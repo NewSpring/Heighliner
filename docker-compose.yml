@@ -9,6 +9,7 @@ heighliner:
   links:
     - mySQL
     - mongoDB
+    - redis
 
 mySQL:
   image: mysql:5.5
@@ -25,3 +26,8 @@ mongoDB:
   image: mongo:latest
   ports:
     - "27017:27017"
+
+redis:
+  image: redis
+  volumes:
+    - /data/redis:/data

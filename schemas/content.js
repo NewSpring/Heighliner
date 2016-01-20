@@ -38,13 +38,13 @@ export default {
       type: GraphQLInt,
       defaultValue: 20
     },
-    offset: {
+    skip: {
       type: GraphQLInt,
       defaultValue: 0
     },
   },
   description: "All dynamic content channels",
-  resolve: (_, { channel, limit, offset }) => {
-    return lookupByChannel(channel, limit, offset)
+  resolve: (_, { channel, limit, skip }) => {
+    return lookupByChannel(channel, limit, skip)
   }
 }

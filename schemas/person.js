@@ -5,6 +5,7 @@ import {
   GraphQLInt,
   GraphQLString,
   GraphQLList,
+  GraphQLNonNull,
 } from "graphql"
 
 import Promise from "bluebird"
@@ -92,6 +93,6 @@ let PersonType = new GraphQLObjectType({
 export default {
   type: PersonType,
   // description: "A person record in Rock",
-  args: { id: { type: GraphQLInt } },
+  args: { id: { type: new GraphQLNonNull(GraphQLInt) } },
   resolve: (_, { id }) => People.get(id)
 }

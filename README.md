@@ -34,7 +34,7 @@ Profit
 
 #### Sample Query
 
-```
+```graphql
 {
 	james: person(id: 90818) {
     ...people

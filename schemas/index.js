@@ -10,6 +10,7 @@ import {
 
 import { People } from "../rock"
 import person from "./person"
+import allFinanicalTransactions, { finanicalTransaction } from "./finanicalTransactions"
 import likes from "./likes"
 import allContent, { content } from "./content"
 
@@ -20,10 +21,11 @@ let schema = new GraphQLSchema({
       person,
       likes,
       allContent,
-      content
+      content,
+      allFinanicalTransactions,
+      finanicalTransaction
     }
   })
 });
-
 
 export default schema;
