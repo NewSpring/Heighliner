@@ -1,0 +1,5 @@
+[mysqld]
+server-id = 1
+binlog_do_db = ee_local
+log_bin = /var/lib/mysql/mysql-bin.log
+binlog_format = row
