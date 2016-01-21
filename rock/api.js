@@ -1,6 +1,7 @@
 
 import _ from "lodash"
 import fetch from "isomorphic-fetch"
+import { load } from "../util/cache"
 
 import Path from "path"
 
@@ -15,7 +16,7 @@ const api = {
   Rock.api.call
  */
 
-api.call = function (method, endpoint, data, callback) {
+api.call = function (method, endpoint, data) {
 
   function checkStatus(response) {
 
@@ -29,11 +30,6 @@ api.call = function (method, endpoint, data, callback) {
     }
   }
 
-
-  if (typeof data === "function") {
-    callback = data
-    data = {}
-  }
 
   if (!this._.tokenName || !this._.token || !this._.baseURL) {
     throw new Error("Rock api credientials are missing")
@@ -56,8 +52,9 @@ api.call = function (method, endpoint, data, callback) {
 
   endpoint = this._.baseURL + "api/" + endpoint
 
-  if (!callback) {
-    return fetch(endpoint, options)
+  return load(
+    endpoint + JSON.stringify(options),
+    () => fetch(endpoint, options)
       .then(checkStatus)
       .then((response) => {
         if (response.status === 204) {
@@ -74,28 +71,8 @@ api.call = function (method, endpoint, data, callback) {
       .then((response) => {
         return response
       })
-  }
+    )
 
-  return fetch(endpoint, options)
-    .then(checkStatus)
-    .then((response) => {
-      if (response.status === 204) {
-        return true
-      }
-
-      if (response.json) {
-        return response.json()
-      }
-
-      return response
-
-    })
-    .then((data) => {
-      callback(null, data)
-    })
-    .catch((er) => {
-      callback(er)
-    })
 }
 
 

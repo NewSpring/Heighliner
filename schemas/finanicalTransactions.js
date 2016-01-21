@@ -10,24 +10,7 @@ import {
 
 
 import { Transactions, api, parseEndpoint } from "../rock"
-
-const AccountDetail = new GraphQLObjectType({
-  name: "FinancialAccount",
-  fields: () => ({
-    name: {
-      type: GraphQLString,
-      resolve: account => (account.PublicName)
-    },
-    description: {
-      type: GraphQLString,
-      resolve: account => (account.PublicDescription)
-    },
-    id: {
-      type: GraphQLInt,
-      resolve: account => (account.Id)
-    },
-  })
-})
+import AccountDetail from "./shared/rock/financial-account"
 
 const TransactionDetails = new GraphQLObjectType({
   name: "TransactionDetails",
@@ -109,13 +92,6 @@ export default {
        FinancialAccounts?
         $expand=
           ChildAccounts
-        &$select=
-          PublicName,
-          PublicDescription,
-          Id,
-          ChildAccounts/PublicName,
-          ChildAccounts/Id,
-          ChildAccounts/PublicDescription
         &$filter=
           ChildAccounts/any(ca: Id ne null) or
           (Id ne null and ParentAccountId eq null)
@@ -161,23 +137,3 @@ export default {
       })
   }
 }
-
-// {
-// 	AuthorizedPersonAliasId: 90818,
-// 	Summary: 'Reference Number: 2947029518',
-// 	CreatedDateTime: '2016-01-05T23:17:06.92',
-// 	Id: 1443764,
-// 	FinancialPaymentDetail: {
-// 		AccountNumberMasked: '1xxxx3123',
-// 		CurrencyTypeValue: {
-// 			Value: 'ACH',
-// 			Description: 'Bank Account (ACH)'
-// 		},
-// 		CreditCardTypeValue: null
-// 	},
-// 	TransactionDetails: [{
-// 		CreatedDateTime: '2016-01-05T23:17:07.28',
-// 		AccountId: 1,
-// 		Amount: 1
-// 	}]
-// }

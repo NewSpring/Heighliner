@@ -9,6 +9,7 @@ import {
 } from "graphql"
 
 import Promise from "bluebird"
+import { load } from "../util/cache"
 
 import { Likes, Users } from "../apollos"
 import { People, api, parseEndpoint } from "../rock"
@@ -73,14 +74,22 @@ let PersonType = new GraphQLObjectType({
     likes: {
       type: new GraphQLList(PersonLikeType),
       resolve({ Id }) {
-        return Users.findOne({"services.rock.PersonId": Id}, "_id")
+        return load(
+          JSON.stringify({"services.rock.PersonId": Id }),
+          () => (Users.findOne({"services.rock.PersonId": Id }, "_id"))
+        )
           .then((user) => {
-            return Likes.find({ userId: user._id })
+            return load(
+              JSON.stringify({ userId: user._id }),
+              () => (Likes.find({ userId: user._id })
+                .then((likes) => (likes.map(x => x.toJSON())))
+              )
+            )
           })
           .then((likes) => {
 
             let promises = likes.map((x) => {
-              return lookupById(x.toJSON().entryId)
+              return lookupById(x.entryId)
             })
 
             return Promise.all(promises)

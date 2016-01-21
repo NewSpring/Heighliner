@@ -6,6 +6,7 @@ import MySQL from "mysql"
 import Promise from "bluebird"
 import Sync from "deasync"
 
+import { load } from "../util/cache"
 
 // local development handling for docker-machine ips being different
 let dockerhost = "192.168.99.100"
@@ -119,22 +120,21 @@ const mysql = (file, data, cb) => {
     return
   }
 
-  // promise
-  let defer = Promise.defer()
-  connection.query(query, (err, row, fields) => {
+  return load(query, () => new Promise((resolve, reject) => {
 
-    if (err) {
-      return defer.reject(err)
-    }
+    connection.query(query, (err, row, fields) => {
 
-    const results = {
-      rows: row,
-      fields: fields
-    }
-    defer.resolve(results)
-  });
+      if (err) { return reject(err) }
 
-  return defer.promise
+      const results = {
+        rows: row
+      }
+
+      resolve(results)
+    });
+
+  }))
+
 
 }
 
@@ -145,10 +145,9 @@ mysql.sync = (file, data) => {
   let results = null,
       done = false;
 
-  const syncQuery = connection.query(query, (err, row, fields) => {
+  const syncQuery = connection.query(query, (err, row) => {
     results = {
-      rows: row,
-      fields: fields
+      rows: row
     }
 
     done = true;

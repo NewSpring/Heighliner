@@ -14,14 +14,17 @@
     "babel": "^5.8.34",
     "bluebird": "^3.1.1",
     "body-parser": "^1.14.2",
+    "dataloader": "^1.1.0",
     "deasync": "^0.1.4",
     "express": "^4.13.3",
     "express-graphql": "^0.4.5",
+    "express-redis-cache": "^0.2.0",
     "graphql": "^0.4.14",
     "graphql-schema": "^0.5.1",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.0.0",
     "mongoose": "^4.3.6",
-    "mysql": "^2.10.2"
+    "mysql": "^2.10.2",
+    "redis": "^2.4.2"
   }
 }

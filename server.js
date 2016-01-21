@@ -2,12 +2,11 @@
 import express from 'express'
 import graphqlHTTP from "express-graphql"
 import { graphql } from 'graphql'
-
 import Schema from './schemas'
+
 
 let app  = express();
 let PORT = 80;
-
 
 app.use('/', graphqlHTTP({
   graphiql: true,

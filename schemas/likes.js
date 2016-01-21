@@ -7,6 +7,7 @@ import {
   GraphQLList,
 } from "graphql"
 
+import { load } from "../util/cache"
 import Promise from "bluebird"
 
 import { Likes, Users } from "../apollos"
@@ -19,14 +20,22 @@ export default {
   args: { person: { type: GraphQLInt } },
   description: "List of likes of a person",
   resolve: (_, { person }) => {
-    return Users.findOne({"services.rock.PersonId": person}, "_id")
+    return load(
+      JSON.stringify({"services.rock.PersonId": person }),
+      () => (Users.findOne({"services.rock.PersonId": person }, "_id"))
+    )
       .then((user) => {
-        return Likes.find({ userId: user._id })
+        return load(
+          JSON.stringify({ userId: user._id }),
+          () => (Likes.find({ userId: user._id })
+            .then((likes) => (likes.map(x => x.toJSON())))
+          )
+        )
       })
       .then((likes) => {
 
         let promises = likes.map((x) => {
-          return lookupById(x.toJSON().entryId)
+          return lookupById(x.entryId)
         })
 
         return Promise.all(promises)
