@@ -39,8 +39,11 @@ export default {
       type: GraphQLInt,
       defaultValue: 0
     },
+    ttl: {
+      type: GraphQLInt
+    },
   },
-  resolve: (_, { limit, skip }) => {
+  resolve: (_, { limit, skip, ttl }) => {
     let allAccountsQuery = api.parseEndpoint(`
        FinancialAccounts?
         $expand=
@@ -54,7 +57,7 @@ export default {
           CreatedDateTime asc
     `)
 
-    return api.get(allAccountsQuery)
+    return api.get(allAccountsQuery, {}, ttl)
       .then((accounts) => {
         return accounts
       })

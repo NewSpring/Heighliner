@@ -16,7 +16,7 @@ const api = {
   Rock.api.call
  */
 
-api.call = function (method, endpoint, data) {
+api.call = function (method, endpoint, data, ttl) {
 
   function checkStatus(response) {
 
@@ -71,7 +71,7 @@ api.call = function (method, endpoint, data) {
       .then((response) => {
         return response
       })
-    )
+    , ttl)
 
 }
 
