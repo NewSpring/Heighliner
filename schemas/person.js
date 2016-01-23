@@ -82,6 +82,18 @@ const PersonType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: person => person.BirthDate
     },
+    birthDay: {
+      type: GraphQLString,
+      resolve: person => person.BirthDay
+    },
+    birthMonth: {
+      type: GraphQLString,
+      resolve: person => person.BirthMonth
+    },
+    birthYear: {
+      type: GraphQLString,
+      resolve: person => person.BirthYear
+    },
     email: {
       type: GraphQLString,
       resolve: person => person.Email

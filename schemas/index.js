@@ -10,9 +10,13 @@ import {
 
 import { People } from "../rock"
 import person from "./person"
+
 import allFinanicalTransactions, { finanicalTransaction } from "./finanicalTransactions"
 import allFinancialAccounts, { financialAccount } from "./financialAccounts"
+import allScheduledFinanicalTransactions, { scheduledFinanicalTransaction } from "./finanicalScheduledTransactions"
 import allSavedPaymentAccounts from "./savedPaymentAccounts"
+import allCampuses, { campus } from "./campuses"
+
 import likes from "./likes"
 import allContent, { content } from "./content"
 
@@ -22,6 +26,8 @@ let schema = new GraphQLSchema({
     fields: {
       // overarching data
       person,
+      campus,
+      allCampuses,
 
       // mongo + ee
       likes,
@@ -30,14 +36,14 @@ let schema = new GraphQLSchema({
       allContent,
       content,
 
-
       // rock financial
       allFinanicalTransactions,
       finanicalTransaction,
       allFinancialAccounts,
       financialAccount,
       allSavedPaymentAccounts,
-
+      scheduledFinanicalTransaction,
+      allScheduledFinanicalTransactions,
 
     }
   })

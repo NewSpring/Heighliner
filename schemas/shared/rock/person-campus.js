@@ -9,7 +9,7 @@ import {
 
 
 const PersonCampusType = new GraphQLObjectType({
-  name: "Campus",
+  name: "PersonCampus",
   fields: () => ({
     name: {
       type: GraphQLString,
