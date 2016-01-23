@@ -6,18 +6,23 @@ import {
   GraphQLString,
   GraphQLList,
   GraphQLNonNull,
+  GraphQLBoolean,
 } from "graphql"
 
 
+import { load } from "../util/cache"
+import { Users } from "../apollos"
+
 import { Transactions, api, parseEndpoint } from "../rock"
 import AccountDetail from "./shared/rock/financial-account"
+import PaymentDetailsType from "./shared/rock/financial-paymentDetails"
 
 const TransactionDetails = new GraphQLObjectType({
   name: "TransactionDetails",
   description: "A NewSpring Transaction Detail Record",
   fields: () => ({
     id: {
-      type: GraphQLString,
+      type: GraphQLInt,
       resolve: transaction => (transaction.AccountId)
     },
     amount: {
@@ -54,6 +59,10 @@ const TransactionType = new GraphQLObjectType({
     details: {
       type: new GraphQLList(TransactionDetails),
       resolve: transaction => (transaction.TransactionDetails)
+    },
+    payment: {
+      type: PaymentDetailsType,
+      resolve: transaction => (transaction.FinancialPaymentDetail)
     }
   })
 })
@@ -76,7 +85,10 @@ export {
 export default {
   type: new GraphQLList(TransactionType),
   args: {
-    personAliasId: { type: new GraphQLNonNull(GraphQLInt) },
+    primaryAliasId: { type: GraphQLInt },
+    mongoId: {
+      type: GraphQLString
+    },
     limit: {
       type: GraphQLInt,
       defaultValue: 20
@@ -84,9 +96,20 @@ export default {
     skip: {
       type: GraphQLInt,
       defaultValue: 0
-    }
+    },
+    ttl: {
+      type: GraphQLInt
+    },
+    cache: {
+      type: GraphQLBoolean,
+      defaultValue: true
+    },
   },
-  resolve: (_, { personAliasId, limit, skip }) => {
+  resolve: (_, { primaryAliasId, mongoId,  limit, skip, ttl, cache }) => {
+
+    if (!mongoId && !primaryAliasId) {
+      throw new Error("An id is required for person lookup")
+    }
 
     let allAccountsQuery = api.parseEndpoint(`
        FinancialAccounts?
@@ -97,9 +120,27 @@ export default {
           (Id ne null and ParentAccountId eq null)
     `)
 
+    let allTransactions;
 
-    let allAccounts = api.get(allAccountsQuery)
-    return Promise.all([Transactions.get(personAliasId, limit, skip), allAccounts])
+    if (!primaryAliasId) {
+      allTransactions = load(
+        JSON.stringify({"user-_id": mongoId }),
+        () => (Users.findOne({"_id": mongoId }, "services.rock.PrimaryAliasId"))
+      , ttl, cache)
+        .then((user) => {
+          console.log(user)
+          if (user) {
+            return Transactions.get(user.services.rock.PrimaryAliasId, limit, skip)
+          }
+          return []
+        })
+    } else {
+      allTransactions = Transactions.get(primaryAliasId, limit, skip)
+    }
+
+
+    let allAccounts = api.get(allAccountsQuery, {}, ttl, cache)
+    return Promise.all([allTransactions, allAccounts])
       .then(([transactions, accounts]) => {
 
         let accountObj = {};

@@ -110,15 +110,10 @@ const getQuery = (file, data) => {
 
 
 // export lookup module
-const mysql = (file, data, cb) => {
+const mysql = (file, data, ttl, cache) => {
 
   let query = getQuery(file, data)
 
-  // async call
-  if (cb) {
-    connection.query(query, cb);
-    return
-  }
 
   return load(query, () => new Promise((resolve, reject) => {
 
@@ -133,7 +128,7 @@ const mysql = (file, data, cb) => {
       resolve(results)
     });
 
-  }))
+  }), ttl, cache)
 
 
 }

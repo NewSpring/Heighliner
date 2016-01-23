@@ -1,9 +1,12 @@
 
 import { api, parseEndpoint } from "../api"
 
-let rootUrl = "People"
-
-const get = id => api.get(`${rootUrl}/${id}`)
+const get = (id, ttl, cache) => api.get(
+  `People?$filter=Id eq ${id}`,
+  {},
+  ttl,
+  cache
+)
 
 export default {
   get

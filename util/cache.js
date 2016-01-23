@@ -24,22 +24,31 @@ function hash(str) {
 
 
 let ttLength = process.env.NODE_ENV === "production" ? 3600 : 30
-const load = (key, fetchMethod, ttl = ttLength) => new Promise((resolve, reject) => {
+const load = (key, fetchMethod, ttl = ttLength, cache = true) => new Promise((resolve, reject) => {
+
+  console.log(cache)
   key = hash(key)
+
+  function get(){
+    fetchMethod()
+      .then((data) => {
+        resolve(data)
+        client.set(key, JSON.stringify(data))
+        client.expire(key, ttl)
+      })
+  }
+
+  if (!cache) {
+    console.log("deleting key: ", key)
+    get();
+    client.del(key)
+    return
+  }
+
   client.get(key, (err, response) => {
     if (err) { return reject(err); }
 
-    if (!response) {
-      fetchMethod()
-        .then((data) => {
-          resolve(data)
-          client.set(key, JSON.stringify(data))
-          client.expire(key, ttl)
-        })
-
-      return
-    }
-
+    if (!response) { get(); return }
     resolve(JSON.parse(response))
     return
 

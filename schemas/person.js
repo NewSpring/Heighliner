@@ -6,6 +6,7 @@ import {
   GraphQLString,
   GraphQLList,
   GraphQLNonNull,
+  GraphQLBoolean,
 } from "graphql"
 
 import Promise from "bluebird"
@@ -20,7 +21,34 @@ import PersonHomeType from "./shared/rock/person-home"
 import PersonLikeType from "./shared/EE/like"
 
 
-let PersonType = new GraphQLObjectType({
+const PhoneNumberType = new GraphQLObjectType({
+  name: "PhoneNumber",
+  description: "A phone number from Rock",
+  fields: () => ({
+    number: {
+      type: GraphQLString,
+      resolve: number => number.Number
+    },
+    formated: {
+      type: GraphQLString,
+      resolve: number => number.NumberFormatted
+    },
+    extension: {
+      type: GraphQLString,
+      resolve: number => number.Extension
+    },
+    description: {
+      type: GraphQLString,
+      resolve: number => number.Description
+    },
+    id: {
+      type: GraphQLInt,
+      resolve: number => number.Id
+    }
+  })
+})
+
+const PersonType = new GraphQLObjectType({
   name: "Person",
   description: "A NewSpring Person",
   fields: () => ({
@@ -31,6 +59,28 @@ let PersonType = new GraphQLObjectType({
     lastName: {
       type: GraphQLString,
       resolve: person => person.LastName
+    },
+    nickName: {
+      type: GraphQLString,
+      resolve: person => person.NickName
+    },
+    phoneNumbers: {
+      type: new GraphQLList(PhoneNumberType),
+      resolve: person => {
+        return api.get(`PhoneNumbers?$filter=PersonId eq ${person.Id}`)
+      }
+    },
+    photo: {
+      type: GraphQLString,
+      resolve: person => person.PhotoUrl // @TODO handle rock images
+    },
+    age: {
+      type: GraphQLString,
+      resolve: person => person.Age
+    },
+    birthdate: {
+      type: GraphQLString,
+      resolve: person => person.BirthDate
     },
     email: {
       type: GraphQLString,
@@ -73,11 +123,20 @@ let PersonType = new GraphQLObjectType({
     },
     likes: {
       type: new GraphQLList(PersonLikeType),
-      resolve({ Id }) {
+      args: {
+        ttl: {
+          type: GraphQLInt
+        },
+        cache: {
+          type: GraphQLBoolean,
+          defaultValue: true
+        },
+      },
+      resolve({ Id }, { ttl, cache }) {
         return load(
           JSON.stringify({"services.rock.PersonId": Id }),
-          () => (Users.findOne({"services.rock.PersonId": Id }, "_id"))
-        )
+          () => (Users.findOne({"services.rock.PersonId": Id }, "_id")),
+        ttl, cache)
           .then((user) => {
             return load(
               JSON.stringify({ userId: user._id }),
@@ -99,9 +158,52 @@ let PersonType = new GraphQLObjectType({
   })
 })
 
+// XGRiwjdhk8x5WGvNN
 export default {
   type: PersonType,
   // description: "A person record in Rock",
-  args: { id: { type: new GraphQLNonNull(GraphQLInt) } },
-  resolve: (_, { id }) => People.get(id)
+  args: {
+    id: {
+      type: GraphQLInt
+    },
+    mongoId: {
+      type: GraphQLString
+    },
+    ttl: {
+      type: GraphQLInt
+    },
+    cache: {
+      type: GraphQLBoolean,
+      defaultValue: true
+    },
+  },
+  resolve: (_, { mongoId, id, ttl, cache }) => {
+
+    if (!mongoId && !id) {
+      throw new Error("An id is required for person lookup")
+    }
+
+    if (id) {
+      return People.get(id, ttl, cache)
+        .then((people) => (people[0]))
+
+    } else if (mongoId) {
+
+      return load(
+        JSON.stringify({"user-_id": mongoId }),
+        () => (Users.findOne({"_id": mongoId }, "services.rock.PersonId"))
+      , ttl, cache)
+        .then((user) => {
+
+          if (user) {
+            return People.get(user.services.rock.PersonId, ttl, cache)
+          }
+
+          return [{}]
+        })
+        .then((people) => (people[0]))
+    }
+
+
+  }
 }

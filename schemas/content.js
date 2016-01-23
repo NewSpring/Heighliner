@@ -6,6 +6,7 @@ import {
   GraphQLString,
   GraphQLList,
   GraphQLNonNull,
+  GraphQLBoolean,
 } from "graphql"
 
 import Promise from "bluebird"
@@ -42,9 +43,15 @@ export default {
       type: GraphQLInt,
       defaultValue: 0
     },
+    ttl: {
+      type: GraphQLInt
+    },
+    cache: {
+      type: GraphQLBoolean
+    },
   },
   description: "All dynamic content channels",
-  resolve: (_, { channel, limit, skip }) => {
-    return lookupByChannel(channel, limit, skip)
+  resolve: (_, { channel, limit, skip, ttl, cache = true }) => {
+    return lookupByChannel(channel, limit, skip, ttl, cache)
   }
 }

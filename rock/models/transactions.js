@@ -23,11 +23,12 @@ const get = (id, limit, skip) => {
         FinancialPaymentDetail/CurrencyTypeValue/Value,
         FinancialPaymentDetail/CreditCardTypeValue/Description,
         FinancialPaymentDetail/CreditCardTypeValue/Value,
-        FinancialPaymentDetail/AccountNumberMasked
+        FinancialPaymentDetail/AccountNumberMasked,
+        FinancialPaymentDetail/Id
       &$top=${limit}
       &$skip=${skip}
       &$orderby=
-        CreatedDateTime asc
+        CreatedDateTime desc
   `)
 
   return api.get(query)
@@ -55,7 +56,8 @@ const getOne = (id) => {
         FinancialPaymentDetail/CurrencyTypeValue/Value,
         FinancialPaymentDetail/CreditCardTypeValue/Description,
         FinancialPaymentDetail/CreditCardTypeValue/Value,
-        FinancialPaymentDetail/AccountNumberMasked
+        FinancialPaymentDetail/AccountNumberMasked,
+        FinancialPaymentDetail/Id
   `)
 
   return api.get(query)

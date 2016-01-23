@@ -4,6 +4,7 @@ import {
   GraphQLSchema,
   GraphQLInt,
   GraphQLString,
+  GraphQLBoolean,
   GraphQLList,
   GraphQLNonNull,
 } from "graphql"
@@ -15,12 +16,38 @@ import AccountDetail from "./shared/rock/financial-account"
 const financialAccount = {
   type: AccountDetail,
   args: {
-    id: { type: new GraphQLNonNull(GraphQLInt) }
+    id: { type: GraphQLInt },
+    name: { type: GraphQLString },
+    ttl: { type: GraphQLInt },
+    cache: {
+      type: GraphQLBoolean,
+      defaultValue: true
+    },
   },
-  resolve: (_, { id }) => {
-    let accountsQuery = api.parseEndpoint(`FinancialAccounts/${id}`)
+  resolve: (_, { id, name, ttl, cache }) => {
+    if (!id && !name) {
+      throw new Error("Id or Name is required")
+    }
 
-    return api.get(accountsQuery)
+    let accountsQuery;
+    if (id) {
+      accountsQuery = api.parseEndpoint(`FinancialAccounts/${id}`)
+    } else if (name) {
+      accountsQuery = api.parseEndpoint(`
+        FinancialAccounts?
+          $filter=
+            Name eq '${name}'
+      `)
+    }
+
+    return api.get(accountsQuery, {}, ttl, cache)
+      .then((data) => {
+        if (data.length === 1) {
+          data = data[0]
+        }
+
+        return data
+      })
   }
 }
 
@@ -42,8 +69,12 @@ export default {
     ttl: {
       type: GraphQLInt
     },
+    cache: {
+      type: GraphQLBoolean,
+      defaultValue: true
+    },
   },
-  resolve: (_, { limit, skip, ttl }) => {
+  resolve: (_, { limit, skip, ttl, cache }) => {
     let allAccountsQuery = api.parseEndpoint(`
        FinancialAccounts?
         $expand=
@@ -57,7 +88,7 @@ export default {
           CreatedDateTime asc
     `)
 
-    return api.get(allAccountsQuery, {}, ttl)
+    return api.get(allAccountsQuery, {}, ttl, cache)
       .then((accounts) => {
         return accounts
       })

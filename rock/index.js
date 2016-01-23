@@ -9,5 +9,5 @@ export {
   parseEndpoint,
 
   People,
-  Transactions
+  Transactions,
 }

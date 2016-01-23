@@ -12,6 +12,7 @@ import { People } from "../rock"
 import person from "./person"
 import allFinanicalTransactions, { finanicalTransaction } from "./finanicalTransactions"
 import allFinancialAccounts, { financialAccount } from "./financialAccounts"
+import allSavedPaymentAccounts from "./savedPaymentAccounts"
 import likes from "./likes"
 import allContent, { content } from "./content"
 
@@ -30,11 +31,14 @@ let schema = new GraphQLSchema({
       content,
 
 
-      // rock
+      // rock financial
       allFinanicalTransactions,
       finanicalTransaction,
       allFinancialAccounts,
-      financialAccount
+      financialAccount,
+      allSavedPaymentAccounts,
+
+
     }
   })
 });

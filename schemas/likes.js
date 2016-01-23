@@ -5,6 +5,7 @@ import {
   GraphQLInt,
   GraphQLString,
   GraphQLList,
+  GraphQLBoolean,
 } from "graphql"
 
 import { load } from "../util/cache"
@@ -17,13 +18,24 @@ import LikeType from "./shared/EE/like"
 
 export default {
   type: new GraphQLList(LikeType),
-  args: { person: { type: GraphQLInt } },
+  args: {
+    person: {
+      type: GraphQLInt
+    },
+    ttl: {
+      type: GraphQLInt
+    },
+    cache: {
+      type: GraphQLBoolean,
+      defaultValue: true
+    },
+  },
   description: "List of likes of a person",
-  resolve: (_, { person }) => {
+  resolve: (_, { person, cache, ttl }) => {
     return load(
       JSON.stringify({"services.rock.PersonId": person }),
       () => (Users.findOne({"services.rock.PersonId": person }, "_id"))
-    )
+    , ttl, cache)
       .then((user) => {
         return load(
           JSON.stringify({ userId: user._id }),
