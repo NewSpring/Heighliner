@@ -17,6 +17,7 @@ SELECT
   t.year,
   t.month,
   t.day,
+  t.entry_date,
   t.author_id,
   m.m_field_id_2,
   m.m_field_id_3,

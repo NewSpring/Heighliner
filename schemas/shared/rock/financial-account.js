@@ -16,6 +16,10 @@ const AccountDetail = new GraphQLObjectType({
       type: GraphQLString,
       resolve: account => (account.PublicName)
     },
+    order: {
+      type: GraphQLInt,
+      resolve: account => (account.Order)
+    },
     description: {
       type: GraphQLString,
       resolve: account => (account.PublicDescription)

@@ -11,6 +11,7 @@ SELECT
   d.field_id_646 as album_downloads,
   d.field_id_1196 as album_study,
   c.channel_name,
+  t.entry_date,
   t.title,
   t.status,
   t.year,

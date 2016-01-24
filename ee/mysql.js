@@ -78,6 +78,10 @@ const getQuery = (file, data) => {
     query += ` WHERE d.channel_id = ${data.channel_id}`
   }
 
+  if (data.sort) {
+    query += ` ORDER BY t.entry_date DESC`
+  }
+
   if (data.limit) {
     query += ` LIMIT ${data.limit}`
   }
@@ -168,7 +172,7 @@ const lookupById = (entry_id) => {
 
 
       if (Fs.existsSync(tableDir)) {
-        return mysql(tableDir, { entry_id })
+        return mysql(tableDir, { entry_id, sort: true })
           .then((data) => {
             let documents = []
             const mappingDir = Path.join(tabelsDir, `${table}.js`),
@@ -205,7 +209,7 @@ const lookupByChannel = (channel_name, limit, offset) => {
 
       let { channel_id } = data.rows[0]
       if (Fs.existsSync(tableDir)) {
-        return mysql(tableDir, { channel_id, limit, offset })
+        return mysql(tableDir, { channel_id, limit, offset, sort: true })
           .then((data) => {
             let documents = []
             const mappingDir = Path.join(tabelsDir, `${table}.js`),
