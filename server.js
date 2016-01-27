@@ -5,7 +5,8 @@ import { graphql } from "graphql"
 import Schema from "./schemas"
 import bodyParser from "body-parser"
 
-let PORT = 80;
+// let PORT = process.env.DOCKER_HOST ? 80 : 8080
+let PORT = 80
 
 const app = express();
 
@@ -32,7 +33,7 @@ app.use((req, res, next) => {
 
 app.use("/", graphqlHTTP(() => ({
   schema: Schema,
-  graphiql: true
+  graphiql: process.env.NODE_ENV != "production"
 })));
 
 // Listen for incoming HTTP requests

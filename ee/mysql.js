@@ -27,7 +27,6 @@ const SQLSettings = {
   ssl: process.env.MYSQL_SSL || false
 };
 
-
 // connect to db
 let started = false;
 const connection = MySQL.createConnection(SQLSettings);

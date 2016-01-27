@@ -1,7 +1,8 @@
 
 import { api, parseEndpoint } from "../api"
 
-const get = (id, active = true, limit, skip) => {
+const get = (id, active, limit, skip) => {
+  console.log(active)
   let query =  api.parseEndpoint(`
     FinancialScheduledTransactions?
       $filter=
@@ -42,6 +43,8 @@ const get = (id, active = true, limit, skip) => {
       &$orderby=
         CreatedDateTime desc
   `)
+
+  console.log(query)
 
   return api.get(query)
 }

@@ -1,15 +1,30 @@
 // import DataLoader from "dataloader"
 import redis from "redis"
 import Promise from "bluebird"
+import Url from "url"
 
 // local development handling for docker-machine ips being different
-let dockerhost = "192.168.99.100"
+let host = "192.168.99.100"
 if (process.env.DOCKER_HOST) {
   const hostObj = Url.parse(process.env.DOCKER_HOST)
-  dockerhost = hostObj.host
+  host = hostObj.host
 }
 
-const client = redis.createClient(6379, dockerhost);
+host = process.env.REDIS_HOST ? process.env.REDIS_HOST : host;
+const client = redis.createClient(6379, host);
+
+client.on("connect", (err, results) => {
+  console.log(err, results, "here")
+})
+
+client.on("error", (err) => {
+  console.log(err)
+  // stub methods
+  client.set = () => {}
+  client.del = () => {}
+  client.expire = () => {}
+  client.get = (key, cb) => (cb(null, false))
+})
 
 function hash(str) {
   var hash = 0, i, chr, len;
@@ -26,7 +41,6 @@ function hash(str) {
 let ttLength = process.env.NODE_ENV === "production" ? 3600 : 30
 const load = (key, fetchMethod, ttl = ttLength, cache = true) => new Promise((resolve, reject) => {
 
-  console.log(cache)
   key = hash(key)
 
   function get(){
@@ -39,7 +53,6 @@ const load = (key, fetchMethod, ttl = ttLength, cache = true) => new Promise((re
   }
 
   if (!cache) {
-    console.log("deleting key: ", key)
     get();
     client.del(key)
     return

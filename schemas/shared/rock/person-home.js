@@ -31,10 +31,6 @@ const PersonHomeType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: locations => getHome(locations).Street2
     },
-    street2: {
-      type: GraphQLString,
-      resolve: locations => getHome(locations).Street2
-    },
     city: {
       type: GraphQLString,
       resolve: locations => getHome(locations).City

@@ -1,14 +1,22 @@
 
+import Fs from "fs"
+import Path from "path"
 import _ from "lodash"
 import fetch from "isomorphic-fetch"
 import { load } from "../util/cache"
 
-import Path from "path"
-
-let settings = require(Path.join(__dirname, "../.remote/sites/my.newspring.cc/settings.json"))
+let settings = { rock: {} }
+let settingsDest = Path.join(__dirname, "../.remote/sites/my.newspring.cc/settings.json")
+if (Fs.existsSync(settingsDest)) {
+  settings = require(settingsDest)
+}
 
 const api = {
-  _: settings.rock
+  _: {
+    baseURL: process.env.ROCK_URL || settings.rock.baseURL,
+    token: process.env.ROCK_TOKEN || settings.rock.token,
+    tokenName: "Authorization-Token"
+  }
 }
 
 

@@ -1,2 +1,4 @@
 node_modules
 /.remote
+.env
+npm-debug.log

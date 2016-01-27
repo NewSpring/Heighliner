@@ -1,9 +1,15 @@
 // setup apollos endpoint
 import mongoose from "mongoose"
 import Path from "path"
+import Fs from "fs"
 
-let settings = require(Path.join(__dirname, "../.remote/sites/my.newspring.cc/mup.json"))
+let settings = { env: {} }
 
-mongoose.connect(settings.env.MONGO_URL);
+let settingsDest = Path.join(__dirname, "../.remote/sites/my.newspring.cc/mup.json")
+if (Fs.existsSync(settingsDest)) {
+  settings = require(settingsDest)
+}
+
+mongoose.connect(process.env.MONGO_URL || settings.env.MONGO_URL);
 
 export default mongoose

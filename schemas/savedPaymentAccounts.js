@@ -34,7 +34,7 @@ const SavedAccountsType = new GraphQLObjectType({
     },
     code: {
       type: GraphQLString,
-      resolve: account => (account.TransactionCode)
+      resolve: account => (account.ReferenceNumber)
     },
     payment: {
       type: PaymentDetailsType,
@@ -77,6 +77,7 @@ export default {
             Id,
             Name,
             ModifiedDateTime,
+            ReferenceNumber,
             TransactionCode,
             FinancialPaymentDetail/AccountNumberMasked,
             FinancialPaymentDetail/CurrencyTypeValue/Value,
@@ -105,7 +106,6 @@ export default {
     } else {
       allPaymentDetails = get(primaryAliasId)
     }
-
 
     return allPaymentDetails
   }
