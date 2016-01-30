@@ -20,26 +20,26 @@ export default function(doc){
   ].join(",\n");
 
   let image = Helpers.getFile(doc.entry_id, doc.album_image, "f.file_name");
-  image = image[0];
-  if (image.cloudfront !== false) {
-    image = image.cloudfront;
-  } else {
-    image = image.s3;
-  }
-  if (image.slice(0,4) === "http") {
-    image = image.slice(image.indexOf("//"));
-  }
+  // image = image[0];
+  // if (image.cloudfront !== false) {
+  //   image = image.cloudfront;
+  // } else {
+  //   image = image.s3;
+  // }
+  // if (image.slice(0,4) === "http") {
+  //   image = image.slice(image.indexOf("//"));
+  // }
 
   let blurredImage = Helpers.getFile(doc.entry_id, doc.album_blurred_image, "f.file_name");
-  blurredImage = blurredImage[0];
-  if (blurredImage.cloudfront !== false) {
-    blurredImage = blurredImage.cloudfront;
-  } else {
-    blurredImage = blurredImage.s3;
-  }
-  if (blurredImage.slice(0,4) === "http") {
-    blurredImage = blurredImage.slice(blurredImage.indexOf("//"));
-  }
+  // blurredImage = blurredImage[0];
+  // if (blurredImage.cloudfront !== false) {
+  //   blurredImage = blurredImage.cloudfront;
+  // } else {
+  //   blurredImage = blurredImage.s3;
+  // }
+  // if (blurredImage.slice(0,4) === "http") {
+  //   blurredImage = blurredImage.slice(blurredImage.indexOf("//"));
+  // }
 
   const date = Helpers.getDate(doc.day, doc.month, doc.year);
 
@@ -59,6 +59,7 @@ export default function(doc){
   links = Helpers.getMatrixData(doc.entry_id, links);
 
 
+  let images = [].concat(image, blurredImage)
 
   let cleanedData = {
     entryId: doc.entry_id,
@@ -66,8 +67,11 @@ export default function(doc){
     channelName: doc.channel_name,
     title: doc.title,
     status: doc.status,
-    image: image,
-    blurredImage: blurredImage,
+    content: {
+      images: images
+    },
+    // image: image,
+    // blurredImage: blurredImage,
     meta: {
       date: date,
       channelId: doc.channel_id

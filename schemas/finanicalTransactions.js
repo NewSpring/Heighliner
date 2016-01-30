@@ -128,7 +128,6 @@ export default {
         () => (Users.findOne({"_id": mongoId }, "services.rock.PrimaryAliasId"))
       , ttl, cache)
         .then((user) => {
-          console.log(user)
           if (user) {
             return Transactions.get(user.services.rock.PrimaryAliasId, limit, skip)
           }

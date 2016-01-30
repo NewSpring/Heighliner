@@ -158,7 +158,7 @@ mysql.sync = (file, data) => {
 
 const lookupById = (entry_id) => {
   let tableFromId = Path.join(__dirname, "./util/tableFromId.sql")
-
+  console.log(entry_id, tableFromId)
   return mysql(tableFromId, { entry_id })
     .then((data) => {
       if (!data.rows.length) {
