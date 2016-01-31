@@ -11,20 +11,20 @@ if (process.env.DOCKER_HOST) {
 }
 
 host = process.env.REDIS_HOST ? process.env.REDIS_HOST : host;
-const client = redis.createClient(6379, host);
-
-client.on("connect", (err, results) => {
-  console.log(err, results, "here")
-})
-
-client.on("error", (err) => {
-  console.log(err)
-  // stub methods
-  client.set = () => {}
-  client.del = () => {}
-  client.expire = () => {}
-  client.get = (key, cb) => (cb(null, false))
-})
+// const client = redis.createClient(6379, host);
+//
+// client.on("connect", (err, results) => {
+//   console.log(err, results, "here")
+// })
+//
+// client.on("error", (err) => {
+//   console.log(err)
+//   // stub methods
+//   client.set = () => {}
+//   client.del = () => {}
+//   client.expire = () => {}
+//   client.get = (key, cb) => (cb(null, false))
+// })
 
 function hash(str) {
   var hash = 0, i, chr, len;
@@ -47,25 +47,27 @@ const load = (key, fetchMethod, ttl = ttLength, cache = true) => new Promise((re
     fetchMethod()
       .then((data) => {
         resolve(data)
-        client.set(key, JSON.stringify(data))
-        client.expire(key, ttl)
+        // client.set(key, JSON.stringify(data))
+        // client.expire(key, ttl)
       })
   }
 
-  if (!cache) {
-    get();
-    client.del(key)
-    return
-  }
+  // if (!cache) {
+  //   get();
+  //   client.del(key)
+  //   return
+  // }
 
-  client.get(key, (err, response) => {
-    if (err) { return reject(err); }
+  // client.get(key, (err, response) => {
+  //   if (err) { return reject(err); }
+  //
+  //   if (!response) { get(); return }
+  //   resolve(JSON.parse(response))
+  //   return
+  //
+  // })
 
-    if (!response) { get(); return }
-    resolve(JSON.parse(response))
-    return
-
-  })
+  get()
 
 
 })

@@ -50,6 +50,7 @@ plan.remote(function(remote) {
   remote.log("Setting environment variables");
   var envVars = [
     "NODE_ENV=production",
+    "PORT=" + process.env.PORT,
     "ROCK_URL=" + process.env.ROCK_URL,
     "ROCK_TOKEN=" + process.env.ROCK_TOKEN,
     "REDIS_HOST=" + process.env.REDIS_HOST,

@@ -31,10 +31,16 @@ app.use((req, res, next) => {
 
 });
 
+app.get("/alive", (req, res) => {
+  res.status(200).json({ alive: true });
+})
+
+
 app.use("/", graphqlHTTP(() => ({
   schema: Schema,
   graphiql: process.env.NODE_ENV != "production"
 })));
+
 
 // Listen for incoming HTTP requests
 const listener = app.listen(PORT, () => {
