@@ -6,7 +6,7 @@ import Schema from "./schemas"
 import bodyParser from "body-parser"
 
 // let PORT = process.env.DOCKER_HOST ? 80 : 8080
-let PORT = 8080
+let PORT = process.env.PORT || 8080
 
 const app = express();
 
