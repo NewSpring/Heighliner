@@ -11,7 +11,7 @@ dependencies:
   post:
     - curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq
     - curl -L https://github.com/docker/compose/releases/download/1.5.0/docker-compose-`uname -s`-`uname -m` > ../bin/docker-compose && chmod +x ../bin/docker-compose
-    - docker build --rm=false -t newspring/heighliner:$CIRCLE_SHA1 . | cat # workaround progress weirdness
+    - docker build --rm=false -t 145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:$CIRCLE_SHA1 . | cat # workaround progress weirdness
 
 test:
   override:

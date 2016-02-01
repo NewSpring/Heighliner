@@ -9,8 +9,8 @@ JQ="jq --raw-output --exit-status"
 
 deploy_image() {
 
-    docker login -u $DOCKER_USERNAME -p $DOCKER_PASS -e $DOCKER_EMAIL
-    docker push newspring/heighliner:$CIRCLE_SHA1 | cat # workaround progress weirdness
+  $(aws ecr get-login --region us-east-1)
+  docker push 145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:$CIRCLE_SHA1 | cat # workaround progress weirdness
 
 }
 
@@ -24,11 +24,11 @@ make_task_def() {
       "memory": 512,
       "cpu": 1024,
       "essential": true,
-      "image": "newspring/heighliner:%s",
+      "image": "145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:%s",
       "portMappings": [
         {
           "hostPort": %s,
-          "containerPort": 80,
+          "containerPort": 80,``
           "protocol": "tcp"
         }
       ],
