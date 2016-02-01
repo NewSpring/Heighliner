@@ -28,8 +28,8 @@ make_task_def() {
       "image": "145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:%s",
       "portMappings": [
         {
-          "hostPort": %s,
-          "containerPort": 80,``
+          "hostPort": 8888,
+          "containerPort": 80,
           "protocol": "tcp"
         }
       ],

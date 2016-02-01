@@ -17,7 +17,7 @@ dependencies:
 
 test:
   override:
-    - docker run -d -p 8080:80 heighliner
+    - ./run.sh
     - sleep 5
     - curl --retry 10 --retry-delay 5 localhost:8080/alive | grep {"alive":true}
 
