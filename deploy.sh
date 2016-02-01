@@ -10,8 +10,8 @@ JQ="jq --raw-output --exit-status"
 deploy_image() {
 
   $(aws ecr get-login --region us-east-1)
-  docker tag heighliner:latest 145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:$CIRCLE_SHA1
-  docker push 145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:$CIRCLE_SHA1 | cat # workaround progress weirdness
+  docker tag heighliner:latest 145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:latest
+  docker push 145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:latest | cat # workaround progress weirdness
 
 }
 
@@ -25,7 +25,7 @@ make_task_def() {
       "memory": 512,
       "cpu": 1024,
       "essential": true,
-      "image": "'"145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:$CIRCLE_SHA1"'",
+      "image": "145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:latest",
       "portMappings": [
         {
           "hostPort": 8888,
