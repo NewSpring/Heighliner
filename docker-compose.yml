@@ -1,4 +1,5 @@
 
 heighliner:
   image: "145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:${CIRCLE_SHA1}"
-  ports: "8000:80"
+  ports:
+    - "8000:80"
