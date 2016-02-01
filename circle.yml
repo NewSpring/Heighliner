@@ -18,7 +18,7 @@ test:
     - ../bin/docker-compose up:
         background: true
     - sleep 5
-    - curl --retry 10 --retry-delay 5 localhost:8000/alive | grep "{ alive: true }"
+    - curl --retry 10 --retry-delay 5 localhost:8000/alive
 
 deployment:
   prod:
