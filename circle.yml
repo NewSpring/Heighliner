@@ -3,6 +3,8 @@ machine:
     PATH: "$PATH:~/$CIRCLE_PROJECT_REPONAME/bin"
   python:
     version: 2.7.9
+  node:
+    version: 4.2.1
   services:
     - docker
 
