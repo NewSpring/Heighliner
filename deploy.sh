@@ -16,8 +16,10 @@ deploy_image() {
 }
 
 # reads $CIRCLE_SHA1, $host_port
-# sets $task_def
+# sets $k_def() {
 make_task_def() {
+
+  image="`145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:$CIRCLE_SHA1`"
 
   task_template='[
     {
@@ -25,27 +27,69 @@ make_task_def() {
       "memory": 512,
       "cpu": 1024,
       "essential": true,
-      "image": "145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:%s",
+      "image": "'"$image"'",
       "portMappings": [
         {
           "hostPort": 8888,
           "containerPort": 80,
           "protocol": "tcp"
         }
+      ],
+      "environment": [
+        {
+          "name": REDIS_HOST,
+          "value": "'"$REDIS_HOST"'"
+        },
+        {
+          "name": MONGO_URL,
+          "value": "'"$MONGO_URL"'"
+        },
+        {
+          "name": MYSQL_HOST,
+          "value": "'"$MYSQL_HOST"'"
+        },
+        {
+          "name": MYSQL_USER,
+          "value": "'"$MYSQL_USER"'"
+        },
+        {
+          "name": MYSQL_PASSWORD,
+          "value": "'"$MYSQL_PASSWORD"'"
+        },
+        {
+          "name": MYSQL_DB,
+          "value": "'"$MYSQL_DB"'"
+        },
+        {
+          "name": MYSQL_SSL,
+          "value": "'"$MYSQL_SSL"'"
+        },
+        {
+          "name": NEW_RELIC_KEY,
+          "value": "'"$NEW_RELIC_KEY"'"
+        },
+        {
+          "name": PORT,
+          "value": "'"$PORT"'"
+        },
+        {
+          "name": ROCK_URL,
+          "value": "'"$ROCK_URL"'"
+        },
+        {
+          "name": ROCK_TOKEN,
+          "value": "'"$ROCK_TOKEN"'"
+        }
       ]
     }
   ]'
-
-  task_def=$(printf "$task_template" $CIRCLE_SHA1 $host_port)
-  echo task_def
 }
-
 
 # reads $family
 # sets $revision
 register_definition() {
 
-  if revision=$(aws ecs register-task-definition --container-definitions "$task_def" --family $family | $JQ '.taskDefinition.taskDefinitionArn'); then
+  if revision=$(aws ecs register-task-definition --container-definitions "$task_template" --family $family | $JQ '.taskDefinition.taskDefinitionArn'); then
     echo "Revision: $revision"
   else
     echo "Failed to register task definition"
