@@ -10,6 +10,10 @@ machine:
 
 
 dependencies:
+  pre:
+    - aws --version
+    - pip install awscli
+    - aws --version
   post:
     - curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq
     # - curl -L https://github.com/docker/compose/releases/download/1.5.0/docker-compose-`uname -s`-`uname -m` > ../bin/docker-compose && chmod +x ../bin/docker-compose
