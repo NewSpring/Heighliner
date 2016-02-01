@@ -1,5 +1,33 @@
 
 heighliner:
-  image: "145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:${CIRCLE_SHA1}"
+  build: .
+  volumes:
+    - .:/usr/src/app/
   ports:
-    - "8000:80"
+    - "80:80"
+  links:
+    - mySQL
+    - redis
+
+mySQL:
+  image: mysql:5.5
+  volumes:
+    - ./scripts/mysql/:/etc/mysql/conf.d
+  ports:
+    - "3306:3306"
+  environment:
+    MYSQL_ROOT_PASSWORD: password
+    MYSQL_DATABASE: ee_local
+    MYSQL_USER: root
+
+# mongoDB:
+#   image: mongo:latest
+#   ports:
+#     - "27017:27017"
+
+redis:
+  image: redis
+  ports:
+    - "6379:6379"
+  volumes:
+    - /data/redis:/data

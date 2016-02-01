@@ -19,7 +19,7 @@ test:
   override:
     - docker run -d -p 8080:80 145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:$CIRCLE_SHA1
     - sleep 5
-    - curl --retry 10 --retry-delay 5 localhost:8000/alive
+    - curl --retry 10 --retry-delay 5 localhost:8000/alive | grep {"alive":true}
 
 deployment:
   prod:
