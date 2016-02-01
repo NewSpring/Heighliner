@@ -8,11 +8,9 @@ set -o pipefail
 JQ="jq --raw-output --exit-status"
 
 deploy_image() {
-
   $(aws ecr get-login --region us-east-1)
   docker tag heighliner:latest 145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:$CIRCLE_SHA1
   docker push 145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:$CIRCLE_SHA1 | cat # workaround progress weirdness
-
 }
 
 # reads $CIRCLE_SHA1, $host_port
@@ -102,13 +100,13 @@ register_definition() {
 
 deploy_cluster() {
 
-  host_port=80
-  family="ecscompose-apollos"
+  host_port=8888
+  family="heighliner"
 
   make_task_def
 
   register_definition
-  if [[ $(aws ecs update-service --cluster apollos --service apollos-new --task-definition $revision | \
+  if [[ $(aws ecs update-service --cluster apollos --service heighliner --task-definition $revision | \
                  $JQ '.service.taskDefinition') != $revision ]]; then
       echo "Error updating service."
       return 1
@@ -117,7 +115,7 @@ deploy_cluster() {
   # wait for older revisions to disappear
   # not really necessary, but nice for demos
   for attempt in {1..30}; do
-      if stale=$(aws ecs describe-services --cluster apollos --services apollos-new | \
+      if stale=$(aws ecs describe-services --cluster apollos --services heighliner | \
                      $JQ ".services[0].deployments | .[] | select(.taskDefinition != \"$revision\") | .taskDefinition"); then
           echo "Waiting for stale deployments:"
           echo "$stale"
