@@ -19,15 +19,13 @@ deploy_image() {
 # sets $k_def() {
 make_task_def() {
 
-  image="`145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:$CIRCLE_SHA1`"
-
   task_template='[
     {
       "name": "heighliner",
       "memory": 512,
       "cpu": 1024,
       "essential": true,
-      "image": "'"$image"'",
+      "image": "'"145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:$CIRCLE_SHA1"'",
       "portMappings": [
         {
           "hostPort": 8888,
