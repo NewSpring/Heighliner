@@ -8,11 +8,9 @@ set -o pipefail
 JQ="jq --raw-output --exit-status"
 
 deploy_image() {
-
   $(aws ecr get-login --region us-east-1)
   docker tag heighliner:latest 145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:$CIRCLE_SHA1
   docker push 145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:$CIRCLE_SHA1 | cat # workaround progress weirdness
-
 }
 
 # reads $CIRCLE_SHA1, $host_port
