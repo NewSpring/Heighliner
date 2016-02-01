@@ -13,11 +13,11 @@ dependencies:
   post:
     - curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq
     - curl -L https://github.com/docker/compose/releases/download/1.5.0/docker-compose-`uname -s`-`uname -m` > ../bin/docker-compose && chmod +x ../bin/docker-compose
-    - docker build --rm=false -t 145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:$CIRCLE_SHA1 . | cat # workaround progress weirdness
+    - docker build --rm=true -t 145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:$CIRCLE_SHA1 . | cat # workaround progress weirdness
 
 test:
   override:
-    - ../bin/docker-compose start
+    - ../bin/docker-compose up
     - sleep 5
     - curl --retry 10 --retry-delay 5 localhost:8000/alive
 

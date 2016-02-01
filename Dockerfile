@@ -9,7 +9,7 @@ ADD . .
 # RUN apk add --update make gcc g++ python
 
 # If you need npm, don't use a base tag
-# RUN npm install
+RUN npm install
 
 # If you had native dependencies you can now remove build tools
 # RUN apk del make gcc g++ python && \
