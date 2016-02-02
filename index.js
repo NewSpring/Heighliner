@@ -15,10 +15,10 @@ if (process.env.NODE_ENV === "production") {
 }
 
 
-// if (process.env.NEW_RELIC_KEY){
-//   // monitor
-//   require("newrelic");
-// }
+if (process.env.NEW_RELIC_KEY){
+  // monitor
+  require("newrelic");
+}
 
 // by requiring `babel/register`, all of our successive `require`s will be Babel"d
 require("babel/register");
