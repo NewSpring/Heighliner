@@ -35,6 +35,10 @@ make_task_def() {
       ],
       "environment": [
         {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
           "name": "REDIS_HOST",
           "value": "'"$REDIS_HOST"'"
         },
