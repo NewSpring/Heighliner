@@ -35,47 +35,47 @@ make_task_def() {
       ],
       "environment": [
         {
-          "name": REDIS_HOST,
+          "name": "REDIS_HOST",
           "value": "'"$REDIS_HOST"'"
         },
         {
-          "name": MONGO_URL,
+          "name": "MONGO_URL",
           "value": "'"$MONGO_URL"'"
         },
         {
-          "name": MYSQL_HOST,
+          "name": "MYSQL_HOST",
           "value": "'"$MYSQL_HOST"'"
         },
         {
-          "name": MYSQL_USER,
+          "name": "MYSQL_USER",
           "value": "'"$MYSQL_USER"'"
         },
         {
-          "name": MYSQL_PASSWORD,
+          "name": "MYSQL_PASSWORD",
           "value": "'"$MYSQL_PASSWORD"'"
         },
         {
-          "name": MYSQL_DB,
+          "name": "MYSQL_DB",
           "value": "'"$MYSQL_DB"'"
         },
         {
-          "name": MYSQL_SSL,
+          "name": "MYSQL_SSL",
           "value": "'"$MYSQL_SSL"'"
         },
         {
-          "name": NEW_RELIC_KEY,
+          "name": "NEW_RELIC_KEY",
           "value": "'"$NEW_RELIC_KEY"'"
         },
         {
-          "name": PORT,
-          "value": "'"$PORT"'"
+          "name": "PORT",
+          "value": $PORT
         },
         {
-          "name": ROCK_URL,
+          "name": "ROCK_URL",
           "value": "'"$ROCK_URL"'"
         },
         {
-          "name": ROCK_TOKEN,
+          "name": "ROCK_TOKEN",
           "value": "'"$ROCK_TOKEN"'"
         }
       ]
