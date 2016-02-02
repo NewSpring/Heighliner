@@ -68,7 +68,7 @@ make_task_def() {
         },
         {
           "name": "PORT",
-          "value": '$PORT'
+          "value": "'"$PORT"'"
         },
         {
           "name": "ROCK_URL",
