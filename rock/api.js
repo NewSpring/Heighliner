@@ -59,7 +59,6 @@ api.call = function (method, endpoint, data, ttl, cache = true) {
 
 
   endpoint = this._.baseURL + "api/" + endpoint
-
   return load(
     endpoint + JSON.stringify(options),
     () => fetch(endpoint, options)

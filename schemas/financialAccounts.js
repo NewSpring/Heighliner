@@ -85,7 +85,7 @@ export default {
         &$top=${limit}
         &$skip=${skip}
         &$orderby=
-          CreatedDateTime asc
+          Order asc
     `)
 
     return api.get(allAccountsQuery, {}, ttl, cache)
