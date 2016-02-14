@@ -14,7 +14,6 @@ if (process.env.NODE_ENV === "production") {
   }
 }
 
-
 if (process.env.NEW_RELIC_KEY){
   // monitor
   require("newrelic");
