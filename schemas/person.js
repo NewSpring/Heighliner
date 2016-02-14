@@ -78,10 +78,14 @@ const PersonType = new GraphQLObjectType({
 
           // is relative to Rock
           if (Path[0] === "~") {
-            Path = Path.substr(1)
+            Path = Path.substr(2)
             Path = api._.baseURL + Path
 
             return Path
+          }
+
+          if (Path.indexOf("?") > -1){
+            Path = Path.slice(0, Path.indexOf("?"))
           }
 
           // is a storage provider
