@@ -36,7 +36,7 @@ const financialAccount = {
       accountsQuery = api.parseEndpoint(`
         FinancialAccounts?
           $filter=
-            Name eq '${name}'
+            PublicName eq '${name}'
       `)
     }
 
