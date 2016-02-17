@@ -71,7 +71,7 @@ const PersonType = new GraphQLObjectType({
         if (!person.Id) {
           return [{}]
         }
-        
+
         return api.get(`PhoneNumbers?$filter=PersonId eq ${person.Id}`)
       }
     },
@@ -97,6 +97,10 @@ const PersonType = new GraphQLObjectType({
           return Path
         }
 
+        if (!person.PhotoUrl) {
+          person.PhotoUrl = "//dg0ddngxdz549.cloudfront.net/images/cached/images/remote/http_s3.amazonaws.com/ns.images/all/member_images/members.nophoto_1000_1000_90_c1.jpg"
+        }
+        
         return person.PhotoUrl
       }
     },
@@ -233,7 +237,7 @@ export default {
       , ttl, cache)
         .then((user) => {
 
-          if (user) {
+          if (user && user.services.rock) {
             return People.get(user.services.rock.PersonId, ttl, cache)
           }
 
