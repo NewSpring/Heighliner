@@ -9,6 +9,11 @@ import {
 
 
 const getHome = (locations) => {
+  
+  if (!locations[0] || !locations[0].GroupLocations) {
+    return {}
+  }
+
   let home = locations[0].GroupLocations.filter((x) => (
     x.GroupLocationTypeValue.Value === "Home"
   ))[0]
