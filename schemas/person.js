@@ -67,6 +67,11 @@ const PersonType = new GraphQLObjectType({
     phoneNumbers: {
       type: new GraphQLList(PhoneNumberType),
       resolve: person => {
+
+        if (!person.Id) {
+          return [{}]
+        }
+        
         return api.get(`PhoneNumbers?$filter=PersonId eq ${person.Id}`)
       }
     },
