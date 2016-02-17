@@ -13,15 +13,15 @@ const PersonCampusType = new GraphQLObjectType({
   fields: () => ({
     name: {
       type: GraphQLString,
-      resolve: location => location[0] && location[0].Name ? location[0].Campus.Name : null
+      resolve: location => location[0] && location[0].Campus ? location[0].Campus.Name : null
     },
     id: {
       type: GraphQLInt,
-      resolve: location => location[0] && location[0].Name ? location[0].Campus.Id : null
+      resolve: location => location[0] && location[0].Campus ? location[0].Campus.Id : null
     },
     shortCode: {
       type: GraphQLString,
-      resolve: location => location[0] && location[0].Name ? location[0].Campus.ShortCode : null
+      resolve: location => location[0] && location[0].Campus ? location[0].Campus.ShortCode : null
     }
   })
 })
