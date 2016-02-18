@@ -78,6 +78,14 @@ const getQuery = (file, data) => {
   }
 
   if (data.sort) {
+    if (!data.future) {
+      if (query.indexOf("WHERE") === -1) {
+        query += " WHERE"
+      } else {
+        query += " AND"
+      }
+      query += ` t.entry_date < UNIX_TIMESTAMP(NOW())`
+    }
     query += ` ORDER BY t.entry_date DESC`
   }
 
