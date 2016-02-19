@@ -10,7 +10,7 @@ import {
   GraphQLFloat,
 } from "graphql"
 
-import { api, parseEndpoint } from "../rock"
+import { api, parseEndpoint, Attributes } from "../rock"
 import { CampusType } from "./shared/rock/campus"
 import { GroupMemberType } from "./shared/rock/group-member"
 import { LocationType } from "./shared/rock/location"
@@ -46,12 +46,27 @@ const GroupLocationType = new GraphQLObjectType({
   })
 })
 
+function generateAttribute(type, key){
+  return {
+    type: type,
+    args: {
+      ttl: { type: GraphQLInt },
+      cache: { type: GraphQLBoolean, defaultValue: true },
+    },
+    resolve: ({ Id }, { ttl, cache }) => Attributes.get(Id, key, ttl, cache),
+  }
+}
+
 const GroupType = new GraphQLObjectType({
   name: "Group",
   fields: () => ({
     id: { type: GraphQLInt, resolve: group => group.Id },
     parentGroupId: { type: GraphQLInt, resolve: group => group.ParentGroupId },
     typeId: { type: GraphQLInt, resolve: group => group.GroupTypeId },
+    childCare: generateAttribute(GraphQLBoolean, "HasChildcare"),
+    ageRange: generateAttribute(new GraphQLList(GraphQLInt), "AgeRange"),
+    demographic: generateAttribute(GraphQLString, "Topic"),
+    maritalStatus: generateAttribute(GraphQLString, "MaritalStatus"),
     campus: {
       type: CampusType,
       args: {
