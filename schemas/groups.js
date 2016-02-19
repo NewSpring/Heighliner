@@ -115,25 +115,24 @@ const GroupType = new GraphQLObjectType({
 const group = {
   type: GroupType,
   args: {
-    id: { type: GraphQLInt },
+    id: { type: new GraphQLNonNull(GraphQLInt) },
     ttl: { type: GraphQLInt },
     cache: { type: GraphQLBoolean, defaultValue: true },
   },
-  resolve: (_, { id, name, ttl, cache }) => {
+  resolve: (_, { id, ttl, cache }) => {
 
-    if (!id && !name){
-      throw new Error("Name of Id of campus is required")
-    }
+    let query = parseEndpoint(`
+      Groups?
+        $filter=
+          Id eq ${id}
+        &$expand=
+          Schedule,
+          GroupLocations
+    `)
 
-    // let query;
-    // if (id) {
-    //   query = `Campuses?$select=Name,ShortCode,Id,LocationId&$filter=Id eq ${id}`
-    // } else if (name) {
-    //   query = `Campuses?$select=Name,ShortCode,Id,LocationId&$filter=Name eq '${name}'`
-    // }
-    //
-    // return api.get(query, ttl, cache)
-    //   .then((campus) => (campus[0]))
+    return api.get(query, ttl, cache)
+      .then(groups => groups[0])
+
   }
 }
 
