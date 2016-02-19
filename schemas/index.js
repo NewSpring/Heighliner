@@ -17,6 +17,7 @@ import allScheduledFinanicalTransactions, { scheduledFinanicalTransaction } from
 import allSavedPaymentAccounts from "./savedPaymentAccounts"
 import allCampuses, { campus } from "./campuses"
 import allDefinedValues from "./definedValues"
+import allGroups, { group } from "./groups"
 
 import likes from "./likes"
 import allContent, { content } from "./content"
@@ -30,6 +31,8 @@ let schema = new GraphQLSchema({
       campus,
       allCampuses,
       allDefinedValues,
+      allGroups,
+      group,
 
       // mongo + ee
       likes,
