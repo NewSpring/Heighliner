@@ -48,7 +48,11 @@ const load = (key, fetchMethod, ttl = ttLength, cache = true) => new Promise((re
       .then((data) => {
         resolve(data)
         client.set(key, JSON.stringify(data))
-        client.expire(key, ttl)
+        ttl = Number(ttl)
+        if (typeof ttl === "number") {
+          client.expire(key, ttl)
+        }
+
       })
   }
 
