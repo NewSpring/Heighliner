@@ -79,30 +79,43 @@ const PersonType = new GraphQLObjectType({
     photo: {
       type: GraphQLString,
       resolve: person => {
-        if (person.Photo && person.Photo.Path) {
-          let { Path } = person.Photo
 
-          // is relative to Rock
-          if (Path[0] === "~") {
-            Path = Path.substr(2)
-            Path = api._.baseURL + Path
+        function getPhoto(person) {
 
+          if (person.Photo && person.Photo.Path) {
+            let { Path } = person.Photo
+
+            // is relative to Rock
+            if (Path[0] === "~") {
+              Path = Path.substr(2)
+              Path = api._.baseURL + Path
+
+              return Path
+            }
+
+            if (Path.indexOf("?") > -1){
+              Path = Path.slice(0, Path.indexOf("?"))
+            }
+
+            // is a storage provider
             return Path
           }
 
-          if (Path.indexOf("?") > -1){
-            Path = Path.slice(0, Path.indexOf("?"))
+          if (!person.PhotoUrl) {
+            person.PhotoUrl = "//dg0ddngxdz549.cloudfront.net/images/cached/images/remote/http_s3.amazonaws.com/ns.images/all/member_images/members.nophoto_1000_1000_90_c1.jpg"
           }
 
-          // is a storage provider
-          return Path
+          return person.PhotoUrl
         }
 
-        if (!person.PhotoUrl) {
-          person.PhotoUrl = "//dg0ddngxdz549.cloudfront.net/images/cached/images/remote/http_s3.amazonaws.com/ns.images/all/member_images/members.nophoto_1000_1000_90_c1.jpg"
+        if (!person.Photo) {
+          return api.get(`People?$filter=Id eq ${person.Id}&$expand=Photo`)
+            .then(person => person[0])
+            .then((person) => getPhoto(person))
         }
 
-        return person.PhotoUrl
+        return getPhoto(person)
+
       }
     },
     age: {

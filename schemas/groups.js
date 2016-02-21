@@ -107,6 +107,7 @@ const GroupType = new GraphQLObjectType({
               Members/Person,
               Members/GroupRole
         `)
+        
         return api.get(query, ttl, cache)
           .then(([{ Members }]) => {
             return Members
@@ -158,7 +159,7 @@ export {
 export default {
   type: new GraphQLList(GroupType),
   args: {
-    groupTypeId: { type: GraphQLInt },
+    groupTypeId: { type: GraphQLInt, defaultValue: 25 },
     lat: { type: GraphQLFloat },
     lng: { type: GraphQLFloat },
     sortByDistance: { type: GraphQLBoolean, defaultValue: true },
