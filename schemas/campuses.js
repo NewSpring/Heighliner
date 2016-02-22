@@ -12,28 +12,8 @@ import {
 
 
 import { api, parseEndpoint } from "../rock"
+import { CampusType } from "./shared/rock/campus"
 
-const CampusType = new GraphQLObjectType({
-  name: "Campus",
-  fields: () => ({
-    name: {
-      type: GraphQLString,
-      resolve: campus => campus.Name
-    },
-    shortCode: {
-      type: GraphQLString,
-      resolve: campus => campus.ShortCode
-    },
-    id: {
-      type: GraphQLInt,
-      resolve: campus => campus.Id
-    },
-    locationId: {
-      type: GraphQLString,
-      resolve: campus => campus.LocationId
-    },
-  })
-})
 
 const campus = {
   type: CampusType,

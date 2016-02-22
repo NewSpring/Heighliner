@@ -13,9 +13,6 @@ if (process.env.DOCKER_HOST) {
 host = process.env.REDIS_HOST ? process.env.REDIS_HOST : host;
 const client = redis.createClient(6379, host);
 
-client.on("connect", (err, results) => {
-  console.log(err, results, "here")
-})
 
 client.on("error", (err) => {
   console.log(err)
@@ -38,7 +35,7 @@ function hash(str) {
 }
 
 
-let ttLength = process.env.NODE_ENV === "production" ? 3600 : 30
+let ttLength = process.env.NODE_ENV === "production" ? 86400 : 30
 const load = (key, fetchMethod, ttl = ttLength, cache = true) => new Promise((resolve, reject) => {
 
   key = hash(key)
@@ -48,7 +45,11 @@ const load = (key, fetchMethod, ttl = ttLength, cache = true) => new Promise((re
       .then((data) => {
         resolve(data)
         client.set(key, JSON.stringify(data))
-        client.expire(key, ttl)
+        ttl = Number(ttl)
+        if (typeof ttl === "number") {
+          client.expire(key, ttl)
+        }
+
       })
   }
 
