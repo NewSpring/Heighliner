@@ -17,19 +17,28 @@ import allScheduledFinanicalTransactions, { scheduledFinanicalTransaction } from
 import allSavedPaymentAccounts from "./savedPaymentAccounts"
 import allCampuses, { campus } from "./campuses"
 import allDefinedValues from "./definedValues"
+import allGroups, { group } from "./groups"
 
 import likes from "./likes"
 import allContent, { content } from "./content"
+
+import search from "./search"
 
 let schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
+
+      // utility
+      search,
+
       // overarching data
       person,
       campus,
       allCampuses,
       allDefinedValues,
+      allGroups,
+      group,
 
       // mongo + ee
       likes,
