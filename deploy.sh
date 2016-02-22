@@ -15,4 +15,4 @@ deploy_image() {
 
 deploy_image
 
-rancher-compose -p heighliner up -d --upgrade heighliner
+rancher-compose -p heighliner up -d --force-upgrade heighliner
