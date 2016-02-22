@@ -22,10 +22,16 @@ import allGroups, { group } from "./groups"
 import likes from "./likes"
 import allContent, { content } from "./content"
 
+import search from "./search"
+
 let schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
+
+      // utility
+      search,
+
       // overarching data
       person,
       campus,
