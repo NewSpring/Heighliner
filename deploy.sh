@@ -8,7 +8,7 @@ set -o pipefail
 JQ="jq --raw-output --exit-status"
 
 deploy_image() {
-  docker login -e $DOCKERHUB_EMAIL -p $DOCKERHUB_PASSWORD
+  docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASSWORD
   docker tag heighliner:latest newspring/heighliner:$CIRCLE_SHA1
   docker push newspring/heighliner:$CIRCLE_SHA1 | cat # workaround progress weirdness
 }
