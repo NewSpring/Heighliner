@@ -17,6 +17,7 @@ dependencies:
   post:
     - curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq
     - curl -L https://github.com/rancher/rancher-compose/releases/download/v0.7.2/rancher-compose-linux-386-v0.7.2.tar.gz | tar xvz && mv rancher-compose-v0.7.2/rancher-compose ~/bin/ && chmod +x ~/bin/rancher-compose
+    - rancher-compose -v
     - docker build --rm=true -t heighliner . | cat # workaround progress weirdness
 
 test:
