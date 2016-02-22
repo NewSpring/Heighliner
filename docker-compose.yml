@@ -1,33 +1,18 @@
-
 heighliner:
-  build: .
-  volumes:
-    - .:/usr/src/app/
+  image: newspring/heighliner:$CIRCLE_SHA1
   ports:
-    - "80:80"
-  links:
-    - mySQL
-    - redis
-
-mySQL:
-  image: mysql:5.5
-  volumes:
-    - ./scripts/mysql/:/etc/mysql/conf.d
-  ports:
-    - "3306:3306"
+    - "8888:80"
   environment:
-    MYSQL_ROOT_PASSWORD: password
-    MYSQL_DATABASE: ee_local
-    MYSQL_USER: root
+    MONGO_URL: $MONGO_URL
+    MYSQL_PASSWORD: $MYSQL_PASSWORD
+    PORT: $PORT
+    MYSQL_USER: $MYSQL_USER
+    MYSQL_SSL: $MYSQL_SSL
+    ROCK_TOKEN: $ROCK_TOKEN
+    NODE_ENV: "production"
+    MYSQL_DB: $MYSQL_DB
+    ROCK_URL: $ROCK_URL
+    MYSQL_HOST: $MYSQL_HOST
+    NEW_RELIC_KEY: $NEW_RELIC_KEY
+    REDIS_HOST: $REDIS_HOST
 
-# mongoDB:
-#   image: mongo:latest
-#   ports:
-#     - "27017:27017"
-
-redis:
-  image: redis
-  ports:
-    - "6379:6379"
-  volumes:
-    - /data/redis:/data
