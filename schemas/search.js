@@ -68,11 +68,12 @@ export default {
     query: { type: new GraphQLNonNull(GraphQLString) },
     first: { type: GraphQLInt, defaultValue: 10 },
     after: { type: GraphQLInt, defaultValue: 1 },
+    site: { type: GraphQLString },
     ttl: { type: GraphQLInt },
     cache: { type: GraphQLBoolean, defaultValue: true },
   },
   description: "A search across all newspring sites and apps",
-  resolve: (_, { query, first, after, cache, ttl }) => {
+  resolve: (_, { query, first, after, site, cache, ttl }) => {
 
     if (first > 10) { first = 10 }
     if (after === 0) { after = 1 }
@@ -80,6 +81,10 @@ export default {
     let fields = "fields=queries(nextPage/startIndex,previousPage/startIndex),searchInformation/totalResults,items(cacheId,title,htmlTitle,link,displayLink,snippet,htmlSnippet,pagemap(cse_image/src,metatags/og:url,metatags/article:section))"
 
     query += `&num=${first}&start=${after}&${fields}`
+
+    if (site) {
+      query += `&=${site}`
+    }
 
     return api.get(query, ttl, cache)
       .then((results) => {
