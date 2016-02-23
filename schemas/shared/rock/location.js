@@ -25,6 +25,8 @@ const LocationType = new GraphQLObjectType({
     zip: { type: GraphQLString, resolve: location => location.PostalCode },
     latitude: { type: GraphQLFloat, resolve: location => location.Latitude },
     longitude: { type: GraphQLFloat, resolve: location => location.Longitude },
+    distance: { type: GraphQLFloat, resolve: location => location.Distance },
+
   })
 })
 

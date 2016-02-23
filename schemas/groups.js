@@ -46,15 +46,20 @@ const GroupLocationType = new GraphQLObjectType({
   })
 })
 
-function generateAttribute(type, key){
-  return {
+function generateAttribute(type, key, defaultValue){
+  let attr = {
     type: type,
     args: {
-      ttl: { type: GraphQLInt },
+      ttl: { type: GraphQLInt, defaultValue: 604800 },
       cache: { type: GraphQLBoolean, defaultValue: true },
     },
-    resolve: ({ Id }, { ttl, cache }) => Attributes.get(Id, key, ttl, cache),
+    resolve: ({ Id }, { ttl, cache }) => {
+      return Attributes.get(Id, key, ttl, cache)
+        .then(value => (value ? value : defaultValue))
+    },
   }
+
+  return attr
 }
 
 const GroupType = new GraphQLObjectType({
@@ -67,10 +72,11 @@ const GroupType = new GraphQLObjectType({
     ageRange: generateAttribute(new GraphQLList(GraphQLInt), "AgeRange"),
     demographic: generateAttribute(GraphQLString, "Topic"),
     maritalStatus: generateAttribute(GraphQLString, "MaritalStatus"),
+    photo: generateAttribute(GraphQLString, "GroupPhoto", "https://s3.amazonaws.com/ns.assets/apollos/Artboard+9+Copy.png"),
     campus: {
       type: CampusType,
       args: {
-        ttl: { type: GraphQLInt },
+        ttl: { type: GraphQLInt, defaultValue: 2592000 },
         cache: { type: GraphQLBoolean, defaultValue: true },
       },
       resolve: (group, { ttl, cache }) => {
@@ -95,10 +101,47 @@ const GroupType = new GraphQLObjectType({
     members: {
       type: new GraphQLList(GroupMemberType),
       args: {
-        ttl: { type: GraphQLInt },
+        ttl: { type: GraphQLInt, defaultValue: 86400 },
         cache: { type: GraphQLBoolean, defaultValue: true },
       },
       resolve: ({ Id }, { ttl, cache }) => {
+
+        function getBatchedPhotos(members){
+          let batchId = []
+          for (let member of members) {
+            if (member.Person.PhotoId) {
+              batchId.push(`Id eq ${member.Person.Id}`)
+            }
+          }
+
+          // until we have direct SQL access, this is at least a start of a batch
+          if (batchId.length) {
+            return api.get(`People?$filter=${batchId.join(" or ")}&$expand=Photo`)
+              .then((people) => {
+
+                let joinedMembers = []
+                for (let member of members) {
+                  for (let person of people) {
+                    if (person.Id === member.Person.Id) {
+                      member.Person = person
+                      continue
+                    }
+                  }
+                  joinedMembers.push(member)
+                }
+
+                return joinedMembers
+
+              })
+          }
+
+          return members
+        }
+
+        if (group.Members && group.Members.length) {
+          return getBatchedPhotos()
+        }
+
         let query = parseEndpoint(`
           Groups?
             $filter=
@@ -107,11 +150,9 @@ const GroupType = new GraphQLObjectType({
               Members/Person,
               Members/GroupRole
         `)
-        
+
         return api.get(query, ttl, cache)
-          .then(([{ Members }]) => {
-            return Members
-          })
+          .then(([{ Members }]) => getBatchedPhotos(Members))
       }
     },
     locations: {
@@ -143,14 +184,18 @@ const group = {
           Id eq ${id}
         &$expand=
           Schedule,
-          GroupLocations
+          GroupLocations,
+          Members/Person,
+          Members/GroupRole
+
     `)
 
     return api.get(query, ttl, cache)
       .then(groups => groups[0])
-
+// 2300272
   }
 }
+
 
 export {
   group
@@ -160,28 +205,90 @@ export default {
   type: new GraphQLList(GroupType),
   args: {
     groupTypeId: { type: GraphQLInt, defaultValue: 25 },
+    first: { type: GraphQLInt },
+    after: { type: GraphQLInt },
     lat: { type: GraphQLFloat },
     lng: { type: GraphQLFloat },
+    distance: { type: GraphQLInt, defaultValue: 25 },
     sortByDistance: { type: GraphQLBoolean, defaultValue: true },
     ttl: { type: GraphQLInt },
     cache: { type: GraphQLBoolean, defaultValue: true },
   },
   resolve: (_, args) => {
 
-    const { groupTypeId, lat, lng, sortByDistance, ttl, cache } = args
+    const {
+      groupTypeId,
+      lat,
+      lng,
+      sortByDistance,
+      distance,
+      ttl,
+      cache,
+      first,
+      after
+    } = args
 
     // @TODO full group lists
     let query = parseEndpoint(`
       Groups/ByLatLong?
-        groupTypeId=${groupTypeId}&
-        latitude=${lat}&
-        longitude=${lng}&
-        sortByDistance=${sortByDistance}
+        $filter=
+          IsActive eq true and
+          IsPublic eq true
+        &
+          groupTypeId=${groupTypeId}&
+          latitude=${lat}&
+          longitude=${lng}&
+          sortByDistance=${sortByDistance}&
+          maxDistanceMiles=${distance}
+
     `)
+
+    if (first) {
+      query += `&$top=${first}`
+    }
+
+    if (after) {
+      query += `&$skip=${after}`
+    }
+
     return api.get(query, ttl, cache)
-      .then((response) => {
-        return response
+      .then((results) => {
+        return results.filter((result) => {
+          return result.IsActive && result.IsPublic
+        })
       })
+      // .then((results) => {
+      //
+      //   // until Members is included with the result, we need to do a batched
+      //   // lookup. This could get expensive quickly
+      //   let batchIds = []
+      //   for (let group of results) {
+      //     batchIds.push(`(Id eq ${group.Id})`)
+      //   }
+      //
+      //   if (batchIds.length) {
+      //     let query = parseEndpoint(`
+      //       Groups?
+      //         $expand=
+      //           Schedule,
+      //           GroupLocations,
+      //           Members/Person,
+      //           Members/GroupRole
+      //     `)
+      //
+      //     query += `&$filter=${batchIds.join(" or ")}`
+      //     console.log(query)
+      //     return api.get(query, ttl, cache)
+      //       .then((res) => {
+      //         console.log(res)
+      //         return res
+      //       })
+      //
+      //   }
+      //
+      //   return results
+      //
+      // })
 
   }
 }
