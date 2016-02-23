@@ -80,6 +80,11 @@ const GroupType = new GraphQLObjectType({
         cache: { type: GraphQLBoolean, defaultValue: true },
       },
       resolve: (group, { ttl, cache }) => {
+
+        if (group.Campus && group.Campus.Id) {
+          return group.Campus
+        }
+
         return api.get(`Campuses?$select=Name,ShortCode,Id,LocationId&$filter=Id eq ${group.CampusId}`, ttl, cache)
           .then((campus) => (campus[0]))
       }
@@ -214,7 +219,7 @@ export default {
     ttl: { type: GraphQLInt },
     cache: { type: GraphQLBoolean, defaultValue: true },
   },
-  resolve: (_, args) => {
+  resolve: (_, args, {fieldASTs}, ) => {
 
     const {
       groupTypeId,
@@ -257,6 +262,25 @@ export default {
           return result.IsActive && result.IsPublic
         })
       })
+      // .then((results) => {
+      //   // pre lookup all campuses because its way cheaper than a lookup for each
+      //   // group
+      //   // @TODO parse fieldASTs to see if campus is being used
+      //   // @TODO move to a promise All so we can batch more
+      //   return api.get(`Campuses?$select=Name,ShortCode,Id,LocationId`)
+      //     .then((campuses) => {
+      //       let campusObj = {}
+      //       for (let campus of campuses) {
+      //         campusObj[campus.Id] = campus
+      //       }
+      //
+      //       for (let group of results) {
+      //         group.Campus = campusObj[group.CampusId]
+      //       }
+      //
+      //       return results
+      //     })
+      // })
       // .then((results) => {
       //
       //   // until Members is included with the result, we need to do a batched
