@@ -166,7 +166,7 @@ mysql.sync = (file, data) => {
 
 const lookupById = (entry_id) => {
   let tableFromId = Path.join(__dirname, "./util/tableFromId.sql")
-  console.log(entry_id, tableFromId)
+
   return mysql(tableFromId, { entry_id })
     .then((data) => {
       if (!data.rows.length) {
@@ -215,6 +215,7 @@ const lookupByChannel = (channel_name, limit, offset) => {
             tableDir = Path.join(tabelsDir, `${table}.sql`);
 
       let { channel_id } = data.rows[0]
+
       if (Fs.existsSync(tableDir)) {
         return mysql(tableDir, { channel_id, limit, offset, sort: true })
           .then((data) => {
@@ -236,5 +237,49 @@ const lookupByChannel = (channel_name, limit, offset) => {
 
 }
 
-export { lookupById, lookupByChannel }
+
+const lookupSet = (setName, ttl, cache) => {
+
+  let getSet = Path.join(__dirname, "./util/low_reorder_sets.sql")
+
+  return mysql(getSet, { set_name: `'${setName}'`})
+    .then((data) => {
+
+      if (!data.rows.length) {
+        return []
+      }
+
+      let { parameters, sort_order } = data.rows[0]
+
+      parameters = JSON.parse(parameters)
+      sort_order = sort_order.split("|").map((x) => (Number(x))).filter((x) => (x != 0))
+
+      let channelLookups = []
+      for (let id of sort_order) {
+        channelLookups.push(lookupById(id))
+      }
+      let channelData = Promise.all(channelLookups)
+
+      return channelData
+        .then((entries) => {
+          let entryObj = {}
+
+          for (let entry of entries) {
+            entryObj[entry.entryId] = entry
+          }
+
+          let sortedEntries = []
+          for (let entry of sort_order) {
+            sortedEntries.push(entryObj[entry])
+          }
+
+          return sortedEntries
+        })
+
+
+    })
+
+}
+
+export { lookupById, lookupByChannel, lookupSet }
 export default mysql
