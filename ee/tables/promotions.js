@@ -21,7 +21,7 @@ export default function(doc) {
     title: doc.title,
     status: doc.status,
     meta: {
-      urlTitle: doc.url_title,
+      urlTitle: doc.promotion_url,
       siteId: doc.site_id,
       date: date,
       channelId: doc.channel_id
