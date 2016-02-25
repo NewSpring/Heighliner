@@ -1,7 +1,8 @@
 
 const Fs = require("fs"),
       Path = require("path"),
-      Env = require("node-env-file");
+      Env = require("node-env-file"),
+      raygun = require("raygun");
 
 // load in env variables if they exist
 if (process.env.NODE_ENV === "production") {
@@ -19,6 +20,25 @@ if (process.env.NEW_RELIC_KEY){
   require("newrelic");
 }
 
-// by requiring `babel/register`, all of our successive `require`s will be Babel"d
-require("babel/register");
-require("./server.js");
+if (process.env.RAYGUN) {
+  var raygunClient = new raygun.Client().init({
+    apiKey: process.env.RAYGUN
+  });
+}
+
+var d = require("domain").create();
+d.on("error", function(err){
+  if (raygunClient) {
+    raygunClient.send(err, {}, function () {
+      // process.exit();
+    });
+  }
+
+});
+
+d.run(function(){
+  // by requiring `babel/register`, all of our successive `require`s will be Babel"d
+  require("babel/register");
+  require("./server.js");
+
+});
