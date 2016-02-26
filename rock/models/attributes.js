@@ -6,6 +6,11 @@ import Promise from "bluebird"
 function RockTypeToGraphType(type, value){
 
   const types = {
+    ["Rock.Field.Types.FileFieldType"]: (value) => {
+      return api.get(`BinaryFiles?$filter=Guid eq guid'${value}'`)
+        .then(value => value[0])
+        .then(value => value ? value.Url : null)
+    },
     ["Rock.Field.Types.DefinedValueFieldType"]: (value) => {
 
       const GuidRegex = /^[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}$/gmi
