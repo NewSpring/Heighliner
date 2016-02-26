@@ -71,7 +71,7 @@ const PersonType = new GraphQLObjectType({
         ttl: { type: GraphQLInt },
         cache: { type: GraphQLBoolean, defaultValue: true },
       },
-      resolve: person => {
+      resolve: (person, { ttl, cache }) => {
 
         if (!person.Id) {
           return [{}]
