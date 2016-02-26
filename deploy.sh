@@ -23,7 +23,7 @@ make_task_def() {
     {
       "name": "heighliner",
       "memory": 512,
-      "cpu": 1024,
+      "cpu": 512,
       "essential": true,
       "image": "145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:latest",
       "portMappings": [
@@ -133,7 +133,7 @@ deploy_cluster() {
   #    fi
   #done
   #echo "Service update took too long."
-  return 1
+  return 0
 }
 
 deploy_image
