@@ -36,7 +36,7 @@ const ScheduledTransactionDetails = new GraphQLObjectType({
     account: {
       type: AccountDetail,
       resolve: transaction => {
-        if (transaction.AccountId) {
+        if (transaction.AccountId && !transaction.Account) {
           let allAccountsQuery = api.parseEndpoint(`
              FinancialAccounts/${transaction.AccountId}
           `)
@@ -123,9 +123,54 @@ const scheduledFinanicalTransaction = {
   type: ScheduledTransactionType,
   args: {
     id: { type: new GraphQLNonNull(GraphQLInt) },
+    ttl: { type: GraphQLInt },
+    cache: { type: GraphQLBoolean, defaultValue: true },
   },
-  resolve: (_, { id }) => {
-    return ScheduledTransactions.getOne(id)
+  resolve: (_, { id, ttl, cache }) => {
+    let allAccountsQuery = api.parseEndpoint(`
+       FinancialAccounts?
+        $expand=
+          ChildAccounts
+        &$filter=
+          ChildAccounts/any(ca: Id ne null) or
+          (Id ne null and ParentAccountId eq null)
+    `)
+
+    let allAccounts = api.get(allAccountsQuery, {}, ttl, cache)
+    return Promise.all([ScheduledTransactions.getOne(id), allAccounts])
+      .then(([transactions, accounts]) => {
+        let accountObj = {};
+
+        for (let account of accounts) {
+
+
+          for (let child of account.ChildAccounts) {
+            child.parent = account.Id
+            accountObj[child.Id] = child
+
+          }
+
+          delete account.ChildAccounts
+
+          // map parent account
+          accountObj[account.Id] = account
+        }
+
+
+        for (let transaction of transactions) {
+          for (let detail of transaction.ScheduledTransactionDetails) {
+
+            let account = accountObj[detail.AccountId]
+            if (account) {
+              detail.Account = account
+              if (account.ParentAccountId) {
+                detail.Account = accountObj[account.ParentAccountId]
+              }
+            }
+          }
+        }
+        return transactions
+      })
       .then((transactions) => (transactions[0]))
   }
 }
