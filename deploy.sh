@@ -81,6 +81,10 @@ make_task_def() {
         {
           "name": "ROCK_TOKEN",
           "value": "'"$ROCK_TOKEN"'"
+        },
+        {
+          "name": "RAYGUN",
+          "value": "'"$RAYGUN"'"
         }
       ]
     }

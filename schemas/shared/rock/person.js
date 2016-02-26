@@ -67,20 +67,28 @@ const PersonType = new GraphQLObjectType({
     },
     phoneNumbers: {
       type: new GraphQLList(PhoneNumberType),
-      resolve: person => {
+      args: {
+        ttl: { type: GraphQLInt },
+        cache: { type: GraphQLBoolean, defaultValue: true },
+      },
+      resolve: (person, { ttl, cache }) => {
 
         if (!person.Id) {
           return [{}]
         }
 
-        return api.get(`PhoneNumbers?$filter=PersonId eq ${person.Id}`)
+        return api.get(`PhoneNumbers?$filter=PersonId eq ${person.Id}`, ttl, cache)
       }
     },
     photo: {
       type: GraphQLString,
-      resolve: person => {
+      args: {
+        ttl: { type: GraphQLInt },
+        cache: { type: GraphQLBoolean, defaultValue: true },
+      },
+      resolve: (person, {ttl, cache}) => {
 
-        function getPhoto(person) {
+        function getPhoto(person = {}) {
 
           if (person.Photo && person.Photo.Path) {
             let { Path } = person.Photo
@@ -108,8 +116,8 @@ const PersonType = new GraphQLObjectType({
           return person.PhotoUrl
         }
 
-        if (!person.Photo) {
-          return api.get(`People?$filter=Id eq ${person.Id}&$expand=Photo`)
+        if (!person.Photo && person.PhotoId) {
+          return api.get(`People?$filter=Id eq ${person.Id}&$expand=Photo`, ttl, cache)
             .then(person => person[0])
             .then((person) => getPhoto(person))
         }
@@ -144,12 +152,16 @@ const PersonType = new GraphQLObjectType({
     },
     campus: {
       type: CampusType,
-      resolve({ Id }) {
+      args: {
+        ttl: { type: GraphQLInt },
+        cache: { type: GraphQLBoolean, defaultValue: true },
+      },
+      resolve({ Id }, ttl, cache) {
         return api.get(parseEndpoint(`
           Groups/GetFamilies/${Id}?
             $expand=
               Campus
-        `)).then((campus) => {
+        `), ttl, cache).then((campus) => {
           if (campus.length && campus[0].Campus) {
             return campus[0].Campus
           }
@@ -160,7 +172,11 @@ const PersonType = new GraphQLObjectType({
     },
     home: {
       type: LocationType,
-      resolve({ Id }) {
+      args: {
+        ttl: { type: GraphQLInt },
+        cache: { type: GraphQLBoolean, defaultValue: true },
+      },
+      resolve({ Id }, { ttl, cache }) {
         return api.get(parseEndpoint(`
           Groups/GetFamilies/${Id}?
             $expand=
@@ -176,7 +192,7 @@ const PersonType = new GraphQLObjectType({
               GroupLocations/Location/PostalCode,
               GroupLocations/Location/Id,
               GroupLocations/GroupLocationTypeValue/Value
-        `)).then((locations) => {
+        `), ttl, cache).then((locations) => {
           if (!locations[0] || !locations[0].GroupLocations) {
             return {}
           }
@@ -194,13 +210,8 @@ const PersonType = new GraphQLObjectType({
     likes: {
       type: new GraphQLList(PersonLikeType),
       args: {
-        ttl: {
-          type: GraphQLInt
-        },
-        cache: {
-          type: GraphQLBoolean,
-          defaultValue: true
-        },
+        ttl: { type: GraphQLInt },
+        cache: { type: GraphQLBoolean, defaultValue: true },
       },
       resolve({ Id }, { ttl, cache }) {
         return load(
