@@ -197,7 +197,6 @@ const group = {
 
     return api.get(query, ttl, cache)
       .then(groups => groups[0])
-// 2300272
   }
 }
 
@@ -206,8 +205,16 @@ export {
   group
 }
 
+const GroupSearchResultType = new GraphQLObjectType({
+  name: "GroupSearchResult",
+  fields: {
+    items: { type: new GraphQLList(GroupType) },
+    count: { type: GraphQLInt }
+  }
+})
+
 export default {
-  type: new GraphQLList(GroupType),
+  type: GroupSearchResultType,
   args: {
     groupTypeId: { type: GraphQLInt, defaultValue: 25 },
     first: { type: GraphQLInt },
@@ -261,6 +268,14 @@ export default {
         return results.filter((result) => {
           return result.IsActive && result.IsPublic
         })
+      })
+      .then((items) => {
+
+        return {
+          items: [...items].slice(0, 10),
+          count: items.length
+        }
+
       })
       // .then((results) => {
       //   // pre lookup all campuses because its way cheaper than a lookup for each
