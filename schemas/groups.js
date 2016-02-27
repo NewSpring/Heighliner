@@ -157,7 +157,12 @@ const GroupType = new GraphQLObjectType({
         `)
 
         return api.get(query, ttl, cache)
-          .then(([{ Members }]) => getBatchedPhotos(Members))
+          .then(([{ Members }]) => {
+            return Members.filter((member) => {
+              return Number(member.GroupMemberStatus) === 1
+            })
+          })
+          .then((Members) => getBatchedPhotos(Members))
       }
     },
     locations: {
@@ -218,6 +223,7 @@ export default {
   args: {
     groupTypeId: { type: GraphQLInt, defaultValue: 25 },
     first: { type: GraphQLInt },
+    includeGroup: { type: GraphQLInt },
     after: { type: GraphQLInt },
     lat: { type: GraphQLFloat },
     lng: { type: GraphQLFloat },
@@ -237,7 +243,8 @@ export default {
       ttl,
       cache,
       first,
-      after
+      after,
+      includeGroup,
     } = args
 
     // @TODO full group lists
@@ -270,9 +277,18 @@ export default {
         })
       })
       .then((items) => {
+        let paginatedItems = [...items].slice(0, 10)
+
+        if (includeGroup) {
+          for (let item of items) {
+            if (item.Id === includeGroup) {
+              paginatedItems.push(item)
+            }
+          }
+        }
 
         return {
-          items: [...items].slice(0, 10),
+          items: paginatedItems,
           count: items.length
         }
 
