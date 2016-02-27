@@ -71,10 +71,56 @@ const finanicalTransaction = {
   type: TransactionType,
   args: {
     id: { type: new GraphQLNonNull(GraphQLInt) },
+    ttl: { type: GraphQLInt },
+    cache: { type: GraphQLBoolean, defaultValue: true },
   },
-  resolve: (_, { id }) => {
-    return Transactions.getOne(id)
-      .then((transactions) => (transactions[0]))
+  resolve: (_, { id, ttl, cache }) => {
+    let allAccountsQuery = api.parseEndpoint(`
+       FinancialAccounts?
+        $expand=
+          ChildAccounts
+        &$filter=
+          ChildAccounts/any(ca: Id ne null) or
+          (Id ne null and ParentAccountId eq null)
+    `)
+
+    let allAccounts = api.get(allAccountsQuery, {}, ttl, cache)
+    return Promise.all([Transactions.getOne(id), allAccounts])
+      .then(([transactions, accounts]) => {
+        let accountObj = {};
+
+        for (let account of accounts) {
+
+          for (let child of account.ChildAccounts) {
+            child.parent = account.Id
+            accountObj[child.Id] = child
+          }
+
+          delete account.ChildAccounts
+
+          // map parent account
+          accountObj[account.Id] = account
+        }
+
+
+        for (let transaction of transactions) {
+          for (let detail of transaction.TransactionDetails) {
+
+            let account = accountObj[detail.AccountId]
+            if (account) {
+              if (account.parent) {
+                detail.Account = accountObj[account.parent]
+                continue
+              }
+              detail.Account = account
+            }
+          }
+        }
+
+        return transactions
+      })
+      .then((transactions) => transactions[0])
+
   }
 }
 
