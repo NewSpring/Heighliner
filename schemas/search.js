@@ -76,7 +76,8 @@ export default {
   resolve: (_, { query, first, after, site, cache, ttl }) => {
 
     if (first > 10) { first = 10 }
-    if (after === 0) { after = 1 }
+    // adjust after to work with start
+    after += 1
 
     let fields = "fields=queries(nextPage/startIndex,previousPage/startIndex),searchInformation/totalResults,items(cacheId,title,htmlTitle,link,displayLink,snippet,htmlSnippet,pagemap(cse_image/src,metatags/og:url,metatags/article:section))"
 
