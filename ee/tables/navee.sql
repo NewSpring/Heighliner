@@ -4,7 +4,7 @@ SELECT
   s.link,
   s.sort,
   s.navee_id as id,
-  s.rel as image,
+  s.custom as image,
   s.type,
   s.entry_id,
   t.site_id,
