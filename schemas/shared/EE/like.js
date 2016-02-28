@@ -11,6 +11,16 @@ import {
 import ContentType from "./content"
 import AuthorType from "./author"
 
+const MetaType = new GraphQLObjectType({
+  name: "Meta",
+  fields: {
+    urlTitle: { type: GraphQLString },
+    siteId: { type: GraphQLInt },
+    date: { type: GraphQLString },
+    channelId: { type: GraphQLInt }
+  }
+})
+
 const PersonLikeType = new GraphQLObjectType({
   name: "Likes",
   fields: () => ({
@@ -25,6 +35,10 @@ const PersonLikeType = new GraphQLObjectType({
     status: {
       type: GraphQLString,
       resolve: like => like.status
+    },
+    meta: {
+      type: MetaType,
+      resolve: like => like.meta
     },
     content: {
       type: ContentType,
