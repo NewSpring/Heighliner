@@ -22,6 +22,7 @@ import allGroups, { group } from "./groups"
 import likes from "./likes"
 import allContent, { content } from "./content"
 import allLowReorderSets, { lowReorderSet } from "./lowReorderSets"
+import { navigation } from "./navigation"
 
 import search from "./search"
 
@@ -49,6 +50,7 @@ let schema = new GraphQLSchema({
       content,
       allLowReorderSets,
       lowReorderSet,
+      navigation,
 
       // rock financial
       allFinanicalTransactions,

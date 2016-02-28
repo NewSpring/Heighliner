@@ -237,6 +237,21 @@ const lookupByChannel = (channel_name, limit, offset) => {
 
 }
 
+const lookupNav = (navTitle, ttl, cache) => {
+  let getNav = Path.join(__dirname, "./tables/navee.sql")
+  return mysql(getNav, { nav_title: `'${navTitle}'`})
+    .then((data) => {
+
+      if (!data.rows.length) {
+        return []
+      }
+
+      const mappingDir = Path.join(__dirname, `./tables/navee.js`),
+            converter = require(mappingDir);
+
+      return converter(data.rows)
+    })
+}
 
 const lookupSet = (setName, ttl, cache) => {
 
@@ -281,5 +296,5 @@ const lookupSet = (setName, ttl, cache) => {
 
 }
 
-export { lookupById, lookupByChannel, lookupSet }
+export { lookupById, lookupByChannel, lookupSet, lookupNav }
 export default mysql
