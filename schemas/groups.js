@@ -73,6 +73,7 @@ const GroupType = new GraphQLObjectType({
     demographic: generateAttribute(GraphQLString, "Topic"),
     maritalStatus: generateAttribute(GraphQLString, "MaritalStatus"),
     photo: generateAttribute(GraphQLString, "GroupPhoto", "https://s3.amazonaws.com/ns.assets/apollos/Artboard+9+Copy.png"),
+    campusId: { type: GraphQLInt, resolve: group => group.CampusId },
     campus: {
       type: CampusType,
       args: {
@@ -227,6 +228,7 @@ export default {
     after: { type: GraphQLInt },
     lat: { type: GraphQLFloat },
     lng: { type: GraphQLFloat },
+    campus: { type: GraphQLInt },
     distance: { type: GraphQLInt, defaultValue: 25 },
     sortByDistance: { type: GraphQLBoolean, defaultValue: true },
     ttl: { type: GraphQLInt },
@@ -245,27 +247,53 @@ export default {
       first,
       after,
       includeGroup,
+      campus,
     } = args
 
-    // @TODO full group lists
-    let query = parseEndpoint(`
-      Groups/ByLatLong?
-        $filter=
-          IsActive eq true and
-          IsPublic eq true
-        &
+    let query;
+
+    if (lat && lng) {
+      // @TODO full group lists
+      query = parseEndpoint(`
+        Groups/ByLatLong?
           groupTypeId=${groupTypeId}&
           latitude=${lat}&
           longitude=${lng}&
           sortByDistance=${sortByDistance}&
-          maxDistanceMiles=${distance}
+          maxDistanceMiles=${distance}&
+          $filter=
+            IsActive eq true and
+            IsPublic eq true
 
-    `)
+      `)
+    } else {
+      query = parseEndpoint(`
+        Groups?
+          $expand=
+            Schedule,
+            Members,
+            GroupLocations
+          &$filter=
+            GroupTypeId eq ${groupTypeId} and
+            ParentGroupId ne null and
+            ScheduleId ne null and
+            IsActive eq true and
+            IsPublic eq true
 
+      `)
+    }
+
+    // filter addons first
+    if (campus) {
+      query += ` and CampusId eq ${campus}`
+    }
+
+    // then limits
     if (first) {
       query += `&$top=${first}`
     }
 
+    // then offeset
     if (after) {
       query += `&$skip=${after}`
     }

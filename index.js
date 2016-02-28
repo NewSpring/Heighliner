@@ -26,19 +26,27 @@ if (process.env.RAYGUN) {
   });
 }
 
-var d = require("domain").create();
-d.on("error", function(err){
-  if (raygunClient) {
-    raygunClient.send(err, {}, function () {
-      // process.exit();
-    });
-  }
 
-});
-
-d.run(function(){
-  // by requiring `babel/register`, all of our successive `require`s will be Babel"d
+function start(){
   require("babel/register");
   require("./server.js");
+}
+if (process.env.NODE_ENV === "production") {
+  var d = require("domain").create();
+  d.on("error", function(err){
+    if (raygunClient) {
+      raygunClient.send(err, {}, function () {
+        // process.exit();
+      });
+    }
 
-});
+  });
+
+  d.run(function(){
+    // by requiring `babel/register`, all of our successive `require`s will be Babel"d
+    start()
+
+  });
+} else {
+  start()
+}
