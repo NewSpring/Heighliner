@@ -17,10 +17,10 @@ const client = redis.createClient(6379, host);
 client.on("error", (err) => {
   console.log(err)
   // stub methods
-  client.set = () => {}
-  client.del = () => {}
-  client.expire = () => {}
-  client.get = (key, cb) => (cb(null, false))
+  // client.set = () => {}
+  // client.del = () => {}
+  // client.expire = () => {}
+  // client.get = (key, cb) => (cb(null, false))
 })
 
 function hash(str) {
