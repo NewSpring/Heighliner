@@ -229,6 +229,7 @@ export default {
     lat: { type: GraphQLFloat },
     lng: { type: GraphQLFloat },
     campus: { type: GraphQLInt },
+    name: { type: GraphQLString },
     distance: { type: GraphQLInt, defaultValue: 25 },
     sortByDistance: { type: GraphQLBoolean, defaultValue: true },
     ttl: { type: GraphQLInt },
@@ -248,6 +249,7 @@ export default {
       after,
       includeGroup,
       campus,
+      name
     } = args
 
     let query;
@@ -286,6 +288,10 @@ export default {
     // filter addons first
     if (campus) {
       query += ` and CampusId eq ${campus}`
+    }
+
+    if (name) {
+      query += ` and substringof('${name}', Name) eq true`
     }
 
     // then limits
