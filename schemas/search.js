@@ -76,7 +76,8 @@ export default {
   resolve: (_, { query, first, after, site, cache, ttl }) => {
 
     if (first > 10) { first = 10 }
-    if (after === 0) { after = 1 }
+    // adjust after to work with start
+    after += 1
 
     let fields = "fields=queries(nextPage/startIndex,previousPage/startIndex),searchInformation/totalResults,items(cacheId,title,htmlTitle,link,displayLink,snippet,htmlSnippet,pagemap(cse_image/src,metatags/og:url,metatags/article:section))"
 
@@ -88,14 +89,20 @@ export default {
 
     return api.get(query, ttl, cache)
       .then((results) => {
-        let next = results.queries.nextPage ? results.queries.nextPage[0].startIndex : 0
-        let previous = results.queries.previousPage ? results.queries.previousPage[0].startIndex : 0
+        let next, previous;
+        if (results.queries) {
+          next = results.queries.nextPage ? results.queries.nextPage[0].startIndex : 0
+          previous = results.queries.previousPage ? results.queries.previousPage[0].startIndex : 0
+        } else {
+          next = 0
+          previous = 0
+        }
 
         return {
           total: Number(results.searchInformation.totalResults),
           next: Number(next),
           previous: Number(previous),
-          items: results.items
+          items: results.items ? results.items : []
         }
       })
   }
