@@ -85,6 +85,18 @@ make_task_def() {
         {
           "name": "RAYGUN",
           "value": "'"$RAYGUN"'"
+        },
+        {
+          "name": "SEARCH_URL",
+          "value": "'"$SEARCH_URL"'"
+        },
+        {
+          "name": "SEARCH_CX",
+          "value": "'"$SEARCH_CX"'"
+        },
+        {
+          "name": "SEARCH_KEY",
+          "value": "'"$SEARCH_KEY"'"
         }
       ]
     }
