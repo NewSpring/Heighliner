@@ -230,12 +230,12 @@ export default {
       , ttl, cache)
         .then((user) => {
           if (user) {
-            return ScheduledTransactions.get(user.services.rock.PrimaryAliasId, active, limit, skip)
+            return ScheduledTransactions.get(user.services.rock.PrimaryAliasId, active, limit, skip, ttl, cache)
           }
           return []
         })
     } else {
-      allTransactions = ScheduledTransactions.get(primaryAliasId, active, limit, skip)
+      allTransactions = ScheduledTransactions.get(primaryAliasId, active, limit, skip, ttl, cache)
     }
 
 
