@@ -43,7 +43,7 @@ const get = (id, active, limit, skip, ttl, cache) => {
         CreatedDateTime desc
   `)
 
-  return api.get(query, ttl, cache)
+  return api.get(query, {}, ttl, cache)
 }
 
 const getOne = (id, ttl, cache) => {
@@ -83,7 +83,7 @@ const getOne = (id, ttl, cache) => {
         ScheduledTransactionDetails/Summary
 `)
 
-  return api.get(query, ttl, cache)
+  return api.get(query, {}, ttl, cache)
 }
 
 export default {
