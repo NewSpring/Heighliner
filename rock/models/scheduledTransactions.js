@@ -1,7 +1,7 @@
 
 import { api, parseEndpoint } from "../api"
 
-const get = (id, active, limit, skip) => {
+const get = (id, active, limit, skip, ttl, cache) => {
   let query =  api.parseEndpoint(`
     FinancialScheduledTransactions?
       $filter=
@@ -43,10 +43,10 @@ const get = (id, active, limit, skip) => {
         CreatedDateTime desc
   `)
 
-  return api.get(query)
+  return api.get(query, ttl, cache)
 }
 
-const getOne = (id) => {
+const getOne = (id, ttl, cache) => {
   let query =  api.parseEndpoint(`
     FinancialScheduledTransactions?
       $filter=
@@ -83,7 +83,7 @@ const getOne = (id) => {
         ScheduledTransactionDetails/Summary
 `)
 
-  return api.get(query)
+  return api.get(query, ttl, cache)
 }
 
 export default {
