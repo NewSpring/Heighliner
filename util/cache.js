@@ -41,12 +41,12 @@ const load = (key, fetchMethod, ttl = ttLength, cache = true) => new Promise((re
   key = hash(key)
 
   function get(){
-    fetchMethod()
+    return fetchMethod()
       .then((data) => {
         resolve(data)
         client.set(key, JSON.stringify(data))
         ttl = Number(ttl)
-        if (typeof ttl === "number") {
+        if (typeof ttl === "number" && !isNaN(ttl)) {
           client.expire(key, ttl)
         }
 
@@ -55,7 +55,7 @@ const load = (key, fetchMethod, ttl = ttLength, cache = true) => new Promise((re
 
   if (!cache) {
     get();
-    client.del(key)
+    // client.del(key)
     return
   }
 
