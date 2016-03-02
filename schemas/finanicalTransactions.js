@@ -71,10 +71,12 @@ const finanicalTransaction = {
   type: TransactionType,
   args: {
     id: { type: new GraphQLNonNull(GraphQLInt) },
+    mongoId: { type: GraphQLString },
     ttl: { type: GraphQLInt },
     cache: { type: GraphQLBoolean, defaultValue: true },
   },
-  resolve: (_, { id, ttl, cache }) => {
+  resolve: (_, { id, mongoId, ttl, cache }) => {
+
     let allAccountsQuery = api.parseEndpoint(`
        FinancialAccounts?
         $expand=
@@ -85,7 +87,20 @@ const finanicalTransaction = {
     `)
 
     let allAccounts = api.get(allAccountsQuery, {}, ttl, cache)
-    return Promise.all([Transactions.getOne(id), allAccounts])
+    let transactions = load(
+        JSON.stringify({"user-_id": mongoId }),
+        () => (Users.findOne({"_id": mongoId }, "services.rock.PrimaryAliasId"))
+      , ttl, cache)
+        .then((user) => {
+
+          let personId = user.services.rock.PrimaryAliasId ? user.services.rock.PrimaryAliasId : user.services.rock.PersonId
+          if (user) {
+            return Transactions.getOne(id, personId, ttl, cache)
+          }
+          return []
+        })
+
+    return Promise.all([transactions, allAccounts])
       .then(([transactions, accounts]) => {
         let accountObj = {};
 
@@ -175,12 +190,12 @@ export default {
       , ttl, cache)
         .then((user) => {
           if (user) {
-            return Transactions.get(user.services.rock.PrimaryAliasId, limit, skip)
+            return Transactions.get(user.services.rock.PrimaryAliasId, limit, skip, ttl, cache)
           }
           return []
         })
     } else {
-      allTransactions = Transactions.get(primaryAliasId, limit, skip)
+      allTransactions = Transactions.get(primaryAliasId, limit, skip, ttl, cache)
     }
 
 
