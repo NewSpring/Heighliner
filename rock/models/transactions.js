@@ -1,7 +1,7 @@
 
 import { api, parseEndpoint } from "../api"
 
-const get = (id, limit, skip) => {
+const get = (id, limit, skip, ttl, cache) => {
   let query =  api.parseEndpoint(`
     FinancialTransactions?
       $filter=
@@ -31,14 +31,15 @@ const get = (id, limit, skip) => {
         CreatedDateTime desc
   `)
 
-  return api.get(query)
+  return api.get(query, {}, ttl, cache)
 }
 
-const getOne = (id) => {
+const getOne = (id, PersonAliasId, ttl, cache) => {
   let query =  api.parseEndpoint(`
     FinancialTransactions?
       $filter=
-        Id eq ${id}
+        Id eq ${id} and
+        AuthorizedPersonAliasId eq ${PersonAliasId}
       &$expand=
         TransactionDetails,
         FinancialPaymentDetail,
@@ -60,7 +61,7 @@ const getOne = (id) => {
         FinancialPaymentDetail/Id
   `)
 
-  return api.get(query)
+  return api.get(query, {}, ttl, cache)
 }
 
 export default {
