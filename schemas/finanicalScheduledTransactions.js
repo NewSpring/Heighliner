@@ -123,10 +123,11 @@ const scheduledFinanicalTransaction = {
   type: ScheduledTransactionType,
   args: {
     id: { type: new GraphQLNonNull(GraphQLInt) },
+    mongoId: { type: GraphQLString },
     ttl: { type: GraphQLInt },
     cache: { type: GraphQLBoolean, defaultValue: true },
   },
-  resolve: (_, { id, ttl, cache }) => {
+  resolve: (_, { id, mongoId, ttl, cache }) => {
     let allAccountsQuery = api.parseEndpoint(`
        FinancialAccounts?
         $expand=
@@ -137,7 +138,18 @@ const scheduledFinanicalTransaction = {
     `)
 
     let allAccounts = api.get(allAccountsQuery, {}, ttl, cache)
-    return Promise.all([ScheduledTransactions.getOne(id), allAccounts])
+    let schedules = load(
+        JSON.stringify({"user-_id": mongoId }),
+        () => (Users.findOne({"_id": mongoId }, "services.rock.PrimaryAliasId"))
+      , ttl, cache)
+        .then((user) => {
+          let personId = user.services.rock.PrimaryAliasId ? user.services.rock.PrimaryAliasId : user.services.rock.PersonId
+          if (user) {
+            return ScheduledTransactions.getOne(id, personId, ttl, cache)
+          }
+          return []
+        })
+    return Promise.all([schedules, allAccounts])
       .then(([transactions, accounts]) => {
         let accountObj = {};
 

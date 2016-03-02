@@ -46,10 +46,11 @@ const get = (id, active, limit, skip, ttl, cache) => {
   return api.get(query, {}, ttl, cache)
 }
 
-const getOne = (id, ttl, cache) => {
+const getOne = (id, PersonAliasId, ttl, cache) => {
   let query =  api.parseEndpoint(`
     FinancialScheduledTransactions?
       $filter=
+        AuthorizedPersonAliasId eq ${PersonAliasId} and
         Id eq ${id}
       &$expand=
         ScheduledTransactionDetails,
