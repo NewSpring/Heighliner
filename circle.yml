@@ -30,8 +30,4 @@ deployment:
   prod:
     branch: master
     commands:
-      - ./deploy.sh
-  rancher:
-    branch: feature-rancher-deploy
-    commands:
-      - ./deploy.sh
+      - .rancher/deploy.sh

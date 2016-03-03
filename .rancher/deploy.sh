@@ -15,4 +15,6 @@ deploy_image() {
 
 deploy_image
 
+export COMPOSE_FILE=.rancher/docker-compose.yml
+
 rancher-compose -p heighliner up -d --force-upgrade heighliner
