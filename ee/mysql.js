@@ -7,6 +7,7 @@ import Promise from "bluebird"
 import Sync from "deasync"
 
 import { load } from "../util/cache"
+import Helpers from "./util/helpers"
 
 // local development handling for docker-machine ips being different
 let dockerhost = "192.168.99.100"
@@ -296,5 +297,22 @@ const lookupSet = (setName, ttl, cache) => {
 
 }
 
-export { lookupById, lookupByChannel, lookupSet, lookupNav }
+const getImagesFromAccount = (AccountId, ttl, cache) => {
+
+  let getAccoundEntryId = Path.join(__dirname, "./util/financial_account_from_id.sql")
+
+  return mysql(getAccoundEntryId, { AccountId })
+    .then((data) => {
+
+      if (!data.rows.length) {
+        return []
+      }
+      let doc = data.rows[0]
+
+      return Helpers.getFiles(doc.entry_id, doc.positions, "da.col_id_565");
+    })
+
+}
+
+export { lookupById, lookupByChannel, lookupSet, lookupNav, getImagesFromAccount }
 export default mysql
