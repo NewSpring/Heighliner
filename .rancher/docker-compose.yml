@@ -16,6 +16,6 @@ heighliner:
     NEW_RELIC_KEY: $NEW_RELIC_KEY
     REDIS_HOST: redis
   links:
-  - redis:redis
-  - mysql:mysql
+    - redis:redis
+    - mysql:mysql
 
