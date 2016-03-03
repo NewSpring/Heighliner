@@ -32,7 +32,11 @@ const SQLSettings = {
 let started = false;
 const connection = MySQL.createConnection(SQLSettings);
 connection.connect((err) => {
-  if (err) { console.log(err); closeAndExit(); }
+  if (err) {
+    console.log("MYSQL connection error")
+    console.log(err);
+    closeAndExit();
+  }
 
   started = true;
 });

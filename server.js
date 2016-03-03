@@ -10,7 +10,14 @@ import forceSSL from "express-force-ssl"
 let PORT = process.env.PORT || 80
 
 const app = express();
-app.use(bodyParser())
+
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
+
+app.use(bodyParser.json())
+
+
 
 if (process.env.NODE_ENV === "production") {
   app.use(forceSSL)

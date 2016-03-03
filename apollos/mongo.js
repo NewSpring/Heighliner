@@ -12,4 +12,6 @@ if (Fs.existsSync(settingsDest)) {
 
 mongoose.connect(process.env.MONGO_URL || settings.env.MONGO_URL);
 
+mongoose.connection.on("error", console.error.bind(console, "MONGO connection error:"));
+
 export default mongoose
