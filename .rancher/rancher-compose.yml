@@ -1,0 +1,4 @@
+heighliner:
+  scale: 3
+  upgrade_strategy:
+    start_first: true
