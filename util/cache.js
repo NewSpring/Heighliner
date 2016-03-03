@@ -15,7 +15,7 @@ const client = redis.createClient(6379, host);
 
 
 client.on("error", (err) => {
-  console.log(err)
+  console.log("REDIS ERROR:", err)
   // stub methods
   // client.set = () => {}
   // client.del = () => {}
