@@ -1,7 +1,7 @@
 heighliner:
   image: newspring/heighliner:$CIRCLE_SHA1
   ports:
-    - "8888:80"
+    - 80/tcp
   environment:
     MONGO_URL: $MONGO_URL
     MYSQL_PASSWORD: $MYSQL_PASSWORD
@@ -12,7 +12,10 @@ heighliner:
     NODE_ENV: "production"
     MYSQL_DB: $MYSQL_DB
     ROCK_URL: $ROCK_URL
-    MYSQL_HOST: $MYSQL_HOST
+    MYSQL_HOST: mysql
     NEW_RELIC_KEY: $NEW_RELIC_KEY
-    REDIS_HOST: $REDIS_HOST
+    REDIS_HOST: redis
+  links:
+  - redis:redis
+  - mysql:mysql
 
