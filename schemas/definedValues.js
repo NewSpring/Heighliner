@@ -7,9 +7,11 @@ import {
   GraphQLList,
   GraphQLNonNull,
   GraphQLBoolean,
+  GraphQLScalarType,
 } from "graphql"
 
 import { get } from "./../rock/models/definedValues"
+import { Attributes } from "./../rock"
 
 const DefinedValueType = new GraphQLObjectType({
   name: "DefinedValues",
@@ -26,6 +28,14 @@ const DefinedValueType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: type => type.Description
     },
+    attribute: {
+      type: GraphQLString,
+      args: { key: { type: new GraphQLNonNull(GraphQLString) } },
+      resolve: ({ Id }, { key }) => {
+        return Attributes.get(Id, key)
+          .then(value => (value ? `${value}` : null))
+      }
+    }
   })
 })
 
