@@ -60,7 +60,7 @@ export default {
   args: {
     limit: {
       type: GraphQLInt,
-      defaultValue: 20
+      defaultValue: 100
     },
     skip: {
       type: GraphQLInt,

@@ -8,6 +8,8 @@ import {
   GraphQLNonNull,
 } from "graphql"
 
+import ImageType from "../EE/image"
+import { getImagesFromAccount } from "../../../ee/mysql"
 
 const AccountDetail = new GraphQLObjectType({
   name: "FinancialAccount",
@@ -43,6 +45,10 @@ const AccountDetail = new GraphQLObjectType({
     start: {
       type: GraphQLString,
       resolve: account => (account.Start)
+    },
+    images: {
+      type: new GraphQLList(ImageType),
+      resolve: account => getImagesFromAccount(account.Id)
     },
   })
 })

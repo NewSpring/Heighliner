@@ -169,10 +169,10 @@ const Helpers = {
 
     imageData.rows.map(row => {
       const settings = JSON.parse(row.settings);
-      const s3 = settings.url_prefix + settings.subfolder + row.sub_path + row.file_name;
+      const s3 = settings.url_prefix + settings.subfolder + "/" + row.sub_path +  row.file_name;
       let cloudfront = false;
       if (settings.bucket === "ns.images") {
-        cloudfront = "//dg0ddngxdz549.cloudfront.net/" + settings.subfolder + row.sub_path + row.file_name;
+        cloudfront = "//dg0ddngxdz549.cloudfront.net/" + settings.subfolder + "/" + row.sub_path +  row.file_name;
       }
       results.push({
         fileName: row.file_name,
