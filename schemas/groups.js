@@ -72,7 +72,7 @@ const GroupType = new GraphQLObjectType({
     ageRange: generateAttribute(new GraphQLList(GraphQLInt), "AgeRange"),
     demographic: generateAttribute(GraphQLString, "Topic"),
     maritalStatus: generateAttribute(GraphQLString, "MaritalStatus"),
-    photo: generateAttribute(GraphQLString, "GroupPhoto", "https://s3.amazonaws.com/ns.assets/apollos/Artboard+9+Copy.png"),
+    photo: generateAttribute(GraphQLString, "GroupPhoto", null),
     campusId: { type: GraphQLInt, resolve: group => group.CampusId },
     campus: {
       type: CampusType,
