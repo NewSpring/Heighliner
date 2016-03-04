@@ -47,29 +47,31 @@ const load = (key, fetchMethod, ttl = ttLength, cache = true) => new Promise((re
     return fetchMethod()
       .then((data) => {
         resolve(data)
-        client.set(key, JSON.stringify(data))
-        ttl = Number(ttl)
-        if (typeof ttl === "number" && !isNaN(ttl)) {
-          client.expire(key, ttl)
-        }
+        // client.set(key, JSON.stringify(data))
+        // ttl = Number(ttl)
+        // if (typeof ttl === "number" && !isNaN(ttl)) {
+        //   client.expire(key, ttl)
+        // }
 
       })
   }
 
-  if (!cache) {
-    get();
-    // client.del(key)
-    return
-  }
+  get()
 
-  client.get(key, (err, response) => {
-    if (err) { return reject(err); }
-
-    if (!response) { get(); return }
-    resolve(JSON.parse(response))
-    return
-
-  })
+  // if (!cache) {
+  //   get();
+  //   // client.del(key)
+  //   return
+  // }
+  //
+  // client.get(key, (err, response) => {
+  //   if (err) { return reject(err); }
+  //
+  //   if (!response) { get(); return }
+  //   resolve(JSON.parse(response))
+  //   return
+  //
+  // })
 
 
 })
