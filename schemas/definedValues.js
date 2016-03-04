@@ -30,7 +30,11 @@ const DefinedValueType = new GraphQLObjectType({
     },
     attribute: {
       type: GraphQLString,
-      args: { key: { type: new GraphQLNonNull(GraphQLString) } },
+      args: {
+        key: { type: new GraphQLNonNull(GraphQLString) },
+        ttl: { type: GraphQLInt, defaultValue: 31536000 },
+        cache: { type: GraphQLBoolean, defaultValue: true },
+      },
       resolve: ({ Id }, { key }) => {
         return Attributes.get(Id, key)
           .then(value => (value ? `${value}` : null))
@@ -42,23 +46,11 @@ const DefinedValueType = new GraphQLObjectType({
 export default {
   type: new GraphQLList(DefinedValueType),
   args: {
-    id: {
-      type: new GraphQLNonNull(GraphQLInt)
-    },
-    limit: {
-      type: GraphQLInt,
-      defaultValue: 20
-    },
-    skip: {
-      type: GraphQLInt,
-      defaultValue: 0
-    },
-    ttl: {
-      type: GraphQLInt
-    },
-    cache: {
-      type: GraphQLBoolean
-    },
+    id: { type: new GraphQLNonNull(GraphQLInt) },
+    limit: { type: GraphQLInt, defaultValue: 20 },
+    skip: { type: GraphQLInt, defaultValue: 0 },
+    ttl: { type: GraphQLInt, defaultValue: 31536000 },
+    cache: { type: GraphQLBoolean, defaultValue: true },
   },
   description: "All defined values in Rock ",
   resolve: (_, { id, limit, skip, ttl, cache = true }) => {
