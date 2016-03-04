@@ -25,7 +25,7 @@ const SQLSettings = {
   port        : 3306,
   minInterval : 200,
   connectTimeout: 20000,
-  ssl: process.env.MYSQL_SSL || false
+  // ssl: process.env.MYSQL_SSL || false
 };
 
 // connect to db
