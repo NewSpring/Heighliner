@@ -20,11 +20,11 @@ if (process.env.NEW_RELIC_KEY){
   require("newrelic");
 }
 
-if (process.env.RAYGUN) {
-  var raygunClient = new raygun.Client().init({
-    apiKey: process.env.RAYGUN
-  });
-}
+// if (process.env.RAYGUN) {
+//   var raygunClient = new raygun.Client().init({
+//     apiKey: process.env.RAYGUN
+//   });
+// }
 
 
 function start(){
@@ -34,11 +34,12 @@ function start(){
 if (process.env.NODE_ENV === "production") {
   var d = require("domain").create();
   d.on("error", function(err){
-    if (raygunClient) {
-      raygunClient.send(err, {}, function () {
-        // process.exit();
-      });
-    }
+    console.error(err)
+    // if (raygunClient) {
+    //   raygunClient.send(err, {}, function () {
+    //     // process.exit();
+    //   });
+    // }
 
   });
 
