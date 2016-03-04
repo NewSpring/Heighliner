@@ -33,9 +33,9 @@ let started = false;
 const connection = MySQL.createConnection(SQLSettings);
 connection.connect((err) => {
   if (err) {
-    console.log("MYSQL connection error")
+    console.log(`MYSQL connection error trying to connect to ${process.env.MYSQL_HOST}`)
     console.log(err);
-    closeAndExit();
+    // closeAndExit();
   }
 
   started = true;

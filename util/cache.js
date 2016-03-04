@@ -15,7 +15,7 @@ const client = redis.createClient(6379, host);
 
 
 client.on("error", (err) => {
-  console.log("REDIS ERROR:", err)
+  console.log(`REDIS ERROR from ${process.env.REDIS_HOST}:`, err)
   // stub methods
   // client.set = () => {}
   // client.del = () => {}
@@ -30,6 +30,9 @@ function hash(str) {
     chr   = str.charCodeAt(i);
     hash  = ((hash << 5) - hash) + chr;
     hash |= 0; // Convert to 32bit integer
+  }
+  if (process.env.REDIS_NAMESPACE) {
+    hash = process.env.REDIS_NAMESPACE + "_" + hash
   }
   return hash;
 }
