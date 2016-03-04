@@ -34,7 +34,8 @@ heighliner-beta:
   ports:
     - 80/tcp
   environment:
-    MONGO_URL: $BETA_MONGO_URL
+    # MONGO_URL: $BETA_MONGO_URL
+    MONGO_URL: $MONGO_URL
 
     NODE_ENV: "production"
     PORT: $PORT
@@ -42,10 +43,12 @@ heighliner-beta:
     MYSQL_PASSWORD: $MYSQL_PASSWORD
     MYSQL_USER: $MYSQL_USER
     MYSQL_SSL: $MYSQL_SSL
-    MYSQL_DB: $BETA_MYSQL_DB
+    # MYSQL_DB: $BETA_MYSQL_DB
+    MYSQL_DB: $MYSQL_DB
 
     ROCK_TOKEN: $ROCK_TOKEN
-    ROCK_URL: $BETA_ROCK_URL
+    # ROCK_URL: $BETA_ROCK_URL
+    ROCK_URL: $ROCK_URL
 
     SEARCH_CX: $SEARCH_CX
     SEARCH_KEY: $SEARCH_KEY
@@ -53,8 +56,10 @@ heighliner-beta:
 
     REDIS_NAMESPACE: "beta"
 
-    MYSQL_HOST: mysql
-    REDIS_HOST: redis
-  links:
-    - redis:redis
-    - mysql:mysql
+    MYSQL_HOST: $MYSQL_HOST
+    REDIS_HOST: $REDIS_HOST
+  #   MYSQL_HOST: mysql
+  #   REDIS_HOST: redis
+  # links:
+  #   - redis:redis
+  #   - mysql:mysql
