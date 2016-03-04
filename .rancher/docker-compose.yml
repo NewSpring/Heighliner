@@ -25,9 +25,7 @@ heighliner:
 
     MYSQL_HOST: mysql
     REDIS_HOST: redis
-  links:
-    - redis:redis
-    - mysql:mysql
+
 
 heighliner-beta:
   image: newspring/heighliner:$CIRCLE_SHA1
@@ -58,6 +56,3 @@ heighliner-beta:
 
     MYSQL_HOST: mysql
     REDIS_HOST: redis
-  # links:
-  #   - redis:redis
-  #   - mysql:mysql
