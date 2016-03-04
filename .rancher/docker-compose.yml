@@ -23,7 +23,7 @@ heighliner:
 
     REDIS_NAMESPACE: "production"
 
-    MYSQL_HOST: $MYSQL
+    MYSQL_HOST: mysql
     REDIS_HOST: redis
 
 
@@ -54,5 +54,5 @@ heighliner-beta:
 
     REDIS_NAMESPACE: "beta"
 
-    MYSQL_HOST: $MYSQL
+    MYSQL_HOST: mysql
     REDIS_HOST: redis
