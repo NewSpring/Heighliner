@@ -19,9 +19,9 @@ app.use(bodyParser.json())
 
 
 
-if (process.env.NODE_ENV === "production") {
-  app.use(forceSSL)
-}
+// if (process.env.NODE_ENV === "production") {
+//   app.use(forceSSL)
+// }
 
 // Add headers
 app.use((req, res, next) => {
