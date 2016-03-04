@@ -58,6 +58,6 @@ heighliner-beta:
 
     MYSQL_HOST: mysql
     REDIS_HOST: redis
-  links:
-    - redis:redis
-    - mysql:mysql
+  # links:
+  #   - redis:redis
+  #   - mysql:mysql
