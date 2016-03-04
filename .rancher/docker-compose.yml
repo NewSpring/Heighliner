@@ -23,11 +23,11 @@ heighliner:
 
     REDIS_NAMESPACE: "production"
 
-    MYSQL_HOST: $MYSQL_HOST
-    REDIS_HOST: $REDIS_HOST
-  # links:
-  #   - redis:redis
-  #   - mysql:mysql
+    MYSQL_HOST: mysql
+    REDIS_HOST: redis
+  links:
+    - redis:redis
+    - mysql:mysql
 
 heighliner-beta:
   image: newspring/heighliner:$CIRCLE_SHA1
@@ -56,10 +56,8 @@ heighliner-beta:
 
     REDIS_NAMESPACE: "beta"
 
-    MYSQL_HOST: $MYSQL_HOST
-    REDIS_HOST: $REDIS_HOST
-  #   MYSQL_HOST: mysql
-  #   REDIS_HOST: redis
-  # links:
-  #   - redis:redis
-  #   - mysql:mysql
+    MYSQL_HOST: mysql
+    REDIS_HOST: redis
+  links:
+    - redis:redis
+    - mysql:mysql
