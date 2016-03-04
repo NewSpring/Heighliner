@@ -57,7 +57,7 @@ heighliner-beta:
     REDIS_NAMESPACE: "beta"
 
     MYSQL_HOST: $MYSQL_HOST
-    REDIS_HOST: $REDIS_HOST
+    REDIS_HOST: redis
   #   MYSQL_HOST: mysql
   #   REDIS_HOST: redis
   # links:
