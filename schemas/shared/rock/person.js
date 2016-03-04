@@ -156,11 +156,9 @@ const PersonType = new GraphQLObjectType({
         ttl: { type: GraphQLInt },
         cache: { type: GraphQLBoolean, defaultValue: true },
       },
-      resolve({ Id }, ttl, cache) {
+      resolve({ Id }, { ttl, cache }) {
         return api.get(parseEndpoint(`
-          Groups/GetFamilies/${Id}?
-            $expand=
-              Campus
+          Groups/GetFamilies/${Id}?$expand=Campus
         `), ttl, cache).then((campus) => {
           if (campus.length && campus[0].Campus) {
             return campus[0].Campus
