@@ -5,11 +5,14 @@ import { graphql } from "graphql"
 import Schema from "./schemas"
 import bodyParser from "body-parser"
 import forceSSL from "express-force-ssl"
+import morgan from "morgan"
 
 // let PORT = process.env.DOCKER_HOST ? 80 : 8080
 let PORT = process.env.PORT || 80
 
 const app = express();
+
+app.use(morgan("combined"))
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -19,9 +22,9 @@ app.use(bodyParser.json())
 
 
 
-if (process.env.NODE_ENV === "production") {
-  app.use(forceSSL)
-}
+// if (process.env.NODE_ENV === "production") {
+//   app.use(forceSSL)
+// }
 
 // Add headers
 app.use((req, res, next) => {
