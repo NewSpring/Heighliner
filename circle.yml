@@ -1,6 +1,8 @@
 machine:
   environment:
     PATH: "$PATH:~/$CIRCLE_PROJECT_REPONAME/bin"
+  python:
+    version: 2.7.9
   node:
     version: 4.2.1
   services:
@@ -8,6 +10,10 @@ machine:
 
 
 dependencies:
+  pre:
+    - aws --version
+    - pip install awscli
+    - aws --version
   post:
     - curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq
     - curl -L https://github.com/rancher/rancher-compose/releases/download/v0.7.2/rancher-compose-linux-386-v0.7.2.tar.gz | tar xvz && mv rancher-compose-v0.7.2/rancher-compose ~/bin/ && chmod +x ~/bin/rancher-compose
@@ -21,13 +27,18 @@ test:
     - curl --retry 10 --retry-delay 5 http://localhost:8080/alive | grep true
 
 deployment:
-  production:
-    branch: master
+  rancher:
+    branch: rancher
     commands:
       - echo deploying to rancher
       - .rancher/deploy.sh
-  beta:
-    branch: beta
+  production:
+    branch: master
     commands:
-      - echo deploying to rancher
-      - .rancher/deploy-beta.sh
+      - echo deploying to ecs
+      - .ecs/deploy.sh
+  # beta:
+  #   branch: beta
+  #   commands:
+  #     - echo deploying to rancher
+  #     - .rancher/deploy-beta.sh
