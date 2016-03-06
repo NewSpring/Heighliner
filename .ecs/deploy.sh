@@ -23,7 +23,7 @@ make_task_def() {
       "memory": 512,
       "cpu": 512,
       "essential": true,
-      "image": "145764974711.dkr.ecr.us-east-1.amazonaws.com/heighliner:latest",
+      "image": "newspring/heighliner:"'$CIRCLE_SHA1'"",
       "portMappings": [
         {
           "hostPort": 8888,
