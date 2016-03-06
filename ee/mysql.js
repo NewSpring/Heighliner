@@ -244,7 +244,7 @@ const lookupByChannel = (channel_name, limit, offset) => {
 
 const lookupNav = (navTitle, ttl, cache) => {
   let getNav = Path.join(__dirname, "./tables/navee.sql")
-  return mysql(getNav, { nav_title: `'${navTitle}'`})
+  return mysql(getNav, { nav_title: `'${navTitle}'`}, ttl, cache)
     .then((data) => {
 
       if (!data.rows.length) {
@@ -262,7 +262,7 @@ const lookupSet = (setName, ttl, cache) => {
 
   let getSet = Path.join(__dirname, "./util/low_reorder_sets.sql")
 
-  return mysql(getSet, { set_name: `'${setName}'`})
+  return mysql(getSet, { set_name: `'${setName}'`}, ttl, cache)
     .then((data) => {
 
       if (!data.rows.length) {
@@ -305,7 +305,7 @@ const getImagesFromAccount = (AccountId, ttl, cache) => {
 
   let getAccoundEntryId = Path.join(__dirname, "./util/financial_account_from_id.sql")
 
-  return mysql(getAccoundEntryId, { AccountId })
+  return mysql(getAccoundEntryId, { AccountId }, ttl, cache)
     .then((data) => {
 
       if (!data.rows.length) {
