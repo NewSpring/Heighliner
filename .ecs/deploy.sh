@@ -26,7 +26,7 @@ make_task_def() {
       "image": "newspring/heighliner:%s",
       "portMappings": [
         {
-          "hostPort": 8888,
+          "hostPort": 8081,
           "containerPort": 80,
           "protocol": "tcp"
         }
