@@ -23,7 +23,7 @@ make_task_def() {
       "memory": 512,
       "cpu": 512,
       "essential": true,
-      "image": "newspring/heighliner:"'$CIRCLE_SHA1'"",
+      "image": "newspring/heighliner:%s",
       "portMappings": [
         {
           "hostPort": 8888,
@@ -99,6 +99,8 @@ make_task_def() {
       ]
     }
   ]'
+
+  task_def=$(printf "$task_template" $CIRCLE_SHA1)
 }
 
 # reads $family
