@@ -66,6 +66,6 @@ export default {
     },
   },
   resolve: (_, { ttl, cache }) => {
-    return api.get("Campuses?$select=Name,ShortCode,Id,LocationId", ttl, cache)
+    return api.get("Campuses?$select=Name,ShortCode,Id,LocationId&$filter=IsActive eq true", ttl, cache)
   }
 }
