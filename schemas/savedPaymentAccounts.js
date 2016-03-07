@@ -84,6 +84,8 @@ export default {
             FinancialPaymentDetail/CurrencyTypeValue/Description,
             FinancialPaymentDetail/CreditCardTypeValue/Value,
             FinancialPaymentDetail/CreditCardTypeValue/Description
+          &$orderby=
+            ModifiedDateTime desc
       `)
 
       return api.get(query, {}, ttl, cache)
