@@ -28,7 +28,7 @@ make_task_def() {
         {
           "hostPort": 8081,
           "containerPort": 80,
-          "protocol": "tcp"
+          "protocol": "http"
         }
       ],
       "environment": [
@@ -118,7 +118,7 @@ register_definition() {
 
 deploy_cluster() {
 
-  host_port=8888
+  host_port=8081
   family="heighliner"
 
   make_task_def
