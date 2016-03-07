@@ -10,18 +10,18 @@ if (process.env.DOCKER_HOST) {
   host = hostObj.host
 }
 
-host = process.env.REDIS_HOST ? process.env.REDIS_HOST : host;
-const client = redis.createClient(6379, host);
+// host = process.env.REDIS_HOST ? process.env.REDIS_HOST : host;
+// const client = redis.createClient(6379, host);
 
 
-client.on("error", (err) => {
-  console.log(`REDIS ERROR from ${process.env.REDIS_HOST}:`, err)
-  // stub methods
-  // client.set = () => {}
-  // client.del = () => {}
-  // client.expire = () => {}
-  // client.get = (key, cb) => (cb(null, false))
-})
+// client.on("error", (err) => {
+//   console.log(`REDIS ERROR from ${process.env.REDIS_HOST}:`, err)
+//   // stub methods
+//   // client.set = () => {}
+//   // client.del = () => {}
+//   // client.expire = () => {}
+//   // client.get = (key, cb) => (cb(null, false))
+// })
 
 function hash(str) {
   var hash = 0, i, chr, len;
@@ -47,29 +47,31 @@ const load = (key, fetchMethod, ttl = ttLength, cache = true) => new Promise((re
     return fetchMethod()
       .then((data) => {
         resolve(data)
-        client.set(key, JSON.stringify(data))
-        ttl = Number(ttl)
-        if (typeof ttl === "number" && !isNaN(ttl)) {
-          client.expire(key, ttl)
-        }
+        // client.set(key, JSON.stringify(data))
+        // ttl = Number(ttl)
+        // if (typeof ttl === "number" && !isNaN(ttl)) {
+        //   client.expire(key, ttl)
+        // }
 
       })
   }
 
-  if (!cache) {
-    get();
-    // client.del(key)
-    return
-  }
-
-  client.get(key, (err, response) => {
-    if (err) { return reject(err); }
-
-    if (!response) { get(); return }
-    resolve(JSON.parse(response))
-    return
-
-  })
+  get()
+  return
+  // if (!cache) {
+  //   get();
+  //   // client.del(key)
+  //   return
+  // }
+  //
+  // client.get(key, (err, response) => {
+  //   if (err) { return reject(err); }
+  //
+  //   if (!response) { get(); return }
+  //   resolve(JSON.parse(response))
+  //   return
+  //
+  // })
 
 
 })
