@@ -262,7 +262,6 @@ export default {
           latitude=${lat}&
           longitude=${lng}&
           sortByDistance=${sortByDistance}&
-          maxDistanceMiles=${distance}&
           $filter=
             IsActive eq true and
             IsPublic eq true
