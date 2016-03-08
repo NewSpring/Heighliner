@@ -14,9 +14,14 @@ let PORT = process.env.PORT || 80
 const app = express();
 
 
+app.get("/alive", (req, res) => {
+  res.status(200).json({ alive: true });
+})
+
+
 if (process.env.NODE_ENV === "production") {
   // force ssl
-  app.use(forceSSL)
+  // app.use(forceSSL)
 
   // initial simple auth using Rock creds
   app.use((req, res, next) => {
@@ -66,10 +71,6 @@ app.use((req, res, next) => {
   next();
 
 });
-
-app.get("/alive", (req, res) => {
-  res.status(200).json({ alive: true });
-})
 
 
 app.use("/", graphqlHTTP(() => ({
