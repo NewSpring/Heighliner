@@ -13,6 +13,8 @@
   "dependencies": {
     "babel": "^5.8.34",
     "babel-core": "^6.4.5",
+    "basic-auth": "^1.0.3",
+    "basic-auth-connect": "^1.0.0",
     "bluebird": "^3.1.1",
     "body-parser": "^1.14.2",
     "dataloader": "^1.1.0",
