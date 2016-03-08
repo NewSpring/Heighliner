@@ -28,6 +28,10 @@ const CampusType = new GraphQLObjectType({
       type: GraphQLInt,
       resolve: campus => campus.Id
     },
+    guid: {
+      type: GraphQLString,
+      resolve: campus => campus.Guid
+    },
     locationId: {
       type: GraphQLString,
       resolve: campus => campus.LocationId
