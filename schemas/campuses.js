@@ -40,9 +40,9 @@ const campus = {
 
     let query;
     if (id) {
-      query = `Campuses?$select=Name,ShortCode,Id,LocationId&$filter=Id eq ${id}`
+      query = `Campuses?&$filter=Id eq ${id}`
     } else if (name) {
-      query = `Campuses?$select=Name,ShortCode,Id,LocationId&$filter=Name eq '${name}'`
+      query = `Campuses?&$filter=Name eq '${name}'`
     }
 
     return api.get(query, ttl, cache)
@@ -66,6 +66,6 @@ export default {
     },
   },
   resolve: (_, { ttl, cache }) => {
-    return api.get("Campuses?$select=Name,ShortCode,Id,LocationId&$filter=IsActive eq true", ttl, cache)
+    return api.get("Campuses?$filter=IsActive eq true", ttl, cache)
   }
 }
