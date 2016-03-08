@@ -28,12 +28,12 @@ test:
 
 deployment:
   rancher:
-    branch: rancher
+    branch: master
     commands:
       - echo deploying to rancher
       - .rancher/deploy.sh
   production:
-    branch: master
+    branch: ecs
     commands:
       - echo deploying to ecs
       - .ecs/deploy.sh
