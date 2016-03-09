@@ -13,7 +13,7 @@ import {
 import { load } from "../util/cache"
 import { Users } from "../apollos"
 
-import { api, parseEndpoint } from "../rock"
+import { api, parseEndpoint, getAliasIds } from "../rock"
 import AccountDetail from "./shared/rock/financial-account"
 import PaymentDetailsType from "./shared/rock/financial-paymentDetails"
 
@@ -64,11 +64,24 @@ export default {
       throw new Error("An id is required for payment detail lookup")
     }
 
-    function get(id) {
+    function get(ids) {
+      let AliasQuery = "("
+
+      let count = 0
+      for (let id of ids) {
+        count ++
+        AliasQuery += `PersonAliasId eq ${id}`
+        if (count != ids.length) {
+          AliasQuery += " or "
+        }
+      }
+
+      AliasQuery += ")"
+
       const query = parseEndpoint(`
         FinancialPersonSavedAccounts?
           $filter=
-            PersonAliasId eq ${id}
+            ${AliasQuery}
           &$expand=
             FinancialPaymentDetail,
             FinancialPaymentDetail/CreditCardTypeValue,
@@ -101,12 +114,18 @@ export default {
         .then((user) => {
 
           if (user) {
-            return get(user.services.rock.PrimaryAliasId)
+            return getAliasIds(user.services.rock.PrimaryAliasId, ttl, cache)
+              .then((ids) => {
+                return get(ids)
+              })
           }
           return []
         })
     } else {
-      allPaymentDetails = get(primaryAliasId)
+      allPaymentDetails = getAliasIds(primaryAliasId, ttl, cache)
+        .then((ids) => {
+          return get(ids)
+        })
     }
 
     return allPaymentDetails

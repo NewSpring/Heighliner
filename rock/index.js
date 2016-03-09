@@ -1,5 +1,5 @@
 
-import { api, parseEndpoint } from "./api"
+import { api, parseEndpoint, getAliasIds } from "./api"
 
 import People from "./models/people"
 import Transactions from "./models/transactions"
@@ -10,6 +10,7 @@ import Attributes from "./models/attributes"
 export {
   api,
   parseEndpoint,
+  getAliasIds,
 
   People,
   Transactions,
