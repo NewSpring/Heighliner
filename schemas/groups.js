@@ -122,8 +122,8 @@ const GroupType = new GraphQLObjectType({
 
 
           const fetchBatches = (ids) => {
-            console.log(`People?$filter=${ids.join(" or ")}&$expand=Photo`)
-            return api.get(`People?$filter=${ids.join(" or ")}&$expand=Photo`)
+
+            return api.get(`People?$filter=IsDeceased eq false${ids.length ? " and " + ids.join(" or ") : ""}&$expand=Photo`)
               .then((people) => {
 
                 let joinedMembers = []
@@ -144,11 +144,11 @@ const GroupType = new GraphQLObjectType({
           // until we have direct SQL access, this is at least a start of a batch
           if (batchId.length) {
             if (batchId.length > 8) {
-              let batch1 = [...batchId].slice(0, 7)
-              let batch2 = [...batchId].slice(7, batchId.length - 1)
+              let batch1 = [...batchId].slice(0, 5)
+              // let batch2 = [...batchId].slice(5, batchId.length - 1)
               return Promise.all([
                 fetchBatches(batch1),
-                fetchBatches(batch2)
+                // fetchBatches(batch2)
               ])
               .then(([b1]) => {
                 return b1
