@@ -142,19 +142,19 @@ const GroupType = new GraphQLObjectType({
           }
           // until we have direct SQL access, this is at least a start of a batch
           if (batchId.length) {
-            if (batchId.length > 8) {
-              let batch1 = [...batchId].slice(0, 7)
-              let batch2 = [...batchId].slice(8, batchId.length - 1)
-              return Promise.all([
-                fetchBatches(batch1),
-                fetchBatches(batch2)
-              ])
-              .then(([b1, b2]) => {
-                return b1.concat(b2)
-              })
-            } else {
+            // if (batchId.length > 8) {
+            //   let batch1 = [...batchId].slice(0, 7)
+            //   let batch2 = [...batchId].slice(8, batchId.length - 1)
+            //   return Promise.all([
+            //     fetchBatches(batch1),
+            //     fetchBatches(batch2)
+            //   ])
+            //   .then(([b1, b2]) => {
+            //     return b1.concat(b2)
+            //   })
+            // } else {
               return fetchBatches(batchId)
-            }
+            // }
 
 
           }
