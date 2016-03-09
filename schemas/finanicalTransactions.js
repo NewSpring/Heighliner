@@ -13,7 +13,7 @@ import {
 import { load } from "../util/cache"
 import { Users } from "../apollos"
 
-import { Transactions, api, parseEndpoint } from "../rock"
+import { Transactions, api, parseEndpoint, getAliasIds } from "../rock"
 import AccountDetail from "./shared/rock/financial-account"
 import PaymentDetailsType from "./shared/rock/financial-paymentDetails"
 
@@ -95,7 +95,10 @@ const finanicalTransaction = {
 
           let personId = user.services.rock.PrimaryAliasId ? user.services.rock.PrimaryAliasId : user.services.rock.PersonId
           if (user) {
-            return Transactions.getOne(id, personId, ttl, cache)
+            return getAliasIds(personId, ttl, cache)
+              .then((ids) => {
+                return Transactions.getOne(id, ids, ttl, cache)
+              })
           }
           return []
         })
@@ -190,12 +193,18 @@ export default {
       , ttl, cache)
         .then((user) => {
           if (user) {
-            return Transactions.get(user.services.rock.PrimaryAliasId, limit, skip, ttl, cache)
+            return getAliasIds(user.services.rock.PrimaryAliasId, ttl, cache)
+              .then((ids) => {
+                return Transactions.get(ids, limit, skip, ttl, cache)
+              })
           }
           return []
         })
     } else {
-      allTransactions = Transactions.get(primaryAliasId, limit, skip, ttl, cache)
+      allTransactions = getAliasIds(primaryAliasId, ttl, cache)
+        .then((ids) => {
+          return Transactions.get(ids, limit, skip, ttl, cache)
+        })
     }
 
 

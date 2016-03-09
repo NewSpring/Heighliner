@@ -131,7 +131,18 @@ const parseEndpoint = (str) => {
 }
 api.parseEndpoint = parseEndpoint
 
+function getAliasIds(PrimaryAliasId, ttl, cache) {
+  return api.get(`PersonAlias?$filter=Id eq ${PrimaryAliasId}&$select=Person/Id&$expand=Person`, ttl, cache)
+    .then((person => person[0]))
+    .then(({ Person }) => {
+      return api.get(`PersonAlias?$filter=PersonId eq ${Person.Id}&$select=Id`, ttl, cache)
+        .then(ids => ids.map((x) => x.Id))
+    })
+}
+
+
 export {
   api,
   parseEndpoint,
+  getAliasIds,
 }

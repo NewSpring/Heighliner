@@ -1,11 +1,24 @@
 
 import { api, parseEndpoint } from "../api"
 
-const get = (id, limit, skip, ttl, cache) => {
+const get = (ids, limit, skip, ttl, cache) => {
+  let AliasQuery = "("
+
+  let count = 0
+  for (let id of ids) {
+    count ++
+    AliasQuery += `AuthorizedPersonAliasId eq ${id}`
+    if (count != ids.length) {
+      AliasQuery += " or "
+    }
+  }
+
+  AliasQuery += ")"
+
   let query =  api.parseEndpoint(`
     FinancialTransactions?
       $filter=
-        AuthorizedPersonAliasId eq ${id}
+        ${AliasQuery}
       &$expand=
         TransactionDetails,
         FinancialPaymentDetail,
@@ -34,12 +47,25 @@ const get = (id, limit, skip, ttl, cache) => {
   return api.get(query, {}, ttl, cache)
 }
 
-const getOne = (id, PersonAliasId, ttl, cache) => {
+const getOne = (id, ids, ttl, cache) => {
+  let AliasQuery = "("
+
+  let count = 0
+  for (let id of ids) {
+    count ++
+    AliasQuery += `AuthorizedPersonAliasId eq ${id}`
+    if (count != ids.length) {
+      AliasQuery += " or "
+    }
+  }
+
+  AliasQuery += ")"
+  
   let query =  api.parseEndpoint(`
     FinancialTransactions?
       $filter=
         Id eq ${id} and
-        AuthorizedPersonAliasId eq ${PersonAliasId}
+        ${AliasQuery}
       &$expand=
         TransactionDetails,
         FinancialPaymentDetail,

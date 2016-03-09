@@ -13,9 +13,10 @@ import {
 import { load } from "../util/cache"
 import { Users } from "../apollos"
 
-import { ScheduledTransactions, api, parseEndpoint } from "../rock"
+import { ScheduledTransactions, api, parseEndpoint, getAliasIds } from "../rock"
 import AccountDetail from "./shared/rock/financial-account"
 import PaymentDetailsType from "./shared/rock/financial-paymentDetails"
+
 
 const ScheduledTransactionDetails = new GraphQLObjectType({
   name: "ScheduledTransactionDetails",
@@ -145,7 +146,10 @@ const scheduledFinanicalTransaction = {
         .then((user) => {
           let personId = user.services.rock.PrimaryAliasId ? user.services.rock.PrimaryAliasId : user.services.rock.PersonId
           if (user) {
-            return ScheduledTransactions.getOne(id, personId, ttl, cache)
+            return getAliasIds(personId, ttl, cache)
+              .then((ids) => {
+                return ScheduledTransactions.getOne(id, ids, ttl, cache)
+              })
           }
           return []
         })
@@ -242,12 +246,18 @@ export default {
       , ttl, cache)
         .then((user) => {
           if (user) {
-            return ScheduledTransactions.get(user.services.rock.PrimaryAliasId, active, limit, skip, ttl, cache)
+            return getAliasIds(user.services.rock.PrimaryAliasId, ttl, cache)
+              .then((ids) => {
+                return ScheduledTransactions.get(ids, active, limit, skip, ttl, cache)
+              })
           }
           return []
         })
     } else {
-      allTransactions = ScheduledTransactions.get(primaryAliasId, active, limit, skip, ttl, cache)
+      allTransactions = getAliasIds(primaryAliasId, ttl, cache)
+        .then((ids) => {
+          return ScheduledTransactions.get(ids, active, limit, skip, ttl, cache)
+        })
     }
 
 
