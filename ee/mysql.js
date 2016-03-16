@@ -285,7 +285,10 @@ const lookupSet = (setName, ttl, cache) => {
           let entryObj = {}
 
           for (let entry of entries) {
-            entryObj[entry.entryId] = entry
+            // promotions in the future will return undefined
+            if (typeof entry !== "undefined") {
+              entryObj[entry.entryId] = entry
+            }
           }
 
           let sortedEntries = []
