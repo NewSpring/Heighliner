@@ -36,6 +36,10 @@ const PersonLikeType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: like => like.status
     },
+    channelName: {
+      type: GraphQLString,
+      resolve: like => like.channelName
+    },
     meta: {
       type: MetaType,
       resolve: like => like.meta
