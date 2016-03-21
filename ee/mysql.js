@@ -204,17 +204,7 @@ const lookupById = (entry_id) => {
             }
 
             // id should only return one response
-            const result = documents[0]
-
-            if (result.channelName === "series_newspring") {
-              return lookupByChannel("sermons", 5, 0, result.entryId)
-                .then((sermons) => {
-                  result.sermons = sermons
-                  return result
-                })
-            }
-
-            return result
+            return documents[0]
           })
       }
 

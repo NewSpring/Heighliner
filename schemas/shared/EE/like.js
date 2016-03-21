@@ -22,31 +22,6 @@ const MetaType = new GraphQLObjectType({
   }
 })
 
-const SermonType = new GraphQLObjectType({
-  name: "Sermon",
-  fields: {
-    title: { type: GraphQLString },
-    id: {
-      type: GraphQLInt, 
-      resolve: sermon => sermon.entryId
-    },
-    collectionId: { type: GraphQLInt },
-    status: { type: GraphQLString },
-    channelName: { type: GraphQLString },
-    meta: { type: MetaType },
-    content: {
-      type: new GraphQLObjectType({
-        name: "SermonContent",
-        fields: {
-          speakers: {
-            type: GraphQLString
-          }
-        }
-      })
-    }
-  }
-})
-
 const PersonLikeType = new GraphQLObjectType({
   name: "Likes",
   fields: () => ({
@@ -81,10 +56,6 @@ const PersonLikeType = new GraphQLObjectType({
     tracks: {
       type: new GraphQLList(TrackType),
       resolve: like => like.tracks
-    },
-    sermons: {
-      type: new GraphQLList(SermonType),
-      resolve: like => like.sermons
     }
   })
 })
