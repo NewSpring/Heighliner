@@ -33,6 +33,10 @@ const PersonLikeType = new GraphQLObjectType({
       type: GraphQLInt,
       resolve: like => like.entryId
     },
+    collectionId: {
+      type: GraphQLInt,
+      resolve: like => like.collectionId
+    },
     status: {
       type: GraphQLString,
       resolve: like => like.status
