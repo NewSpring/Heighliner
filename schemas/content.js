@@ -35,6 +35,9 @@ export default {
     channel: {
       type: new GraphQLNonNull(GraphQLString)
     },
+    collectionId: {
+      type: GraphQLInt
+    },
     limit: {
       type: GraphQLInt,
       defaultValue: 20
@@ -51,7 +54,7 @@ export default {
     },
   },
   description: "All dynamic content channels",
-  resolve: (_, { channel, limit, skip, ttl, cache = true }) => {
-    return lookupByChannel(channel, limit, skip, ttl, cache)
+  resolve: (_, { channel, collectionId, limit, skip, ttl, cache = true }) => {
+    return lookupByChannel(channel, collectionId, limit, skip, ttl, cache)
   }
 }

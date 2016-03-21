@@ -214,7 +214,7 @@ const lookupById = (entry_id) => {
 
 }
 
-const lookupByChannel = (channel_name, limit, offset, collection_id) => {
+const lookupByChannel = (channel_name, collection_id, limit, offset) => {
   let tableFromChannel = Path.join(__dirname, "./util/tableFromChannel.sql")
 
   return mysql(tableFromChannel, { channel_name: `'${channel_name}'` })
@@ -231,7 +231,7 @@ const lookupByChannel = (channel_name, limit, offset, collection_id) => {
       let { channel_id } = data.rows[0]
 
       if (Fs.existsSync(tableDir)) {
-        return mysql(tableDir, { channel_id, limit, offset, sort: true, collection_id })
+        return mysql(tableDir, { channel_id, collection_id, limit, offset, sort: true })
           .then((data) => {
             let documents = []
             const mappingDir = Path.join(tabelsDir, `${table}.js`),
