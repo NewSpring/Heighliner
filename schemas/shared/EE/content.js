@@ -35,6 +35,10 @@ const ContentType = new GraphQLObjectType({
     tags: {
       type: new GraphQLList(GraphQLString),
       resolve: content => content.tags
+    },
+    collectionBackgroundColor: {
+      type: GraphQLString,
+      resolve: content => content.collectionBackgroundColor
     }
   })
 })
