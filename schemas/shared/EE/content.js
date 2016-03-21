@@ -16,6 +16,10 @@ const ContentType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: content => content.body
     },
+    description: {
+      type: GraphQLString,
+      resolve: like => like.description
+    },
     scripture: {
       type: GraphQLString,
       resolve: content => content.scripture
