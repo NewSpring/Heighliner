@@ -26,11 +26,24 @@ const SermonType = new GraphQLObjectType({
   name: "Sermon",
   fields: {
     title: { type: GraphQLString },
-    id: { type: GraphQLInt, resolve: sermon => sermon.entryId },
+    id: {
+      type: GraphQLInt, 
+      resolve: sermon => sermon.entryId
+    },
     collectionId: { type: GraphQLInt },
     status: { type: GraphQLString },
     channelName: { type: GraphQLString },
     meta: { type: MetaType },
+    content: {
+      type: new GraphQLObjectType({
+        name: "SermonContent",
+        fields: {
+          speakers: {
+            type: GraphQLString
+          }
+        }
+      })
+    }
   }
 })
 
