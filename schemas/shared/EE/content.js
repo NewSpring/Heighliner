@@ -39,6 +39,10 @@ const ContentType = new GraphQLObjectType({
     collectionBackgroundColor: {
       type: GraphQLString,
       resolve: content => content.collectionBackgroundColor
+    },
+    speakers: {
+      type: GraphQLString,
+      resolve: content => content.speakers
     }
   })
 })
