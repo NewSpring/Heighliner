@@ -10,6 +10,7 @@ import {
 
 import ContentType from "./content"
 import AuthorType from "./author"
+import TrackType from "./tracks"
 
 const MetaType = new GraphQLObjectType({
   name: "Meta",
@@ -52,6 +53,10 @@ const PersonLikeType = new GraphQLObjectType({
       type: AuthorType,
       resolve: like => like.author
     },
+    tracks: {
+      type: new GraphQLList(TrackType),
+      resolve: like => like.tracks
+    }
   })
 })
 
