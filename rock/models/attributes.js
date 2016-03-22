@@ -30,6 +30,14 @@ function RockTypeToGraphType(type, value){
 
     },
     ["Rock.Field.Types.BooleanFieldType"]: (value) => {
+      if (value === "False") {
+        return false
+      }
+
+      if (value === "True") {
+        return true
+      }
+
       let num = Number(value)
       if (typeof num === "number") {
         if (num === 1) {
@@ -111,7 +119,7 @@ const get = (id, key, ttl, cache) => {
               })
           }
 
-          if (!value && cachedDefaults[key]) {
+          if (value != false && !value && cachedDefaults[key]) {
             return cachedDefaults[key]
           }
 
