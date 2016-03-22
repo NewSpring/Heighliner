@@ -18,6 +18,7 @@ const MetaType = new GraphQLObjectType({
     urlTitle: { type: GraphQLString },
     siteId: { type: GraphQLInt },
     date: { type: GraphQLString },
+    actualDate: { type: GraphQLString },
     channelId: { type: GraphQLInt }
   }
 })
