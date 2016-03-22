@@ -55,7 +55,9 @@ function generateAttribute(type, key, defaultValue){
     },
     resolve: ({ Id }, { ttl, cache }) => {
       return Attributes.get(Id, key, ttl, cache)
-        .then(value => (value ? value : defaultValue))
+        .then(value => {
+          return value != null ? value : defaultValue
+        })
     },
   }
 
