@@ -74,7 +74,8 @@ export default function(doc){
     // blurredImage: blurredImage,
     meta: {
       date: date,
-      channelId: doc.channel_id
+      channelId: doc.channel_id,
+      urlTitle: doc.url_title
     },
     tracks: tracks,
     downloads: downloads,
