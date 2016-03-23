@@ -8,6 +8,7 @@ import {
 } from "graphql"
 
 import ImageType from "./image"
+import ColorType from "./color"
 
 const ContentType = new GraphQLObjectType({
   name: "Content",
@@ -36,9 +37,9 @@ const ContentType = new GraphQLObjectType({
       type: new GraphQLList(GraphQLString),
       resolve: content => content.tags
     },
-    collectionBackgroundColor: {
-      type: GraphQLString,
-      resolve: content => content.collectionBackgroundColor
+    colors: {
+      type: new GraphQLList(ColorType),
+      resolve: content => content.colors
     },
     speakers: {
       type: GraphQLString,
