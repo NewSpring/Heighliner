@@ -9,7 +9,7 @@ SELECT
   d.field_id_547 as hashtag,
   d.field_id_15 as ooyala_id,
   d.field_id_860 as positions,
-  d.field_id_486 as collection_background_color,
+  d.field_id_486 as primary_accent_color,
   d.field_id_666 as tags,
   d.field_id_667 as downloads,
   c.channel_name,

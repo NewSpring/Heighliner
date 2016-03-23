@@ -10,6 +10,7 @@ import {
 
 import ContentType from "./content"
 import AuthorType from "./author"
+import TrackType from "./tracks"
 
 const MetaType = new GraphQLObjectType({
   name: "Meta",
@@ -17,6 +18,7 @@ const MetaType = new GraphQLObjectType({
     urlTitle: { type: GraphQLString },
     siteId: { type: GraphQLInt },
     date: { type: GraphQLString },
+    actualDate: { type: GraphQLString },
     channelId: { type: GraphQLInt }
   }
 })
@@ -32,9 +34,17 @@ const PersonLikeType = new GraphQLObjectType({
       type: GraphQLInt,
       resolve: like => like.entryId
     },
+    collectionId: {
+      type: GraphQLInt,
+      resolve: like => like.collectionId
+    },
     status: {
       type: GraphQLString,
       resolve: like => like.status
+    },
+    channelName: {
+      type: GraphQLString,
+      resolve: like => like.channelName
     },
     meta: {
       type: MetaType,
@@ -48,6 +58,10 @@ const PersonLikeType = new GraphQLObjectType({
       type: AuthorType,
       resolve: like => like.author
     },
+    tracks: {
+      type: new GraphQLList(TrackType),
+      resolve: like => like.tracks
+    }
   })
 })
 

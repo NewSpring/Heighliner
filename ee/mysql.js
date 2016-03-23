@@ -82,6 +82,15 @@ const getQuery = (file, data) => {
     query += ` WHERE d.channel_id = ${data.channel_id}`
   }
 
+  if (data.collection_id) {
+    if (query.indexOf("WHERE") === -1) {
+      query += " WHERE"
+    } else {
+      query += " AND"
+    }
+    query += ` p.child_entry_id = ${data.collection_id}`
+  }
+
   if (data.sort) {
     if (!data.future) {
       if (query.indexOf("WHERE") === -1) {
@@ -205,7 +214,7 @@ const lookupById = (entry_id) => {
 
 }
 
-const lookupByChannel = (channel_name, limit, offset) => {
+const lookupByChannel = (channel_name, collection_id, limit, offset) => {
   let tableFromChannel = Path.join(__dirname, "./util/tableFromChannel.sql")
 
   return mysql(tableFromChannel, { channel_name: `'${channel_name}'` })
@@ -222,7 +231,7 @@ const lookupByChannel = (channel_name, limit, offset) => {
       let { channel_id } = data.rows[0]
 
       if (Fs.existsSync(tableDir)) {
-        return mysql(tableDir, { channel_id, limit, offset, sort: true })
+        return mysql(tableDir, { channel_id, collection_id, limit, offset, sort: true })
           .then((data) => {
             let documents = []
             const mappingDir = Path.join(tabelsDir, `${table}.js`),
