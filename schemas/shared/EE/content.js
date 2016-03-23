@@ -8,6 +8,7 @@ import {
 } from "graphql"
 
 import ImageType from "./image"
+import ColorType from "./color"
 
 const ContentType = new GraphQLObjectType({
   name: "Content",
@@ -15,6 +16,10 @@ const ContentType = new GraphQLObjectType({
     body: {
       type: GraphQLString,
       resolve: content => content.body
+    },
+    description: {
+      type: GraphQLString,
+      resolve: like => like.description
     },
     scripture: {
       type: GraphQLString,
@@ -31,6 +36,14 @@ const ContentType = new GraphQLObjectType({
     tags: {
       type: new GraphQLList(GraphQLString),
       resolve: content => content.tags
+    },
+    colors: {
+      type: new GraphQLList(ColorType),
+      resolve: content => content.colors
+    },
+    speakers: {
+      type: GraphQLString,
+      resolve: content => content.speakers
     }
   })
 })

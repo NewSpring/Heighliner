@@ -13,6 +13,7 @@ SELECT
   c.channel_name,
   t.entry_date,
   t.title,
+  t.url_title,
   t.status,
   t.year,
   t.month,
