@@ -4,7 +4,7 @@ import Helpers from "./../util/helpers"
 export default function(doc) {
   const date = Helpers.getDate(doc.day, doc.month, doc.year);
 
-  const images = [];
+  let images = [];
   switch(doc.channel_name) {
     // collection
     case "series_newspring":
@@ -47,6 +47,14 @@ export default function(doc) {
     });
   }
 
+  // set us up for multiple colors in the future
+  let colors = [];
+  if (doc.primary_accent_color !== "") {
+    colors.push(
+      { id: 1, value: doc.primary_accent_color, description: "primary" }
+    );
+  }
+
   const cleanedData = {
     entryId: doc.entry_id,
     siteId: doc.site_id,
@@ -59,7 +67,8 @@ export default function(doc) {
       channelId: doc.channel_id,
     },
     content: {
-      images: images
+      images: images,
+      colors: colors,
     },
   };
 
