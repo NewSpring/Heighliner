@@ -45,6 +45,8 @@ export default function(doc) {
         collectionId = row.child_entry_id;
       }
     });
+    const seriesImages = Helpers.getFiles(collectionId, "1", "da.col_id_269");
+    images = images.concat(seriesImages);
   }
 
   // set us up for multiple colors in the future
