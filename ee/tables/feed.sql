@@ -1,14 +1,33 @@
 SELECT
+  -- all items should have these fields
   d.entry_id,
   d.site_id,
   d.channel_id,
   c.channel_name,
   t.title,
   t.entry_date,
+  t.year,
+  t.month,
+  t.day,
   t.status,
+
+  -- each data type has it's own positions field
+  -- these are needed for getting associated images
+  d.field_id_860 as collection_positions,
+  d.field_id_683 as collection_entry_positions,
+  d.field_id_664 as editorial_positions,
+
+  -- series items are displayed with a color gradient
   d.field_id_486 as primary_accent_color,
+
+  -- sermons need their parent series for images and urls
   p.child_entry_id as series_id,
-  d.field_id_249 as album_image
+
+  -- albums have their own special image field
+  d.field_id_249 as album_image,
+
+  -- editorials have inline images we display
+  d.field_id_18 as markup
 FROM
   exp_channel_data as d
 LEFT JOIN
