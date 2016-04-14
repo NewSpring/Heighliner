@@ -36,9 +36,3 @@ LEFT JOIN
 LEFT JOIN
   exp_playa_relationships as p
     ON d.entry_id = p.parent_entry_id
-WHERE
-  -- series, sermons, stories, devotionals, articles, music
-  d.channel_id IN (4,3,5,27,30,47)
-ORDER BY
-  t.entry_date DESC
-LIMIT 50

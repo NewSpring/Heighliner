@@ -48,5 +48,20 @@ const ContentType = new GraphQLObjectType({
   })
 })
 
+const FeedContentType = new GraphQLObjectType({
+  name: "FeedContent",
+  fields: () => ({
+    images: {
+      type: new GraphQLList(ImageType),
+      resolve: content => content.images
+    },
+    colors: {
+      type: new GraphQLList(ColorType),
+      resolve: content => content.colors
+    },
+  })
+});
 
-export default ContentType
+
+export default ContentType;
+export { FeedContentType };

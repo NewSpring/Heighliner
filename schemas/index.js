@@ -21,6 +21,7 @@ import allGroups, { group } from "./groups"
 
 import likes from "./likes"
 import allContent, { content } from "./content"
+import feed from "./feed";
 import allLowReorderSets, { lowReorderSet } from "./lowReorderSets"
 import { navigation } from "./navigation"
 
@@ -46,6 +47,7 @@ let schema = new GraphQLSchema({
       likes,
 
       // ee
+      feed,
       allContent,
       content,
       allLowReorderSets,

@@ -91,6 +91,19 @@ const getQuery = (file, data) => {
     query += ` p.child_entry_id = ${data.collection_id}`
   }
 
+  if (data.excludeChannels) {
+    const channels = Helpers.getChannels(data.excludeChannels);
+
+    if (query.indexOf("WHERE") === -1) {
+      query += " WHERE"
+    } else {
+      query += " AND"
+    }
+
+    query += ` d.channel_id IN (${channels})`;
+
+  }
+
   if (data.sort) {
     if (!data.future) {
       if (query.indexOf("WHERE") === -1) {
@@ -251,6 +264,25 @@ const lookupByChannel = (channel_name, collection_id, limit, offset) => {
 
 }
 
+const getFeed = (excludeChannels, limit, offset, ttl, cache) => {
+  const tablesDir = Path.join(__dirname, "./tables");
+  const feedDir = Path.join(tablesDir, "feed.sql");
+
+  return mysql(feedDir, { excludeChannels, limit, offset, sort: true }, ttl, cache)
+    .then((data) => {
+      let documents = [];
+      const mappingDir = Path.join(tablesDir, "feed.js"),
+            modal = require(mappingDir);
+
+      for (let row of data.rows) {
+        documents.push(modal(row));
+      }
+
+      return documents
+    });
+
+}
+
 const lookupNav = (navTitle, ttl, cache) => {
   let getNav = Path.join(__dirname, "./tables/navee.sql")
   return mysql(getNav, { nav_title: `'${navTitle}'`}, ttl, cache)
@@ -333,5 +365,12 @@ const getImagesFromAccount = (AccountId, ttl, cache) => {
 
 }
 
-export { lookupById, lookupByChannel, lookupSet, lookupNav, getImagesFromAccount }
+export {
+  lookupById,
+  lookupByChannel,
+  getFeed,
+  lookupSet,
+  lookupNav,
+  getImagesFromAccount,
+}
 export default mysql
