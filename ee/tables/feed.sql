@@ -20,9 +20,6 @@ SELECT
   -- series items are displayed with a color gradient
   d.field_id_486 as primary_accent_color,
 
-  -- sermons need their parent series for images and urls
-  p.child_entry_id as series_id,
-
   -- albums have their own special image field
   d.field_id_249 as album_image,
 
