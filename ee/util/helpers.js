@@ -2,6 +2,7 @@
 
 import Path from "path"
 import Fs from "fs"
+import { reject } from "lodash"
 import mySQL from "../mysql"
 
 const Helpers = {
@@ -258,6 +259,31 @@ const Helpers = {
 
     return playaData.rows;
 
+  },
+
+  getChannels: (excludeChannels) => {
+    const channels = [
+      { channelId: 27, displayName: "Devotions" },
+      { channelId: 30, displayName: "Articles" },
+      { channelId: 4, displayName: "Series" },
+      { channelId: 5, displayName: "Stories" },
+      { channelId: 47, displayName: "Music" },
+      { channelId: 3, displayName: "Sermons" }
+    ];
+    // only include what user hasn't excluded
+    let includeChannels = reject(channels, (channel) => {
+      return excludeChannels.indexOf(channel.displayName) > -1
+    });
+    // if everything is excluded, too bad
+    if (includeChannels.length === 0) {
+      includeChannels = channels
+    }
+
+    includeChannels = includeChannels.map((channel) => {
+      return channel.channelId
+    });
+
+    return includeChannels.join(",");
   }
 
 };

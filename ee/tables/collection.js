@@ -27,9 +27,12 @@ export default function(doc){
   const images = Helpers.getFiles(doc.entry_id, doc.positions, "da.col_id_269");
 
   // set us up for multiple colors in the future
-  const colors = [
-    { id: 1, value: doc.primary_accent_color, description: "primary" }
-  ]
+  let colors = [];
+  if (doc.primary_accent_color !== "") {
+    colors.push(
+      { id: 1, value: doc.primary_accent_color, description: "primary" }
+    );
+  }
 
   let cleanedData = {
     entryId: doc.entry_id,
