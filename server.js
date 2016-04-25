@@ -20,6 +20,12 @@ app.get("/alive", (req, res) => {
 })
 
 
+
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true
+}
+app.use(cors(corsOptions))
 if (process.env.NODE_ENV === "production") {
   // force ssl
   // app.use(forceSSL)
@@ -27,10 +33,13 @@ if (process.env.NODE_ENV === "production") {
   // initial simple auth using Rock creds
   app.use((req, res, next) => {
     if (req.method === "OPTIONS") {
+      console.log("options");
       next();
     } else {
+      console.log("not options");
       let creds = auth(req)
 
+      console.log(creds);
       if (!creds || creds.name != "apollos" || creds.pass !=  process.env.ROCK_TOKEN) {
         res.statusCode = 401
         res.setHeader('WWW-Authenticate', 'Basic realm="example"')
@@ -51,12 +60,6 @@ app.use(bodyParser.urlencoded({
 }))
 
 app.use(bodyParser.json())
-
-const corsOptions = {
-  origin: "http://localhost:3000",
-  credentials: true
-}
-app.use(cors(corsOptions))
 
 
 app.use("/", graphqlHTTP(() => ({
