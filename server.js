@@ -24,19 +24,24 @@ if (process.env.NODE_ENV === "production") {
   // force ssl
   // app.use(forceSSL)
 
-  // initial simple auth using Rock creds
-  app.use((req, res, next) => {
-    let creds = auth(req)
+  if (req.method === "OPTIONS") {
+    next();
+  } else {
 
-    if (!creds || creds.name != "apollos" || creds.pass !=  process.env.ROCK_TOKEN) {
-      res.statusCode = 401
-      res.setHeader('WWW-Authenticate', 'Basic realm="example"')
-      res.end('Access denied')
-      return
-    }
+    // initial simple auth using Rock creds
+    app.use((req, res, next) => {
+      let creds = auth(req)
 
-    next()
-  })
+      if (!creds || creds.name != "apollos" || creds.pass !=  process.env.ROCK_TOKEN) {
+        res.statusCode = 401
+        res.setHeader('WWW-Authenticate', 'Basic realm="example"')
+        res.end('Access denied')
+        return
+      }
+
+      next()
+    })
+  }
 }
 
 
