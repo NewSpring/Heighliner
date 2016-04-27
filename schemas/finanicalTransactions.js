@@ -17,6 +17,8 @@ import { Transactions, api, parseEndpoint, getAliasIds } from "../rock"
 import AccountDetail from "./shared/rock/financial-account"
 import PaymentDetailsType from "./shared/rock/financial-paymentDetails"
 
+import Auth from "./auth";
+
 const TransactionDetails = new GraphQLObjectType({
   name: "TransactionDetails",
   description: "A NewSpring Transaction Detail Record",
@@ -71,15 +73,19 @@ const TransactionType = new GraphQLObjectType({
   })
 })
 
+// secured by using user token to lookup rock id
 const finanicalTransaction = {
   type: TransactionType,
   args: {
     id: { type: new GraphQLNonNull(GraphQLInt) },
-    mongoId: { type: GraphQLString },
     ttl: { type: GraphQLInt },
     cache: { type: GraphQLBoolean, defaultValue: true },
   },
-  resolve: (_, { id, mongoId, ttl, cache }) => {
+  resolve: (_, { id, ttl, cache }, context) => {
+
+    if (context.user === null || !context.user.services.rock.PrimaryAliasId) {
+      throw new Error("No person found")
+    }
 
     let allAccountsQuery = api.parseEndpoint(`
        FinancialAccounts?
@@ -91,21 +97,15 @@ const finanicalTransaction = {
     `)
 
     let allAccounts = api.get(allAccountsQuery, {}, ttl, cache)
-    let transactions = load(
-        JSON.stringify({"user-_id": mongoId }),
-        () => (Users.findOne({"_id": mongoId }, "services.rock.PrimaryAliasId"))
-      , ttl, cache)
-        .then((user) => {
 
-          let personId = user.services.rock.PrimaryAliasId ? user.services.rock.PrimaryAliasId : user.services.rock.PersonId
-          if (user) {
-            return getAliasIds(personId, ttl, cache)
-              .then((ids) => {
-                return Transactions.getOne(id, ids, ttl, cache)
-              })
-          }
-          return []
-        })
+    let personId = context.user.services.rock.PrimaryAliasId ?
+      context.user.services.rock.PrimaryAliasId :
+      context.user.services.rock.PersonId;
+
+    let transactions = getAliasIds(personId, ttl, cache)
+      .then((ids) => {
+        return Transactions.getOne(id, ids, ttl, cache)
+      })
 
     return Promise.all([transactions, allAccounts])
       .then(([transactions, accounts]) => {
@@ -150,13 +150,11 @@ export {
   finanicalTransaction
 }
 
+// secured by using user token to lookup rock id
 export default {
   type: new GraphQLList(TransactionType),
   args: {
     primaryAliasId: { type: GraphQLInt },
-    mongoId: {
-      type: GraphQLString
-    },
     limit: {
       type: GraphQLInt,
       defaultValue: 20
@@ -173,10 +171,10 @@ export default {
       defaultValue: true
     },
   },
-  resolve: (_, { primaryAliasId, mongoId,  limit, skip, ttl, cache }) => {
+  resolve: (_, { limit, skip, ttl, cache }, context) => {
 
-    if (!mongoId && !primaryAliasId) {
-      throw new Error("An id is required for person lookup")
+    if (context.user === null || !context.user.services.rock.PrimaryAliasId) {
+      throw new Error("No person found")
     }
 
     let allAccountsQuery = api.parseEndpoint(`
@@ -188,31 +186,13 @@ export default {
           (Id ne null and ParentAccountId eq null)
     `)
 
-    let allTransactions;
-
-    if (!primaryAliasId) {
-      allTransactions = load(
-        JSON.stringify({"user-_id": mongoId }),
-        () => (Users.findOne({"_id": mongoId }, "services.rock.PrimaryAliasId"))
-      , ttl, cache)
-        .then((user) => {
-          if (user) {
-            return getAliasIds(user.services.rock.PrimaryAliasId, ttl, cache)
-              .then((ids) => {
-                return Transactions.get(ids, limit, skip, ttl, cache)
-              })
-          }
-          return []
-        })
-    } else {
-      allTransactions = getAliasIds(primaryAliasId, ttl, cache)
-        .then((ids) => {
-          return Transactions.get(ids, limit, skip, ttl, cache)
-        })
-    }
-
+    let allTransactions = getAliasIds(context.user.services.rock.PrimaryAliasId, ttl, cache)
+      .then((ids) => {
+        return Transactions.get(ids, limit, skip, ttl, cache)
+      })
 
     let allAccounts = api.get(allAccountsQuery, {}, ttl, cache)
+
     return Promise.all([allTransactions, allAccounts])
       .then(([transactions, accounts]) => {
 
