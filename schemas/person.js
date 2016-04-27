@@ -35,31 +35,23 @@ export default {
       defaultValue: true
     },
   },
-  resolve: (_, { mongoId, id, ttl, cache }) => {
-
-    if (!mongoId && !id) {
-      throw new Error("An id is required for person lookup")
-    }
+  resolve: (_, { id, ttl, cache }, context) => {
 
     if (id) {
       return People.get(id, ttl, cache)
         .then((people) => (people[0]))
+    } else {
+      console.log(context);
+      if (context.user === null || !context.user.services.rock.PrimaryAliasId) {
+        throw new Error("No person found")
+      }
 
-    } else if (mongoId) {
+      if (context.user && context.user.services.rock) {
+        return People.get(context.user.services.rock.PersonId, ttl, cache)
+          .then((people) => (people[0]));
+      }
 
-      return load(
-        JSON.stringify({"user-_id": mongoId }),
-        () => (Users.findOne({"_id": mongoId }, "services.rock.PersonId"))
-      , ttl, cache)
-        .then((user) => {
-
-          if (user && user.services.rock) {
-            return People.get(user.services.rock.PersonId, ttl, cache)
-          }
-
-          return [{}]
-        })
-        .then((people) => (people[0]))
+      return [{}]
     }
 
 

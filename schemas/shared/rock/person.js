@@ -22,6 +22,8 @@ import PersonLikeType from "./../EE/like"
 import { LocationType } from "./location"
 import { CampusType } from "./campus"
 
+import Auth from "../../auth";
+
 const PhoneNumberType = new GraphQLObjectType({
   name: "PhoneNumber",
   description: "A phone number from Rock",
@@ -71,7 +73,9 @@ const PersonType = new GraphQLObjectType({
         ttl: { type: GraphQLInt },
         cache: { type: GraphQLBoolean, defaultValue: true },
       },
-      resolve: (person, { ttl, cache }) => {
+      resolve: (person, { ttl, cache }, context) => {
+
+        Auth.Person.enforceReadPerm(context, person);
 
         if (!person.Id) {
           return [{}]
@@ -128,27 +132,45 @@ const PersonType = new GraphQLObjectType({
     },
     age: {
       type: GraphQLString,
-      resolve: person => person.Age
+      resolve: (person, {}, context) => {
+        Auth.Person.enforceReadPerm(context, person);
+        return person.Age;
+      }
     },
     birthdate: {
       type: GraphQLString,
-      resolve: person => person.BirthDate
+      resolve: (person, {}, context) => {
+        Auth.Person.enforceReadPerm(context, person);
+        return person.BirthDate;
+      }
     },
     birthDay: {
       type: GraphQLString,
-      resolve: person => person.BirthDay
+      resolve: (person, {}, context) => {
+        Auth.Person.enforceReadPerm(context, person);
+        return person.BirthDay;
+      }
     },
     birthMonth: {
       type: GraphQLString,
-      resolve: person => person.BirthMonth
+      resolve: (person, {}, context) => {
+        Auth.Person.enforceReadPerm(context, person);
+        return person.BirthMonth;
+      }
     },
     birthYear: {
       type: GraphQLString,
-      resolve: person => person.BirthYear
+      resolve: (person, {}, context) => {
+        Auth.Person.enforceReadPerm(context, person);
+        return person.BirthYear;
+      }
     },
     email: {
       type: GraphQLString,
-      resolve: person => person.Email
+      resolve: (person, {}, context) => {
+        Auth.Person.enforceReadPerm(context, person);
+        return person.Email;
+      }
     },
     campus: {
       type: CampusType,
@@ -156,9 +178,12 @@ const PersonType = new GraphQLObjectType({
         ttl: { type: GraphQLInt },
         cache: { type: GraphQLBoolean, defaultValue: true },
       },
-      resolve({ Id }, { ttl, cache }) {
+      resolve(person, { ttl, cache }, context) {
+
+        Auth.Person.enforceReadPerm(context, person);
+
         return api.get(parseEndpoint(`
-          Groups/GetFamilies/${Id}?$expand=Campus
+          Groups/GetFamilies/${person.Id}?$expand=Campus
         `), ttl, cache).then((campus) => {
           if (campus.length && campus[0].Campus) {
             return campus[0].Campus
@@ -174,9 +199,12 @@ const PersonType = new GraphQLObjectType({
         ttl: { type: GraphQLInt },
         cache: { type: GraphQLBoolean, defaultValue: true },
       },
-      resolve({ Id }, { ttl, cache }) {
+      resolve(person, { ttl, cache }, context) {
+
+        Auth.Person.enforceReadPerm(context, person);
+
         return api.get(parseEndpoint(`
-          Groups/GetFamilies/${Id}?
+          Groups/GetFamilies/${person.Id}?
             $expand=
               GroupLocations,
               GroupLocations/Location,
