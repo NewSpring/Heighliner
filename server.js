@@ -50,8 +50,12 @@ app.use("/", graphqlHTTP(async (request) => {
     hashedToken.update(request.headers.authorization);
     hashedToken = hashedToken.digest('base64');
 
+    // support hashed token or actual token
     user = await Users.findOne({
-      "services.resume.loginTokens.hashedToken": hashedToken,
+      $or: [
+        { "services.resume.loginTokens.hashedToken": hashedToken },
+        { "services.resume.loginTokens.hashedToken": request.headers.authorization },
+      ],
     }, "_id, services.rock.PrimaryAliasId");
   }
 
