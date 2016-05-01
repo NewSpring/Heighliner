@@ -28,6 +28,7 @@ const get = (ids, limit, skip, ttl, cache) => {
         Id,
         CreatedDateTime,
         Summary,
+        Status,
         AuthorizedPersonAliasId,
         TransactionDetails/Amount,
         TransactionDetails/AccountId,
@@ -60,7 +61,7 @@ const getOne = (id, ids, ttl, cache) => {
   }
 
   AliasQuery += ")"
-  
+
   let query =  api.parseEndpoint(`
     FinancialTransactions?
       $filter=
@@ -75,6 +76,7 @@ const getOne = (id, ids, ttl, cache) => {
         Id,
         CreatedDateTime,
         Summary,
+        Status,
         AuthorizedPersonAliasId,
         TransactionDetails/Amount,
         TransactionDetails/AccountId,
