@@ -50,7 +50,11 @@ const TransactionType = new GraphQLObjectType({
     },
     summary: {
       type: GraphQLString,
-      resolve: transaction => (transaction.Summary)
+      resolve: transaction => (transaction.StatusMessage)
+    },
+    status: {
+      type: GraphQLString,
+      resolve: transaction => (transaction.Status)
     },
     date: {
       type: GraphQLString,
