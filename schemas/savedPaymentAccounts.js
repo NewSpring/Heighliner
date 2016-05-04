@@ -13,7 +13,13 @@ import {
 import { load } from "../util/cache"
 import { Users } from "../apollos"
 
-import { api, parseEndpoint, getAliasIds } from "../rock"
+import {
+  api,
+  parseEndpoint,
+  getAliasIds,
+  getAliasIdsFromPersonId,
+} from "../rock"
+
 import AccountDetail from "./shared/rock/financial-account"
 import PaymentDetailsType from "./shared/rock/financial-paymentDetails"
 
@@ -104,17 +110,16 @@ export default {
       return api.get(query, {}, ttl, cache)
     }
 
-
     let allPaymentDetails;
     if (!primaryAliasId) {
       allPaymentDetails = load(
         JSON.stringify({"user-_id": mongoId }),
-        () => (Users.findOne({"_id": mongoId }, "services.rock.PrimaryAliasId"))
+        () => (Users.findOne({"_id": mongoId }, "services.rock.PersonId"))
       , ttl, cache)
         .then((user) => {
 
           if (user) {
-            return getAliasIds(user.services.rock.PrimaryAliasId, ttl, cache)
+            return getAliasIdsFromPersonId(user.services.rock.PersonId, ttl, cache)
               .then((ids) => {
                 return get(ids)
               })

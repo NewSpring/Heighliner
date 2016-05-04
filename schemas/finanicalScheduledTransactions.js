@@ -13,7 +13,14 @@ import {
 import { load } from "../util/cache"
 import { Users } from "../apollos"
 
-import { ScheduledTransactions, api, parseEndpoint, getAliasIds } from "../rock"
+import {
+  ScheduledTransactions,
+  api,
+  parseEndpoint,
+  getAliasIds,
+  getAliasIdsFromPersonId,
+} from "../rock"
+
 import AccountDetail from "./shared/rock/financial-account"
 import PaymentDetailsType from "./shared/rock/financial-paymentDetails"
 
@@ -223,7 +230,6 @@ export default {
     },
   },
   resolve: (_, { primaryAliasId, mongoId, active, limit, skip, ttl, cache }) => {
-
     if (!mongoId && !primaryAliasId) {
       throw new Error("An id is required for person lookup")
     }
@@ -242,11 +248,11 @@ export default {
     if (!primaryAliasId) {
       allTransactions = load(
         JSON.stringify({"user-_id": mongoId }),
-        () => (Users.findOne({"_id": mongoId }, "services.rock.PrimaryAliasId"))
+        () => (Users.findOne({"_id": mongoId }, "services.rock.PersonId"))
       , ttl, cache)
         .then((user) => {
           if (user) {
-            return getAliasIds(user.services.rock.PrimaryAliasId, ttl, cache)
+            return getAliasIdsFromPersonId(user.services.rock.PersonId, ttl, cache)
               .then((ids) => {
                 return ScheduledTransactions.get(ids, active, limit, skip, ttl, cache)
               })
