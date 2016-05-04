@@ -37,10 +37,13 @@ if (process.env.NODE_ENV === "production") {
 
     next()
   })
+  
+  app.use(morgan("combined"))
+
 }
 
 
-app.use(morgan("combined"))
+
 
 app.use(bodyParser.urlencoded({
   extended: true
