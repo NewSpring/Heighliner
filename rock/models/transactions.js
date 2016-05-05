@@ -18,9 +18,11 @@ const get = (ids, limit, skip, ttl, cache) => {
   let query =  api.parseEndpoint(`
     FinancialTransactions?
       $filter=
-        ${AliasQuery}
+        ${AliasQuery} and
+        TransactionTypeValue/Value eq 'Contribution'
       &$expand=
         TransactionDetails,
+        TransactionTypeValue,
         FinancialPaymentDetail,
         FinancialPaymentDetail/CurrencyTypeValue,
         FinancialPaymentDetail/CreditCardTypeValue
