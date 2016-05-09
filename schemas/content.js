@@ -55,6 +55,10 @@ export default {
   },
   description: "All dynamic content channels",
   resolve: (_, { channel, collectionId, limit, skip, ttl, cache = true }) => {
+    // hotfix
+    if (channel === "albums") {
+      channel = "newspring_albums"
+    }
     return lookupByChannel(channel, collectionId, limit, skip, ttl, cache)
   }
 }
