@@ -24,8 +24,17 @@ app.get("/alive", (req, res) => {
 
 
 
+const whitelist = [
+  "http://localhost:3000",
+  "http://localhost:12392",
+  "https://alpha-app.newspring.io",
+  "https://beta-app.newspring.io",
+];
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: (origin, callback) => {
+    const originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+    callback(null, originIsWhitelisted);
+  },
   credentials: true
 }
 app.use(cors(corsOptions))
