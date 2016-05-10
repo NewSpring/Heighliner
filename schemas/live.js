@@ -1,4 +1,6 @@
 // schema.js
+import Path from "path"
+
 import {
   GraphQLObjectType,
   GraphQLSchema,
@@ -11,9 +13,8 @@ import {
 } from "graphql"
 
 import Promise from "bluebird"
-import { getLiveFeed } from "../ee/mysql"
+import MySQL from "../ee/mysql"
 import ContentType from "./shared/EE/content"
-
 
 const MediaType = new GraphQLObjectType({
   name: "MediaType",
@@ -26,13 +27,13 @@ const LiveFeedType = new GraphQLObjectType({
   name: "LiveFeed",
   description: "Data around what is currently live",
   fields: () => ({
-    live: { type: GraphQLBoolean },
-    title: { type: GraphQLString },
-    content: { type: ContentType },
-    media: { type: MediaType },
+    channelTitle: { type: GraphQLString },
+    dataMatrix: { type: GraphQLString },
+    status: { type: GraphQLString }
   }),
 })
 
+/*
 let dummyData = {
 
   "title": "Watch Live: Mother's Day",
@@ -50,7 +51,7 @@ let dummyData = {
   "media": {
     "streamUrl": "http: //ooyalahd2-f.akamaihd.net/i/newspring02_delivery@120045/master.m3u8"
   }
-}
+}*/
 
 export default {
   type: LiveFeedType,
@@ -62,16 +63,8 @@ export default {
     },
   },
   resolve: (_, { site }) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(dummyData)
-      }, 30)
-      /*
-
-        Do look up from the DB
-
-      */
-    })
+    const liveQuery = Path.join(__dirname, "../ee/util/live.sql")
+    return MySQL(liveQuery);
   }
 }
 
