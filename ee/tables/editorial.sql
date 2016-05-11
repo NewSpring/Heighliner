@@ -17,11 +17,7 @@ SELECT
   t.year,
   t.month,
   t.day,
-  t.entry_date,
-  t.author_id,
-  m.m_field_id_2,
-  m.m_field_id_3,
-  m.m_field_id_4
+  t.entry_date
 FROM
   exp_channel_data as d
 LEFT JOIN
@@ -30,6 +26,3 @@ LEFT JOIN
 LEFT JOIN
   exp_channel_titles AS t
     ON d.entry_id = t.entry_id
-LEFT JOIN
-  exp_member_data as m
-    ON t.author_id = m.member_id
