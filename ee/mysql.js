@@ -371,18 +371,66 @@ const getImagesFromAccount = (AccountId, ttl, cache) => {
 
 
 const getLiveFeed = (site, ttl, cache) => {
-  const liveQuery = Path.join(__dirname, "../ee/util/live.sql")
+  const scheduleQuery = Path.join(__dirname, "../ee/util/liveSchedule.sql");
+  const contentQuery = Path.join(__dirname, "../ee/util/liveContent.sql");
 
-  return mysql(liveQuery, { site_name: site }, ttl, cache)
-    .then((data) => {
+  return mysql(scheduleQuery, { site_name: site }, ttl, cache)
+    .then((schedules) => {
+      const currentDate = new Date();
+      const dayOfWeek = currentDate.getDay();
+      const time = currentDate.getHours() * 100 + currentDate.getMinutes();
 
-      if (!data.rows.length) {
-        return []
+      let data = {
+        title: null,
+        content: {
+          images: [],
+          body: null
+        },
+        live: false,
+        media: {
+          streamUrl: null
+        }
+      };
+
+      if (!schedules.rows.length) {
+        return [];
       }
-      let doc = data.rows[0]
-      console.log(doc)
-      return doc
-      // return Helpers.getFiles(doc.entry_id, doc.positions, "da.col_id_565");
+
+      for(let i in schedules.rows) {
+        let s = schedules.rows[i];
+
+        if(s.dayOfWeek == dayOfWeek && time >= s.startTime && time <= s.endTime) {
+          data.live = true;
+        }
+      }
+
+      return mysql(contentQuery, { site_name: site }, ttl, cache)
+        .then((content) => {
+
+          if (!content.rows.length) {
+            return [];
+          }
+
+          content = content.rows[0];
+          data.title = content.title;
+          data.content.body = content.body;
+          data.media.streamUrl = content.url;
+
+          data.content.images.push({
+            cloudfront: content.wideImage,
+            fileLabel: "2x1"
+          });
+          data.content.images.push({
+            cloudfront: content.squareImage,
+            fileLabel: "1x1"
+          });
+          data.content.images.push({
+            cloudfront: content.tallImage,
+            fileLabel: "1x2"
+          });
+
+          return data;
+        });
     })
 }
 
