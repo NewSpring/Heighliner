@@ -55,12 +55,7 @@ export default function(doc) {
       ooyalaId: doc.field_id_668,
       images: images
     },
-    author: {
-      authorId: doc.author_id,
-      firstName: doc.m_field_id_2 || false,
-      lastName: doc.m_field_id_3 || false,
-      fullName: doc.m_field_id_4 || false
-    },
+    authors: doc.field_id_657.split(","),
     series: {
       seriesId: series[1],
       slug: series[2],
