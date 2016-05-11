@@ -9,7 +9,6 @@ import {
 } from "graphql"
 
 import ContentType from "./content"
-import AuthorType from "./author"
 import TrackType from "./tracks"
 
 const MetaType = new GraphQLObjectType({
@@ -54,9 +53,9 @@ const PersonLikeType = new GraphQLObjectType({
       type: ContentType,
       resolve: like => like.content
     },
-    author: {
-      type: AuthorType,
-      resolve: like => like.author
+    authors: {
+      type: new GraphQLList(GraphQLString),
+      resolve: like => like.authors
     },
     tracks: {
       type: new GraphQLList(TrackType),
