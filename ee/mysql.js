@@ -373,7 +373,7 @@ const getImagesFromAccount = (AccountId, ttl, cache) => {
 const getLiveFeed = (site, ttl, cache) => {
   const liveQuery = Path.join(__dirname, "../ee/util/live.sql")
 
-  return mysql(liveQuery, { }, ttl, cache)
+  return mysql(liveQuery, { site_name: site }, ttl, cache)
     .then((data) => {
 
       if (!data.rows.length) {
