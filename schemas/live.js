@@ -27,9 +27,10 @@ const LiveFeedType = new GraphQLObjectType({
   name: "LiveFeed",
   description: "Data around what is currently live",
   fields: () => ({
-    channelTitle: { type: GraphQLString },
-    dataMatrix: { type: GraphQLString },
-    status: { type: GraphQLString }
+    serviceType: { type: GraphQLString },
+    startTime: { type: GraphQLInt },
+    endTime: { type: GraphQLInt },
+    dayOfWeek: { type: GraphQLInt }
   }),
 })
 
