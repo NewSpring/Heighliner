@@ -27,12 +27,12 @@ const LiveFeedType = new GraphQLObjectType({
   name: "LiveFeed",
   description: "Data around what is currently live",
   fields: () => ({
-    serviceType: { type: GraphQLString },
-    startTime: { type: GraphQLInt },
-    endTime: { type: GraphQLInt },
-    dayOfWeek: { type: GraphQLInt }
+    live: { type: GraphQLBoolean },
+    title: { type: GraphQLString },
+    content: { type: ContentType },
+    media: { type: MediaType },
   }),
-})
+});
 
 /*
 let dummyData = {

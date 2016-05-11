@@ -10,6 +10,7 @@ FROM
   JOIN exp_matrix_data m ON m.entry_id = d.entry_id AND m.site_id = s.site_id
 WHERE
   s.site_name = '${site_name}'
+  AND m.col_id_365 = s.site_name
   AND d.channel_id = 175
   AND d.entry_id = 128506
   AND t.entry_date <= UNIX_TIMESTAMP()
