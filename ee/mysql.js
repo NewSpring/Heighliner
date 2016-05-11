@@ -69,6 +69,10 @@ const getQuery = (file, data) => {
     data = {};
   }
 
+  if (!data) {
+    data = {}
+  }
+
   let query = Fs.readFileSync(
     file,
     { encoding: "utf8" }
@@ -365,6 +369,23 @@ const getImagesFromAccount = (AccountId, ttl, cache) => {
 
 }
 
+
+const getLiveFeed = (site, ttl, cache) => {
+  const liveQuery = Path.join(__dirname, "../ee/util/live.sql")
+
+  return mysql(liveQuery, { }, ttl, cache)
+    .then((data) => {
+
+      if (!data.rows.length) {
+        return []
+      }
+      let doc = data.rows[0]
+      console.log(doc)
+      return doc
+      // return Helpers.getFiles(doc.entry_id, doc.positions, "da.col_id_565");
+    })
+}
+
 export {
   lookupById,
   lookupByChannel,
@@ -372,5 +393,6 @@ export {
   lookupSet,
   lookupNav,
   getImagesFromAccount,
+  getLiveFeed,
 }
 export default mysql
