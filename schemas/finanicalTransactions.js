@@ -58,7 +58,7 @@ const TransactionType = new GraphQLObjectType({
     },
     date: {
       type: GraphQLString,
-      resolve: transaction => (transaction.TransactionDateTime)
+      resolve: transaction => (transaction.TransactionDateTime || transaction.CreatedDateTime)
     },
     details: {
       type: new GraphQLList(TransactionDetails),

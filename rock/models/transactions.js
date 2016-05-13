@@ -29,6 +29,7 @@ const get = (ids, limit, skip, ttl, cache) => {
       &$select=
         Id,
         CreatedDateTime,
+        TransactionDateTime,
         Summary,
         Status,
         AuthorizedPersonAliasId,
