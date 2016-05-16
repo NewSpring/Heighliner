@@ -65,7 +65,7 @@ app.use("/", graphqlHTTP(async (request) => {
         { "services.resume.loginTokens.hashedToken": hashedToken },
         { "services.resume.loginTokens.hashedToken": request.headers.authorization },
       ],
-    }, "_id, services.rock.PrimaryAliasId");
+    }, "_id, services.rock.PrimaryAliasId, services.rock.PersonId");
   }
 
   return {
