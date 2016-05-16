@@ -388,7 +388,6 @@ const getLiveFeed = (site, ttl, cache) => {
         },
         live: false,
         media: {
-          streamUrl: null,
           embedCode: null
         }
       };
