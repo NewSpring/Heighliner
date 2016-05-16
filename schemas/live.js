@@ -19,7 +19,7 @@ import ContentType from "./shared/EE/content"
 const MediaType = new GraphQLObjectType({
   name: "MediaType",
   fields: () => ({
-    streamUrl: { type: GraphQLString }
+    embedCode: { type: GraphQLString }
   }),
 });
 
