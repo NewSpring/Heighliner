@@ -41,12 +41,12 @@ export default {
       return People.get(id, ttl, cache)
         .then((people) => (people[0]))
     } else {
-      if (context.user === null || !context.user.services.rock.PrimaryAliasId) {
+      if (context.user === null || !context.user.services.rock.PersonId) {
         throw new Error("No person found")
       }
 
       if (context.user && context.user.services.rock) {
-        return People.get(context.user.services.rock.PrimaryAliasId, ttl, cache)
+        return People.get(context.user.services.rock.PersonId, ttl, cache)
           .then((people) => (people[0]));
       }
 
