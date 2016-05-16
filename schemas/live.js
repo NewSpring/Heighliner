@@ -1,4 +1,6 @@
 // schema.js
+import Path from "path"
+
 import {
   GraphQLObjectType,
   GraphQLSchema,
@@ -13,7 +15,6 @@ import {
 import Promise from "bluebird"
 import { getLiveFeed } from "../ee/mysql"
 import ContentType from "./shared/EE/content"
-
 
 const MediaType = new GraphQLObjectType({
   name: "MediaType",
@@ -31,8 +32,9 @@ const LiveFeedType = new GraphQLObjectType({
     content: { type: ContentType },
     media: { type: MediaType },
   }),
-})
+});
 
+/*
 let dummyData = {
 
   "title": "Watch Live: Mother's Day",
@@ -50,7 +52,7 @@ let dummyData = {
   "media": {
     "streamUrl": "http: //ooyalahd2-f.akamaihd.net/i/newspring02_delivery@120045/master.m3u8"
   }
-}
+}*/
 
 export default {
   type: LiveFeedType,
@@ -62,72 +64,8 @@ export default {
     },
   },
   resolve: (_, { site }) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(dummyData)
-      }, 30)
-      /*
 
-        Do look up from the DB
+    return getLiveFeed(site)
 
-      */
-    })
   }
 }
-
-
-// import { load } from "../util/cache"
-//
-// import { Likes, Users } from "../apollos"
-// import { People, api, parseEndpoint } from "../rock"
-//
-// import { PersonType } from "./shared/rock/person"
-//
-// export default {
-//   type: PersonType,
-//   // description: "A person record in Rock",
-//   args: {
-//     id: {
-//       type: GraphQLInt
-//     },
-//     mongoId: {
-//       type: GraphQLString
-//     },
-//     ttl: {
-//       type: GraphQLInt
-//     },
-//     cache: {
-//       type: GraphQLBoolean,
-//       defaultValue: true
-//     },
-//   },
-//   resolve: (_, { mongoId, id, ttl, cache }) => {
-//
-//     if (!mongoId && !id) {
-//       throw new Error("An id is required for person lookup")
-//     }
-//
-//     if (id) {
-//       return People.get(id, ttl, cache)
-//         .then((people) => (people[0]))
-//
-//     } else if (mongoId) {
-//
-//       return load(
-//         JSON.stringify({"user-_id": mongoId }),
-//         () => (Users.findOne({"_id": mongoId }, "services.rock.PersonId"))
-//       , ttl, cache)
-//         .then((user) => {
-//
-//           if (user && user.services.rock) {
-//             return People.get(user.services.rock.PersonId, ttl, cache)
-//           }
-//
-//           return [{}]
-//         })
-//         .then((people) => (people[0]))
-//     }
-//
-//
-//   }
-// }
