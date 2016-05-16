@@ -388,7 +388,8 @@ const getLiveFeed = (site, ttl, cache) => {
         },
         live: false,
         media: {
-          streamUrl: null
+          streamUrl: null,
+          embedCode: null
         }
       };
 
@@ -414,7 +415,7 @@ const getLiveFeed = (site, ttl, cache) => {
           content = content.rows[0];
           data.title = content.title;
           data.content.body = content.body;
-          data.media.streamUrl = content.url;
+          data.media.embedCode = content.embedCode;
 
           data.content.images.push({
             cloudfront: content.wideImage,
