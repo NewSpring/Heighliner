@@ -10,6 +10,8 @@ SELECT
   d.field_id_687 as album_links,
   d.field_id_646 as album_downloads,
   d.field_id_1196 as album_study,
+  d.field_id_1546 as album_color,
+  d.field_id_1547 as album_is_light,
   c.channel_name,
   t.entry_date,
   t.title,

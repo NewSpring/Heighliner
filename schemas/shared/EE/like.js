@@ -19,9 +19,11 @@ const MetaType = new GraphQLObjectType({
     siteId: { type: GraphQLInt },
     date: { type: GraphQLString },
     actualDate: { type: GraphQLString },
-    channelId: { type: GraphQLInt }
+    channelId: { type: GraphQLInt },
+    color: { type: GraphQLString },
+    isLight: { type: GraphQLString }
   }
-})
+});
 
 const PersonLikeType = new GraphQLObjectType({
   name: "Likes",
