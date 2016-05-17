@@ -75,7 +75,9 @@ export default function(doc){
     meta: {
       date: date,
       channelId: doc.channel_id,
-      urlTitle: doc.url_title
+      urlTitle: doc.url_title,
+      color: doc.album_color,
+      isLight: doc.album_is_light
     },
     tracks: tracks,
     downloads: downloads,
