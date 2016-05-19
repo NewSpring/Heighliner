@@ -20,4 +20,4 @@ if (process.env.NEW_RELIC_KEY){
 }
 
 require("babel/register");
-require("./server.js");
+require("./src/server.js");
