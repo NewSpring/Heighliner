@@ -53,5 +53,3 @@ heighliner-beta:
 
     MYSQL_HOST: mysql
     REDIS_HOST: redis
-
-    TRACER_APP_KEY: $TRACER_APP_KEY
