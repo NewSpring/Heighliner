@@ -94,14 +94,14 @@ app.use("/", apolloServer(() => {
     context: {
       user,
     }
-  }
+  };
 
   if (process.env.TRACER_APP_KEY) {
     const tracer = new Tracer({ TRACER_APP_KEY: process.env.TRACER_APP_KEY });
     graphql = {...graphql, ...{ tracer }};
   }
 
-  return graphql
+  return graphql;
 }));
 
 
