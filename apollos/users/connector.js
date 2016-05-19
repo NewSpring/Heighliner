@@ -18,7 +18,7 @@ const schema = {
 
 const model = new MongoConnector("user", schema);
 
-export class Users {
+class Users {
   constructor({ hashedToken }) {
     this.connector = model;
 
@@ -48,4 +48,8 @@ export class Users {
       ],
     });
   }
+}
+
+export default {
+  Users,
 }
