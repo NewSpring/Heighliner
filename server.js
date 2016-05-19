@@ -1,7 +1,9 @@
 
 import express from "express"
-import graphqlHTTP from "express-graphql"
-import { graphql } from "graphql"
+// import graphqlHTTP from "express-graphql"
+import { apolloServer, Tracer } from 'graphql-tools';
+
+// import { graphql } from "graphql"
 import Schema from "./schemas"
 import bodyParser from "body-parser"
 import forceSSL from "express-force-ssl"
@@ -51,7 +53,8 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json())
 
 
-app.use("/", graphqlHTTP(async (request) => {
+
+app.use("/", apolloServer(async (request) => {
   let user = null;
 
   if (request.headers.authorization) {
@@ -68,13 +71,20 @@ app.use("/", graphqlHTTP(async (request) => {
     }, "_id, services.rock.PrimaryAliasId, services.rock.PersonId");
   }
 
-  return {
+  let graphql = {
     schema: Schema,
     graphiql: process.env.NODE_ENV != "production",
     context: {
       user,
     }
   };
+
+  if (process.env.TRACER_APP_KEY) {
+    const tracer = new Tracer({ TRACER_APP_KEY: process.env.TRACER_APP_KEY });
+    graphql = {...graphql, ...{ tracer }};
+  }
+
+  return graphql;
 }));
 
 
