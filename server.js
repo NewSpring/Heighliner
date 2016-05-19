@@ -4,11 +4,12 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import cors from "cors";
 
-import schema from "./schema";
-import resolvers from "./resolvers";
-import connectors from "./connectors";
+import {
+  schema,
+  resolvers,
+  connectors,
+} from "./schema";
 
-import { Users } from "./apollos/users/connector"
 const app = express();
 
 /*
