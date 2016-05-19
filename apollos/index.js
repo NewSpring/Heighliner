@@ -1,10 +1,9 @@
 
 import {
   schema as userSchema,
-  resolvers as User,
-} from "./users/schema";
-
-import { Users } from "./users/connector";
+  resolver as User,
+  connector as Users,
+} from "./users"
 
 export const schema = [
   ...userSchema,
@@ -20,5 +19,5 @@ export const resolveFunctions = {
 };
 
 export const connectors = {
-  Users,
+  ...Users,
 }

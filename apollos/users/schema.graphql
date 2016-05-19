@@ -1,0 +1,31 @@
+type Hashes {
+  when: String!
+  hashedToken: String!
+}
+
+type UserTokens {
+  tokens: [Hashes]
+}
+
+type UserRock {
+  id: Int
+  alias: Int
+}
+
+type UserService {
+  rock: UserRock
+  resume: UserTokens
+}
+
+type UserEmail {
+  address: String!
+  verified: Boolean
+}
+
+type User {
+  id: String!
+  # We should investigate how best to represent dates
+  createdAt: String!
+  services: UserService
+  emails: [UserEmail]
+}
