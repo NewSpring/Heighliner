@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "sh ./scripts/run",
-    "deploy": "fly production"
+    "start": "supervisor index.js"
   },
   "author": "",
   "license": "ISC",
@@ -24,8 +23,9 @@
     "express-redis-cache": "^0.2.0",
     "graphql": "^0.5.0",
     "graphql-schema": "^0.5.1",
+    "graphql-tools": "^0.4.0",
     "isomorphic-fetch": "^2.2.1",
-    "lodash": "^4.5.1",
+    "lodash": "^4.12.0",
     "mongoose": "^4.3.6",
     "morgan": "^1.7.0",
     "mysql": "^2.10.2",
@@ -34,5 +34,8 @@
     "php-unserialize": "0.0.1",
     "raygun": "^0.8.5",
     "redis": "^2.4.2"
+  },
+  "devDependencies": {
+    "supervisor": "^0.10.0"
   }
 }
