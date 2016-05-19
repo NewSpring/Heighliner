@@ -1,26 +1,25 @@
+import { apolloServer } from "graphql-tools";
+import express from "express";
+import bodyParser from "body-parser";
+import morgan from "morgan";
+import cors from "cors";
 
-import express from "express"
-import graphqlHTTP from "express-graphql"
-import { graphql } from "graphql"
-import Schema from "./schemas"
-import bodyParser from "body-parser"
-import forceSSL from "express-force-ssl"
-import morgan from "morgan"
-import cors from "cors"
-import crypto from "crypto"
-import { Users } from "./apollos"
+import schema from "./schema";
+import resolvers from "./resolvers";
+import connectors from "./connectors";
 
-// let PORT = process.env.DOCKER_HOST ? 80 : 8080
-let PORT = process.env.PORT || 80
-
+import { Users } from "./apollos/users/connector"
 const app = express();
 
+/*
+
+  Middleware
+
+*/
 
 app.get("/alive", (req, res) => {
   res.status(200).json({ alive: true });
 })
-
-
 
 const whitelist = [
   "http://localhost:3000",
@@ -28,6 +27,7 @@ const whitelist = [
   "https://alpha-app.newspring.io",
   "https://beta-app.newspring.io",
 ];
+
 const corsOptions = {
   origin: (origin, callback) => {
     const originIsWhitelisted = whitelist.indexOf(origin) !== -1;
@@ -35,14 +35,8 @@ const corsOptions = {
   },
   credentials: true
 }
+
 app.use(cors(corsOptions))
-if (process.env.NODE_ENV === "production") {
-  // force ssl
-  // app.use(forceSSL)
-}
-
-
-app.use(morgan("combined"))
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -51,33 +45,26 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json())
 
 
-app.use("/", graphqlHTTP(async (request) => {
-  let user = null;
+/*
 
-  if (request.headers.authorization) {
-    let hashedToken = crypto.createHash('sha256');
-    hashedToken.update(request.headers.authorization);
-    hashedToken = hashedToken.digest('base64');
+  Apollo Server
 
-    // support hashed token or actual token
-    user = await Users.findOne({
-      $or: [
-        { "services.resume.loginTokens.hashedToken": hashedToken },
-        { "services.resume.loginTokens.hashedToken": request.headers.authorization },
-      ],
-    }, "_id, services.rock.PrimaryAliasId, services.rock.PersonId");
-  }
-
+*/
+app.use("/", apolloServer((request) => {
   return {
-    schema: Schema,
     graphiql: process.env.NODE_ENV != "production",
+    pretty: true,
     context: {
-      user,
-    }
+      hashedToken: request.headers.authorization,
+    },
+    connectors,
+    resolvers, // required if schema is an array of type definitions
+    schema,
   };
 }));
 
 
+let PORT = process.env.PORT || 80;
 // Listen for incoming HTTP requests
 const listener = app.listen(PORT, () => {
   var host = listener.address().address;
