@@ -1,17 +1,28 @@
 
-import { schema as Apollos } from "./apollos";
+import { createSchema } from "./util/graphql";
 
-const Root = [`
-  type Query {
-    currentUser: User
-  }
+// Import the apollos application
+import Apollos, { queries as ApollosQueries } from "./apollos";
 
-  schema {
-    query: Query
-  }
-`];
 
-export default [
-  ...Root,
+// Merge all applications together
+let { schema, connectors, resolvers } = {
   ...Apollos,
-];
+};
+
+// join all application queries and generate base query
+schema = createSchema({
+  queries: [
+    ...ApollosQueries,
+  ],
+  // mutations: [
+  //
+  // ],
+  schema
+});
+
+export {
+  schema,
+  connectors,
+  resolvers,
+}

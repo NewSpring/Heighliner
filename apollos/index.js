@@ -9,7 +9,7 @@ export const schema = [
   ...userSchema,
 ];
 
-export const resolveFunctions = {
+export const resolvers = {
   Query: {
     currentUser(_, args, { connectors }){
       return connectors.Users.currentUser;
@@ -20,4 +20,14 @@ export const resolveFunctions = {
 
 export const connectors = {
   ...Users,
+}
+
+export const queries = [
+  "currentUser: User"
+]
+
+export default {
+  connectors,
+  resolvers,
+  schema,
 }

@@ -35,3 +35,34 @@ export function gql(file) {
 
   return gql;
 }
+
+
+export function createQueries(queries) {
+  return [`
+    type Query {
+      ${queries.join("/n")}
+    }
+  `];
+}
+
+
+export function createSchema({ queries, mutations, schema }) {
+
+  // build base level schema
+  const Root = [`
+    schema {
+      query: Query
+    }
+  `];
+
+  const Query = createQueries(queries);
+  // const Mutation = createMutations(mutations);
+
+  // generate the final schema
+  return [
+    ...Root,
+    ...Query,
+    ...schema
+  ];
+  
+}
