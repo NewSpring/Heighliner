@@ -31,17 +31,17 @@ deployment:
     branch: rancher-prod
     commands:
       - echo deploying to rancher
-      - .rancher/deploy.sh
+      - ../scripts/rancher/deploy.sh
   rancher-beta:
     branch: rancher-beta
     commands:
       - echo deploying to rancher
-      - .rancher/deploy-beta.sh
+      - ./scripts/.rancher/deploy-beta.sh
   production:
     branch: master
     commands:
       - echo deploying to ecs
-      - .ecs/deploy.sh
+      - ./scripts/.ecs/deploy.sh
   # beta:
   #   branch: beta
   #   commands:

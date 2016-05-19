@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-import { MongoConnector } from "../connector";
+import { MongoConnector } from "../../connectors/mongo";
 
 const schema = {
   _id: String,
