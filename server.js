@@ -71,9 +71,12 @@ app.use("/", apolloServer(async (request) => {
     }, "_id, services.rock.PrimaryAliasId, services.rock.PersonId");
   }
 
+  function formatError(e){ console.log(e.message); console.log(e.originalError.stack) }
+
   let graphql = {
     schema: Schema,
     graphiql: process.env.NODE_ENV != "production",
+    formatError: formatError,
     context: {
       user,
     }
