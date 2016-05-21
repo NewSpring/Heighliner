@@ -22,7 +22,6 @@
     "deasync": "^0.1.6",
     "express": "^4.13.3",
     "express-force-ssl": "^0.3.0",
-    "express-graphql": "^0.4.5",
     "express-redis-cache": "^0.2.0",
     "graphql": "^0.5.0",
     "graphql-schema": "^0.5.1",
