@@ -1,6 +1,7 @@
 
 import express from "express"
-import graphqlHTTP from "express-graphql"
+// import graphqlHTTP from "express-graphql"
+import { apolloServer, Tracer } from "graphql-tools"
 import { graphql } from "graphql"
 import Schema from "./schemas"
 import bodyParser from "body-parser"
@@ -58,10 +59,20 @@ const corsOptions = {
 app.use(cors(corsOptions))
 
 
-app.use("/", graphqlHTTP(() => ({
-  schema: Schema,
-  graphiql: process.env.NODE_ENV != "production"
-})));
+app.use("/", apolloServer(() => {
+
+  let graphql = {
+    schema: Schema,
+    graphiql: process.env.NODE_ENV != "production"
+  }
+
+  if (process.env.TRACER_APP_KEY) {
+    const tracer = new Tracer({ TRACER_APP_KEY: process.env.TRACER_APP_KEY });
+    graphql = {...graphql, ...{ tracer }};
+  }
+
+  return graphql
+}));
 
 
 // Listen for incoming HTTP requests
