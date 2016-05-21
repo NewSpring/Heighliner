@@ -91,6 +91,10 @@ make_task_def() {
         {
           "name": "SEARCH_KEY",
           "value": "'"$SEARCH_KEY"'"
+        },
+        {
+          "name": "TRACER_APP_KEY",
+          "value": "'"$PROD_TRACER_APP_KEY"'"
         }
       ]
     }
