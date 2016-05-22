@@ -20,12 +20,6 @@ dependencies:
     - cp -R ./scripts/ .
     - docker build --rm=true -t heighliner . | cat # workaround progress weirdness
 
-test:
-  override:
-    - ./run.sh
-    - sleep 5
-    - curl --retry 10 --retry-delay 5 http://localhost:8080/alive | grep true
-
 deployment:
   rancher-prod:
     branch: rancher-prod
