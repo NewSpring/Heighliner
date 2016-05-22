@@ -1,5 +1,6 @@
 heighliner:
   build: .
+  run: 'supervisor index.js'
   volumes:
     - .:/usr/src/app/
   ports:
