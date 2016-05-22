@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run testonly --",
-    "testonly": "mocha --compilers js:babel/register --reporter spec --full-trace",
+    "testonly": "mocha --compilers js:babel/register --reporter spec --full-trace --recursive",
     "start": "supervisor index.js"
   },
   "author": "",
@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "graphql-tester": "0.0.4",
     "mocha": "^2.4.5",
     "supervisor": "^0.10.0"
   }
