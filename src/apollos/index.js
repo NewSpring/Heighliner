@@ -3,7 +3,7 @@ import {
   schema as userSchema,
   mocks as userMocks,
   resolver as User,
-  connector as Users,
+  model as Users,
 } from "./users"
 
 export const schema = [
@@ -19,7 +19,7 @@ export const resolvers = {
   ...User,
 };
 
-export const connectors = {
+export const models = {
   ...Users,
 };
 
@@ -35,7 +35,7 @@ export let mocks = {
 }
 
 export default {
-  connectors,
+  models,
   resolvers,
   mocks,
   schema,

@@ -4,7 +4,7 @@ import {
   attachConnectorsToContext,
 } from "graphql-tools";
 
-import { connect as Mongo } from "./connectors/mongo";
+import { connect as Mongo, MongoConnector } from "./connectors/mongo";
 
 import { createSchema } from "./util/graphql";
 
@@ -30,7 +30,7 @@ const createApp = async () => {
 
 
   // Merge all applications together
-  let { schema, connectors, resolvers, mocks } = {
+  let { schema, models, resolvers, mocks } = {
     ...Apollos,
   };
 
@@ -45,30 +45,15 @@ const createApp = async () => {
     schema
   });
 
-  // // generate a full GraphQL Schema Type
-  // schema = makeExecutableSchema({
-  //   typeDefs: schema,
-  //   resolvers,
-  // });
-  //
-  // // attach the connectors
-  // attachConnectorsToContext(schema, connectors);
-  //
-  // // add mocks to the schema
-  // addMockFunctionsToSchema({
-  //   schema,
-  //   mocks,
-  //   preserveResolvers: true
-  // });
-
   return (request) => {
     return {
       graphiql: process.env.NODE_ENV != "production",
       pretty: true,
       context: {
         hashedToken: request.headers.authorization,
+        // ...connectors,
+        ...models,
       },
-      connectors,
       resolvers, // required if schema is an array of type definitions
       mocks,
       schema,

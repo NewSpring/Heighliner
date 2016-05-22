@@ -16,15 +16,15 @@ const schema = {
   profile: { lastLogin: Date },
 };
 
-const model = new MongoConnector("user", schema);
+const Model = new MongoConnector("user", schema);
 
 class Users {
   constructor({ hashedToken }) {
-    this.connector = model;
+    this.model = Model;
 
     // on query, get the current user
     // then you can get the logged in user by
-    // ctx.connectors.Users.currentUser
+    // ctx.models.Users.currentUser
     this.currentUser = null;
     if (hashedToken) {
       this.currentUser = this.getByHashedToken(hashedToken);
@@ -41,7 +41,7 @@ class Users {
       .update(token)
       .digest('base64');
 
-    return await this.connector.findOne({
+    return await this.model.findOne({
       $or: [
         { "services.resume.loginTokens.hashedToken": token },
         { "services.resume.loginTokens.hashedToken": rawToken },
