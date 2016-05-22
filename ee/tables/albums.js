@@ -59,7 +59,12 @@ export default function(doc){
   links = Helpers.getMatrixData(doc.entry_id, links);
 
 
-  let images = [].concat(image, blurredImage)
+  let images = [].concat(image, blurredImage);
+  let colors = [];
+
+  if(doc.album_color) {
+    colors.push({ value: doc.album_color });
+  }
 
   let cleanedData = {
     entryId: doc.entry_id,
@@ -68,16 +73,16 @@ export default function(doc){
     title: doc.title,
     status: doc.status,
     content: {
-      images: images
+      images: images,
+      isLight: doc.album_is_light,
+      colors: colors
     },
     // image: image,
     // blurredImage: blurredImage,
     meta: {
       date: date,
       channelId: doc.channel_id,
-      urlTitle: doc.url_title,
-      color: doc.album_color,
-      isLight: doc.album_is_light
+      urlTitle: doc.url_title
     },
     tracks: tracks,
     downloads: downloads,

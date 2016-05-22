@@ -8,6 +8,7 @@ import {
   GraphQLList,
 } from "graphql"
 
+import ColorType from "./color"
 import ContentType from "./content"
 import TrackType from "./tracks"
 
@@ -18,9 +19,7 @@ const MetaType = new GraphQLObjectType({
     siteId: { type: GraphQLInt },
     date: { type: GraphQLString },
     actualDate: { type: GraphQLString },
-    channelId: { type: GraphQLInt },
-    color: { type: GraphQLString },
-    isLight: { type: GraphQLString }
+    channelId: { type: GraphQLInt }
   }
 });
 
