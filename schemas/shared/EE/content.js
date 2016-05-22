@@ -44,6 +44,9 @@ const ContentType = new GraphQLObjectType({
     speakers: {
       type: GraphQLString,
       resolve: content => content.speakers
+    },
+    isLight: {
+      type: GraphQLString
     }
   })
 })
