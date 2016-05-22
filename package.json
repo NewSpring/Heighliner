@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run testonly --",
+    "testonly": "mocha --compilers js:babel/register --reporter spec --full-trace",
     "start": "supervisor index.js"
   },
   "author": "",
