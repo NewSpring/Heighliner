@@ -1,0 +1,51 @@
+
+type Color {
+  id: ID!
+  value: String
+  description: String
+}
+
+type Image {
+  fileName: String
+  fileType: String
+  fileLabel: String
+  s3: String
+  cloudfront: String
+}
+
+type Track {
+  title: String
+  duration: String
+  file: String
+}
+
+type Meta {
+ urlTitle: String
+ siteId: ID!
+ date: String
+ actualDate: String
+ channelId: ID!
+}
+
+type Content {
+  body: String
+  description: String
+  scripture: String
+  ooyalaId: String
+  images: [Image]
+  tags: [String]
+  colors: [Color]
+  speakers: String
+}
+
+type ContentEntry {
+  title: String
+  id: ID!
+  collectionId: ID!
+  status: String
+  channelName: String
+  meta: Meta
+  content: Content
+  authors: [String]
+  tracks: [Tracks]
+}

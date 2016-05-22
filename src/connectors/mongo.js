@@ -2,9 +2,21 @@
 import mongoose, { Schema } from "mongoose";
 import DataLoader from "dataloader";
 
-const db = mongoose.connect(
-  process.env.MONGO_URL || "mongodb://localhost/meteor"
-);
+let db;
+
+export async function connect(...args) {
+  return await new Promise((cb) => {
+
+    db = mongoose.connect(args, (err) => {
+      if (err) { cb(false); return; }
+
+      cb(true);
+      return;
+
+    });
+
+  });
+}
 
 mongoose.connection.on("error",
   console.error.bind(console, "MONGO connection error:")

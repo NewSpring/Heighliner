@@ -1,6 +1,7 @@
 
 import {
   schema as userSchema,
+  mocks as userMocks,
   resolver as User,
   connector as Users,
 } from "./users"
@@ -11,7 +12,7 @@ export const schema = [
 
 export const resolvers = {
   Query: {
-    currentUser(_, args, { connectors }){
+    currentUser(_, args, { connectors }) {
       return connectors.Users.currentUser;
     },
   },
@@ -20,14 +21,22 @@ export const resolvers = {
 
 export const connectors = {
   ...Users,
-}
+};
 
 export const queries = [
   "currentUser: User"
-]
+];
+
+export let mocks = {
+  Query: () => ({
+    currentUser() { return {} },
+  }),
+  ...userMocks,
+}
 
 export default {
   connectors,
   resolvers,
+  mocks,
   schema,
 }

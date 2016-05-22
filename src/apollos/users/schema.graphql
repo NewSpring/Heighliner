@@ -1,6 +1,6 @@
 type Hashes {
   when: String!
-  hashedToken: String!
+  hashedToken: ID!
 }
 
 type UserTokens {
@@ -23,7 +23,7 @@ type UserEmail {
 }
 
 type User {
-  id: String!
+  id: ID!
   # We should investigate how best to represent dates
   createdAt: String!
   services: UserService
