@@ -1,25 +1,15 @@
+import {
+  makeExecutableSchema,
+  addMockFunctionsToSchema,
+  attachConnectorsToContext,
+} from "graphql-tools";
+
 import { connect as Mongo } from "./connectors/mongo";
 
 import { createSchema } from "./util/graphql";
 
 // Import the apollos application
 import Apollos, { queries as ApollosQueries } from "./apollos";
-
-// Merge all applications together
-let { schema, connectors, resolvers, mocks } = {
-  ...Apollos,
-};
-
-// join all application queries and generate base query
-schema = createSchema({
-  queries: [
-    ...ApollosQueries,
-  ],
-  // mutations: [
-  //
-  // ],
-  schema
-});
 
 const createApp = async () => {
 
@@ -38,6 +28,38 @@ const createApp = async () => {
   const MONGO = await Mongo(process.env.MONGO_URL || "mongodb://localhost/meteor");
   if (MONGO) mocks = false;
 
+
+  // Merge all applications together
+  let { schema, connectors, resolvers, mocks } = {
+    ...Apollos,
+  };
+
+  // join all application queries and generate base query
+  schema = createSchema({
+    queries: [
+      ...ApollosQueries,
+    ],
+    // mutations: [
+    //
+    // ],
+    schema
+  });
+
+  // // generate a full GraphQL Schema Type
+  // schema = makeExecutableSchema({
+  //   typeDefs: schema,
+  //   resolvers,
+  // });
+  //
+  // // attach the connectors
+  // attachConnectorsToContext(schema, connectors);
+  //
+  // // add mocks to the schema
+  // addMockFunctionsToSchema({
+  //   schema,
+  //   mocks,
+  //   preserveResolvers: true
+  // });
 
   return (request) => {
     return {
