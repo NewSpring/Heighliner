@@ -3,7 +3,7 @@ import Fs from "fs";
 import Path from "path";
 import { merge } from "lodash";
 
-Object.defineProperty(global, '__stack', {
+Object.defineProperty(global, "__stack", {
   get: function() {
     var orig = Error.prepareStackTrace;
     Error.prepareStackTrace = function(_, stack) {
@@ -16,7 +16,7 @@ Object.defineProperty(global, '__stack', {
   }
 });
 
-Object.defineProperty(global, '__file', {
+Object.defineProperty(global, "__file", {
   get: function() {
     return __stack[3].getFileName();
   }
@@ -26,11 +26,11 @@ export function gql(file) {
   const baseFile = Path.dirname(__file);
   file = Path.resolve(baseFile, `${file}.graphql`);
 
-  let gql = []
+  let gql = [];
   if (Fs.existsSync(file)) {
     const data = Fs.readFileSync(file, { encoding: "utf8" });
     if (data) {
-      gql = [data]
+      gql = [data];
     }
   }
 

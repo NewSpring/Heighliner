@@ -4,7 +4,7 @@ import {
   mocks as userMocks,
   resolver as User,
   model as Users,
-} from "./users"
+} from "./users";
 
 export const schema = [
   ...userSchema,
@@ -29,14 +29,14 @@ export const queries = [
 
 export let mocks = {
   Query: () => ({
-    currentUser() { return {} },
+    currentUser() { return {}; },
   }),
   ...userMocks,
-}
+};
 
 export default {
   models,
   resolvers,
   mocks,
   schema,
-}
+};

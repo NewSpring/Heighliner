@@ -17,7 +17,7 @@ async function start() {
 
   app.get("/alive", (req, res) => {
     res.status(200).json({ alive: true });
-  })
+  });
 
   const whitelist = [
     "http://localhost:3000",
@@ -32,15 +32,15 @@ async function start() {
       callback(null, originIsWhitelisted);
     },
     credentials: true
-  }
+  };
 
-  app.use(cors(corsOptions))
+  app.use(cors(corsOptions));
 
   app.use(bodyParser.urlencoded({
     extended: true
-  }))
+  }));
 
-  app.use(bodyParser.json())
+  app.use(bodyParser.json());
 
 
   /*

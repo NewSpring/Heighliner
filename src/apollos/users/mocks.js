@@ -1,6 +1,6 @@
 
-import { MockList } from 'graphql-tools';
-import casual from 'casual';
+import { MockList } from "graphql-tools";
+import casual from "casual";
 
 export default {
 
@@ -20,4 +20,4 @@ export default {
     }))
   }),
 
-}
+};

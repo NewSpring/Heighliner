@@ -6,7 +6,11 @@
   "scripts": {
     "test": "npm run testonly --",
     "testonly": "mocha --compilers js:babel/register --reporter spec --full-trace --recursive",
-    "start": "supervisor index.js"
+    "lint": "eslint src test",
+    "fix": "eslint --fix src test",
+    "posttest": "npm run lint && npm run coverage",
+    "start": "supervisor index.js",
+    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --compilers js:babel/register --full-trace --recursive"
   },
   "author": "",
   "license": "ISC",
@@ -36,9 +40,14 @@
     "tedious": "^1.14.0"
   },
   "devDependencies": {
+    "babel-eslint": "^6.0.4",
     "chai": "^3.5.0",
+    "eslint": "^2.10.2",
     "graphql-tester": "0.0.4",
+    "istanbul": "^0.4.3",
     "mocha": "^2.4.5",
-    "supervisor": "^0.10.0"
+    "supervisor": "^0.10.0",
+    "tslint": "^3.10.2",
+    "typescript": "^1.8.10"
   }
 }
