@@ -44,6 +44,7 @@ describe("Using the application", () => {
     });
 
     it('it should return some data', () => {
+      console.log(response)
       expect(response.data.currentUser).to.exist;
     });
 
