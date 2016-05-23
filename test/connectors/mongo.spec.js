@@ -63,7 +63,7 @@ describe("MongoDB", () => {
         testModel.model.findOne = function mockedFindOne(...args) {
           expect(args[0][0]).to.equal("test");
           return [1];
-        }
+        };
 
         const tests = testModel.findOne("test");
         expect(tests[0]).to.equal(1);
