@@ -1,6 +1,7 @@
 
 import Fs from "fs";
 import Path from "path";
+import { merge } from "lodash";
 
 Object.defineProperty(global, '__stack', {
   get: function() {
@@ -40,11 +41,32 @@ export function gql(file) {
 export function createQueries(queries) {
   return [`
     type Query {
-      ${queries.join("/n")}
+      ${queries.join("\n")}
     }
   `];
 }
 
+
+export function loadApplications(applications) {
+
+  const joined = {
+    schema: [],
+    models: {},
+    resolvers: {},
+    mocks: {},
+  };
+
+
+  Object.keys(applications).forEach((name) => {
+    let app = applications[name];
+    joined.schema = [...joined.schema, ...app.schema];
+    joined.models = merge(joined.models, app.models);
+    joined.resolvers = merge(joined.resolvers, app.resolvers);
+    joined.mocks = merge(joined.mocks, app.mocks);
+  });
+
+  return joined;
+}
 
 export function createSchema({ queries, mutations, schema }) {
 
@@ -64,5 +86,5 @@ export function createSchema({ queries, mutations, schema }) {
     ...Query,
     ...schema
   ];
-  
+
 }

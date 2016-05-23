@@ -5,11 +5,16 @@ import casual from 'casual';
 export default {
 
   Hashes: () => ({
-    when: () => (`${casual.date()}`),
+    when: () => (`${new Date(casual.unix_time)}`),
+  }),
+
+  UserRock: () => ({
+    id: () => casual.integer(0, 10000),
+    alias: () => casual.integer(0, 10000),
   }),
 
   User: () => ({
-    createdAt: () => (`${casual.date()}`),
+    createdAt: () => (`${new Date(casual.unix_time)}`),
     emails: () => new MockList(1, () => ({
       address: casual.email,
     }))

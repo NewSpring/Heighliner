@@ -1,33 +1,34 @@
-// 
-// import {
-//   schema as userSchema,
-//   resolver as User,
-//   connector as Users,
-// } from "./users"
-//
-// export const schema = [
-//   ...userSchema,
-// ];
-//
-// export const resolvers = {
-//   Query: {
-//     currentUser(_, args, { connectors }){
-//       return connectors.Users.currentUser;
-//     },
-//   },
-//   ...User,
-// };
-//
-// export const connectors = {
-//   ...Users,
-// }
-//
-// export const queries = [
-//   "currentUser: User"
-// ]
-//
-// export default {
-//   connectors,
-//   resolvers,
-//   schema,
-// }
+
+import {
+  schema as contentSchema,
+  resolver as Contents,
+  model as Content,
+} from "./content"
+
+export const schema = [
+  ...contentSchema,
+];
+
+export const resolvers = {
+  Query: {
+    content(_, args, { models }){
+      return {}
+      // return models.Content.find(args);
+    },
+  },
+  ...Contents,
+};
+
+export const models = {
+  ...Content,
+}
+
+export const queries = [
+  "content(site: String, after: Int, first: Int): Content"
+]
+
+export default {
+  models,
+  resolvers,
+  schema,
+}

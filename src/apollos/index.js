@@ -12,8 +12,8 @@ export const schema = [
 
 export const resolvers = {
   Query: {
-    currentUser(_, args, { connectors }) {
-      return connectors.Users.currentUser;
+    currentUser(_, args, { user }) {
+      return user;
     },
   },
   ...User,

@@ -19,17 +19,8 @@ const schema = {
 const Model = new MongoConnector("user", schema);
 
 class Users {
-  constructor({ hashedToken }) {
+  constructor() {
     this.model = Model;
-
-    // on query, get the current user
-    // then you can get the logged in user by
-    // ctx.models.Users.currentUser
-    this.currentUser = null;
-    if (hashedToken) {
-      this.currentUser = this.getByHashedToken(hashedToken);
-    }
-
   }
 
   async getByHashedToken(token) {
