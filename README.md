@@ -5,6 +5,7 @@
 </p>
 
 Heighliner
+[![Coverage Status](https://coveralls.io/repos/github/NewSpring/Heighliner/badge.svg?branch=apollo)](https://coveralls.io/github/NewSpring/Heighliner?branch=apollo) [![CircleCI](https://circleci.com/gh/NewSpring/Heighliner/tree/apollo.svg?style=svg)](https://circleci.com/gh/NewSpring/Heighliner/tree/apollo)
 =======================
 
 An Apollo GraphQL server for NewSpring Church
