@@ -15,7 +15,7 @@ export default {
 
   User: () => ({
     createdAt: () => (`${new Date(casual.unix_time)}`),
-    emails: () => new MockList(1, () => ({
+    emails: () => new MockList(2, () => ({
       address: casual.email,
     }))
   }),
