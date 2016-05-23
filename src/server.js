@@ -31,13 +31,13 @@ async function start() {
       const originIsWhitelisted = whitelist.indexOf(origin) !== -1;
       callback(null, originIsWhitelisted);
     },
-    credentials: true
+    credentials: true,
   };
 
   app.use(cors(corsOptions));
 
   app.use(bodyParser.urlencoded({
-    extended: true
+    extended: true,
   }));
 
   app.use(bodyParser.json());

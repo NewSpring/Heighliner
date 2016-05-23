@@ -13,13 +13,13 @@ Object.defineProperty(global, "__stack", {
     var stack = err.stack;
     Error.prepareStackTrace = orig;
     return stack;
-  }
+  },
 });
 
 Object.defineProperty(global, "__file", {
   get: function() {
     return __stack[3].getFileName();
-  }
+  },
 });
 
 export function gql(file) {
@@ -84,7 +84,7 @@ export function createSchema({ queries, mutations, schema }) {
   return [
     ...Root,
     ...Query,
-    ...schema
+    ...schema,
   ];
 
 }

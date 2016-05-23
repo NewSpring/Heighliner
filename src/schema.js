@@ -54,7 +54,7 @@ schema = createSchema({
   //   ...ApollosMutations,
   //   ...RockMutations,
   // ],
-  schema
+  schema,
 });
 
 
