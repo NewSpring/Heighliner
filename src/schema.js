@@ -13,28 +13,46 @@ import {
   loadApplications,
 } from "./util/graphql";
 
-// Import the apollos application
-import Apollos, { queries as ApollosQueries } from "./apollos";
+// Import Apollos
+import Apollos, {
+  queries as ApollosQueries,
+  mutations as ApollosMutations,
+} from "./apollos";
+
+// Import Rock
+// import Rock, {
+//   queries as RockQueries,
+//   mutations as RockMutations,
+// } from "./rock";
+
+// Import Expression Engine
 import ExpressionEngine, {
   queries as ExpressionEngineQueries,
 } from "./expression-engine";
 
+// Import Google Site Search
+// import GoogleSS, { queries as GoogleSSQueries } from "./google-site-search";
 
 
 // Merge all applications together
 let { schema, models, resolvers, mocks } = loadApplications({
   Apollos,
   // ExpressionEngine,
+  // Rock,
+  // GoogleSS,
 });
 
 // join all application queries and generate base query
 schema = createSchema({
   queries: [
     ...ApollosQueries,
-    // ...ExpressionEngineQueries
+    // ...ExpressionEngineQueries,
+    // ...RockQueries,
+    // ...GoogleSSQueries,
   ],
   // mutations: [
-  //
+  //   ...ApollosMutations,
+  //   ...RockMutations,
   // ],
   schema
 });
@@ -71,7 +89,7 @@ const createApp = async () => {
       let user = await Users.getByHashedToken(context.hashedToken);
       context.user = user;
     }
-    
+
     let createdModels = {};
     Object.keys(models).forEach((name) => {
       createdModels[name] = new models[name](context);
