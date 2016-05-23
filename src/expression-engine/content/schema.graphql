@@ -47,5 +47,5 @@ type ContentEntry {
   meta: Meta
   content: Content
   authors: [String]
-  tracks: [Tracks]
+  tracks: [Track]
 }
