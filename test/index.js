@@ -1,7 +1,7 @@
 
 import { expect } from "chai";
 
-describe("test infrastructure", () => {
+describe("Test infrastructure", () => {
 
   it("allows a test to be passed", () => {
     expect(true).be.true;
@@ -11,7 +11,7 @@ describe("test infrastructure", () => {
     setTimeout(() => {
       expect(true).to.be.true;
       done();
-    }, 100);
+    }, 10);
   });
 
 });

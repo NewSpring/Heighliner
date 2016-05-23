@@ -27,7 +27,7 @@ export class MongoConnector {
     this.db = db;
     this.model = mongoose.model(collection, new Schema(schema));
 
-    // this.loader =
+    // XXX integrate data loader
   }
 
   findOne(...args) {
