@@ -4,15 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "pretest": "rm -rf ./dist && mkdir ./dist",
     "test": "npm run testonly --",
     "testonly": "mocha --compilers js:babel/register --reporter spec --full-trace --recursive",
-    "ci-test": "mocha --require ./test/fixtures/setup.js --reporter mocha-junit-reporter --full-trace --recursive --reporter-options mochaFile=$CIRCLE_TEST_REPORTS/mocha/junit.xml ./dist/test",
+    "ci-test": "mocha --compilers js:babel/register --reporter mocha-junit-reporter --full-trace --recursive --reporter-options mochaFile=$CIRCLE_TEST_REPORTS/mocha/junit.xml ./dist",
     "lint": "eslint src test",
     "fix": "eslint --fix src test",
     "posttest": "npm run lint && npm run coverage",
     "start": "supervisor index.js",
-    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --compilers js:babel/register --full-trace --recursive",
-    "postcoverage": "remap-istanbul --input coverage/coverage.json --type lcovonly --output coverage/lcov.info"
+    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --compilers js:babel/register --full-trace --recursive"
   },
   "author": "",
   "license": "ISC",
@@ -48,8 +48,6 @@
     "graphql-tester": "0.0.4",
     "istanbul": "^0.4.3",
     "mocha": "^2.4.5",
-    "mocha-junit-reporter": "^1.11.1",
-    "remap-istanbul": "^0.6.4",
     "supervisor": "^0.10.0",
     "tslint": "^3.10.2",
     "typescript": "^1.8.10"
