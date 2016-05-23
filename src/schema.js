@@ -72,10 +72,11 @@ const createApp = async () => {
 
 
   */
-  const MONGO = await Mongo(process.env.MONGO_URL || "mongodb://localhost/meteor");
-  if (MONGO) mocks = false;
-
-
+  if (!process.env.CI) {
+    const MONGO = await Mongo(process.env.MONGO_URL || "mongodb://localhost/meteor");
+    if (MONGO) mocks = false;
+  }
+  
   return async (request) => {
 
     let context = {

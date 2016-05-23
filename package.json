@@ -16,7 +16,6 @@
     "bluebird": "^3.1.1",
     "body-parser": "^1.14.2",
     "casual": "^1.5.3",
-    "casual-browserify": "^1.5.3",
     "cors": "^2.7.1",
     "dataloader": "^1.1.0",
     "deasync": "^0.1.6",
