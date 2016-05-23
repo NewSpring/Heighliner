@@ -24,7 +24,7 @@ export const models = {
 };
 
 export const queries = [
-  "currentUser: User"
+  "currentUser: User",
 ];
 
 export let mocks = {

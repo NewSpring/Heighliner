@@ -17,7 +17,7 @@ export default {
     createdAt: () => (`${new Date(casual.unix_time)}`),
     emails: () => new MockList(2, () => ({
       address: casual.email,
-    }))
+    })),
   }),
 
 };

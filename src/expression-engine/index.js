@@ -24,7 +24,7 @@ export const models = {
 };
 
 export const queries = [
-  "content(site: String, after: Int, first: Int): Content"
+  "content(site: String, after: Int, first: Int): Content",
 ];
 
 export default {
