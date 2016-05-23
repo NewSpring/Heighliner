@@ -1,4 +1,4 @@
-import { gql } from "../../util"
+import { gql } from "../../util";
 const schema = gql("./schema");
 import resolver from "./resolver";
 import model from "./model";
@@ -9,4 +9,4 @@ export {
   resolver,
   model,
   mocks,
-}
+};

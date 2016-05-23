@@ -3,7 +3,7 @@ import {
   schema as contentSchema,
   resolver as Contents,
   model as Content,
-} from "./content"
+} from "./content";
 
 export const schema = [
   ...contentSchema,
@@ -12,7 +12,7 @@ export const schema = [
 export const resolvers = {
   Query: {
     content(_, args, { models }){
-      return {}
+      return {};
       // return models.Content.find(args);
     },
   },
@@ -21,14 +21,14 @@ export const resolvers = {
 
 export const models = {
   ...Content,
-}
+};
 
 export const queries = [
   "content(site: String, after: Int, first: Int): Content"
-]
+];
 
 export default {
   models,
   resolvers,
   schema,
-}
+};

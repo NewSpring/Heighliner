@@ -10,8 +10,8 @@ describe("test infrastructure", () => {
   it("allows an async test to be passed", (done) => {
     setTimeout(() => {
       expect(true).to.be.true;
-      done()
-    }, 100)
-  })
+      done();
+    }, 100);
+  });
 
 });

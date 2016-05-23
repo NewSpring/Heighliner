@@ -28,9 +28,9 @@ class Users {
     let rawToken = token;
 
     // allow for client or server side auth calls
-    token = crypto.createHash('sha256')
+    token = crypto.createHash("sha256")
       .update(token)
-      .digest('base64');
+      .digest("base64");
 
     return await this.model.findOne({
       $or: [
@@ -43,4 +43,4 @@ class Users {
 
 export default {
   Users,
-}
+};

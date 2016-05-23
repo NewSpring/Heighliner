@@ -13,7 +13,7 @@ describe("Using the application", () => {
   before((done) => {
 
     createApp().then((endpoint) => {
-      app.use('/graphql', apolloServer(endpoint));
+      app.use("/graphql", apolloServer(endpoint));
 
       Heighliner = tester({
         server: create(app),
@@ -25,49 +25,49 @@ describe("Using the application", () => {
 
   });
 
-  describe('Valid Query', function() {
+  describe("Valid Query", function() {
     let response;
     beforeEach((done) => {
-      Heighliner('{ currentUser { id } }')
+      Heighliner("{ currentUser { id } }")
         .then((data) => {
           response = data;
           done();
         });
-    })
+    });
 
-    it('it should return success', () => {
+    it("it should return success", () => {
       expect(response.success).to.be.true;
     });
 
-    it('it should return the correct status code', () => {
+    it("it should return the correct status code", () => {
       expect(response.status).to.equal(200);
     });
 
-    it('it should return some data', () => {
+    it("it should return some data", () => {
       expect(response.data.currentUser).to.exist;
     });
 
   });
 
-  describe('Invalid Query', () => {
+  describe("Invalid Query", () => {
     let response;
     beforeEach((done) => {
-      Heighliner('{ foobar { id } }')
+      Heighliner("{ foobar { id } }")
         .then((data) => {
           response = data;
           done();
         });
-    })
+    });
 
-    it('it should return success', () => {
+    it("it should return success", () => {
       expect(response.success).to.be.false;
     });
 
-    it('it should return the correct status code', () => {
+    it("it should return the correct status code", () => {
       expect(response.status).to.equal(400);
     });
 
-    it('it should return some errors', () => {
+    it("it should return some errors", () => {
       expect(response.errors).to.have.length.above(0);
     });
 

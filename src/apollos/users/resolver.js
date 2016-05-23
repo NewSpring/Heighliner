@@ -21,4 +21,4 @@ export default {
     emails: ({ emails }) => emails,
   },
 
-}
+};
