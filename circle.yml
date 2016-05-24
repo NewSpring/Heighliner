@@ -11,7 +11,7 @@ machine:
 
 dependencies:
   pre:
-    - npm i -g tslint typings coveralls type
+    - npm i -g tslint typings coveralls type norma
     - typings i
   cache_directories:
     - "node_modules"

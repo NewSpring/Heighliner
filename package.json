@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "pretest": "npm run build && rm -rf ./dist && mkdir ./dist",
+    "pretest": "rm -rf ./dist && mkdir ./dist && npm run build",
     "test": "npm run testonly --",
     "testonly": "mocha --compilers js:babel/register --reporter spec --full-trace --recursive",
     "ci-test": "mocha --compilers js:babel/register --reporter mocha-junit-reporter --full-trace --recursive --reporter-options mochaFile=$CIRCLE_TEST_REPORTS/mocha/junit.xml ./dist",
