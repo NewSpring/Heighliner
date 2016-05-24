@@ -1,7 +1,7 @@
 name: "Heighliner"
 
 tasks:
-  copy: 
+  copy:
     src: "./src/**/*"
     dest: "./lib"
     ext: "graphql"

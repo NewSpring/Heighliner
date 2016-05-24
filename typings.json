@@ -6,12 +6,14 @@
     "express-serve-static-core": "registry:dt/express-serve-static-core#0.0.0+20160322035842",
     "global": "file:./global.d.ts",
     "mime": "registry:dt/mime#0.0.0+20160316155526",
+    "mocha": "registry:dt/mocha#2.2.5+20160317120654",
     "mongoose": "registry:dt/mongoose#3.8.5+20160517033907",
     "morgan": "registry:dt/morgan#1.2.2+20160317120654",
     "node": "registry:env/node#4.0.0+20160507210304",
     "serve-static": "registry:dt/serve-static#0.0.0+20160501131543"
   },
   "dependencies": {
+    "chai": "registry:npm/chai#3.5.0+20160415060238",
     "lodash": "registry:npm/lodash#4.0.0+20160416211519"
   }
 }
