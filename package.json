@@ -12,7 +12,8 @@
     "posttest": "npm run lint && npm run coverage",
     "start": "norma | tsc --watch | supervisor index.js",
     "build": "tsc & norma build",
-    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --compilers js:babel/register --full-trace --recursive"
+    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --compilers js:babel/register --full-trace --recursive",
+    "postcoverage": "remap-istanbul --input coverage/coverage.json --type lcovonly --output coverage/lcov.info"
   },
   "author": "",
   "license": "ISC",
@@ -49,6 +50,7 @@
     "graphql-tester": "0.0.4",
     "istanbul": "^0.4.3",
     "mocha": "^2.4.5",
+    "remap-istanbul": "^0.5.1",
     "supervisor": "^0.10.0",
     "tslint": "^3.10.2",
     "typescript": "^1.8.10",
