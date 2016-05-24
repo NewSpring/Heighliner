@@ -50,6 +50,7 @@
     "graphql-tester": "0.0.4",
     "istanbul": "^0.4.3",
     "mocha": "^2.4.5",
+    "normajs": "^1.7.10",
     "remap-istanbul": "^0.5.1",
     "supervisor": "^0.10.0",
     "tslint": "^3.10.2",
