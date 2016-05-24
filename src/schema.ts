@@ -1,11 +1,4 @@
-import {
-  makeExecutableSchema,
-  addMockFunctionsToSchema,
-  attachConnectorsToContext,
-} from "graphql-tools";
-
 import UserModels from "./apollos/users/model";
-
 import { connect as Mongo, MongoConnector } from "./connectors/mongo";
 
 import {
@@ -16,7 +9,8 @@ import {
 // Import Apollos
 import Apollos, {
   queries as ApollosQueries,
-  mutations as ApollosMutations,
+  // mutations as ApollosMutations,
+  UserDocument,
 } from "./apollos";
 
 // Import Rock
@@ -26,9 +20,9 @@ import Apollos, {
 // } from "./rock";
 
 // Import Expression Engine
-import ExpressionEngine, {
-  queries as ExpressionEngineQueries,
-} from "./expression-engine";
+// import ExpressionEngine, {
+//   queries as ExpressionEngineQueries,
+// } from "./expression-engine";
 
 // Import Google Site Search
 // import GoogleSS, { queries as GoogleSSQueries } from "./google-site-search";
@@ -58,8 +52,9 @@ schema = createSchema({
 });
 
 
-const createApp = async () => {
-
+export async function createApp() {
+   
+  let useMocks = true;
   /*
 
     Database support
@@ -74,12 +69,12 @@ const createApp = async () => {
   */
   if (!process.env.CI) {
     const MONGO = await Mongo(process.env.MONGO_URL || "mongodb://localhost/meteor");
-    if (MONGO) mocks = false;
+    if (MONGO) useMocks = false;
   }
-  
-  return async (request) => {
 
-    let context = {
+  return async function(request){
+
+    let context: any = {
       hashedToken: request.headers.authorization,
     };
 
@@ -97,20 +92,22 @@ const createApp = async () => {
     });
 
     context.models = createdModels;
-
+    
+    
     return {
       graphiql: process.env.NODE_ENV != "production",
       pretty: false,
-      context,
+      context: context as Context,
       resolvers, // required if schema is an array of type definitions
-      mocks,
+      mocks: useMocks ? mocks : false,
       schema,
     };
   };
 
 };
 
-
-export {
-  createApp,
-};
+export interface Context {
+  hashedToken: string
+  user: UserDocument
+  models: any
+}

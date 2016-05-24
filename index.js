@@ -1,5 +1,5 @@
 
-const Fs = require("fs"),
+var Fs = require("fs"),
       Path = require("path"),
       Env = require("node-env-file");
 
@@ -19,5 +19,6 @@ if (process.env.NEW_RELIC_KEY){
   require("newrelic");
 }
 
-require("babel/register");
-require("./src/server.js");
+// require("babel/register");
+require('typescript-require');
+require("./src/server");

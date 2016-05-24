@@ -8,8 +8,7 @@
     "test": "npm run testonly --",
     "testonly": "mocha --compilers js:babel/register --reporter spec --full-trace --recursive",
     "ci-test": "mocha --compilers js:babel/register --reporter mocha-junit-reporter --full-trace --recursive --reporter-options mochaFile=$CIRCLE_TEST_REPORTS/mocha/junit.xml ./dist",
-    "lint": "eslint src test",
-    "fix": "eslint --fix src test",
+    "lint": "tslint src/**/*.ts && tslint test/**/*.ts",
     "posttest": "npm run lint && npm run coverage",
     "start": "supervisor index.js",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --compilers js:babel/register --full-trace --recursive"
@@ -17,8 +16,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "babel": "^5.8.34",
-    "babel-core": "^6.4.5",
     "bluebird": "^3.1.1",
     "body-parser": "^1.14.2",
     "casual": "^1.5.3",
@@ -39,7 +36,9 @@
     "php-unserialize": "0.0.1",
     "redis": "^2.4.2",
     "sequelize": "^3.23.2",
-    "tedious": "^1.14.0"
+    "tedious": "^1.14.0",
+    "typescript": "^1.8.10",
+    "typescript-require": "^0.2.9-1"
   },
   "devDependencies": {
     "babel-eslint": "^6.0.4",
@@ -50,6 +49,7 @@
     "mocha": "^2.4.5",
     "supervisor": "^0.10.0",
     "tslint": "^3.10.2",
-    "typescript": "^1.8.10"
+    "typescript": "^1.8.10",
+    "typings": "^1.0.4"
   }
 }
