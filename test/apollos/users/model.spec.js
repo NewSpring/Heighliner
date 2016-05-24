@@ -2,7 +2,7 @@
 import { expect } from "chai";
 import crypto from "crypto";
 
-import Models from "../../../src/apollos/users/model";
+import Models from "../../../lib/apollos/users/model";
 
 describe("Users Model", () => {
 

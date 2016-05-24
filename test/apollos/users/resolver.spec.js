@@ -1,7 +1,7 @@
 
 import { expect } from "chai";
 import casual from "casual";
-import Resolver from "../../../src/apollos/users/resolver";
+import Resolver from "../../../lib/apollos/users/resolver";
 
 describe("User resolvers", () => {
 
