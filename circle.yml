@@ -33,10 +33,11 @@ test:
   override:
     - npm run pretest
     - npm run ci-test
-    - npm run posttest
-  post:
-    - npm run coverage
-    - coveralls < ./coverage/lcov.info
+    # - npm run posttest
+    - npm run lint
+  # post:
+  #   - npm run coverage
+  #   - coveralls < ./coverage/lcov.info
 # deployment:
 #   rancher-prod:
 #     branch: rancher-prod
