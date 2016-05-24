@@ -4,7 +4,7 @@ import { apolloServer } from "graphql-tools";
 import { tester } from "graphql-tester";
 import { create } from "graphql-tester/lib/main/servers/express";
 
-import { createApp } from "../../../src/schema";
+import { createApp } from "../../../lib/schema";
 
 // XXX figure out how to start and seed db on tests
 describe("User queries", () => {

@@ -4,7 +4,7 @@ import { apolloServer } from "graphql-tools";
 import { tester } from "graphql-tester";
 import { create } from "graphql-tester/lib/main/servers/express";
 
-import { createApp } from "../src/schema";
+import { createApp } from "../lib/schema";
 
 describe("Using the application", () => {
   const app = express();

@@ -2,7 +2,7 @@
 import { expect } from "chai";
 import { Schema } from "mongoose";
 
-import { MongoConnector, connect } from "../../src/connectors/mongo";
+import { MongoConnector, connect } from "../../lib/connectors/mongo";
 
 describe("MongoDB", () => {
 

@@ -1,6 +1,6 @@
 
 import { expect } from "chai";
-import Mocks from "../../../src/apollos/users/mocks";
+import Mocks from "../../../lib/apollos/users/mocks";
 
 describe("User mocks", () => {
 
