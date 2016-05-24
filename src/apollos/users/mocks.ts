@@ -2,6 +2,31 @@
 import { MockList } from "graphql-tools";
 import casual from "casual";
 
+export interface HashTypeMocks {
+  when(): string
+}
+
+export interface UserRockTypeMocks {
+  id(): number
+  alias(): number
+}
+
+export interface UserRockTypeMocks {
+  id(): number
+  alias(): number
+}
+
+export interface UserTypeMocks {
+  createdAt(): string
+  emails(): [{ address: string }]
+}
+
+export interface UserMocks {
+  Hashes(): HashTypeMocks
+  UserRock(): UserRockTypeMocks
+  User(): UserTypeMocks
+}
+
 export default {
 
   Hashes: () => ({

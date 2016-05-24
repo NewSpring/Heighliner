@@ -1,0 +1,14 @@
+{
+  "globalDependencies": {
+    "body-parser": "registry:dt/body-parser#0.0.0+20160317120654",
+    "cors": "registry:dt/cors#0.0.0+20160317120654",
+    "express": "registry:dt/express#4.0.0+20160317120654",
+    "global": "file:./global.d.ts",
+    "mongoose": "registry:dt/mongoose#3.8.5+20160517033907",
+    "morgan": "registry:dt/morgan#1.2.2+20160317120654",
+    "node": "registry:env/node#4.0.0+20160507210304"
+  },
+  "dependencies": {
+    "lodash": "registry:npm/lodash#4.0.0+20160416211519"
+  }
+}

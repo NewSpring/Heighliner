@@ -2,7 +2,50 @@ import crypto from "crypto";
 
 import { MongoConnector } from "../../connectors/mongo";
 
-const schema = {
+
+export interface UserProfile {
+  lastLogin: Date
+}
+
+export interface UserEmails {
+  address: string
+  verified: boolean
+}
+
+export interface UserLoginTokens {
+  when: Date
+  hashToken: string
+}
+
+export interface UserResume {
+  loginTokens: [UserLoginTokens]
+}
+
+export interface UserRock {
+  PersonId: number
+  PrimaryAliasId: number
+}
+
+export interface UserPassword {
+  bcrypt: string
+}
+
+export interface UserServices {
+  password: UserPassword
+  rock: UserRock
+  resume: UserResume
+}
+
+export interface UserDocument {
+  _id: string
+  createdAt: Date
+  services: UserServices
+  emails: [UserEmails]
+  profile: UserProfile
+}
+
+
+const schema: Object = {
   _id: String,
   createdAt: { type: Date, default: Date.now },
   services: {
@@ -18,12 +61,14 @@ const schema = {
 
 const Model = new MongoConnector("user", schema);
 
-class Users {
+export class Users {
+  private model: MongoConnector
+  
   constructor() {
     this.model = Model;
   }
 
-  async getByHashedToken(token) {
+  async getByHashedToken(token: string): Promise<UserDocument> {
 
     let rawToken = token;
 
@@ -37,7 +82,7 @@ class Users {
         { "services.resume.loginTokens.hashedToken": token },
         { "services.resume.loginTokens.hashedToken": rawToken },
       ],
-    });
+    }) as UserDocument;
   }
 }
 

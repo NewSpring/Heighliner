@@ -3,14 +3,24 @@ import Fs from "fs";
 import Path from "path";
 import { merge } from "lodash";
 
+import {
+  ApplicationDefinition,
+  SchemaShorthand,
+} from "./application";
+
+// XXX update node error constructor
+declare var Error;
+declare var __stack;
+declare var __file;
+
 Object.defineProperty(global, "__stack", {
   get: function() {
-    var orig = Error.prepareStackTrace;
+    let orig = Error.prepareStackTrace;
     Error.prepareStackTrace = function(_, stack) {
       return stack;
     };
-    var err = new Error;
-    var stack = err.stack;
+    const err = new Error;
+    const stack = err.stack;
     Error.prepareStackTrace = orig;
     return stack;
   },
@@ -22,11 +32,11 @@ Object.defineProperty(global, "__file", {
   },
 });
 
-export function gql(file) {
+export function gql(file: string): [string] {
   const baseFile = Path.dirname(__file);
   file = Path.resolve(baseFile, `${file}.graphql`);
 
-  let gql = [];
+  let gql = [] as [string];
   if (Fs.existsSync(file)) {
     const data = Fs.readFileSync(file, { encoding: "utf8" });
     if (data) {
@@ -38,7 +48,7 @@ export function gql(file) {
 }
 
 
-export function createQueries(queries) {
+export function createQueries(queries: string[]): string[] {
   return [`
     type Query {
       ${queries.join("\n")}
@@ -47,18 +57,17 @@ export function createQueries(queries) {
 }
 
 
-export function loadApplications(applications) {
+export function loadApplications(applications: { [key: string]: ApplicationDefinition }): ApplicationDefinition {
 
   const joined = {
     schema: [],
     models: {},
     resolvers: {},
     mocks: {},
-  };
+  } as ApplicationDefinition;
 
-
-  Object.keys(applications).forEach((name) => {
-    let app = applications[name];
+  Object.keys(applications).forEach((name: string) => {
+    let app: ApplicationDefinition = applications[name];
     joined.schema = [...joined.schema, ...app.schema];
     joined.models = merge(joined.models, app.models);
     joined.resolvers = merge(joined.resolvers, app.resolvers);
@@ -68,22 +77,23 @@ export function loadApplications(applications) {
   return joined;
 }
 
-export function createSchema({ queries, mutations, schema }) {
+
+export function createSchema({ queries, schema }: SchemaShorthand): string[] {
 
   // build base level schema
-  const Root = [`
+  const root = [`
     schema {
       query: Query
     }
   `];
 
-  const Query = createQueries(queries);
+  const query = createQueries(queries);
   // const Mutation = createMutations(mutations);
 
   // generate the final schema
   return [
-    ...Root,
-    ...Query,
+    ...root,
+    ...query,
     ...schema,
   ];
 

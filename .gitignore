@@ -4,3 +4,6 @@ node_modules
 .env.dev
 npm-debug.log
 coverage
+tmp
+.tmp
+typings
