@@ -5,14 +5,15 @@
     "sourceMap": true,
     "declaration": false,
     "noImplicitAny": false,
-    "rootDir": ".",
-    "outDir": ".tmp",
+    "rootDir": "./src",
+    "outDir": "lib",
     "allowSyntheticDefaultImports": true,
     "pretty": true,
     "removeComments": true,
     "allowJs": false
   },
-  "include": [
+  "files": [
+    "typings/index.d.ts",
     "src/server.ts"
   ]
 }

@@ -19,6 +19,5 @@ if (process.env.NEW_RELIC_KEY){
   require("newrelic");
 }
 
-// require("babel/register");
-require('typescript-require');
-require("./src/server");
+require("babel/register");
+require("./lib/server");

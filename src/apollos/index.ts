@@ -22,28 +22,30 @@ export const schema = [
 ];
 
 export const resolvers = merge({
-  Query: {
-    currentUser(_: any, args: any, { user }: any): any {
-      return user;
+    Query: {
+      currentUser(_: any, args: any, { user }: any): any {
+        return user;
+      },
     },
   },
-  User,
-}) as Resolvers;
+  User
+) as Resolvers;
 
-export const models = merge({
-  Users,
-}) as Models;
+export const models = merge(
+  Users
+) as Models;
 
 export const queries = [
   "currentUser: User",
 ];
 
 export let mocks = merge({
-  Query: () => ({
-    currentUser() { return {}; },
-  }),
-  userMocks,
-}) as Mocks;
+    Query: () => ({
+      currentUser() { return {}; },
+    })
+  },
+  userMocks
+) as Mocks;
 
 export default {
   models,

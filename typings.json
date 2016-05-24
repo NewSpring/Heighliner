@@ -3,10 +3,13 @@
     "body-parser": "registry:dt/body-parser#0.0.0+20160317120654",
     "cors": "registry:dt/cors#0.0.0+20160317120654",
     "express": "registry:dt/express#4.0.0+20160317120654",
+    "express-serve-static-core": "registry:dt/express-serve-static-core#0.0.0+20160322035842",
     "global": "file:./global.d.ts",
+    "mime": "registry:dt/mime#0.0.0+20160316155526",
     "mongoose": "registry:dt/mongoose#3.8.5+20160517033907",
     "morgan": "registry:dt/morgan#1.2.2+20160317120654",
-    "node": "registry:env/node#4.0.0+20160507210304"
+    "node": "registry:env/node#4.0.0+20160507210304",
+    "serve-static": "registry:dt/serve-static#0.0.0+20160501131543"
   },
   "dependencies": {
     "lodash": "registry:npm/lodash#4.0.0+20160416211519"

@@ -1,6 +1,5 @@
-import * as mongoose from "mongoose";
 
-import {
+import mongoose, {
   Schema,
   Connection,
   Model,
@@ -23,9 +22,9 @@ export function connect(address: string): Promise<boolean> {
   });
 }
 
-// mongoose.connection.on("error",
-//   console.error.bind(console, "MONGO connection error:")
-// );
+mongoose.connection.on("error",
+  console.error.bind(console, "MONGO connection error:")
+);
 
 export class MongoConnector {
   public db: Connection;

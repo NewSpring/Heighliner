@@ -1,51 +1,31 @@
+type Hashes {
+  when: String!
+  hashedToken: ID!
+}
 
-type Color {
+type UserTokens {
+  tokens: [Hashes]
+}
+
+type UserRock {
+  id: Int
+  alias: Int
+}
+
+type UserService {
+  rock: UserRock
+  resume: UserTokens
+}
+
+type UserEmail {
+  address: String!
+  verified: Boolean
+}
+
+type User {
   id: ID!
-  value: String
-  description: String
-}
-
-type Image {
-  fileName: String
-  fileType: String
-  fileLabel: String
-  s3: String
-  cloudfront: String
-}
-
-type Track {
-  title: String
-  duration: String
-  file: String
-}
-
-type Meta {
- urlTitle: String
- siteId: ID!
- date: String
- actualDate: String
- channelId: ID!
-}
-
-type Content {
-  body: String
-  description: String
-  scripture: String
-  ooyalaId: String
-  images: [Image]
-  tags: [String]
-  colors: [Color]
-  speakers: String
-}
-
-type ContentEntry {
-  title: String
-  id: ID!
-  collectionId: ID!
-  status: String
-  channelName: String
-  meta: Meta
-  content: Content
-  authors: [String]
-  tracks: [Track]
+  # We should investigate how best to represent dates
+  createdAt: String!
+  services: UserService
+  emails: [UserEmail]
 }
