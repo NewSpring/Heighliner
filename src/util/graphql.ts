@@ -73,7 +73,7 @@ export function loadApplications(applications: { [key: string]: ApplicationDefin
     joined.resolvers = merge(joined.resolvers, app.resolvers);
     joined.mocks = merge(joined.mocks, app.mocks);
   });
-
+  
   return joined;
 }
 
