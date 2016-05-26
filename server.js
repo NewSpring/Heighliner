@@ -75,7 +75,8 @@ app.use("/", apolloServer(async (request) => {
 
   let graphql = {
     schema: Schema,
-    graphiql: process.env.NODE_ENV != "production",
+    // graphiql: process.env.NODE_ENV != "production",
+    graphiql: true,
     // formatError: formatError,
     context: {
       user,
