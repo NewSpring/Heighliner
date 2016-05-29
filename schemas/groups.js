@@ -253,7 +253,7 @@ export default {
     lng: { type: GraphQLFloat },
     campus: { type: GraphQLInt },
     name: { type: GraphQLString },
-    distance: { type: GraphQLInt, defaultValue: 25 },
+    distance: { type: GraphQLInt, defaultValue: 50 },
     sortByDistance: { type: GraphQLBoolean, defaultValue: true },
     ttl: { type: GraphQLInt },
     cache: { type: GraphQLBoolean, defaultValue: true },
@@ -313,7 +313,7 @@ export default {
     }
 
     if (name) {
-      query += ` and substringof('${name}', Name) eq true`
+      query += ` and substringof('${name.replace("'", "''")}', Name) eq true`
     }
 
     // then limits
@@ -328,6 +328,7 @@ export default {
 
     return api.get(query, ttl, cache)
       .then((results) => {
+        console.log(results, args, query)
         return results.filter((result) => {
           return result.IsActive && result.IsPublic
         })
