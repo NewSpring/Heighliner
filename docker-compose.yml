@@ -1,11 +1,13 @@
 heighliner:
   build: .
+  command: 'supervisor index.js'
   volumes:
     - .:/usr/src/app/
   ports:
     - "80:80"
   links:
     - mySQL
+    - mongoDB
     - redis
 
 mySQL:
@@ -19,10 +21,10 @@ mySQL:
     MYSQL_DATABASE: ee_local
     MYSQL_USER: root
 
-# mongoDB:
-#   image: mongo:latest
-#   ports:
-#     - "27017:27017"
+mongoDB:
+  image: mongo:latest
+  ports:
+    - "27017:27017"
 
 redis:
   image: redis
