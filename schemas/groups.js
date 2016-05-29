@@ -309,7 +309,8 @@ export default {
       `)
 
       if (name) {
-        query += ` and substringof('${name.replace("'", "''")}', Name) eq true`
+        query += ` and (substringof('${name.replace("'", "''")}', Name) eq true or substringof('${name.replace("'", "''")}', Description))`
+
       }
     }
 
@@ -340,10 +341,11 @@ export default {
           return results
         }
 
-        let names = Fuzzy(name, results.map((x) => x.Name.toLowerCase()));
+        let names = Fuzzy(name, results.map((x) => x.Name));
+        let descriptions = Fuzzy(name, results.filter((x) => x.Description).map((x) => x.Description));
 
         return results.filter((group) => {
-          return names.indexOf(group.Name.toLowerCase()) > -1;
+          return (names.indexOf(group.Name) > -1 || descriptions.indexOf(group.Description) > -1);
         })
       })
       .then((items) => {
