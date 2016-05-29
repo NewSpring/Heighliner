@@ -78,7 +78,13 @@ function RockTypeToGraphType(type, value){
   }
 
   return new Promise((resolve) => resolve())
-    .then(() => types[type](value))
+    .then(() => {
+      try {
+        return types[type](value);
+      } catch (e) {
+        return null;
+      }
+    })
 
 }
 
