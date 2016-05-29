@@ -46,11 +46,12 @@ const GroupLocationType = new GraphQLObjectType({
   })
 })
 
-function generateAttribute(type, key, defaultValue){
+function generateAttribute(type, key, defaultValue, defaultTTL){
+  // 3600000
   let attr = {
     type: type,
     args: {
-      ttl: { type: GraphQLInt, defaultValue: 604800 },
+      ttl: { type: GraphQLInt, defaultValue: defaultTTL ? defaultTTL : 604800 },
       cache: { type: GraphQLBoolean, defaultValue: true },
     },
     resolve: ({ Id }, { ttl, cache }) => {
@@ -74,7 +75,7 @@ const GroupType = new GraphQLObjectType({
     ageRange: generateAttribute(new GraphQLList(GraphQLInt), "AgeRange"),
     demographic: generateAttribute(GraphQLString, "Topic"),
     maritalStatus: generateAttribute(GraphQLString, "MaritalStatus"),
-    photo: generateAttribute(GraphQLString, "GroupPhoto", null),
+    photo: generateAttribute(GraphQLString, "GroupPhoto", null, 3600),
     campusId: { type: GraphQLInt, resolve: group => group.CampusId },
     campus: {
       type: CampusType,
