@@ -10,6 +10,8 @@ import {
   GraphQLFloat,
 } from "graphql"
 
+import Fuzzy from "fuzzy-filter";
+
 import { api, parseEndpoint, Attributes } from "../rock"
 import { CampusType } from "./shared/rock/campus"
 import { GroupMemberType } from "./shared/rock/group-member"
@@ -305,15 +307,15 @@ export default {
             IsPublic eq true
 
       `)
+
+      if (name) {
+        query += ` and substringof('${name.replace("'", "''")}', Name) eq true`
+      }
     }
 
     // filter addons first
     if (campus) {
       query += ` and CampusId eq ${campus}`
-    }
-
-    if (name) {
-      query += ` and substringof('${name.replace("'", "''")}', Name) eq true`
     }
 
     // then limits
@@ -328,9 +330,20 @@ export default {
 
     return api.get(query, ttl, cache)
       .then((results) => {
-        console.log(results, args, query)
         return results.filter((result) => {
           return result.IsActive && result.IsPublic
+        })
+      })
+      .then((results) => {
+        // XXX remove when ByLatLong respects oData filters correctly
+        if (!lat || !lng || !name) {
+          return results
+        }
+
+        let names = Fuzzy(name, results.map((x) => x.Name.toLowerCase()));
+
+        return results.filter((group) => {
+          return names.indexOf(group.Name.toLowerCase()) > -1;
         })
       })
       .then((items) => {
