@@ -10,7 +10,8 @@ import {
   GraphQLFloat,
 } from "graphql"
 
-import Fuzzy from "fuzzy-filter";
+import FuzzyFilter from "fuzzy-filter";
+import Fuzzy from "fuzzy";
 
 import { api, parseEndpoint, Attributes } from "../rock"
 import { CampusType } from "./shared/rock/campus"
@@ -341,8 +342,10 @@ export default {
           return results
         }
 
-        let names = Fuzzy(name, results.map((x) => x.Name));
-        let descriptions = Fuzzy(name, results.filter((x) => x.Description).map((x) => x.Description));
+        let names = FuzzyFilter(name, results.map((x) => x.Name));
+
+        let descriptions = Fuzzy.filter(name, results.filter((x) => x.Description).map((x) => x.Description));
+        descriptions = descriptions.filter((x) => x.score < 5).map((x) => x.string);
 
         return results.filter((group) => {
           return (names.indexOf(group.Name) > -1 || descriptions.indexOf(group.Description) > -1);
@@ -365,6 +368,8 @@ export default {
         }
 
       })
+
+      // https://rock.newspring.cc/api/Groups/ByLatLong?groupTypeId=25&latitude=34.582899&longitude=-82.673204&sortByDistance=true&$filter=IsActive
       // .then((results) => {
       //   // pre lookup all campuses because its way cheaper than a lookup for each
       //   // group
