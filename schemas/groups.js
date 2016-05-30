@@ -313,6 +313,16 @@ export default {
         query += ` and (substringof('${name.replace("'", "''")}', Name) eq true or substringof('${name.replace("'", "''")}', Description))`
 
       }
+
+      // then limits
+      if (first) {
+        query += `&$top=${first}`
+      }
+
+      // then offeset
+      if (after) {
+        query += `&$skip=${after}`
+      }
     }
 
     // filter addons first
@@ -320,15 +330,6 @@ export default {
       query += ` and CampusId eq ${campus}`
     }
 
-    // then limits
-    if (first) {
-      query += `&$top=${first}`
-    }
-
-    // then offeset
-    if (after) {
-      query += `&$skip=${after}`
-    }
 
     return api.get(query, ttl, cache)
       .then((results) => {
@@ -350,6 +351,20 @@ export default {
         return results.filter((group) => {
           return (names.indexOf(group.Name) > -1 || descriptions.indexOf(group.Description) > -1);
         })
+      })
+      .then((items) => {
+        // XXX oData doesn't work with locations
+        if (after && lat && lng) {
+          return [...items].slice(after, items.length);
+        }
+        return items
+      })
+      .then((items) => {
+        // XXX oData doesn't work with locations
+        if (first && lat && lng) {
+          return [...items].slice(0, first);
+        }
+        return items
       })
       .then((items) => {
         let paginatedItems = [...items].slice(0, 10)
