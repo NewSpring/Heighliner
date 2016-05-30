@@ -293,6 +293,11 @@ export default {
             IsPublic eq true
 
       `)
+
+      // filter addons first
+      if (campus) {
+        query += ` and CampusId eq ${campus}`
+      }
     } else {
       query = parseEndpoint(`
         Groups?
@@ -308,6 +313,11 @@ export default {
             IsPublic eq true
 
       `)
+
+      // filter addons first
+      if (campus) {
+        query += ` and CampusId eq ${campus}`
+      }
 
       if (name) {
         query += ` and (substringof('${name.replace("'", "''")}', Name) eq true or substringof('${name.replace("'", "''")}', Description))`
@@ -325,10 +335,7 @@ export default {
       }
     }
 
-    // filter addons first
-    if (campus) {
-      query += ` and CampusId eq ${campus}`
-    }
+
 
 
     return api.get(query, ttl, cache)
