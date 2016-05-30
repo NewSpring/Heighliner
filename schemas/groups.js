@@ -10,9 +10,6 @@ import {
   GraphQLFloat,
 } from "graphql"
 
-import FuzzyFilter from "fuzzy-filter";
-import Fuzzy from "fuzzy";
-
 import { api, parseEndpoint, Attributes } from "../rock"
 import { CampusType } from "./shared/rock/campus"
 import { GroupMemberType } from "./shared/rock/group-member"
@@ -321,7 +318,6 @@ export default {
 
       if (name) {
         query += ` and (substringof('${name.replace("'", "''")}', Name) eq true or substringof('${name.replace("'", "''")}', Description))`
-
       }
 
       // then limits
@@ -350,14 +346,21 @@ export default {
           return results
         }
 
-        let names = FuzzyFilter(name, results.map((x) => x.Name));
 
-        let descriptions = Fuzzy.filter(name, results.filter((x) => x.Description).map((x) => x.Description));
-        descriptions = descriptions.filter((x) => x.score < 5).map((x) => x.string);
-
+        let query = name.toLowerCase();
         return results.filter((group) => {
-          return (names.indexOf(group.Name) > -1 || descriptions.indexOf(group.Description) > -1);
-        })
+          return (
+            (
+              group.Name &&
+              group.Name.toLowerCase().indexOf(query) > -1
+            ) ||
+            (
+              group.Description &&
+              group.Description.toLowerCase().indexOf(query) > -1
+            )
+          );
+        });
+
       })
       .then((items) => {
         // XXX oData doesn't work with locations
