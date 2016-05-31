@@ -70,7 +70,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json())
 
 
-app.use("/", apolloServer(() => {
+app.use("/", apolloServer(async (request, response) => {
   let user = null;
 
   if (request.headers.authorization) {
@@ -84,12 +84,12 @@ app.use("/", apolloServer(() => {
         { "services.resume.loginTokens.hashedToken": hashedToken },
         { "services.resume.loginTokens.hashedToken": request.headers.authorization },
       ],
-    }, "_id, services.rock.PrimaryAliasId, services.rock.PersonId");
+    }, "_id, services.rock");
   }
 
   let graphql = {
     schema: Schema,
-    graphiql: process.env.NODE_ENV != "production"
+    graphiql: process.env.NODE_ENV != "production",
     context: {
       user,
     }
