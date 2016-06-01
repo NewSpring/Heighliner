@@ -10,7 +10,7 @@
     "testonly": "mocha --full-trace --compilers js:babel-core/register --require babel-polyfill --recursive",
     "ci-test": "mocha --reporter mocha-junit-reporter --full-trace --compilers js:babel-core/register --require babel-polyfill --recursive --reporter-options mochaFile=$CIRCLE_TEST_REPORTS/mocha/junit.xml ./dist",
     "lint": "tslint src/**/*.ts && tslint test/**/*.ts",
-    "posttest": "npm run lint && npm run coverage",
+    "posttest": "npm run lint && npm run build && npm run coverage",
     "start": "tsc --watch | supervisor index.js",
     "build": "tsc & norma build",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --full-trace --compilers js:babel-core/register --require babel-polyfill --recursive",
