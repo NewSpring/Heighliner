@@ -2,14 +2,36 @@
 import { expect } from "chai";
 import crypto from "crypto";
 
-import Models from "../../../lib/apollos/users/model";
+import { User } from "../../../lib/apollos/users/model";
 
 describe("Users Model", () => {
 
-  let users = new Models.Users();
+  let users = new User();
 
   it("should expose the model as 'model'", () => {
     expect(users.model).to.exist;
+  });
+  
+  describe("getFromId", () => {
+    let oldFindOne;
+    beforeEach(() => {
+      oldFindOne = users.model.findOne;
+    });
+
+    afterEach(() => {
+      users.model.findOne = oldFindOne;
+    });
+    
+    it("should allow searching by an id", (done) => {
+      let id = "id";
+
+      users.model.findOne = function mockedFindOne({ _id }) {
+        expect(_id).to.equal(id);
+      };
+
+      users.getFromId(id)
+        .then(() => { done(); });
+    });
   });
 
   describe("getByHashedToken", () => {

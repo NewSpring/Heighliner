@@ -37,8 +37,8 @@ export class MongoConnector {
     // XXX integrate data loader
   }
 
-  public findOne(...args): Object {
-    return this.model.findOne(args);
+  public findOne(...args): Promise<Object> {
+    return this.model.findOne.apply(this.model, args);
   }
 
 }

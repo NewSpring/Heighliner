@@ -1,10 +1,12 @@
-import UserModels from "./apollos/users/model";
+import { User } from "./apollos/users/model";
+import Node from "./util/node/model";
+import { InMemoryCache, Cache } from "./util/cache";
 import { connect as Mongo, MongoConnector } from "./connectors/mongo";
 
 import {
   createSchema,
   loadApplications,
-} from "./util/graphql";
+} from "./util/heighliner";
 
 // Import Apollos
 import Apollos, {
@@ -44,16 +46,15 @@ schema = createSchema({
     // ...RockQueries,
     // ...GoogleSSQueries,
   ],
-  // mutations: [
-  //   ...ApollosMutations,
-  //   ...RockMutations,
-  // ],
+  mutations: [
+    // ...ApollosMutations,
+    // ...RockMutations,
+  ],
   schema,
 });
 
-
 export async function createApp() {
-   
+
   let useMocks = true;
   /*
 
@@ -67,21 +68,26 @@ export async function createApp() {
 
 
   */
+  let cacheType;
   if (!process.env.CI) {
     const MONGO = await Mongo(process.env.MONGO_URL || "mongodb://localhost/meteor");
     if (MONGO) useMocks = false;
   }
+  
+  const cache = new InMemoryCache();
+  
 
   return async function(request){
 
     let context: any = {
       hashedToken: request.headers.authorization,
+      cache,
     };
 
     if (context.hashedToken) {
       // we instansiate the
       // bind the logged in user to the context overall
-      const Users = new UserModels.Users();
+      const Users = new User(context);
       let user = await Users.getByHashedToken(context.hashedToken);
       context.user = user;
     }
@@ -90,10 +96,10 @@ export async function createApp() {
     Object.keys(models).forEach((name) => {
       createdModels[name] = new models[name](context);
     });
-
+    
     context.models = createdModels;
-    
-    
+    context.models.Node = new Node(context);
+
     return {
       graphiql: process.env.NODE_ENV != "production",
       pretty: false,
@@ -108,6 +114,7 @@ export async function createApp() {
 
 export interface Context {
   hashedToken: string
+  cache: Cache
   user: UserDocument
   models: any
 }

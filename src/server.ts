@@ -14,7 +14,6 @@ async function start() {
     Middleware
 
   */
-
   app.get("/alive", (req, res) => {
     res.status(200).json({ alive: true });
   });

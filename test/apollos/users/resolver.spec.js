@@ -2,6 +2,7 @@
 import { expect } from "chai";
 import casual from "casual";
 import Resolver from "../../../lib/apollos/users/resolver";
+import { parseGlobalId } from "../../../lib/util";
 
 describe("User resolvers", () => {
 
@@ -86,8 +87,8 @@ describe("User resolvers", () => {
 
     it("should return the 'id' value from the data", () => {
       const { User } = Resolver;
-
-      const id = User.id(sampleData);
+      const parentType = { name: "User" }; 
+      const { id } = parseGlobalId(User.id(sampleData, null, null, { parentType }));
       expect(id).to.equal(sampleData._id);
     });
 

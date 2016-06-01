@@ -4,7 +4,9 @@ import {
   UserRock,
   UserServices,
   UserDocument,
-} from "./model"
+} from "./model";
+
+import { createGlobalId } from "../../util";
 
 export default {
 
@@ -23,7 +25,7 @@ export default {
   },
 
   User: {
-    id: ({ _id }: UserDocument) => _id,
+    id: ({ _id }: UserDocument, _, $, { parentType }) => createGlobalId(_id, parentType.name),
     services: ({ services }: UserDocument) => services,
     emails: ({ emails }: UserDocument) => emails,
   },
