@@ -14,7 +14,7 @@
     "start": "tsc --watch | supervisor index.js",
     "build": "tsc & norma build",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --full-trace --compilers js:babel-core/register --require babel-polyfill --recursive",
-    "postcoverage": "remap-istanbul --input coverage/coverage.raw.json --type lcovonly --output coverage/lcov.info"
+    "##postcoverage": "remap-istanbul --input coverage/coverage.raw.json --type lcovonly --output coverage/lcov.info"
   },
   "author": "",
   "license": "ISC",
