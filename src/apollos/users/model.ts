@@ -1,7 +1,7 @@
 import crypto from "crypto";
 
 import { MongoConnector } from "../../connectors/mongo";
-
+import { Cache, defaultCache } from "../../util/cache";
 
 export interface UserProfile {
   lastLogin: Date
@@ -61,15 +61,21 @@ const schema: Object = {
 
 const Model = new MongoConnector("user", schema);
 
-export class Users {
+export class User {
   private model: MongoConnector
+  private cache: Cache
   
-  constructor() {
+  constructor({ cache } = { cache: defaultCache }) {
+    this.cache = cache;
     this.model = Model;
   }
 
-  async getByHashedToken(token: string): Promise<UserDocument> {
+  async getFromId(_id: string): Promise<UserDocument> {
+    // try a cache lookup
+    return await this.cache.get(_id, () => this.model.findOne({ _id })) as UserDocument;
+  }
 
+  async getByHashedToken(token: string): Promise<UserDocument> {
     let rawToken = token;
 
     // allow for client or server side auth calls
@@ -87,5 +93,5 @@ export class Users {
 }
 
 export default {
-  Users,
+  User,
 };

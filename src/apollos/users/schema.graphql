@@ -22,7 +22,7 @@ type UserEmail {
   verified: Boolean
 }
 
-type User {
+type User implements Node {
   id: ID!
   # We should investigate how best to represent dates
   createdAt: String!
