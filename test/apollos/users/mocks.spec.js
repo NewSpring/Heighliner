@@ -1,6 +1,7 @@
 
 import { expect } from "chai";
 import Mocks from "../../../lib/apollos/users/mocks";
+import { mocks } from "../../../lib/apollos";
 
 describe("User mocks", () => {
 
@@ -58,6 +59,19 @@ describe("User mocks", () => {
       const email = user.emails().wrappedFunction();
 
       expect(email.address).to.match(/@/, "gmi");
+    });
+
+  });
+
+  describe("Query", () => {
+
+    it("should expose currentUser as part of the query", () => {
+      const { Query } = mocks;
+
+      const { currentUser } = Query();
+
+      expect(currentUser).to.exist;
+      expect(currentUser).to.be.a("function");
     });
 
   });
