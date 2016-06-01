@@ -5,12 +5,13 @@ export default class Node {
   constructor(context) {
     this.models = context.models;
   }
-  
-  async get(encodedId) {
+
+  // XXX what do we want to do about errors here?
+  public async get(encodedId): Promise<Object> {
     const { __type, id } = parseGlobalId(encodedId);
 
     const data = await(this.models[__type].getFromId(id));
-    data.__type = __type; 
+    data.__type = __type;
 
     return data;
   }
