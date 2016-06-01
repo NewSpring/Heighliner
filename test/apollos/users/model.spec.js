@@ -11,7 +11,7 @@ describe("Users Model", () => {
   it("should expose the model as 'model'", () => {
     expect(users.model).to.exist;
   });
-  
+
   describe("getFromId", () => {
     let oldFindOne;
     beforeEach(() => {
@@ -21,11 +21,31 @@ describe("Users Model", () => {
     afterEach(() => {
       users.model.findOne = oldFindOne;
     });
-    
+
     it("should allow searching by an id", (done) => {
       let id = "id";
 
       users.model.findOne = function mockedFindOne({ _id }) {
+        expect(_id).to.equal(id);
+      };
+
+      users.getFromId(id)
+        .then(() => { done(); });
+    });
+
+    it("should try and read the data from the cache", (done) => {
+      let id = "id";
+
+      const cache = {
+        get(_id){
+          expect(_id).to.equal(id);
+          return false;
+        },
+      };
+
+      const tempUsers = new User({ cache })
+
+      tempUsers.model.findOne = function mockedFindOne({ _id }) {
         expect(_id).to.equal(id);
       };
 
