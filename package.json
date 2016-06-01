@@ -14,7 +14,7 @@
     "start": "tsc --watch | supervisor index.js",
     "build": "tsc & norma build",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --full-trace --compilers js:babel-core/register --require babel-polyfill --recursive",
-    "postcoverage": "remap-istanbul --input coverage/coverage.json --type lcovonly --output coverage/lcov.info"
+    "postcoverage": "remap-istanbul --input coverage/coverage.raw.json --type lcovonly --output coverage/lcov.info"
   },
   "author": "",
   "license": "ISC",
@@ -55,7 +55,7 @@
     "chai": "^3.5.0",
     "eslint": "^2.10.2",
     "graphql-tester": "0.0.4",
-    "istanbul": "^0.4.3",
+    "istanbul": "^1.0.0-alpha",
     "mocha": "^2.4.5",
     "mocha-junit-reporter": "^1.11.1",
     "normajs": "^1.7.10",
