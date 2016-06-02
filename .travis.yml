@@ -1,24 +1,22 @@
 language: node_js
-
 node_js:
-  - "6"
-  - "5"
-  - "4"
-
+- '6'
+- '5'
+- '4'
 cache:
   directories:
-    - "node_modules"
-    - "typings"
-
+  - node_modules
+  - typings
 before_install:
-  - npm i -g tslint typings
-  - typings i
-
+- npm i -g tslint typings
+- typings i
 script:
-  - npm i
-  - sed -i 's/tracerLogger.submit()/ /g' node_modules/apollo-server/dist/apolloServer.js
-  - npm test
-
+- npm i
+- sed -i 's/tracerLogger.submit()/ /g' node_modules/apollo-server/dist/apolloServer.js
+- npm test
 after_success:
-  - npm run coverage
-  - bash <(curl -s https://codecov.io/bash)
+- npm run coverage
+- bash <(curl -s https://codecov.io/bash)
+
+notifications:
+  slack: A0AmOQkfsuNh8FJbE+jQuEEUCw9BM7M4IYFcrvutMZrq8L8bb4j/UFF7N4NUzsi3nACEUbaaExKX98WgHtq3ENN1fyfQVBjbknnW1Nt86n7Igfw39vxS4aBof9GPIG14b6tnw6UnK/aausaTXfaZDObdRfPIQ3Son7X7Ac9f8VUNiahbJ6817gGsMHy161R3vxDVte5ZC0dNFEJDyRv+limpDgXAjD6Z/B7NDO8cxYNsfHphTc9VhCqdpLfcWpoXy6rUlwG8fRHdDesHRaBh3Himp3UHVFoZYzDx/WiL6JCWM4c3o1PvlrDWZy5AH+mB/e79UJTm9mwE/ERHlnnN+BNZ9sluMm3lbxfAuVcedFK1Il+ARIRrX3pHCw22xOBAxFRMcApYpPByzWA/1G0Vcg6JCPHcKMvM7IR3ZqCA9aqdn34qoh20NpkMOrzhQ53fbl9LwXZPSyEPHptRo2YoBOx8AhewwLBY8Y4d/R7h5yhsi3BCIORcGMCoLMpxGcMGnIzMU6DhciRqIbXJl37ZvbX0B7q7jZw1SY4SwNfydQd2WYq7X5mPxXAahWDMdlXptXF+gPWq6nLIGEKslQLWQOBDzSoUAEJ7Tru0b/lgVbKJMvWMU1oFO7eBxFk/4skWXfJmcWDm0SGR5USYHCewXXZpdrUB9v38veukVCe7AYc=
