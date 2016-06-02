@@ -1,79 +1,59 @@
 
-import { expect } from "chai";
+import test from "ava";
 import Mocks from "../../../lib/apollos/users/mocks";
 import { mocks } from "../../../lib/apollos";
 
-describe("User mocks", () => {
+test("Hashes should have a 'when' key with a unix date", t => {
+  const { Hashes } = Mocks;
 
-  describe("Hashes", () => {
+  const hash = Hashes();
+  const when = hash.when();
 
-    it("should have a 'when' key with a unix date", () => {
-      const { Hashes } = Mocks;
+  t.true(new Date(when) instanceof Date);
+});
 
-      const hash = Hashes();
-      const when = hash.when();
+test("UserRock should have a postive integer as an 'id' field", t => {
+  const { UserRock } = Mocks;
 
-      expect(new Date(when)).to.be.instanceof(Date);
-    });
+  const user = UserRock();
+  const id = user.id();
 
-  });
+  t.true(id > 0);
+});
 
-  describe("UserRock", () => {
+test("UserRock should have a postive integer as an 'alias' field", t => {
+  const { UserRock } = Mocks;
 
-    it("should have a postive integer as an 'id' field", () => {
-      const { UserRock } = Mocks;
+  const user = UserRock();
+  const alias = user.alias();
 
-      const user = UserRock();
-      const id = user.id();
+  t.true(alias > 0);
+});
 
-      expect(id).to.be.above(0);
-    });
+test("User should have a 'createdAt' key with a unix date", t => {
+  const { User } = Mocks;
 
-    it("should have a postive integer as an 'alias' field", () => {
-      const { UserRock } = Mocks;
+  const user = User();
+  const createdAt = user.createdAt();
 
-      const user = UserRock();
-      const alias = user.alias();
+  t.true(new Date(createdAt) instanceof Date);
+});
 
-      expect(alias).to.be.above(0);
-    });
+test("User should return an array of emails with an address", t => {
+  const { User } = Mocks;
 
-  });
+  const user = User();
+  const email = user.emails()[0];
 
-  describe("User", () => {
+  t.true(/@/.test(email.address));
+});
 
-    it("should have a 'createdAt' key with a unix date", () => {
-      const { User } = Mocks;
+test("Query should expose currentUser as part of the query", t => {
+  const { Query } = mocks;
 
-      const user = User();
-      const createdAt = user.createdAt();
+  const { currentUser } = Query;
 
-      expect(new Date(createdAt)).to.be.instanceof(Date);
-    });
-
-    it("should return an array of emails with an address", () => {
-      const { User } = Mocks;
-
-      const user = User();
-      // this is a mocked list
-      const email = user.emails().wrappedFunction();
-
-      expect(email.address).to.match(/@/, "gmi");
-    });
-
-  });
-
-  describe("Query", () => {
-
-    it("should expose currentUser as part of the query", () => {
-      const { Query } = mocks;
-
-      const { currentUser } = Query();
-
-      expect(currentUser).to.exist;
-      expect(currentUser).to.be.a("function");
-    });
-
-  });
+  t.truthy(currentUser);
+  t.is(typeof currentUser, "function");
 
 });

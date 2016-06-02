@@ -1,16 +1,37 @@
-import { expect } from "chai";
+import test from "ava";
 
-describe("Test infrastructure", () => {
+test("allows a test to be passed", t => {
+  t.pass();
+});
 
-  it("allows a test to be passed", () => {
-    expect(true).be.true;
+test("allows for promises", t => {
+  return new Promise((r) => {
+    setTimeout(r, 10);
+  }).then(() => {
+    t.pass();
+  });
+});
+
+test("allows for generators", function* (t) {
+
+  const value = yield new Promise((r) => {
+    setTimeout(r, 10);
+  }).then(() => {
+    return true;
   });
 
-  it("allows an async test to be passed", (done) => {
-    setTimeout(() => {
-      expect(true).to.be.true;
-      done();
-    }, 10);
+  t.true(value);
+
+});
+
+test("allows for async functions", async t => {
+
+  const value = await new Promise((r) => {
+    setTimeout(r, 10);
+  }).then(() => {
+    return true;
   });
+
+  t.true(value);
 
 });

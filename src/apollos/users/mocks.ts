@@ -2,6 +2,8 @@
 import { MockList } from "graphql-tools";
 import casual from "casual";
 
+import { createGlobalId } from "../../util/node/model";
+
 export interface HashTypeMocks {
   when(): string
 }
@@ -39,10 +41,11 @@ export default {
   }),
 
   User: () => ({
+    id: () => createGlobalId(`${casual.integer(0, 1000)}`, "User"),
     createdAt: () => (`${new Date(casual.unix_time)}`),
-    emails: () => new MockList(2, () => ({
+    emails: () => ([{
       address: casual.email,
-    })),
+    }]),
   }),
 
 };

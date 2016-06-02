@@ -1,4 +1,4 @@
-node_modules
+
 /.remote
 .env
 .env.dev
@@ -9,3 +9,6 @@ tmp
 typings
 lib
 dist
+.nyc_output
+node_modules
+coverage.lcov

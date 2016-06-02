@@ -2,6 +2,8 @@
 import { Cache } from "./cache";
 import { InMemoryCache } from "./memory-cache";
 
+import { createGlobalId } from "../node/model";
+
 export {
   Cache,
   InMemoryCache,
@@ -17,7 +19,13 @@ export const defaultCache: Cache = {
 
 export const resolvers = {
   Mutation: {
-    cache(_, { id }: { id: string }, { cache, models }): Promise<Object | void> {
+    cache(_,
+      { id, type }: { id: string, type: string },
+      { cache, models }
+    ): Promise<Object | void> {
+      if (type && id) {
+        id = createGlobalId(id, type);
+      }
       return Promise.resolve()
         .then(() => cache.del(id))
         .then(() => models.Node.get(id));
@@ -26,5 +34,5 @@ export const resolvers = {
 }
 
 export const mutations = [
-  "cache(id: ID!): Node",
+  "cache(id: ID!, type: String): Node",
 ];

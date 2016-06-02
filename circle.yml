@@ -11,7 +11,7 @@ machine:
 
 dependencies:
   pre:
-    - npm i -g tslint typings coveralls type normajs
+    - npm i -g tslint typings
     - typings i
   cache_directories:
     - "node_modules"
@@ -30,12 +30,11 @@ dependencies:
 test:
   pre:
     - mkdir -p $CIRCLE_TEST_REPORTS/mocha/
-  override:
-    - npm run pretest
-    - npm run ci-test
-    - npm run posttest
+    # temp fix for tracer bug
+    - sed -i 's/tracerLogger.submit()/ /g' node_modules/apollo-server/dist/apolloServer.js
+
   post:
-    - coveralls < ./coverage/lcov.info
+    - npm run coverage
 # deployment:
 #   rancher-prod:
 #     branch: rancher-prod
