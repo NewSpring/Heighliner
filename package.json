@@ -15,7 +15,7 @@
     "build": "tsc & norma build",
     "build-coverage": "BABEL_ENV=production babel --out-dir=dist index.js",
     "coverage": "npm run build && npm run build-coverage && ./node_modules/.bin/nyc report --reporter=json",
-    "postcoverage": "remap-istanbul --input coverage/coverage-final.json --type lcovonly --output coverage/lcov.info && npm run remap:coverage && npm run send:coverage",
+    "postcoverage": "remap-istanbul --input coverage/coverage-final.json --type lcovonly --output coverage/lcov.info && npm run send:coverage",
     "send:coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "author": "jbaxleyiii",
