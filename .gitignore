@@ -9,3 +9,5 @@ tmp
 typings
 lib
 dist
+.nyc_output
+!node_modules/apollo-server

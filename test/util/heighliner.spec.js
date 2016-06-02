@@ -1,4 +1,4 @@
-import { expect } from "chai";
+import test from "ava";
 import casual from "casual";
 
 import {
@@ -8,40 +8,32 @@ import {
   createSchema,
 } from "../../lib/util/heighliner";
 
-describe("Application helpers", () => {
+test("`createQueries` should return an array with `type Query`", t => {
+  const queries = createQueries([]);
+  t.true(/type Query/.test(queries));
+});
 
-  describe("createQueries", () => {
-    it("should return an array with `type Query`", () => {
-      const queries = createQueries([]);
-      expect(queries).to.match(/type Query/);
-    });
+test("`createQueries` should include the node interface", t => {
+  const queries = createQueries([]);
+  t.true(/node\(id: ID!\): Node/.test(queries));
+});
 
-    it("should include the node interface", () => {
-      const queries = createQueries([]);
-      expect(queries).to.match(/node\(id: ID!\): Node/);
-    });
+test("`createQueries` should allow passing in new queries", t => {
+  const queries = createQueries([`foo: Node`]);
+  t.true(/foo: Node/.test(queries));
+});
 
-    it("should allow passing in new queries", () => {
-      const queries = createQueries([`foo: Node`]);
-      expect(queries).to.match(/foo: Node/);
-    });
-  });
+test("`createMutations` should return an array with `type Mutation`", t => {
+  const mutations = createMutations([]);
+  t.true(/type Mutation/.test(mutations));
+});
 
-  describe("createMutations", () => {
-    it("should return an array with `type Mutation`", () => {
-      const mutations = createMutations([]);
-      expect(mutations).to.match(/type Mutation/);
-    });
+test("`createMutations` should include the cache interface", t => {
+  const mutations = createMutations([]);
+  t.true(/cache\(id: ID!\): Node/.test(mutations));
+});
 
-    it("should include the cache interface", () => {
-      const mutations = createMutations([]);
-      expect(mutations).to.match(/cache\(id: ID!\): Node/);
-    });
-
-    it("should allow passing in new mutations", () => {
-      const mutations = createMutations([`foo(id: String): Node`]);
-      expect(mutations).to.match(/foo\(id: String\): Node/);
-    });
-  });
-
+test("`createMutations` should allow passing in new mutations", t => {
+  const mutations = createMutations([`foo(id: String): Node`]);
+  t.true(/foo\(id: String\): Node/.test(mutations));
 });

@@ -11,7 +11,7 @@ machine:
 
 dependencies:
   pre:
-    - npm i -g tslint typings coveralls type normajs
+    - npm i -g tslint typings
     - typings i
   cache_directories:
     - "node_modules"
@@ -35,7 +35,7 @@ test:
     - npm run ci-test
     - npm run posttest
   post:
-    - coveralls < ./coverage/lcov.info
+    - npm run coverage
 # deployment:
 #   rancher-prod:
 #     branch: rancher-prod

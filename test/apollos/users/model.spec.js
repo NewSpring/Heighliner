@@ -1,121 +1,89 @@
 
-import { expect } from "chai";
+import test from "ava";
 import crypto from "crypto";
 
 import { User } from "../../../lib/apollos/users/model";
 
-describe("Users Model", () => {
+test("should expose the model as 'model'", t => {
+  const users = new User();
+  t.truthy(users.model);
+});
 
-  let users = new User();
+test("`getByHashedToken` should allow searching for a raw token", async t => {
+  let token = "testToken";
+  const users = new User();
+  users.model.findOne = function mockedFindOne(mongoQuery) {
+    const matches = mongoQuery["$or"];
 
-  it("should expose the model as 'model'", () => {
-    expect(users.model).to.exist;
-  });
+    for (let match of matches) {
+      const tok = match["services.resume.loginTokens.hashedToken"];
+      if (tok != token) {
+        continue;
+      }
 
-  describe("getFromId", () => {
-    let oldFindOne;
-    beforeEach(() => {
-      oldFindOne = users.model.findOne;
-    });
+      t.is(tok, token);
+      return true;
+    }
 
-    afterEach(() => {
-      users.model.findOne = oldFindOne;
-    });
+    // we should never get here
+    t.fail();
+  };
 
-    it("should allow searching by an id", (done) => {
-      let id = "id";
+  return await users.getByHashedToken(token);
+});
 
-      users.model.findOne = function mockedFindOne({ _id }) {
-        expect(_id).to.equal(id);
-      };
+test("`getByHashedToken` should allow searching for an encrypted token", async t => {
+  const token = "testToken";
+  const users = new User();
+  const encyptedToken = crypto.createHash("sha256")
+    .update(token)
+    .digest("base64");
 
-      users.getFromId(id)
-        .then(() => { done(); });
-    });
+  users.model.findOne = function mockedFindOne(mongoQuery) {
+    const matches = mongoQuery["$or"];
+    for (let match of matches) {
+      const tok = match["services.resume.loginTokens.hashedToken"];
+      if (tok != encyptedToken) {
+        continue;
+      }
 
-    it("should try and read the data from the cache", (done) => {
-      let id = "id";
+      t.is(tok, encyptedToken);
+      return true;
+    }
 
-      const cache = {
-        get(_id){
-          expect(_id).to.equal(id);
-          return false;
-        },
-      };
+    // we should never get here
+    t.fail();
+  };
 
-      const tempUsers = new User({ cache })
+  return await users.getByHashedToken(token);
+});
 
-      tempUsers.model.findOne = function mockedFindOne({ _id }) {
-        expect(_id).to.equal(id);
-      };
+test("`getFromId` should allow searching by an id", async t => {
+  let id = "id";
+  const users = new User();
+  users.model.findOne = function mockedFindOne({ _id }) {
+    t.is(_id, id);
+    return {}
+  };
 
-      users.getFromId(id)
-        .then(() => { done(); });
-    });
-  });
+  return await users.getFromId(id)
+});
 
-  describe("getByHashedToken", () => {
-    let oldFindOne;
-    beforeEach(() => {
-      oldFindOne = users.model.findOne;
-    });
+test("`getFromId` should try and read the data from the cache", async t => {
+  let id = "id";
 
-    afterEach(() => {
-      users.model.findOne = oldFindOne;
-    });
+  const cache = {
+    get(_id){
+      t.is(_id, id);
+      return {};
+    },
+  };
 
-    it("should allow searching for a raw token", (done) => {
-      let token = "testToken";
+  const tempUsers = new User({ cache })
 
-      users.model.findOne = function mockedFindOne(mongoQuery) {
-        const matches = mongoQuery["$or"];
+  tempUsers.model.findOne = function mockedFindOne({ _id }) {
+    t.is(_id, id);
+  };
 
-        for (let match of matches) {
-          const tok = match["services.resume.loginTokens.hashedToken"];
-          if (tok != token) {
-            continue;
-          }
-
-          expect(tok).to.equal(token);
-          return true;
-        }
-
-        // we should never get here
-        done(new Error("token not found"));
-      };
-
-      users.getByHashedToken(token)
-        .then(() => { done(); });
-    });
-
-    it("should allow searching for an encrypted token", (done) => {
-      const token = "testToken";
-
-      const encyptedToken = crypto.createHash("sha256")
-        .update(token)
-        .digest("base64");
-
-      users.model.findOne = function mockedFindOne(mongoQuery) {
-        const matches = mongoQuery["$or"];
-
-        for (let match of matches) {
-          const tok = match["services.resume.loginTokens.hashedToken"];
-          if (tok != encyptedToken) {
-            continue;
-          }
-
-          expect(tok).to.equal(encyptedToken);
-          return true;
-        }
-
-        // we should never get here
-        done(new Error("token not found"));
-      };
-
-      users.getByHashedToken(token)
-        .then(() => { done(); });
-    });
-
-  });
-
+  return await tempUsers.getFromId(id);
 });

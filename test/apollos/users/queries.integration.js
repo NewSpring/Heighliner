@@ -1,76 +1,52 @@
-import { expect } from "chai";
+import test from "ava";
 import express from "express";
-import { apolloServer } from "graphql-tools";
+import { apolloServer } from "apollo-server";
 import { tester } from "graphql-tester";
 import { create } from "graphql-tester/lib/main/servers/express";
 
 import { createApp } from "../../../lib/schema";
 
-// XXX figure out how to start and seed db on tests
-describe("User queries", () => {
+let Heighliner;
+test.before(async t => {
   const app = express();
-  let Heighliner;
+  const endpoint = await createApp();
 
-  before((done) => {
+  app.use("/graphql", apolloServer(endpoint));
 
-    createApp().then((endpoint) => {
-      app.use("/graphql", apolloServer(endpoint));
-
-      Heighliner = tester({
-        server: create(app),
-        url: "/graphql",
-      });
-
-      done();
-    });
-
+  Heighliner = tester({
+    server: create(app),
+    url: "/graphql",
   });
 
-  describe("currentUser", function() {
+});
 
-    let response;
-    beforeEach((done) => {
-      Heighliner(`
-        query CurrentUser {
-          currentUser {
+
+test("Valid queries should return success", async t => {
+  const response = await Heighliner(`
+    query CurrentUser {
+      currentUser {
+        id
+        createdAt
+        emails {
+          address
+        }
+        services {
+          rock {
             id
-            createdAt
-            emails {
-              address
-            }
-            services {
-              rock {
-                id
-                alias
-              }
-              resume {
-                tokens {
-                  when
-                  hashedToken
-                }
-              }
+            alias
+          }
+          resume {
+            tokens {
+              when
+              hashedToken
             }
           }
         }
-      `)
-        .then((data) => {
-          response = data;
-          done();
-        });
-    });
+      }
+    }
+  `);
 
-    it("it should return success", () => {
-      expect(response.success).to.be.true;
-    });
-
-    it("it should return the correct status code", () => {
-      expect(response.status).to.equal(200);
-    });
-
-    it("it should return some data", () => {
-      expect(response.data.currentUser).to.exist;
-    });
-
-  });
-
+  t.true(response.success);
+  t.is(response.status, 200);
+  t.truthy(response.data);
 });
