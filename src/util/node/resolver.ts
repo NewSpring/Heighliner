@@ -7,7 +7,7 @@ export default {
   },
   Node: {
     __resolveType: ({ __type }: { __type: string }, _: any, { schema }: any) => {
-        return schema.getType(__type);
-      },
+      return schema.getType(__type);
+    },
   },
 }

@@ -1,92 +1,97 @@
 
-import { expect } from "chai";
+import test from "ava";
 import casual from "casual";
 import { defaultCache, resolvers } from "../../../lib/util/cache";
 import { InMemoryCache } from "../../../lib/util/cache/memory-cache";
+import { parseGlobalId } from "../../../lib/util/node/model";
 
-describe("Caching system", () => {
+test("the cache mutation should delete the id from the cache", async t => {
+  const id = casual.word,
+        data = { test: casual.word },
+        cacheData = { [id]: data },
+        cache = new InMemoryCache(cacheData);
 
-  describe("resolvers", () => {
+  const { Mutation } = resolvers;
 
-    describe("cache", () => {
+  function get(id) {
+    return Promise.resolve({ [id]: { test: casual.word }});
+  }
+  const context = { cache, models: { Node: { get } } };
 
-      it("should delete the id from the cache", (done) => {
-        const id = casual.word,
-              data = { test: casual.word },
-              cacheData = { [id]: data },
-              cache = new InMemoryCache(cacheData);
+  const result = await Mutation.cache(null, { id }, context)
 
-        const { Mutation } = resolvers;
+  t.falsy(cacheData[id]);
+});
 
-        function get(id) {
-          return Promise.resolve({ [id]: { test: casual.word }});
-        }
+test("the cache mutation should refetch and save the data in the cache", t => {
+  const id = casual.word,
+        data = { test: casual.word },
+        data2 = { test: casual.word },
+        cacheData = { [id]: data },
+        cache = new InMemoryCache(cacheData);
 
-        Mutation.cache(null, { id }, { cache, models: { Node: { get } } })
-          .then((result) => {
-            expect(cacheData[id]).to.not.exist;
-            done();
-          });
+  const { Mutation } = resolvers;
+
+  function get(id) {
+    return cache.get(id, () => (Promise.resolve(data2)));
+  }
+  const context = { cache, models: { Node: { get } } };
+
+  return Mutation.cache(null, { id }, context)
+    .then((result) => {
+      t.deepEqual(result, data2);
+
+      // cache resetting is an async action
+      process.nextTick(() => {
+        t.deepEqual(result, data2);
+        t.pass();
       });
-
-      it("should refetch and save the data in the cache", (done) => {
-        const id = casual.word,
-              data = { test: casual.word },
-              data2 = { test: casual.word },
-              cacheData = { [id]: data },
-              cache = new InMemoryCache(cacheData);
-
-        const { Mutation } = resolvers;
-
-        function get(id) {
-          return cache.get(id, () => (Promise.resolve(data2)));
-        }
-
-        Mutation.cache(null, { id }, { cache, models: { Node: { get } } })
-          .then((result) => {
-            expect(result).to.deep.equal(data2);
-
-            // cache resetting is an async action
-            process.nextTick(() => {
-              expect(cacheData[id]).to.deep.equal(data2);
-              done();
-            });
-
-          });
-      });
-
     });
+});
+
+test("the cache mutation should allow using a native id an type together", t => {
+  const id = casual.word,
+        type = casual.word,
+        data = { test: casual.word },
+        data2 = { test: casual.word },
+        cacheData = { [id]: data },
+        cache = new InMemoryCache(cacheData);
+
+  const { Mutation } = resolvers;
+
+  function get(_id) {
+    const parsed = parseGlobalId(_id);
+    t.is(id, parsed.id);
+    t.is(type, parsed.__type);
+    return cache.get(_id, () => (Promise.resolve(data2)));
+  }
+  const context = { cache, models: { Node: { get } } };
+
+  return Mutation.cache(null, { id, type }, context)
+    .then((result) => {
+      t.deepEqual(result, data2);
+
+      // cache resetting is an async action
+      process.nextTick(() => {
+        t.deepEqual(result, data2);
+        t.pass();
+      });
+    });
+});
+
+test("defaultCache:get should simply run the lookup method", t => {
+  defaultCache.get(null, () => {
+    t.pass();
   });
+});
 
-  describe("defaultCache", () => {
-
-    describe("get", () => {
-      it("should simply run the lookup method", (done) => {
-        const lookup = () => {
-          expect(true).to.be.true;
-          done();
-        }
-        defaultCache.get(null, lookup);
-      });
+test("defaultCache:set should return true and do nothing", t => {
+  return defaultCache.set()
+    .then((success) => {
+      t.true(success);
     });
+});
 
-    describe("set", () => {
-      it("should return true and do nothing", (done) => {
-        defaultCache.set()
-          .then((success) => {
-            expect(success).to.be.true;
-            done();
-          });
-      });
-    });
-
-    describe("del", () => {
-      it("exist as a function but do nothing", () => {
-        expect(defaultCache.del).to.not.throw;
-      });
-    });
-
-
-  });
-
+test("defaultCache:del exist as a function but do nothing", t => {
+  t.notThrows(defaultCache.del);
 });

@@ -1,160 +1,107 @@
 
-import { expect } from "chai";
+import test from "ava";
 import casual from "casual";
 import { InMemoryCache } from "../../../lib/util/cache/memory-cache";
 
-describe("InMemoryCache", () => {
+test("`InMemoryCache` should have a way to get items from the cache", async t => {
+  const id = casual.word;
+  const data = { test: casual.word };
 
-  // mutable object for testing purposes
-  let cacheData;
-  let cache;
+  const cacheData = { [id]: data };
+  const cache = new InMemoryCache(cacheData);
 
-  describe("get", () => {
+  const result = await cache.get(id)
+  t.deepEqual(result, data);
+});
 
-    afterEach(() => {
-      cacheData = undefined;
-      cache = undefined;
+test("`InMemoryCache` should use a lookup method if no cache entry exists", async t => {
+  const id = casual.word;
+  const data = { test: casual.word };
+
+  const cacheData = {};
+  const cache = new InMemoryCache(cacheData);
+
+  const spyLookup = () => {
+    return Promise.resolve(data);
+  }
+
+  const result = await cache.get(id, spyLookup)
+  t.deepEqual(result, data);
+});
+
+test("`InMemoryCache` should have a way to set items in the cache with a ttl", t => {
+  const id = casual.word;
+  const data = { test: casual.word };
+
+  const cacheData = {};
+  const cache = new InMemoryCache(cacheData);
+
+  const spyLookup = () => {
+    return Promise.resolve(data);
+  }
+
+  cache.get(id, spyLookup, .1)
+    .then((result) => {
+      t.deepEqual(result, data);
     });
 
-    it("should have a way to get items from the cache", (done) => {
-      const id = casual.word;
-      const data = { test: casual.word };
+  setTimeout(() => {
+    t.falsy(cacheData[id]);
+    t.pass();
+  }, (.1 * 60) + 25);
 
-      cacheData = { [id]: data };
-      cache = new InMemoryCache(cacheData);
-
-      cache.get(id)
-        .then((result) => {
-          expect(result).to.deep.equal(data);
-          done();
-        });
-    });
-
-    it("should use a lookup method if no cache entry exists", (done) => {
-      const id = casual.word;
-      const data = { test: casual.word };
-
-      cacheData = {};
-      cache = new InMemoryCache(cacheData);
-
-      const spyLookup = () => {
-        return Promise.resolve(data);
-      }
-
-      cache.get(id, spyLookup)
-        .then((result) => {
-          expect(result).to.deep.equal(data);
-          done();
-        });
-    });
-
-    it("should have a way to set items in the cache with a ttl", (done) => {
-      const id = casual.word;
-      const data = { test: casual.word };
-
-      cacheData = {};
-      cache = new InMemoryCache(cacheData);
-
-      const spyLookup = () => {
-        return Promise.resolve(data);
-      }
-
-      cache.get(id, spyLookup, .1)
-        .then((result) => {
-          expect(result).to.deep.equal(data);
-        });
-
-      setTimeout(() => {
-        expect(cacheData[id]).to.not.exist;
-        done();
-      }, (.1 * 60) + 25);
-
-    });
-
-  });
-
-  describe("set", () => {
-
-    beforeEach(() => {
-      cacheData = {};
-      cache = new InMemoryCache(cacheData);
-    });
-
-    afterEach(() => {
-      cacheData = undefined;
-      cache = undefined;
-    });
-
-    it("should have a way to set items in the cache", (done) => {
-      const id = casual.word;
-      const data = { test: casual.word };
-
-      cache.set(id, data)
-        .then(() => {
-          expect(cacheData[id]).to.deep.equal(data);
-          done();
-        });
-    });
-
-    it("should eventually return true if successfully set", (done) => {
-      const id = casual.word;
-      const data = { test: casual.word };
-
-      cache.set(id, data)
-        .then((success) => {
-          expect(cacheData[id]).to.deep.equal(data);
-          expect(success).to.be.true;
-          done();
-        });
-    });
-
-    // it("should eventually return true if successfully set", (done) => {
-    //   const id = casual.word;
-    //   const data = { test: casual.word };
-
-    //   // destroy the `connection` to the memory store
-    //   cacheData = false;
-
-    //   cache.set(id, data)
-    //     .then((success) => {
-    //       console.log(success)
-    //       // expect(success).to.be.false;
-    //       done();
-    //     });
-    // });
-
-    it("should have a way to set items in the cache with a ttl", (done) => {
-      const id = casual.word;
-      const data = { test: casual.word };
-
-      cache.set(id, data, .1)
-        .then(() => {
-          expect(cacheData[id]).to.deep.equal(data);
-        });
-
-      setTimeout(() => {
-        expect(cacheData[id]).to.not.exist;
-        done();
-      }, (.1 * 60) + 25);
-
-    });
-
-  });
-
-  describe("del", () => {
-
-    it("should allow removing existing cache entries", () => {
-      const id = casual.word;
-      const data = { test: casual.word };
-
-      cacheData = { [id]: data };
-      cache = new InMemoryCache(cacheData);
-
-      cache.del(id);
-      expect(cacheData[id]).to.not.exist;
-    });
-
-  });
+});
 
 
+test("should have a way to set items in the cache", async t => {
+  const id = casual.word;
+  const data = { test: casual.word };
+
+  const cacheData = {};
+  const cache = new InMemoryCache(cacheData);
+
+  await cache.set(id, data)
+
+  t.deepEqual(cacheData[id], data);
+});
+
+test("should eventually return true if successfully set", async t => {
+  const id = casual.word;
+  const data = { test: casual.word };
+
+  const cacheData = {};
+  const cache = new InMemoryCache(cacheData);
+
+  const success = await cache.set(id, data);
+
+  t.deepEqual(cacheData[id], data);
+  t.true(success)
+});
+
+test("should have a way to set items in the cache with a ttl", async t => {
+  const id = casual.word;
+  const data = { test: casual.word };
+
+  const cacheData = {};
+  const cache = new InMemoryCache(cacheData);
+
+  await cache.set(id, data, .1);
+
+  t.deepEqual(cacheData[id], data);
+
+  setTimeout(() => {
+    t.falsy(cacheData[id]);
+  }, (.1 * 60) + 25);
+
+});
+
+test("`InMemoryCache` should allow removing existing cache entries", t => {
+  const id = casual.word;
+  const data = { test: casual.word };
+
+  const cacheData = { [id]: data };
+  const cache = new InMemoryCache(cacheData);
+
+  cache.del(id);
+  t.falsy(cacheData[id]);
 });

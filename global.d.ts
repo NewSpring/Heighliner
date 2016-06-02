@@ -6,12 +6,15 @@
 
 */
 declare module "graphql-tools" {
-  // XXX actually type this project
-  function apolloServer(config: any): any
 
   export class MockList {
     constructor(count: number, method: () => any)
   }
+}
+
+declare module "apollo-server" {
+  // XXX actually type this project
+  function apolloServer(config: any): any
 }
 
 declare module "casual" {

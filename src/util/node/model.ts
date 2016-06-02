@@ -11,13 +11,21 @@ export default class Node {
   }
 
   // XXX what do we want to do about errors here?
-  public async get(encodedId): Promise<Object> {
+  public async get(encodedId): Promise<Object | void> {
     const { __type, id } = parseGlobalId(encodedId);
 
-    const data = await(this.models[__type].getFromId(id));
-    data.__type = __type;
+    if (!this.models || !this.models[__type] || !this.models[__type].getFromId) {
+      return Promise.reject(`No model found using ${__type}`);
+    }
 
-    return data;
+    try {
+      const data = await(this.models[__type].getFromId(id));
+      data.__type = __type;
+      return data;
+    } catch (e) {
+      return Promise.reject(e.message);
+    }
+
   }
 
 }
