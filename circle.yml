@@ -32,10 +32,7 @@ test:
     - mkdir -p $CIRCLE_TEST_REPORTS/mocha/
     # temp fix for tracer bug
     - sed -i 's/tracerLogger.submit()/ /g' node_modules/apollo-server/dist/apolloServer.js
-  override:
-    - npm run pretest
-    - npm run ci-test
-    - npm run posttest
+
   post:
     - npm run coverage
     - bash <(curl -s https://codecov.io/bash)
