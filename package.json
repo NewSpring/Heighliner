@@ -15,7 +15,8 @@
     "build": "tsc & norma build",
     "build-coverage": "BABEL_ENV=production babel --out-dir=dist index.js",
     "coverage": "npm run build && npm run build-coverage && ./node_modules/.bin/nyc report --reporter=json",
-    "postcoverage": "remap-istanbul --input coverage/coverage-final.json -b ./src --type lcovonly --output coverage/lcov.info | ./node_modules/bin/coveralls"
+    "postcoverage": "remap-istanbul --input coverage/coverage-final.json -b ./src --type lcovonly --output coverage/lcov.info | ./node_modules/bin/coveralls | npm run send:coverage",
+    "send:coverage": "nyc report --reporter=text-lcov > coverage.lcov && ./node_modules/.bin/codecov"
   },
   "author": "jbaxleyiii",
   "ava": {
@@ -62,6 +63,7 @@
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-0": "^6.5.0",
     "babel-runtime": "^6.9.2",
+    "codecov": "^1.0.1",
     "coveralls": "^2.11.9",
     "eslint": "^2.10.2",
     "graphql-tester": "0.0.4",

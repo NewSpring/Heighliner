@@ -11,3 +11,4 @@ lib
 dist
 .nyc_output
 node_modules
+coverage.lcov
