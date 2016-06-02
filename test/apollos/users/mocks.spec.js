@@ -43,15 +43,15 @@ test("User should return an array of emails with an address", t => {
   const { User } = Mocks;
 
   const user = User();
-  const email = user.emails().wrappedFunction();
-  
+  const email = user.emails()[0];
+
   t.true(/@/.test(email.address));
 });
 
 test("Query should expose currentUser as part of the query", t => {
   const { Query } = mocks;
 
-  const { currentUser } = Query();
+  const { currentUser } = Query;
 
   t.truthy(currentUser);
   t.is(typeof currentUser, "function");

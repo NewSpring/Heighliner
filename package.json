@@ -6,11 +6,12 @@
   "scripts": {
     "pretest": "rm -rf ./dist && mkdir ./dist && npm run build",
     "test": "npm run testonly --",
+    "test:watch": "ava --watch",
     "copy-schemas": "norma build",
     "testonly": "nyc ava",
     "lint": "tslint src/**/*.ts && tslint test/**/*.ts",
     "posttest": "npm run lint",
-    "start": "tsc --watch | supervisor index.js | ava --watch",
+    "start": "tsc --watch | supervisor -w lib index.js",
     "build": "tsc & norma build",
     "build-coverage": "BABEL_ENV=production babel --out-dir=dist index.js",
     "coverage": "npm run build && npm run build-coverage && ./node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls"

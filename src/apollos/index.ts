@@ -40,9 +40,9 @@ export const queries = [
 ];
 
 export let mocks = merge({
-    Query: () => ({
+    Query: {
       currentUser() { return {}; },
-    }),
+    },
   },
   userMocks
 ) as Mocks;

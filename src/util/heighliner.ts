@@ -51,6 +51,12 @@ export function loadApplications(applications: { [key: string]: ApplicationDefin
     joined.mocks = merge(joined.mocks, app.mocks);
   });
 
+  // dynmically create the root query mock
+  const queries = merge({}, joined.mocks.Query)
+  joined.mocks.Query = () => queries;
+
+  // XXX dynamically create the root mutation mock
+
   return joined;
 }
 

@@ -30,7 +30,7 @@ test("`createMutations` should return an array with `type Mutation`", t => {
 
 test("`createMutations` should include the cache interface", t => {
   const mutations = createMutations([]);
-  t.true(/cache\(id: ID!\): Node/.test(mutations));
+  t.true(/cache\(id: ID!, type: String\): Node/.test(mutations));
 });
 
 test("`createMutations` should allow passing in new mutations", t => {
