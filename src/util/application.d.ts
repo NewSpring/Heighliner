@@ -24,7 +24,7 @@ export interface Models {
 // }
 
 export interface Mocks {
-  Query?: any
+  Query?: any;
   [key: string]: any;
 }
 
