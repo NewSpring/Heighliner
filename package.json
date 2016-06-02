@@ -16,7 +16,7 @@
     "build-coverage": "BABEL_ENV=production babel --out-dir=dist index.js",
     "coverage": "npm run build && npm run build-coverage && ./node_modules/.bin/nyc report --reporter=json",
     "postcoverage": "remap-istanbul --input coverage/coverage-final.json --type lcovonly --output coverage/lcov.info && npm run remap:coverage && npm run send:coverage",
-    "remap:coverage": "sed -i '' 's/\\/lib\\//\\/src\\//g' coverage/coverage-final.json",
+    "remap:coverage": "sed -i 's/\\/lib\\//\\/src\\//g' coverage/coverage-final.json",
     "send:coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && nyc report --reporter=text-lcov > coverage.lcov && ./node_modules/.bin/codecov"
   },
   "author": "jbaxleyiii",
