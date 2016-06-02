@@ -1,76 +1,39 @@
-import { expect } from "chai";
+import test from "ava";
 import express from "express";
-import { apolloServer } from "graphql-tools";
+import { apolloServer } from "apollo-server";
 import { tester } from "graphql-tester";
 import { create } from "graphql-tester/lib/main/servers/express";
 
 import { createApp } from "../lib/schema";
 
-describe("Using the application", () => {
+
+let Heighliner;
+test.before(async t => {
   const app = express();
-  let Heighliner;
+  const endpoint = await createApp();
 
-  before((done) => {
+  app.use("/graphql", apolloServer(endpoint));
 
-    createApp().then((endpoint) => {
-      app.use("/graphql", apolloServer(endpoint));
-
-      Heighliner = tester({
-        server: create(app),
-        url: "/graphql",
-      });
-
-      done();
-    });
-
+  Heighliner = tester({
+    server: create(app),
+    url: "/graphql",
   });
 
-  describe("Valid Query", function() {
-    let response;
-    beforeEach((done) => {
-      Heighliner("{ currentUser { id } }")
-        .then((data) => {
-          response = data;
-          done();
-        });
-    });
+});
 
-    it("it should return success", () => {
-      expect(response.success).to.be.true;
-    });
 
-    it("it should return the correct status code", () => {
-      expect(response.status).to.equal(200);
-    });
+test("Valid queries should return success", async t => {
+  const response = await Heighliner("{ currentUser { id } }");
 
-    it("it should return some data", () => {
-      expect(response.data.currentUser).to.exist;
-    });
+  t.true(response.success);
+  t.is(response.status, 200);
+  t.truthy(response.data);
+});
 
-  });
+test("Invalid queries should fail", async t => {
+  const response = await Heighliner("{ foobar { id } }");
 
-  describe("Invalid Query", () => {
-    let response;
-    beforeEach((done) => {
-      Heighliner("{ foobar { id } }")
-        .then((data) => {
-          response = data;
-          done();
-        });
-    });
-
-    it("it should return success", () => {
-      expect(response.success).to.be.false;
-    });
-
-    it("it should return the correct status code", () => {
-      expect(response.status).to.equal(400);
-    });
-
-    it("it should return some errors", () => {
-      expect(response.errors).to.have.length.above(0);
-    });
-
-  });
-
+  t.false(response.success);
+  t.is(response.status, 400);
+  t.truthy(response.errors);
 });
