@@ -3,6 +3,7 @@ import test from "ava";
 import casual from "casual";
 import { defaultCache, resolvers } from "../../../lib/util/cache";
 import { InMemoryCache } from "../../../lib/util/cache/memory-cache";
+import { parseGlobalId } from "../../../lib/util/node/model";
 
 test("the cache mutation should delete the id from the cache", async t => {
   const id = casual.word,
@@ -37,6 +38,36 @@ test("the cache mutation should refetch and save the data in the cache", t => {
   const context = { cache, models: { Node: { get } } };
 
   return Mutation.cache(null, { id }, context)
+    .then((result) => {
+      t.deepEqual(result, data2);
+
+      // cache resetting is an async action
+      process.nextTick(() => {
+        t.deepEqual(result, data2);
+        t.pass();
+      });
+    });
+});
+
+test("the cache mutation should allow using a native id an type together", t => {
+  const id = casual.word,
+        type = casual.word,
+        data = { test: casual.word },
+        data2 = { test: casual.word },
+        cacheData = { [id]: data },
+        cache = new InMemoryCache(cacheData);
+
+  const { Mutation } = resolvers;
+
+  function get(_id) {
+    const parsed = parseGlobalId(_id);
+    t.is(id, parsed.id);
+    t.is(type, parsed.__type);
+    return cache.get(_id, () => (Promise.resolve(data2)));
+  }
+  const context = { cache, models: { Node: { get } } };
+
+  return Mutation.cache(null, { id, type }, context)
     .then((result) => {
       t.deepEqual(result, data2);
 

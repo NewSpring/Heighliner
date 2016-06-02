@@ -73,9 +73,9 @@ export async function createApp() {
     const MONGO = await Mongo(process.env.MONGO_URL || "mongodb://localhost/meteor");
     if (MONGO) useMocks = false;
   }
-  
+
   const cache = new InMemoryCache();
-  
+
 
   return async function(request){
 
@@ -96,7 +96,7 @@ export async function createApp() {
     Object.keys(models).forEach((name) => {
       createdModels[name] = new models[name](context);
     });
-    
+
     context.models = createdModels;
     context.models.Node = new Node(context);
 
@@ -104,7 +104,7 @@ export async function createApp() {
       graphiql: process.env.NODE_ENV != "production",
       pretty: false,
       context: context as Context,
-      resolvers, // required if schema is an array of type definitions
+      resolvers: useMocks ? false: resolvers, // required if schema is an array of type definitions
       mocks: useMocks ? mocks : false,
       schema,
     };

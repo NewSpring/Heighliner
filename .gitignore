@@ -1,4 +1,4 @@
-node_modules
+
 /.remote
 .env
 .env.dev
@@ -10,4 +10,4 @@ typings
 lib
 dist
 .nyc_output
-!node_modules/apollo-server
+node_modules
