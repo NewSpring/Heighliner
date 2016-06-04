@@ -24,7 +24,12 @@ export const resolvers = merge(
   {
     Query: {
       content(_, { channel, collection, limit, skip, status }, { models }){
-        return models.Content.find(channel, { limit, offset: skip, status });
+        return models.Content.find({
+          channel_name: channel,
+          offset: skip,
+          limit,
+          status
+        });
       },
     },
   },

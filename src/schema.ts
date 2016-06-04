@@ -73,10 +73,10 @@ export async function createApp() {
 
     // local development handling for docker-machine ips being different
     let dockerhost = "192.168.99.100"
-    if (process.env.DOCKER_HOST) {
-      const hostObj = Url.parse(process.env.DOCKER_HOST)
-      dockerhost = hostObj.host
-    }
+    // if (process.env.DOCKER_HOST) {
+    //   const hostObj = Url.parse(process.env.DOCKER_HOST)
+    //   dockerhost = hostObj.host
+    // }
 
     // MONGO
     const APOLLOS = await Apollos.connect(process.env.MONGO_URL || "mongodb://localhost/meteor");

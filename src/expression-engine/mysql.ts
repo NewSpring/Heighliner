@@ -43,7 +43,6 @@ export class MySQLConnector {
   constructor(tableName: string, schema: Object = {}, options: DefineOptions<any> = {}) {
     this.db = db;
     options = merge(options, { tableName });
-
     this.model = db.define(tableName, schema, options);
 
     // XXX integrate data loader

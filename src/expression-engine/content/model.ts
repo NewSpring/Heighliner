@@ -1,7 +1,14 @@
-import { merge } from "lodash";
+import { merge, pick } from "lodash";
 
 import { Cache, defaultCache } from "../../util/cache";
-import { Channels, ChannelTitles } from "../tables/channels";
+import {
+  Channels,
+  channelSchema,
+  ChannelData,
+  channelDataSchema,
+  ChannelTitles,
+  channelTitleSchema,
+} from "../tables/channels";
 
 export class Content {
   private cache: Cache
@@ -10,19 +17,35 @@ export class Content {
     this.cache = cache;
   }
 
-  async find(channelName: string, opts: any = {}) {
-    const { limit, offset } = opts;
-    delete opts.limit;
-    delete opts.offset;
-    return await ChannelTitles.find(merge({
-      include: [{
-        model: Channels.model,
-        where: { channel_name: channelName },
-      }],
-    }, { where: opts }, { limit, offset }))
+  async find(query: any = {}) {
+    const { limit, offset } = query; // true options
+    delete query.limit;
+    delete query.offset;
+
+    // channel data fields
+    const channelDataFields = pick(query,  Object.keys(channelDataSchema));
+    const channelFields = pick(query, Object.keys(channelSchema));
+    const channelTitleFields = pick(query, Object.keys(channelTitleSchema));
+
+    return await ChannelData.find(merge({
+      include: [
+        {
+          model: Channels.model,
+          where: channelFields,
+        },
+        {
+          model: ChannelTitles.model,
+          where: channelTitleFields,
+        }
+    ],
+    }, { where: channelDataFields }, { limit, offset }))
       .then((data) => data.map(x => x.dataValues))
       .then((data) => data.map(x => {
         x.exp_channel = x.exp_channel.dataValues;
+        return x;
+      }));
+      .then((data) => data.map(x => {
+        x.exp_channel_title = x.exp_channel_title.dataValues;
         return x;
       }));
   }
