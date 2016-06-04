@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "chai": "registry:npm/chai#3.5.0+20160415060238",
-    "lodash": "registry:npm/lodash#4.0.0+20160416211519"
+    "lodash": "registry:npm/lodash#4.0.0+20160416211519",
+    "sequelize": "registry:npm/sequelize#3.0.0+20160602143835"
   }
 }

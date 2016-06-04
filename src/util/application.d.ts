@@ -34,6 +34,7 @@ export interface ApplicationDefinition {
   models: Models;
   resolvers: Resolvers;
   mocks: Mocks;
+  connect?: Function;
 }
 
 export interface SchemaShorthand {
