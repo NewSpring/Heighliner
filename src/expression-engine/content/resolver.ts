@@ -7,6 +7,8 @@ export default {
     id: ({ entry_id }: any, _, $, { parentType }) => createGlobalId(entry_id, parentType.name),
     channel: ({ channel_id }: any) => createGlobalId(channel_id, "Channel"),
     channelName: ({ exp_channel }) => exp_channel.channel_name,
+    title: ({ exp_channel_title }) => exp_channel_title.title,
+    status: ({ exp_channel_title }) => exp_channel_title.status,
   },
 
 };
