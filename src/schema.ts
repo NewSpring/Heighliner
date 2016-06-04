@@ -1,7 +1,7 @@
+import Url from "url";
 import { User } from "./apollos/users/model";
 import Node from "./util/node/model";
 import { InMemoryCache, Cache } from "./util/cache";
-import { connect as Mongo, MongoConnector } from "./connectors/mongo";
 
 import {
   createSchema,
@@ -22,9 +22,9 @@ import Apollos, {
 // } from "./rock";
 
 // Import Expression Engine
-// import ExpressionEngine, {
-//   queries as ExpressionEngineQueries,
-// } from "./expression-engine";
+import ExpressionEngine, {
+  queries as ExpressionEngineQueries,
+} from "./expression-engine";
 
 // Import Google Site Search
 // import GoogleSS, { queries as GoogleSSQueries } from "./google-site-search";
@@ -33,7 +33,7 @@ import Apollos, {
 // Merge all applications together
 let { schema, models, resolvers, mocks } = loadApplications({
   Apollos,
-  // ExpressionEngine,
+  ExpressionEngine,
   // Rock,
   // GoogleSS,
 });
@@ -42,7 +42,7 @@ let { schema, models, resolvers, mocks } = loadApplications({
 schema = createSchema({
   queries: [
     ...ApollosQueries,
-    // ...ExpressionEngineQueries,
+    ...ExpressionEngineQueries,
     // ...RockQueries,
     // ...GoogleSSQueries,
   ],
@@ -70,12 +70,37 @@ export async function createApp() {
   */
   let cacheType;
   if (!process.env.CI) {
-    const MONGO = await Mongo(process.env.MONGO_URL || "mongodb://localhost/meteor");
-    if (MONGO) useMocks = false;
+
+    // local development handling for docker-machine ips being different
+    let dockerhost = "192.168.99.100"
+    if (process.env.DOCKER_HOST) {
+      const hostObj = Url.parse(process.env.DOCKER_HOST)
+      dockerhost = hostObj.host
+    }
+
+    // MONGO
+    const APOLLOS = await Apollos.connect(process.env.MONGO_URL || "mongodb://localhost/meteor");
+    // XXX find a way to just use mocks for Apollos
+    if (APOLLOS) useMocks = false;
+
+
+    // MySQL connections
+    const EESettings = {
+      host        : process.env.MYSQL_HOST || dockerhost,
+      user        : process.env.MYSQL_USER || "root",
+      password    : process.env.MYSQL_PASSWORD || "password",
+      database    : process.env.MYSQL_DB || "ee_local",
+      ssl: process.env.MYSQL_SSL || false
+    };
+    const { database, user, password } = EESettings;
+    const EE = await ExpressionEngine.connect(database, user, password, {
+      host: EESettings.host,
+      // ssl: MySQLSettings.ssl,
+    });
+    if (EE) useMocks = false;
   }
 
   const cache = new InMemoryCache();
-
 
   return async function(request){
 

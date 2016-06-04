@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-import { MongoConnector } from "../../connectors/mongo";
+import { MongoConnector } from "../mongo";
 import { Cache, defaultCache } from "../../util/cache";
 
 export interface UserProfile {
@@ -64,7 +64,7 @@ const Model = new MongoConnector("user", schema);
 export class User {
   private model: MongoConnector
   private cache: Cache
-  
+
   constructor({ cache } = { cache: defaultCache }) {
     this.cache = cache;
     this.model = Model;

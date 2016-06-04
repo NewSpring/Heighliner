@@ -1,5 +1,7 @@
 import { merge } from "lodash";
 
+import { connect } from "./mongo";
+
 import {
   schema as userSchema,
   mocks as userMocks,
@@ -52,4 +54,5 @@ export default {
   resolvers,
   mocks,
   schema,
+  connect,
 } as ApplicationDefinition;

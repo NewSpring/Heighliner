@@ -2,7 +2,7 @@
 import test from "ava";
 import { Schema } from "mongoose";
 
-import { MongoConnector, connect } from "../../lib/connectors/mongo";
+import { MongoConnector, connect } from "../../lib/apollos/mongo";
 
 test("\'connect\' should allow for a connection status to be returned", async t => {
   const status = await connect("fake address");
