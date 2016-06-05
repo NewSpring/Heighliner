@@ -16,8 +16,15 @@ import {
   model as Contents,
 } from "./content";
 
+import {
+  schema as fileSchema,
+  resolver as File,
+  model as Files,
+} from "./files";
+
 export const schema = [
   ...contentSchema,
+  ...fileSchema,
 ];
 
 export const resolvers = merge(
@@ -33,11 +40,13 @@ export const resolvers = merge(
       },
     },
   },
-  Content
+  Content,
+  File
 ) as Resolvers;
 
 export const models = merge(
-  Contents
+  Contents,
+  Files
 ) as Models;
 
 // XXX implement pagination instead of skip

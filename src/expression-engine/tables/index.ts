@@ -1,14 +1,32 @@
+import { merge } from "lodash";
 
-import { connect as channels } from "./channels";
+import { Tables } from "../mysql";
+
+import channels from "./channels";
+import assets from "./assets";
+import matrix from "./matrix";
 
 let tables = {
+  assets,
   channels,
-}
+  matrix,
+} as {
+  [key: string]: {
+    connect: () => Tables;
+    bind?: (Tables) => void;
+  }
+};
 
 export function createTables() {
+   let createdTables = {};
+   
   for (let table in tables) {
-    tables[table] = tables[table]();
+    createdTables = merge(createdTables, tables[table].connect());
+  }
+  
+  for (let table in tables) {
+    if (tables[table].bind) tables[table].bind(createdTables);
   }
 
-  return tables;
+  return createdTables as Tables;
 }

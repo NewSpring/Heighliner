@@ -1,0 +1,30 @@
+
+# interface File {
+#   id: ID!
+#   file: String!
+#   type: String
+#   label: String
+
+#   s3: String
+#   cloudfront: String
+
+#   # deprecated
+#   fileName: String!
+#   fileType: String
+#   fileLabel: String
+# }
+
+type File implements Node {
+  id: ID!
+  file: String!
+  type: String
+  label: String
+
+  s3: String
+  cloudfront: String
+
+  # deprecated
+  fileName: String!
+  fileType: String
+  fileLabel: String
+}
