@@ -55,7 +55,7 @@ export class File extends EE {
         {
           file_id: x.file_id,
           // fileType: x.exp_matrix_datum[column_name],
-          fileLabel: x.exp_matrix_col.col_label,
+          fileLabel: x.exp_matrix_col && x.exp_matrix_col.col_label,
         },
         this.generateFileName(x.exp_assets_file)
       )));
