@@ -18,32 +18,48 @@ export default {
   },
 
   ContentData: {
-    body: ({ editorial_body }, _, { models }) => models.Content.cleanMarkup(editorial_body),
-    description: () => "foo",
+    body: ({ body, legacy_body }, _, { models }) => models.Content.cleanMarkup(body || legacy_body),
+    description: ({ description }) => description,
     scripture: () => "foo",
-    ooyalaId: ({ editorial_ooyalaId }) => editorial_ooyalaId,
-    tags: ({ editorial_tags }, _, { models }) => models.Content.splitByNewLines(editorial_tags),
+    ooyalaId: ({ video }) => video,
+    tags: ({ tags }, _, { models }) => models.Content.splitByNewLines(tags),
     speakers: () => ["foo"],
-    isLight: () => true,
+    hashtag: ({ hashtag }) => hashtag,
+    isLight: ({ lightswitch }) => lightswitch != "dark",
 
-    images: ({ entry_id }, _, { models }) => {
-      // XXX how do we do this dynamically based on the channel?
-      return models.File.getFilesFromContent(entry_id, "Hero Image", "collection_images");
+    images: ({ image, exp_channel, entry_id }, _, { models }) => {
+      const position = exp_channel.exp_channel_fields.image;
+      console.log(image, position)
+      return models.File.getFilesFromContent(entry_id, image, position);
     },
     colors: data => [],
   },
 
   ContentMeta: {
-    urlTitle: ({ exp_channel_title }) => exp_channel_title.url_title,
     site: ({ site_id }) => createGlobalId(site_id, "Sites"),
     channel: ({ channel_id }: any) => createGlobalId(channel_id, "Channel"),
+    series: ({ series_id }, _, $, { parentType }) => createGlobalId(series_id, parentType.name),
+    urlTitle: ({ exp_channel_title }) => exp_channel_title.url_title,
+    
     date: ({ exp_channel_title }, _, { models }) => {
       const { day, month, year } = exp_channel_title;
-      return `${models.Content.getDate(day, month, year)}`;
+      return models.Content.getDate(day, month, year);
     },
-    actualDate: ({ actual_date }, _, { models }) => {
-      return `${models.Content.getDateFromUnix(actual_date)}`
+    // XXX date fields per model
+    actualDate: ({ actualdate }, _, { models }) => {
+      return models.Content.getDateFromUnix(actualdate);
     },
+    entryDate: ({ entrydate }, _, { models }) => {
+      return models.Content.getDateFromUnix(entrydate);
+    },
+    startDate: ({ startdate }, _, { models }) => {
+      return models.Content.getDateFromUnix(startdate);
+    },
+    endDate: ({ enddate }, _, { models }) => {
+      return models.Content.getDateFromUnix(enddate);
+    },
+    
+    // deprecated
     siteId: ({ site_id }) => createGlobalId(site_id, "Sites"),
     channelId: ({ channel_id }: any) => createGlobalId(channel_id, "Channel"),
   },
@@ -56,10 +72,13 @@ export default {
     status: ({ exp_channel_title }) => exp_channel_title.status,
     meta: data => data,
     content: data => data,
-    tracks: data => data,
     authors: ({ editorial_authors }) => {
       return editorial_authors ? editorial_authors.split(","): null
     },
+    
+    // deprecated
+    tracks: data => data,
+    seriesId: ({ series_id }, _, $, { parentType }) => createGlobalId(series_id, parentType.name),
   },
 
 };

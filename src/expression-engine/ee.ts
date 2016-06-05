@@ -4,12 +4,12 @@ export class EE {
 
   }
 
-  public getDate(day: string, month: string, year: string): Date {
-    return new Date(Number(year), Number(month) -1 , Number(day));
+  public getDate(day: string, month: string, year: string): string {
+    return `${new Date(Number(year), Number(month) -1 , Number(day))}`;
   }
 
-  public getDateFromUnix(timestamp: number): Date {
-    return new Date(timestamp * 1000);
+  public getDateFromUnix(timestamp: number): string | void {
+    return timestamp ? `${new Date(timestamp * 1000)}`: null;
   }
 
   public contentImages(markup: string): any[] {

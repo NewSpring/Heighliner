@@ -14,8 +14,11 @@ const matrixSchema: Object = {
   
   // start the long list of cols...
   // XXX can this be more dynamic?
-  collection_images: { type: STRING, field: "col_id_269" },
-  // col_id_269: { type: STRING }
+  // collection_images: { type: STRING, field: "col_id_269" },
+  // collection_download_description: { type: STRING, field: "col_id_223" },
+  // collection_download_file: { type: STRING, field: "col_id_224" },
+  // collection_download_title: { type: STRING, field: "col_id_225" },
+
 };
 
 const matrixColSchema: Object = {

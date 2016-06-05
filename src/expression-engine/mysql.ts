@@ -21,7 +21,7 @@ export function connect(
     opts = merge({}, opts, {
       dialect: "mysql",
       logging: (...args) => {},
-      // logging: console.log.bind(console, "MYSQL:") // use for debugging mysql
+      // logging: console.log.bind(console, "MYSQL:"), // use for debugging mysql
       define: {
         timestamps: false,
         freezeTableName: true,

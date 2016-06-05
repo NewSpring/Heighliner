@@ -87,7 +87,27 @@ export class File extends EE {
     }
   }
   
-  public async getFilesFromContent(entry_id: number, name: string = "Hero Image", column_name: string ): Promise<any> { // replace with FileType
+  public async getFilesFromContent(entry_id: number, name: string = "Hero Image", field_id: string ): Promise<any> { // replace with FileType
+    field_id = field_id.split("_").pop()
+    
+    // XXX make this more dynamic
+    let dynamicIncludes = [
+      {
+        model: Assets.model,
+        attributes: ["file_name"],
+        include: [
+          { model: AssetsSources.model, attributes: ["settings"] },
+          { model: AssetsFolders.model, attributes: ["full_path"] },
+        ],
+      }
+    ] as any[]; // XXX typescript weirdness
+    
+    if (name.indexOf(".") === -1) {
+      // uses matrix
+      dynamicIncludes.unshift({ model: Matrix.model, where: { field_id } });
+      dynamicIncludes.unshift({ model: MatrixCol.model, attributes: ["col_name", "col_label"] });
+    }
+    
     return ChannelData.find({
       where: { entry_id },
       attributes: ["entry_id"],
@@ -95,27 +115,18 @@ export class File extends EE {
         {
           model: AssetsSelections.model,
           attributes: ["col_id", "file_id"],
-          include: [
-            { model: Matrix.model, where: { [column_name]: name } },
-            { model: MatrixCol.model, attributes: ["col_name", "col_label"] },
-            {
-              model: Assets.model,
-              attributes: ["file_name"],
-              include: [
-                { model: AssetsSources.model, attributes: ["settings"] },
-                { model: AssetsFolders.model, attributes: ["full_path"] },
-              ],
-            },
-          ],
+          where: { field_id },
+          include: dynamicIncludes,
         },
       ],
     })
+      .then(data => { console.log(data); return data; })
       .then(data => data.map(x => x.exp_assets_selection))
       .then(data => data.map(x => (merge(
         {
           file_id: x.file_id,
-          fileType: x.exp_matrix_datum[column_name],
-          fileLabel: x.exp_matrix_col.col_label,
+          // fileType: x.exp_matrix_datum[column_name],
+          fileLabel: x.exp_matrix_col && x.exp_matrix_col.col_label,
         },
         this.generateFileName(x.exp_assets_file)
       ))));
