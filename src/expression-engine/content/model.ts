@@ -46,14 +46,42 @@ export class Content extends EE {
     return fieldName;
   }
   
-  private createFieldNames(fields: ChannelField[], channelType: string): string[][] {
+  private createFieldNames(fields: ChannelField[], remove): string[][] {
     return fields.map(field => {
-      let name = field.field_name.split("_");
-      name.shift();
-      // xxx this will probably need to be more borust
-      const newName = name.join("_");     
-      return [`field_id_${field.field_id}`, newName];
+      let name = field.field_name;
+      
+      if (remove) {
+        let splitName = name.split("_");
+        splitName.shift();
+        name = splitName.join("_");
+      } else {
+        name = `${name}@dynamic`;
+      }
+      
+      return [`field_id_${field.field_id}`, name];
     });
+  }
+  
+  private cleanFieldNames(data: any): any {
+    for (let key in data) {
+
+      if (key.indexOf("@dynamic") > -1) {
+        let newKey = key.replace("@dynamic", "").split("_");
+        newKey.shift();
+        
+        let value = data[key];
+        
+        if (value) {
+          delete data[key];
+        
+          key = newKey.join("_");
+          data[key] = value;
+        }
+        
+        continue;
+      }
+    }
+    return data
   }
   
   public async getFromId(id: string): Promise<any> { // replace with ContentType
@@ -95,6 +123,8 @@ export class Content extends EE {
       .then(x => flatten(x.map(y => y.exp_matrix_data)));
   };
   
+  private 
+  
   public async find(query: any = {}) {
     const { limit, offset } = query; // true options
     delete query.limit;
@@ -108,15 +138,13 @@ export class Content extends EE {
     
     const fields = await Channels.find({
       where: channel,
-      include: [
-        { model: ChannelFields.model }
-      ]
+      include: [ { model: ChannelFields.model } ]
     })
       .then(x => x.map(y => y.exp_channel_field))
       .then(this.createFieldNames);
     
     const exp_channel_fields = this.createFieldObject(fields);
-          
+
     return await ChannelData.find({
       where: channelData,
       attributes: ["entry_id", "channel_id", "site_id"].concat(fields),
@@ -124,19 +152,26 @@ export class Content extends EE {
         [ChannelTitles.model, "entry_date", "DESC"]
       ],
       include: [
-        {
-          model: Channels.model,
-          where: channel,
-        },
+        { model: Channels.model, where: channel },
         { model: ChannelTitles.model, where: channelTitle },
       ],
       limit,
       offset
     })
       .then(x => x.map(y => {
-        y.exp_channel.exp_channel_fields = exp_channel_fields
+        // only keep the keys that have value to them
+        const keys = [];
+        for (let key in y) {
+          if (y[key]) keys.push(key);
+        }
+        // esseintially this part takes the joined channel fields and keeps only the fields
+        // from this content type (i.e. editorial)
+        y.exp_channel.exp_channel_fields = this.cleanFieldNames(pick(exp_channel_fields, keys));
         return y;
-      }));
+      }))
+      .then(x => x.map(this.cleanFieldNames))
+      ;
+      
  
   }
 }

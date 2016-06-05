@@ -1,5 +1,5 @@
 
-import { merge } from "lodash";
+import { merge, difference } from "lodash";
 
 import { connect } from "./mysql";
 
@@ -38,6 +38,28 @@ export const resolvers = merge(
           status
         });
       },
+      feed(_, { excludeChannels, limit, skip, status}, { models }){
+        let channels = [
+          "devotionals",
+          "articles",
+          "series_newspring",
+          "sermons",
+          "stories",
+          "albums"
+        ];
+        
+        // only include what user hasn't excluded
+        channels = difference(channels, excludeChannels);
+
+        return models.Content.find({
+          channel_name: {
+            $or: channels,
+          },
+          offset: skip,
+          limit,
+          status
+        });
+      }
     },
   },
   Content,
@@ -53,6 +75,7 @@ export const models = merge(
 // use `after` for ^^
 export const queries = [
   `content(channel: String!, collection: ID, limit: Int = 20, skip: Int = 0, status: String = "open"): [Content]`,
+  `feed(excludeChannels: [String], limit: Int = 20, skip: Int = 0, status: String = "open"): [Content]`
 ];
 
 export let mocks = merge({
