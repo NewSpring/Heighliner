@@ -5,11 +5,13 @@ import { Tables } from "../mysql";
 import channels from "./channels";
 import assets from "./assets";
 import matrix from "./matrix";
+import playa from "./playa";
 
 let tables = {
   assets,
   channels,
   matrix,
+  playa,
 } as {
   [key: string]: {
     connect: () => Tables;

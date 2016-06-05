@@ -11,14 +11,6 @@ const matrixSchema: Object = {
   site_id: { type: INTEGER },
   entry_id: { type: INTEGER },
   field_id: { type: INTEGER },
-  
-  // start the long list of cols...
-  // XXX can this be more dynamic?
-  // collection_images: { type: STRING, field: "col_id_269" },
-  // collection_download_description: { type: STRING, field: "col_id_223" },
-  // collection_download_file: { type: STRING, field: "col_id_224" },
-  // collection_download_title: { type: STRING, field: "col_id_225" },
-
 };
 
 const matrixColSchema: Object = {
