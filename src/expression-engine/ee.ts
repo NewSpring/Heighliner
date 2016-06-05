@@ -3,6 +3,11 @@ export class EE {
   constructor() {
 
   }
+  
+  public debug(data: any): any {
+    console.log("DEBUG:", data);
+    return data;
+  }
 
   public getDate(day: string, month: string, year: string): string {
     return `${new Date(Number(year), Number(month) -1 , Number(day))}`;

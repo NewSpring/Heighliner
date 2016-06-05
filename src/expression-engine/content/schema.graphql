@@ -1,31 +1,30 @@
-# XXX this should be a global type that implements File
-# XXX abstract from content
-type ContentTrack {
-  id: ID!
-  file: String!
-  duration: String
-  title: String!
-}
 
 # should this be a global type that implements Node?
 # XXX abstract from content if ^^
 type ContentColor {
-  id: ID!
+  id: ID
   value: String!
   description: String
+}
+
+type ContentScripture {
+  book: String
+  passage: String
 }
 
 type ContentData {
   body: String
   description: String
-  scripture: String # XXX make a scripture type
   ooyalaId: String
-  images: [File]
-  tags: [String] # XXX create global tag type
-  colors: [ContentColor]
-  speakers: [String]
+  speaker: String
   isLight: Boolean
   hashtag: String
+  
+  tags: [String] # XXX create global tag type
+  colors: [ContentColor]
+  images: [File]
+  tracks: [File]
+  scripture: [ContentScripture]
 }
 
 type ContentMeta {
@@ -59,6 +58,6 @@ type Content implements Node {
   authors: [String]
   
   # deprecated (moved to other types)
-  tracks: [ContentTrack]
+  tracks: [File]
   seriesId: ID
 }

@@ -1,4 +1,4 @@
-import { merge, pick, flatten } from "lodash";
+import { merge, pick, flatten, pickBy } from "lodash";
 
 import { Cache, defaultCache } from "../../util/cache";
 
@@ -54,7 +54,6 @@ export class File extends EE {
       .then(x => (merge(
         {
           file_id: x.file_id,
-          // fileType: x.exp_matrix_datum[column_name],
           fileLabel: x.exp_matrix_col && x.exp_matrix_col.col_label,
         },
         this.generateFileName(x.exp_assets_file)
@@ -87,8 +86,16 @@ export class File extends EE {
     }
   }
   
-  public async getFilesFromContent(entry_id: number, name: string = "Hero Image", field_id: string ): Promise<any> { // replace with FileType
-    field_id = field_id.split("_").pop()
+  private fuzzyMatchKey(obj: { [key: string]: any }, key: string): any {
+    for (let k in obj) {
+      if (k.indexOf(key) > -1) {
+        return obj[k];
+      }
+    }
+  }
+  
+  public async getFilesFromContent(entry_id: number, name: string = "Hero Image", field_id: number ): Promise<any> { // replace with FileType    
+    if (!entry_id || !field_id) return [];
     
     // XXX make this more dynamic
     let dynamicIncludes = [
@@ -103,8 +110,14 @@ export class File extends EE {
     ] as any[]; // XXX typescript weirdness
     
     if (name.indexOf(".") === -1) {
+      const columns = await MatrixCol.find({
+        where: { field_id },
+        attributes: ["col_id", "col_name", "col_label"],
+      });
+    
+      let columnIds = columns.map(x => [`col_id_${x.col_id}`, x.col_name]);
       // uses matrix
-      dynamicIncludes.unshift({ model: Matrix.model, where: { field_id } });
+      dynamicIncludes.unshift({ model: Matrix.model, where: { field_id }, attributes: columnIds });
       dynamicIncludes.unshift({ model: MatrixCol.model, attributes: ["col_name", "col_label"] });
     }
     
@@ -120,13 +133,13 @@ export class File extends EE {
         },
       ],
     })
-      .then(data => { console.log(data); return data; })
       .then(data => data.map(x => x.exp_assets_selection))
       .then(data => data.map(x => (merge(
         {
           file_id: x.file_id,
-          // fileType: x.exp_matrix_datum[column_name],
           fileLabel: x.exp_matrix_col && x.exp_matrix_col.col_label,
+          title: x.exp_matrix_datum && this.fuzzyMatchKey(x.exp_matrix_datum, "title"),
+          duration: x.exp_matrix_datum && this.fuzzyMatchKey(x.exp_matrix_datum, "duration"),
         },
         this.generateFileName(x.exp_assets_file)
       ))));

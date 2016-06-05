@@ -14,8 +14,12 @@ import {
   
 } from "../tables/channels";
 
-import { EE } from "../ee";
+import {
+  Matrix,
+  MatrixCol,
+} from "../tables/matrix";
 
+import { EE } from "../ee";
 
 export interface ChannelField {
   field_id: number;
@@ -71,6 +75,26 @@ export class Content extends EE {
     return fieldObject;
   }
 
+  public async getContentFromMatrix(entry_id: string, name: string, field_id: number): Promise<any> {
+    if (!entry_id || !field_id) return [];
+    
+    const columns = await MatrixCol.find({
+        where: { field_id },
+        attributes: ["col_id", "col_name", "col_label"],
+      });
+    
+    let columnIds = columns.map(x => [`col_id_${x.col_id}`, x.col_name]);
+
+    return await ChannelData.find({
+      where: { entry_id },
+      attributes: ["entry_id"],
+      include: [
+        { model: Matrix.model, where: { field_id }, attributes: columnIds },
+      ],
+    })
+      .then(x => flatten(x.map(y => y.exp_matrix_data)));
+  };
+  
   public async find(query: any = {}) {
     const { limit, offset } = query; // true options
     delete query.limit;
@@ -112,11 +136,8 @@ export class Content extends EE {
       .then(x => x.map(y => {
         y.exp_channel.exp_channel_fields = exp_channel_fields
         return y;
-      }))
-      ;
-      // .then(data => data.map(x => {
-      //   return x.exp_channel.exp_channel_fields = exp_channel_fields;
-      // }));
+      }));
+ 
   }
 }
 

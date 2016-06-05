@@ -17,11 +17,13 @@
 type File implements Node {
   id: ID!
   file: String!
-  type: String
   label: String
 
   s3: String
   cloudfront: String
+  
+  duration: String
+  title: String
 
   # deprecated
   fileName: String!
