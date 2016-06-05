@@ -2,6 +2,7 @@ import {
   INTEGER,
   STRING,
   CHAR,
+  AssociationOptionsHasMany,
 } from "sequelize";
 
 import { MySQLConnector, Tables } from "../mysql";
@@ -9,6 +10,14 @@ import { MySQLConnector, Tables } from "../mysql";
 const channelSchema: Object = {
   channel_id: { type: INTEGER, primaryKey: true },
   channel_name: { type: STRING },
+  field_group: { type: INTEGER },
+};
+
+const channelFieldSchema: Object = {
+  field_id: { type: INTEGER, primaryKey: true },
+  group_id: { type: INTEGER },
+  field_name: { type: STRING },
+  field_label: { type: STRING },
 };
 
 const channelTitleSchema: Object = {
@@ -20,27 +29,43 @@ const channelTitleSchema: Object = {
   year: { type: CHAR },
   day: { type: CHAR },
   month: { type: CHAR },
+  entry_date: { type: INTEGER },
 };
 
 const channelDataSchema: Object = {
   entry_id: { type: INTEGER, primaryKey: true },
   channel_id: { type: INTEGER },
   site_id: { type: INTEGER },
-  actual_date: { type: STRING, field: "field_id_6" },
 
-  // editorial
-  editorial_body: { type: STRING, field: "field_id_18" },
-  editorial_authors: { type: STRING, field: "field_id_657" },
-  editorial_tags: { type: STRING, field: "field_id_1028" },
-  editorial_ooyalaId: { type: STRING, field: "field_id_668" },
+  // // editorial
+  // editoria_actual_date: { type: STRING, field: "field_id_6" },
+  // editorial_body: { type: STRING, field: "field_id_18" },
+  // editorial_authors: { type: STRING, field: "field_id_657" },
+  // editorial_tags: { type: STRING, field: "field_id_1028" },
+  // editorial_ooyalaId: { type: STRING, field: "field_id_668" },
+  
+  // // collection
+  // collection_start_date: { type: INTEGER, field: "field_id_14" },
+  // collection_end_date: { type: INTEGER, field: "field_id_665" },
+  // collection_description: { type: STRING, field: "field_id_13"},
+  // collection_hashtag: { type: STRING, field: "field_id_547"},
+  // collection_ooyalaId: { type: STRING, field: "field_id_15"},
+  // collection_primary_color: { type: STRING, field: "field_id_486"},
+  // collection_tags: { type: STRING, field: "field_id_666" },
+  // collection_downloads: { type: STRING, field: "field_id_667" },
+  
 };
 
 let Channels;
+let ChannelFields;
 let ChannelTitles;
 let ChannelData;
 export {
   Channels,
   channelSchema,
+  
+  ChannelFields,
+  channelFieldSchema,
 
   ChannelTitles,
   channelTitleSchema,
@@ -51,19 +76,29 @@ export {
 
 export function connect(): Tables {
   Channels = new MySQLConnector("exp_channels", channelSchema);
+  ChannelFields = new MySQLConnector("exp_channel_fields", channelFieldSchema);
   ChannelTitles =  new MySQLConnector("exp_channel_titles", channelTitleSchema);
   ChannelData = new MySQLConnector("exp_channel_data", channelDataSchema);
   
   return {
     Channels,
+    ChannelFields,
     ChannelTitles,
     ChannelData
   }
 };
 
-export function bind({ Channels, ChannelTitles, ChannelData }: Tables): void {
+export function bind({
+  Channels,
+  ChannelTitles,
+  ChannelData,
+  ChannelFields,
+}: Tables): void {
   Channels.model.hasMany(ChannelTitles.model, { foreignKey: "channel_id" });
   Channels.model.hasMany(ChannelData.model, { foreignKey: "channel_id" });
+  
+  Channels.model.belongsTo(ChannelFields.model, { foreignKey: "field_group", targetKey: "group_id" });
+  ChannelFields.model.hasOne(Channels.model, { foreignKey: "field_group" });
 
   ChannelTitles.model.belongsTo(Channels.model, { foreignKey: "channel_id" });
   ChannelTitles.model.hasMany(ChannelData.model, { foreignKey: "entry_id" });

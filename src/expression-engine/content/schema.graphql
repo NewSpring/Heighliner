@@ -25,15 +25,22 @@ type ContentData {
   colors: [ContentColor]
   speakers: [String]
   isLight: Boolean
+  hashtag: String
 }
 
 type ContentMeta {
-  urlTitle: String
   site: ID
+  channel: ID
+  series: ID
+  urlTitle: String
+  
   date: String
+  entryDate: String
+  startDate: String
+  endDate: String
+  
   # XXX should this be named better?
   actualDate: String
-  channel: ID
 
   # deprecated
   siteId: ID
@@ -50,6 +57,8 @@ type Content implements Node {
   meta: ContentMeta
   content: ContentData
   authors: [String]
-
+  
+  # deprecated (moved to other types)
   tracks: [ContentTrack]
+  seriesId: ID
 }
