@@ -1,38 +1,59 @@
-
+import { flatten } from "lodash";
 import { createGlobalId } from "../../util";
 
 export default {
 
-  ContentTrack: {
-    // id: ID!
-    file: () => 'foobar',
-    duration: () => null,
-    title: () => null,
-  },
-
   ContentColor: {
-    // id: ID!
-    id: () => "foo",
-    value: () => "foo",
-    description: () => "foo",
+    id: ({ id }) => id,
+    value: ({ value }) => value,
+    description: ({ description }) => description,
+  },
+  
+  ContentScripture: {
+    book: ({ book }) => book,
+    passage: ({ passage }) => passage,
   },
 
   ContentData: {
     body: ({ body, legacy_body }, _, { models }) => models.Content.cleanMarkup(body || legacy_body),
     description: ({ description }) => description,
-    scripture: () => "foo",
     ooyalaId: ({ video }) => video,
     tags: ({ tags }, _, { models }) => models.Content.splitByNewLines(tags),
-    speakers: () => ["foo"],
+    speaker: ({speaker}) => speaker,
     hashtag: ({ hashtag }) => hashtag,
     isLight: ({ lightswitch }) => lightswitch != "dark",
-
-    images: ({ image, exp_channel, entry_id }, _, { models }) => {
-      const position = exp_channel.exp_channel_fields.image;
-      console.log(image, position)
-      return models.File.getFilesFromContent(entry_id, image, position);
+    scripture: ({ entry_id, scripture, exp_channel }, _, { models }) => {
+      if (!scripture) return [];
+      
+      const position = Number(exp_channel.exp_channel_fields.scripture.split("_").pop());
+      return models.Content.getContentFromMatrix(entry_id, scripture, position)
     },
-    colors: data => [],
+    images: ({ image, image_blurred, exp_channel, entry_id }, _, { models }) => {
+      if (!image && !image_blurred) return Promise.all([]);
+      
+      const position = Number(exp_channel.exp_channel_fields.image.split("_").pop());
+      const blurredPosition = Number(exp_channel.exp_channel_fields.image_blurred.split("_").pop());
+      
+      return Promise.all([
+        models.File.getFilesFromContent(entry_id, image_blurred, blurredPosition),
+        models.File.getFilesFromContent(entry_id, image, position),
+      ])
+        .then(data => flatten(data));
+    },
+    colors: ({ bgcolor, color }) => {
+      if (!bgcolor || !color) return [];
+      
+      return [{
+        value: color || bgcolor,
+        description: "primary"
+      }]
+    },
+    tracks: ({ entry_id, tracks, exp_channel }, _, { models }) => {
+      if (!tracks) return [];
+      
+      const position = Number(exp_channel.exp_channel_fields.tracks.split("_").pop());
+      return models.File.getFilesFromContent(entry_id, tracks, position)
+    },
   },
 
   ContentMeta: {
@@ -77,7 +98,12 @@ export default {
     },
     
     // deprecated
-    tracks: data => data,
+    tracks: ({ entry_id, tracks, exp_channel }, _, { models }) => {
+      if (!tracks) return [];
+      
+      const position = Number(exp_channel.exp_channel_fields.tracks.split("_").pop());
+      return models.File.getFilesFromContent(entry_id, tracks, position)
+    },
     seriesId: ({ series_id }, _, $, { parentType }) => createGlobalId(series_id, parentType.name),
   },
 
