@@ -1,71 +1,44 @@
-#
-#
-# # should it be a file type?
-# # interface File implements Node {
-# #   id: ID!
-# #   file: String!
-# #   type: String
-# # }
-#
-# # XXX this should be a global type that implements File
-# # XXX abstract from content
-# # type ContentTrack implements File {
-# type ContentTrack {
-#   # id: ID!
-#   file: String!
-#   duration: String
-#   title: String!
-# }
-#
-# # XXX this should be a global type that implements File
-# # XXX abstract from content
-# # type ContentImage implements File {
-# type ContentImage {
-#   # id: ID!
-#   file: String!
-#   type: String
-#   label: String
-#
-#   s3: String
-#   cloudfront: String
-#
-#   # deprecated
-#   fileName: String!
-#   fileType: String
-#   fileLabel: String
-# }
-#
-# # should this be a global type that implements Node?
-# # XXX abstract from content if ^^
-# type ContentColor {
-#   id: ID!
-#   value: String!
-#   description: String
-# }
-#
-# type ContentData {
-#   body: String
-#   description: String
-#   scripture: String # XXX make a scripture type
-#   ooyalaId: String
-#   images: [ContentImage]
-#   tags: [String] # XXX create global tag type
-#   colors: [ContentColor]
-#   speakers: [String]
-#   isLight: Boolean
-# }
-#
-# type ContentMeta {
-#   urlTitle: String
-#   site: ID
-#   date: String
-#   channel: ID
-#
-#   # deprecated
-#   siteId: ID
-#   actualDate: String
-#   channelId: ID
-# }
+# XXX this should be a global type that implements File
+# XXX abstract from content
+type ContentTrack {
+  id: ID!
+  file: String!
+  duration: String
+  title: String!
+}
+
+# should this be a global type that implements Node?
+# XXX abstract from content if ^^
+type ContentColor {
+  id: ID!
+  value: String!
+  description: String
+}
+
+type ContentData {
+  body: String
+  description: String
+  scripture: String # XXX make a scripture type
+  ooyalaId: String
+  images: [File]
+  tags: [String] # XXX create global tag type
+  colors: [ContentColor]
+  speakers: [String]
+  isLight: Boolean
+}
+
+type ContentMeta {
+  urlTitle: String
+  site: ID
+  date: String
+  # XXX should this be named better?
+  actualDate: String
+  channel: ID
+
+  # deprecated
+  siteId: ID
+  channelId: ID
+}
 
 type Content implements Node {
   id: ID!
@@ -74,9 +47,9 @@ type Content implements Node {
   status: String!
   channel: ID!
   channelName: String
-  # meta: ContentMeta
-  # content: ContentData
-  # authors: [String]
+  meta: ContentMeta
+  content: ContentData
+  authors: [String]
 
-  # tracks: [ContentTrack]
+  tracks: [ContentTrack]
 }

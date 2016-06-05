@@ -15,7 +15,8 @@ export interface Resolvers {
 
 
 export interface Models {
-  [key: string]: new(...args: any[]) => any;
+  // [key: string]: new(...args: any[]) => any;
+  [key: string]: any // XXX make this better
 }
 
 // export interface Mock {
