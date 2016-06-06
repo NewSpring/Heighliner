@@ -16,10 +16,10 @@ import Apollos, {
 } from "./apollos";
 
 // Import Rock
-// import Rock, {
-//   queries as RockQueries,
-//   mutations as RockMutations,
-// } from "./rock";
+import Rock, {
+  // queries as RockQueries,
+  // mutations as RockMutations,
+} from "./rock";
 
 // Import Expression Engine
 import ExpressionEngine, {
@@ -34,7 +34,7 @@ import ExpressionEngine, {
 let { schema, models, resolvers, mocks } = loadApplications({
   Apollos,
   ExpressionEngine,
-  // Rock,
+  Rock,
   // GoogleSS,
 });
 
@@ -92,12 +92,37 @@ export async function createApp() {
       database    : process.env.MYSQL_DB || "ee_local",
       ssl: process.env.MYSQL_SSL || false
     };
-    const { database, user, password } = EESettings;
-    const EE = await ExpressionEngine.connect(database, user, password, {
-      host: EESettings.host,
-      // ssl: MySQLSettings.ssl,
-    });
-    if (EE) useMocks = false;
+    {
+      const { database, user, password } = EESettings;
+      const EE = await ExpressionEngine.connect(database, user, password, {
+        host: EESettings.host,
+        // ssl: MySQLSettings.ssl,
+      });
+      if (EE) useMocks = false;
+    }
+    
+    
+    
+    const RockSettings = {
+      host        : process.env.MSSQL_HOST,
+      user        : process.env.MSSQL_USER,
+      password    : process.env.MSSQL_PASSWORD,
+      database    : process.env.MSSQL_DB,
+      ssl: process.env.MYSQL_SSL || false,
+      dialectOptions: {
+        instanceName: process.env.MSSQL_INSTANCE
+      }
+    }
+    {
+      const { database, user, password } = RockSettings;
+      const ROCK = await Rock.connect(database, user, password, {
+        host: RockSettings.host,
+        dialectOptions: RockSettings.dialectOptions,
+        // ssl: MySQLSettings.ssl,
+      });
+      if (ROCK) useMocks = false;
+    }
+    
   }
 
   const cache = new InMemoryCache();
