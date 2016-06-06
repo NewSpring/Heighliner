@@ -37,24 +37,25 @@ export const schema = [
 export const resolvers = merge(
   {
     Query: {
-      content(_, { channel, collection, limit, skip, status }, { models }){
+      content(_, { channel, limit, skip, status }, { models }) {
+        // XXX integrate collection argument?
         return models.Content.find({
           channel_name: channel,
           offset: skip,
           limit,
-          status
+          status,
         });
       },
-      feed(_, { excludeChannels, limit, skip, status}, { models }){
+      feed(_, { excludeChannels, limit, skip, status}, { models }) {
         let channels = [
           "devotionals",
           "articles",
           "series_newspring",
           "sermons",
           "stories",
-          "albums"
+          "albums",
         ];
-        
+
         // only include what user hasn't excluded
         channels = difference(channels, excludeChannels);
 
@@ -64,7 +65,7 @@ export const resolvers = merge(
           },
           offset: skip,
           limit,
-          status
+          status,
         });
       },
       navigation: (_, { nav }, { models }) => models.Navigation.find({ nav }),
@@ -86,7 +87,7 @@ export const models = merge(
 export const queries = [
   `content(channel: String!, collection: ID, limit: Int = 20, skip: Int = 0, status: String = "open"): [Content]`,
   `feed(excludeChannels: [String], limit: Int = 20, skip: Int = 0, status: String = "open"): [Content]`,
-  `navigation(nav: String!): [Navigation]`
+  `navigation(nav: String!): [Navigation]`,
 ];
 
 export let mocks = merge({

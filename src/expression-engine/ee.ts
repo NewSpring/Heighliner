@@ -1,20 +1,17 @@
 
 export class EE {
-  constructor() {
 
-  }
-  
   public debug(data: any): any {
-    console.log("DEBUG:", data);
+    console.log("DEBUG:", data); // tslint:disable-line
     return data;
   }
 
   public getDate(day: string, month: string, year: string): string {
-    return `${new Date(Number(year), Number(month) -1 , Number(day))}`;
+    return `${new Date(Number(year), Number(month) - 1 , Number(day))}`;
   }
 
   public getDateFromUnix(timestamp: number): string | void {
-    return timestamp ? `${new Date(timestamp * 1000)}`: null;
+    return timestamp ? `${new Date(timestamp * 1000)}` : null;
   }
 
   public contentImages(markup: string): any[] {
