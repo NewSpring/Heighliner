@@ -140,6 +140,7 @@ export class Content extends EE {
   };
     
   public async find(query: any = {}) {
+    
     const { limit, offset } = query; // true options
     delete query.limit;
     delete query.offset;
@@ -158,7 +159,6 @@ export class Content extends EE {
       .then(this.createFieldNames);
     
     const exp_channel_fields = this.createFieldObject(fields);
-
     return await ChannelData.find({
       where: channelData,
       attributes: ["entry_id", "channel_id", "site_id"].concat(fields),
