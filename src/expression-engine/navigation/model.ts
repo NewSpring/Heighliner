@@ -63,9 +63,6 @@ export class Navigation extends EE {
     let orphans = [];
     return await NaveeNav.find({
       where: { nav_title: nav },
-      order: [
-        [Navee.model, "parent", "DESC" ]
-      ],
       include: [
         { model: Navee.model },
         { model: Sites.model },
