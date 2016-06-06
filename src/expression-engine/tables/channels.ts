@@ -36,24 +36,6 @@ const channelDataSchema: Object = {
   entry_id: { type: INTEGER, primaryKey: true },
   channel_id: { type: INTEGER },
   site_id: { type: INTEGER },
-
-  // // editorial
-  // editoria_actual_date: { type: STRING, field: "field_id_6" },
-  // editorial_body: { type: STRING, field: "field_id_18" },
-  // editorial_authors: { type: STRING, field: "field_id_657" },
-  // editorial_tags: { type: STRING, field: "field_id_1028" },
-  // editorial_ooyalaId: { type: STRING, field: "field_id_668" },
-  
-  // // collection
-  // collection_start_date: { type: INTEGER, field: "field_id_14" },
-  // collection_end_date: { type: INTEGER, field: "field_id_665" },
-  // collection_description: { type: STRING, field: "field_id_13"},
-  // collection_hashtag: { type: STRING, field: "field_id_547"},
-  // collection_ooyalaId: { type: STRING, field: "field_id_15"},
-  // collection_primary_color: { type: STRING, field: "field_id_486"},
-  // collection_tags: { type: STRING, field: "field_id_666" },
-  // collection_downloads: { type: STRING, field: "field_id_667" },
-  
 };
 
 let Channels;

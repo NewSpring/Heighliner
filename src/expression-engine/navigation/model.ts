@@ -26,17 +26,38 @@ export class Navigation extends EE {
   }
   
   
-  // public async getFromId(id: string): Promise<any> { // replace with ContentType
-    
+  // XXX support getting children from the node interface 
+  public async getFromId(id: string): Promise<any> { // XXX correctly type
+    return Navee.findOne({
+      where: { navee_id: id },
+      include: [
+        { model: Sites.model },
+      ],
+    })
+      .then(x => {
+        x.site_pages = Sites.parsePage(x.exp_site.site_pages)[x.site_id]
+        return x
+      })
+      .then(x => {
+        
+        if (x.type === "pages" && x.entry_id) {
+          x.link = x.site_pages.uris[x.entry_id];
+        }
+        
+        return {
+          link: x.link,
+          id: x.navee_id,
+          text: x.text,
+          url: x.site_pages.url,
+          parent: x.parent,
+          sort: x.sort,
+          image: x.custom,
+        };
+      })
+      ;
+  }
   
-  // }
 
-  // id: ID!
-  // text: String
-  // link: String
-  // sort: Int
-  // image: String
-  // children: [Navigation]
   public async find({ nav }: { nav: string }): Promise<any> {
     let navigation = {};
     let orphans = [];
@@ -55,6 +76,7 @@ export class Navigation extends EE {
         return x.exp_navee
       }))
       .then(data => data.map(x => {
+        
         if (x.type === "pages" && x.entry_id) {
           x.link = x.site_pages.uris[x.entry_id];
         }
@@ -63,6 +85,7 @@ export class Navigation extends EE {
           link: x.link,
           id: x.navee_id,
           text: x.text,
+          url: x.site_pages.url,
           parent: x.parent,
           sort: x.sort,
           image: x.custom,

@@ -58,6 +58,9 @@ export function bind({
 
   NaveeNav.model.belongsTo(Sites.model, { foreignKey: "site_id", targetKey: "site_id" });
   Sites.model.hasOne(NaveeNav.model, { foreignKey: "site_id" });
+  
+  Navee.model.belongsTo(Sites.model, { foreignKey: "site_id", targetKey: "site_id" });
+  Sites.model.hasOne(Navee.model, { foreignKey: "site_id" });
 };
 
 export default {
