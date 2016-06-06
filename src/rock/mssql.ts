@@ -27,7 +27,7 @@ export function connect(
         freezeTableName: true,
       },
     });
-    console.log(opts);
+
     db = new Sequelize(database, username, password, opts);
 
     db.authenticate()

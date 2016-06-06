@@ -1,5 +1,5 @@
 
-import { merge, difference } from "lodash";
+import { merge } from "lodash";
 
 import { connect } from "./mssql";
 
