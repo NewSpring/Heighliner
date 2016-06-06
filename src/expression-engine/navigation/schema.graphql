@@ -1,6 +1,6 @@
 
 
-type Navigation {
+type Navigation implements Node {
   id: ID!
   text: String
   link: String
