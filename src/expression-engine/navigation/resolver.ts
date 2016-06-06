@@ -12,12 +12,10 @@ export default {
     sort: ({ sort }) => sort,
     image: ({ image }) => image,
     children: ({ children, id }, _, { models }) => {
-      if (children.length) {
-        return children;
-      }
+      if (children) return children;
       
       // XXX hookup up find by parent method
-      return [];
+      return null;
       // return models.Navigation.findByParent(id);
     },
   },
