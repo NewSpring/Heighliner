@@ -22,9 +22,16 @@ import {
   model as Files,
 } from "./files";
 
+import {
+  schema as navigationSchema,
+  resolver as Navigation,
+  model as Navigations,
+} from "./navigation";
+
 export const schema = [
   ...contentSchema,
   ...fileSchema,
+  ...navigationSchema,
 ];
 
 export const resolvers = merge(
@@ -59,23 +66,27 @@ export const resolvers = merge(
           limit,
           status
         });
-      }
+      },
+      navigation: (_, { nav }, { models }) => models.Navigation.find({ nav }),
     },
   },
   Content,
-  File
+  File,
+  Navigation
 ) as Resolvers;
 
 export const models = merge(
   Contents,
-  Files
+  Files,
+  Navigations
 ) as Models;
 
 // XXX implement pagination instead of skip
 // use `after` for ^^
 export const queries = [
   `content(channel: String!, collection: ID, limit: Int = 20, skip: Int = 0, status: String = "open"): [Content]`,
-  `feed(excludeChannels: [String], limit: Int = 20, skip: Int = 0, status: String = "open"): [Content]`
+  `feed(excludeChannels: [String], limit: Int = 20, skip: Int = 0, status: String = "open"): [Content]`,
+  `navigation(nav: String!): [Navigation]`
 ];
 
 export let mocks = merge({

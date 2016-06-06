@@ -85,13 +85,29 @@ export class Content extends EE {
   }
   
   public async getFromId(id: string): Promise<any> { // replace with ContentType
+    
+    const fields = await ChannelData.find({
+      where: { entry_id: Number(id) },
+      include: [ { model: Channels.model,  include: [ { model: ChannelFields.model } ] } ],
+    })
+      .then(x => flatten(x.map(y => y.exp_channel.exp_channel_field)))
+      .then(x => this.createFieldNames(x, true))
+      ;
+    
+    const exp_channel_fields = this.createFieldObject(fields);
     return await ChannelData.findOne({
       where: { entry_id: Number(id) },
+      attributes:  ["entry_id", "channel_id", "site_id"].concat(fields),
       include: [
-        { model: Channels.model },
+        { model: Channels.model},
         { model: ChannelTitles.model },
       ]
-    });
+    })
+      .then(x => {
+        x.exp_channel.exp_channel_fields = exp_channel_fields;
+        return x;
+      })
+      ;
   }
   
   private createFieldObject(fields: string[][]): any {
@@ -122,9 +138,7 @@ export class Content extends EE {
     })
       .then(x => flatten(x.map(y => y.exp_matrix_data)));
   };
-  
-  private 
-  
+    
   public async find(query: any = {}) {
     const { limit, offset } = query; // true options
     delete query.limit;

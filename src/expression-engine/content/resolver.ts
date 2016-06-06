@@ -29,7 +29,6 @@ export default {
       return models.Content.getContentFromMatrix(entry_id, scripture, position)
     },
     images: ({ image, image_blurred, exp_channel, entry_id }, _, { models }) => {
-      console.log(image, exp_channel.exp_channel_fields.image, entry_id)
       if (!image && !image_blurred) return Promise.all([]);
       
       let position;

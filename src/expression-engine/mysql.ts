@@ -20,8 +20,8 @@ export function connect(
   return new Promise((cb) => {
     opts = merge({}, opts, {
       dialect: "mysql",
-      logging: (...args) => {},
-      // logging: console.log.bind(console, "MYSQL:"), // use for debugging mysql
+      // logging: (...args) => {},
+      logging: console.log.bind(console, "MYSQL:"), // use for debugging mysql
       define: {
         timestamps: false,
         freezeTableName: true,

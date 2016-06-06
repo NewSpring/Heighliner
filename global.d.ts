@@ -22,3 +22,8 @@ declare module "casual" {
   export var email: string;
   export var unix_time: string;
 }
+
+
+declare module "php-unserialize" {
+  function unserialize(data: string): any
+}
