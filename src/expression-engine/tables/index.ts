@@ -6,12 +6,16 @@ import channels from "./channels";
 import assets from "./assets";
 import matrix from "./matrix";
 import playa from "./playa";
+import sites from "./sites";
+import navee from "./navee";
 
 let tables = {
   assets,
   channels,
   matrix,
   playa,
+  sites,
+  navee,
 } as {
   [key: string]: {
     connect: () => Tables;
