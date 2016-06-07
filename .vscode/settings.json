@@ -25,6 +25,7 @@
     ".gitignore": true,
     ".env*": true,
     "**/*.yml": true,
-    "scripts": true
+    "scripts": true,
+    ".nyc_output": true
   }
 }

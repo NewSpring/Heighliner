@@ -27,9 +27,10 @@ mongoose.connection.on("error",
 );
 
 export class MongoConnector {
-  private count: number = 0;
   public db: Connection;
   public model: Model<Document>;
+
+  private count: number = 0;
 
   constructor(collection: string, schema: Object = {}) {
     this.db = db;
@@ -38,16 +39,18 @@ export class MongoConnector {
     // XXX integrate data loader
   }
 
+  public findOne(...args): Promise<Object> {
+    const label = `MongoConnector${this.getCount()}`;
+    console.time(label); // tslint:disable-line
+    return this.model.findOne.apply(this.model, args)
+      .then(x => { console.timeEnd(label); return x; });  // tslint:disable-line
+  }
+
+
+
   private getCount(): number {
     this.count++;
     return this.count;
-  }
-
-  public findOne(...args): Promise<Object> {
-    const label = `MongoConnector${this.getCount()}`;
-    console.time(label);
-    return this.model.findOne.apply(this.model, args)
-      .then(x => { console.timeEnd(label); return x;});
   }
 
 }

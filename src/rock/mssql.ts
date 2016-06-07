@@ -22,7 +22,7 @@ export function connect(
       dialect: "mssql",
       logging: (...args) => {}, // tslint:disable-line
       // logging: console.log.bind(console, "MSSQL:"), // tslint:disable-line
-      benchmark: process.env.NODE_ENV != "production",
+      benchmark: process.env.NODE_ENV !== "production",
       define: {
         timestamps: false,
         freezeTableName: true,
@@ -43,10 +43,11 @@ export interface Tables {
 }
 
 export class MSSQLConnector {
-  private count: number = 0;
   public prefix: string = "";
   public db: Connection;
   public model: Model<any, any>;
+
+  private count: number = 0;
 
   constructor(tableName: string, schema: Object = {}, options: DefineOptions<any> = {}) {
     this.db = db;
@@ -54,20 +55,6 @@ export class MSSQLConnector {
     this.model = db.define(tableName, schema, options);
 
     // XXX integrate data loader
-  }
-
-  private queryCount(): number {
-    this.count++
-    return this.count;
-  }
-
-  private time(promise: Promise<any>): Promise<any> {
-    const label = `MSSQLConnector-${this.queryCount()}`
-    console.time(label);
-    return promise
-      .then(x => { console.timeEnd(label); return x})
-      .catch(x => { console.timeEnd(label); return x})
-      ;
   }
 
   public find(...args): Promise<Object[]> {
@@ -105,6 +92,20 @@ export class MSSQLConnector {
 
   private getValues(data: any[]): any[] {
     return data.map(x => x.dataValues);
+  }
+
+  private queryCount(): number {
+    this.count++;
+    return this.count;
+  }
+
+  private time(promise: Promise<any>): Promise<any> {
+    const label = `MSSQLConnector-${this.queryCount()}`;
+    console.time(label); // tslint:disable-line
+    return promise
+      .then(x => { console.timeEnd(label); return x}) // tslint:disable-line
+      .catch(x => { console.timeEnd(label); return x}) // tslint:disable-line
+      ;
   }
 
 }
