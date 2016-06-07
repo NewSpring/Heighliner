@@ -1,12 +1,18 @@
 
 import { Cache } from "./cache";
 import { InMemoryCache } from "./memory-cache";
+import {
+  RedisCache,
+  connect as RedisConnect,
+} from "./redis";
 
 import { createGlobalId } from "../node/model";
 
 export {
   Cache,
   InMemoryCache,
+  RedisCache,
+  RedisConnect
 }
 
 export const defaultCache: Cache = {
@@ -15,6 +21,7 @@ export const defaultCache: Cache = {
   },
   set(id: string){ return Promise.resolve().then(() => true); },
   del(){},
+  encode(obj, prefix){ return `${prefix}${JSON.stringify(obj)}`;}
 }
 
 export const resolvers = {

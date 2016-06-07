@@ -1,7 +1,11 @@
 import Url from "url";
-import { User } from "./apollos/users/model";
 import Node from "./util/node/model";
-import { InMemoryCache, Cache } from "./util/cache";
+import {
+  InMemoryCache,
+  RedisCache,
+  RedisConnect,
+  Cache,
+  } from "./util/cache";
 
 import {
   createSchema,
@@ -17,7 +21,7 @@ import Apollos, {
 
 // Import Rock
 import Rock, {
-  // queries as RockQueries,
+  queries as RockQueries,
   // mutations as RockMutations,
 } from "./rock";
 
@@ -29,6 +33,8 @@ import ExpressionEngine, {
 // Import Google Site Search
 // import GoogleSS, { queries as GoogleSSQueries } from "./google-site-search";
 
+import { People } from "./rock/person/model";
+import { User } from "./apollos/users/model";
 
 // Merge all applications together
 let { schema, models, resolvers, mocks } = loadApplications({
@@ -43,7 +49,7 @@ schema = createSchema({
   queries: [
     ...ApollosQueries,
     ...ExpressionEngineQueries,
-    // ...RockQueries,
+    ...RockQueries,
     // ...GoogleSSQueries,
   ],
   mutations: [
@@ -68,21 +74,16 @@ export async function createApp() {
 
 
   */
-  let cacheType;
+  let cache;
   if (!process.env.CI) {
 
-    // local development handling for docker-machine ips being different
+    // local development
     let dockerhost = "192.168.99.100"
-    // if (process.env.DOCKER_HOST) {
-    //   const hostObj = Url.parse(process.env.DOCKER_HOST)
-    //   dockerhost = hostObj.host
-    // }
 
     // MONGO
     const APOLLOS = await Apollos.connect(process.env.MONGO_URL || "mongodb://localhost/meteor");
     // XXX find a way to just use mocks for Apollos
     if (APOLLOS) useMocks = false;
-
 
     // MySQL connections
     const EESettings = {
@@ -100,9 +101,8 @@ export async function createApp() {
       });
       if (EE) useMocks = false;
     }
-    
-    
-    
+
+    // MSSQL connection
     const RockSettings = {
       host        : process.env.MSSQL_HOST,
       user        : process.env.MSSQL_USER,
@@ -110,7 +110,8 @@ export async function createApp() {
       database    : process.env.MSSQL_DB,
       ssl: process.env.MYSQL_SSL || false,
       dialectOptions: {
-        instanceName: process.env.MSSQL_INSTANCE
+        instanceName: process.env.MSSQL_INSTANCE,
+        connectTimeout: 90000,
       }
     }
     {
@@ -122,13 +123,18 @@ export async function createApp() {
       });
       if (ROCK) useMocks = false;
     }
-    
+
+    const REDIS = await RedisConnect(process.env.REDIS_HOST || dockerhost);
+    if (REDIS) {
+      cache = new RedisCache();
+    } else {
+      cache = new InMemoryCache();
+    }
+
   }
 
-  const cache = new InMemoryCache();
-
   return async function(request){
-
+    console.log(request.headers.authorization)
     let context: any = {
       hashedToken: request.headers.authorization,
       cache,
@@ -137,13 +143,22 @@ export async function createApp() {
     if (context.hashedToken) {
       // we instansiate the
       // bind the logged in user to the context overall
+      // XXX should we remove the `User` and `People models from `models`?
       const Users = new User(context);
       let user = await Users.getByHashedToken(context.hashedToken);
       context.user = user;
+
+      let person;
+      const Peoples = new People(context);
+      if (user) {
+        person = await Peoples.getFromAliasId(user.services.rock.PrimaryAliasId);
+        person.PrimaryAliasId = user.services.rock.PrimaryAliasId;
+      }
+      context.person = person;
     }
 
     let createdModels = {};
-    Object.keys(models).forEach((name) => {
+    Object.keys(models).filter(x => (x != "User" && x != "People")).forEach((name) => {
       createdModels[name] = new models[name](context);
     });
 

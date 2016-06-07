@@ -10,16 +10,16 @@ import {
   Mocks,
 } from "../util/application";
 
-// import {
-//   schema as contentSchema,
-//   resolver as Content,
-//   model as Contents,
-// } from "./content";
+import {
+  schema as personSchema,
+  resolver as Person,
+  model as People,
+} from "./person";
 
 
 
 export const schema = [
-  // ...contentSchema,
+  ...personSchema,
   // ...fileSchema,
   // ...navigationSchema,
 ];
@@ -27,13 +27,15 @@ export const schema = [
 export const resolvers = merge(
   {
     Query: {
+      people: (_, { email }, { models }) => models.People.findByEmail(email),
+      currentPerson: (_: any, args: any, { person }: any): any => person,
     },
-  }
+  },
+  Person
 ) as Resolvers;
 
 export const models = merge(
-  {}
-  // Contents,
+  People
   // Files,
   // Navigations
 ) as Models;
@@ -41,11 +43,13 @@ export const models = merge(
 // XXX implement pagination instead of skip
 // use `after` for ^^
 export const queries = [
+  `people(email: String): [Person]`,
+  `currentPerson: Person`
 ];
 
 export let mocks = merge({
     Query: {
-      content() { return {}; },
+      people() { return {}; },
     },
   }
   // userMocks

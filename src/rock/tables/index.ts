@@ -4,7 +4,6 @@ import { Tables } from "../mssql";
 
 import person from "./person";
 
-
 let tables = {
   person,
 } as {
@@ -16,13 +15,23 @@ let tables = {
 
 export function createTables() {
    let createdTables = {};
-   
+
   for (let table in tables) {
-    createdTables = merge(createdTables, tables[table].connect());
+    try {
+      createdTables = merge(createdTables, tables[table].connect());
+    } catch (e) {
+      console.error(e);
+    }
+
   }
-  
+
   for (let table in tables) {
-    if (tables[table].bind) tables[table].bind(createdTables);
+    try {
+      if (tables[table].bind) tables[table].bind(createdTables);
+    } catch (e) {
+      console.error(e);
+    }
+
   }
 
   return createdTables as Tables;

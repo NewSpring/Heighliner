@@ -24,9 +24,9 @@ export class Navigation extends EE {
     super();
     this.cache = cache;
   }
-  
-  
-  // XXX support getting children from the node interface 
+
+  // XXX add caching
+  // XXX support getting children from the node interface
   public async getFromId(id: string): Promise<any> { // XXX correctly type
     return Navee.findOne({
       where: { navee_id: id },
@@ -39,11 +39,11 @@ export class Navigation extends EE {
         return x
       })
       .then(x => {
-        
+
         if (x.type === "pages" && x.entry_id) {
           x.link = x.site_pages.uris[x.entry_id];
         }
-        
+
         return {
           link: x.link,
           id: x.navee_id,
@@ -56,7 +56,7 @@ export class Navigation extends EE {
       })
       ;
   }
-  
+
 
   public async find({ nav }: { nav: string }): Promise<any> {
     let navigation = {};
@@ -73,11 +73,11 @@ export class Navigation extends EE {
         return x.exp_navee
       }))
       .then(data => data.map(x => {
-        
+
         if (x.type === "pages" && x.entry_id) {
           x.link = x.site_pages.uris[x.entry_id];
         }
-        
+
         return {
           link: x.link,
           id: x.navee_id,
