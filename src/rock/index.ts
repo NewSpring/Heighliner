@@ -44,7 +44,7 @@ export const models = merge(
 // use `after` for ^^
 export const queries = [
   `people(email: String): [Person]`,
-  `currentPerson: Person`
+  `currentPerson: Person`,
 ];
 
 export let mocks = merge({
