@@ -58,32 +58,30 @@ test("`getByHashedToken` should allow searching for an encrypted token", async t
   return await users.getByHashedToken(token);
 });
 
-test("`getFromId` should allow searching by an id", async t => {
-  let id = "id";
-  const users = new User();
-  users.model.findOne = function mockedFindOne({ _id }) {
-    t.is(_id, id);
-    return {}
-  };
+// test("`getFromId` should allow searching by an id", async t => {
+//   let id = "id";
+//   const users = new User();
+//   users.model.findOne = function mockedFindOne({ _id }) {
+//     t.is(_id, id);
+//     return {}
+//   };
 
-  return await users.getFromId(id)
-});
+//   return await users.getFromId(id)
+// });
 
-test("`getFromId` should try and read the data from the cache", async t => {
+test("`getFromId` should try and read the data from the cache using the globalId", async t => {
   let id = "id";
+  let globalId = "foo";
 
   const cache = {
-    get(_id){
-      t.is(_id, id);
-      return {};
+    get(global){
+      t.is(globalId, global);
+      t.pass();
+      return Promise.resolve();
     },
   };
 
   const tempUsers = new User({ cache })
 
-  tempUsers.model.findOne = function mockedFindOne({ _id }) {
-    t.is(_id, id);
-  };
-
-  return await tempUsers.getFromId(id);
+  return await tempUsers.getFromId(id, globalId);
 });
