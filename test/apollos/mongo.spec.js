@@ -37,15 +37,15 @@ test("should use the schema passed as the second argument", t => {
   t.is(schema.paths._id.instance, "String");
 });
 
-test("findOne should be a sugared passthrough to the models findOne", t => {
+test("findOne should be a sugared passthrough to the models findOne", async t => {
   const oldFindOne = testModel.model.findOne;
 
   testModel.model.findOne = function mockedFindOne(...args) {
     t.is(args[0], "test")
-    return [1];
+    return new Promise((r) => r([1]));
   };
 
-  const tests = testModel.findOne("test");
+  const tests = await testModel.findOne("test");
   t.is(tests[0], 1)
 
   testModel.model.findOne = oldFindOne;

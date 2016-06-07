@@ -70,9 +70,9 @@ export class User {
     this.model = Model;
   }
 
-  async getFromId(_id: string): Promise<UserDocument> {
+  async getFromId(_id: string, globalId: string): Promise<UserDocument> {
     // try a cache lookup
-    return await this.cache.get(_id, () => this.model.findOne({ _id })) as UserDocument;
+    return await this.cache.get(globalId, () => this.model.findOne({ _id })) as UserDocument;
   }
 
   async getByHashedToken(token: string): Promise<UserDocument> {
