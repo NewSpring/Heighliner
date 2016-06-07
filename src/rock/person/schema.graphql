@@ -1,0 +1,19 @@
+
+
+type Person implements Node {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  nickName: String
+  # phoneNumbers: [PhoneNumber]
+  photo: String
+  age: String
+  birthDate: String
+  birthDay: Int
+  birthMonth: Int
+  birthYear: Int
+  email: String
+  # campus: [Campus]
+  # home: [Location]
+  # likes: [Content] // XXX should this be on user?
+}

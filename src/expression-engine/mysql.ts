@@ -22,6 +22,7 @@ export function connect(
       dialect: "mysql",
       logging: (...args) => {}, // tslint:disable-line
       // logging: console.log.bind(console, "MYSQL:"), // use for debugging mysql
+      benchmark: process.env.NODE_ENV != "production",
       define: {
         timestamps: false,
         freezeTableName: true,
@@ -42,6 +43,7 @@ export interface Tables {
 }
 
 export class MySQLConnector {
+  private count: number = 0;
   public prefix: string = "exp_";
   public db: Connection;
   public model: Model<any, any>;
@@ -54,16 +56,30 @@ export class MySQLConnector {
     // XXX integrate data loader
   }
 
+  private queryCount(): number {
+    this.count++
+    return this.count;
+  }
+
+  private time(promise: Promise<any>): Promise<any> {
+    const label = `MYSQLConnector-${this.queryCount()}`
+    console.time(label);
+    return promise
+      .then(x => { console.timeEnd(label); return x})
+      .catch(x => { console.timeEnd(label); return x})
+      ;
+  }
+
   public find(...args): Promise<Object[]> {
-    return this.model.findAll.apply(this.model, args)
+    return this.time(this.model.findAll.apply(this.model, args)
       .then(this.getValues)
-      .then(data => data.map(this.mergeData));
+      .then(data => data.map(this.mergeData)));
   }
 
   public findOne(...args): Promise<Object> {
-    return this.model.findOne.apply(this.model, args)
+    return this.time(this.model.findOne.apply(this.model, args)
       .then((x) => x.dataValues)
-      .then(this.mergeData);
+      .then(this.mergeData));
   }
 
   private mergeData = (data: any): any => {

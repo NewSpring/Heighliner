@@ -20,8 +20,9 @@ export function connect(
   return new Promise((cb) => {
     opts = merge({}, opts, {
       dialect: "mssql",
-      // logging: (...args) => {}, // tslint:disable-line
-      logging: console.log.bind(console, "MSSQL:"), // tslint:disable-line
+      logging: (...args) => {}, // tslint:disable-line
+      // logging: console.log.bind(console, "MSSQL:"), // tslint:disable-line
+      benchmark: process.env.NODE_ENV != "production",
       define: {
         timestamps: false,
         freezeTableName: true,
@@ -42,6 +43,7 @@ export interface Tables {
 }
 
 export class MSSQLConnector {
+  private count: number = 0;
   public prefix: string = "";
   public db: Connection;
   public model: Model<any, any>;
@@ -54,16 +56,30 @@ export class MSSQLConnector {
     // XXX integrate data loader
   }
 
+  private queryCount(): number {
+    this.count++
+    return this.count;
+  }
+
+  private time(promise: Promise<any>): Promise<any> {
+    const label = `MSSQLConnector-${this.queryCount()}`
+    console.time(label);
+    return promise
+      .then(x => { console.timeEnd(label); return x})
+      .catch(x => { console.timeEnd(label); return x})
+      ;
+  }
+
   public find(...args): Promise<Object[]> {
-    return this.model.findAll.apply(this.model, args)
+    return this.time(this.model.findAll.apply(this.model, args)
       .then(this.getValues)
-      .then(data => data.map(this.mergeData));
+      .then(data => data.map(this.mergeData)));
   }
 
   public findOne(...args): Promise<Object> {
-    return this.model.findOne.apply(this.model, args)
+    return this.time(this.model.findOne.apply(this.model, args)
       .then((x) => x.dataValues)
-      .then(this.mergeData);
+      .then(this.mergeData));
   }
 
   private mergeData = (data: any): any => {

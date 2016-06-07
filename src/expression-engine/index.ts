@@ -47,6 +47,7 @@ export const resolvers = merge(
         });
       },
       feed(_, { excludeChannels, limit, skip, status}, { models }) {
+        console.time("feed");
         let channels = [
           "devotionals",
           "articles",
@@ -66,7 +67,9 @@ export const resolvers = merge(
           offset: skip,
           limit,
           status,
-        });
+        })
+          .then(x => { console.timeEnd("feed"); return x;})
+          ;
       },
       navigation: (_, { nav }, { models }) => models.Navigation.find({ nav }),
     },

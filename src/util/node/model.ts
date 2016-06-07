@@ -19,7 +19,7 @@ export default class Node {
     }
 
     try {
-      const data = await(this.models[__type].getFromId(id));
+      const data = await(this.models[__type].getFromId(id, encodedId));
       data.__type = __type;
       return data;
     } catch (e) {

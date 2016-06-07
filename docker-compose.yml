@@ -1,13 +1,3 @@
-heighliner:
-  build: .
-  volumes:
-    - .:/usr/src/app/
-  ports:
-    - "80:80"
-  links:
-    - mySQL
-    - redis
-
 mySQL:
   image: mysql:5.5
   volumes:

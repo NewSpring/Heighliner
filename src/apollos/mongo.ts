@@ -27,6 +27,7 @@ mongoose.connection.on("error",
 );
 
 export class MongoConnector {
+  private count: number = 0;
   public db: Connection;
   public model: Model<Document>;
 
@@ -37,8 +38,16 @@ export class MongoConnector {
     // XXX integrate data loader
   }
 
+  private getCount(): number {
+    this.count++;
+    return this.count;
+  }
+
   public findOne(...args): Promise<Object> {
-    return this.model.findOne.apply(this.model, args);
+    const label = `MongoConnector${this.getCount()}`;
+    console.time(label);
+    return this.model.findOne.apply(this.model, args)
+      .then(x => { console.timeEnd(label); return x;});
   }
 
 }

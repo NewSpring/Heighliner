@@ -83,12 +83,12 @@ export class User {
       .update(token)
       .digest("base64");
 
-    return await this.model.findOne({
+    return await this.cache.get(`hashedToken:${token}`, () => this.model.findOne({
       $or: [
         { "services.resume.loginTokens.hashedToken": token },
         { "services.resume.loginTokens.hashedToken": rawToken },
       ],
-    }) as UserDocument;
+    })) as UserDocument;
   }
 }
 
