@@ -40,11 +40,18 @@ export class RedisCache implements Cache {
     return this.count;
   }
 
-  public get(id, lookup, ttl): Promise<Object | void> {
+  public get(
+    id: string,
+    lookup: () => Promise<any>,
+    { ttl, cache }: { ttl: number, cache: boolean } = { cache: true, ttl: 86400 }
+  ): Promise<Object | void> {
     let fromCache = false;
     const label = `RedisCache-${this.getCount()}`;
     console.time(label);
     return new Promise((done) => {
+      if (!cache && lookup) {
+        return lookup().then(done);
+      }
       db.get(id, (err, data) => {
         if (err) return lookup().then(done);
         if (!data) return lookup().then(done);
@@ -71,7 +78,7 @@ export class RedisCache implements Cache {
     });
   }
 
-  public set(id, data, ttl = 86400): Promise<Boolean> {
+  public set(id: string, data: Object, ttl: number = 86400): Promise<Boolean> {
     return new Promise((done) => {
       // XXX this should technically never fail
       try {

@@ -33,8 +33,8 @@ import ExpressionEngine, {
 // Import Google Site Search
 // import GoogleSS, { queries as GoogleSSQueries } from "./google-site-search";
 
-import { People } from "./rock/person/model";
-import { User } from "./apollos/users/model";
+import { People } from "./rock/models/person/model";
+import { User } from "./apollos/models/users/model";
 
 // Merge all applications together
 let { schema, models, resolvers, mocks } = loadApplications({
@@ -110,8 +110,8 @@ export async function createApp() {
       database    : process.env.MSSQL_DB,
       ssl: process.env.MYSQL_SSL || false,
       dialectOptions: {
-        instanceName: process.env.MSSQL_INSTANCE,
-        connectTimeout: 90000,
+        // instanceName: process.env.MSSQL_INSTANCE,
+        // connectTimeout: 90000,
       }
     }
     {
@@ -134,7 +134,7 @@ export async function createApp() {
   }
 
   return async function(request){
-    console.log(request.headers.authorization)
+
     let context: any = {
       hashedToken: request.headers.authorization,
       cache,

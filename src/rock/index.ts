@@ -14,7 +14,8 @@ import {
   schema as personSchema,
   resolver as Person,
   model as People,
-} from "./person";
+  queries as peopleQueries,
+} from "./models/person";
 
 
 
@@ -25,12 +26,6 @@ export const schema = [
 ];
 
 export const resolvers = merge(
-  {
-    Query: {
-      people: (_, { email }, { models }) => models.People.findByEmail(email),
-      currentPerson: (_: any, args: any, { person }: any): any => person,
-    },
-  },
   Person
 ) as Resolvers;
 
@@ -43,8 +38,7 @@ export const models = merge(
 // XXX implement pagination instead of skip
 // use `after` for ^^
 export const queries = [
-  `people(email: String): [Person]`,
-  `currentPerson: Person`,
+  ...peopleQueries,
 ];
 
 export let mocks = merge({

@@ -42,26 +42,6 @@ export class EE {
     return seriesRegex.exec(series);
   }
 
-  public getMatrixData(entryId: Number, fields: any): [any] {
-    throw new Error("Not yet implemented");
-  }
-
-  public getMatrixWithFile(entryId: Number, fields: any, fileObj: any): [any] {
-    throw new Error("Not yet implemented");
-  }
-
-  public getFile(entryId: number, name: string, positionColumn: string): [any] {
-    throw new Error("Not yet implemented");
-  }
-
-  public getFiles(entryId: number, positions: string, positionColumn: string): any {
-    throw new Error("Not yet implemented");
-  }
-
-  public getMedia(entryId: number): [any] {
-    throw new Error("Not yet implemented");
-  }
-
   public cleanMarkup(markup: string): string | boolean {
     if (!markup) return false;
 

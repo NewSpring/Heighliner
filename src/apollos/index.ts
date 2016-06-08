@@ -7,8 +7,9 @@ import {
   mocks as userMocks,
   resolver as User,
   model as Users,
+  queries as userQueries,
   UserDocument,
-} from "./users";
+} from "./models/users";
 
 import {
   ApplicationDefinition,
@@ -23,13 +24,7 @@ export const schema = [
   ...userSchema,
 ];
 
-export const resolvers = merge({
-    Query: {
-      currentUser(_: any, args: any, { user }: any): any {
-        return user;
-      },
-    },
-  },
+export const resolvers = merge(
   User
 ) as Resolvers;
 
@@ -38,7 +33,7 @@ export const models = merge(
 ) as Models;
 
 export const queries = [
-  "currentUser: User",
+  ...userQueries,
 ];
 
 export let mocks = merge({
