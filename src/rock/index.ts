@@ -15,7 +15,7 @@ import {
   resolver as Person,
   model as People,
   queries as peopleQueries,
-} from "./models/person";
+} from "./models/people";
 
 
 
