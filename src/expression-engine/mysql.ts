@@ -8,7 +8,7 @@ import Sequelize, {
 import { merge, isArray, isObject } from "lodash";
 // import DataLoader from "dataloader";
 
-import { createTables } from "./tables";
+import { createTables } from "./database";
 
 let db;
 export function connect(

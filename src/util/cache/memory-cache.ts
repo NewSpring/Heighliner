@@ -12,12 +12,16 @@ export class InMemoryCache implements Cache {
     this.secret = secret;
   }
 
-  public get(id, lookup, ttl): Promise<Object | void> {
+  public get(
+    id,
+    lookup,
+    { ttl, cache }: { ttl: number, cache: boolean } = { ttl: 86400, cache: true }
+  ): Promise<Object | void> {
     let fromCache = false;
     return new Promise((done) => {
       let data = this.cache[id];
 
-      if (!data && lookup) {
+      if ((!data || !cache) && lookup) {
         return lookup().then(done);
       }
 

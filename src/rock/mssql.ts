@@ -8,7 +8,7 @@ import Sequelize, {
 import { merge, isArray, isObject } from "lodash";
 // import DataLoader from "dataloader";
 
-import { createTables } from "./tables";
+import { createTables } from "./database";
 
 let db;
 export function connect(
@@ -23,6 +23,7 @@ export function connect(
       logging: (...args) => {}, // tslint:disable-line
       // logging: console.log.bind(console, "MSSQL:"), // tslint:disable-line
       benchmark: process.env.NODE_ENV !== "production",
+
       define: {
         timestamps: false,
         freezeTableName: true,

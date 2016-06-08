@@ -40,7 +40,7 @@ test("`InMemoryCache` should have a way to set items in the cache with a ttl", t
     return Promise.resolve(data);
   }
 
-  cache.get(id, spyLookup, .1)
+  cache.get(id, spyLookup, { ttl: .1 })
     .then((result) => {
       t.deepEqual(result, data);
     });
@@ -85,7 +85,7 @@ test("should have a way to set items in the cache with a ttl", async t => {
   const cacheData = {};
   const cache = new InMemoryCache(cacheData);
 
-  await cache.set(id, data, .1);
+  await cache.set(id, data, { ttl: .1 });
 
   t.deepEqual(cacheData[id], data);
 
