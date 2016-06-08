@@ -1,0 +1,63 @@
+
+type ScheduleFrequency {
+  value: String
+  description: String
+}
+
+type TransactionDetail implements Node {
+  id: ID!
+  amount: Float
+  date: String
+  account: FinancialAccount
+}
+
+type ScheduledTransaction implements Node {
+  id: ID!
+  reminderDate: String
+  start: String
+  next: String
+  code: String
+  gateway: ID!
+  end: String
+  numberOfPayments: Int
+  date: String
+  details: [TransactionDetail]
+  schedule: ScheduleFrequency
+  payment: PaymentDetail
+}
+
+type Transcation implements Node {
+  id: ID!
+  summary: String
+  status: String
+  date: String
+  details: [TransactionDetail]
+  payment: PaymentDetail
+}
+
+type FinancialAccount implements Node {
+  id: ID!
+  name: String
+  order: Int
+  description: String
+  summary: String
+  image: String
+  end: String
+  start: String
+  images: [File]
+}
+
+type PaymentDetail implements Node {
+  id: ID!
+  accountNumber: String!
+  paymentType: String
+}
+
+type SavedPayment implements Node {
+  id: ID!
+  name: String
+  guid: String
+  code: String!
+  date: String
+  payment: PaymentDetail
+}

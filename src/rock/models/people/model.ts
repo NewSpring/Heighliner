@@ -41,5 +41,5 @@ export class People extends Rock {
 }
 
 export default {
-  Person,
+  People,
 };
