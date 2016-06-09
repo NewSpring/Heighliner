@@ -10,6 +10,7 @@ import {
   Mocks,
 } from "../util/application";
 
+// XXX make this import standard and less boilerplate
 import {
   schema as personSchema,
   resolver as Person,
