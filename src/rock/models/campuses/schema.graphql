@@ -1,0 +1,5 @@
+
+
+type Campus implements Node {
+  id: ID!
+}
