@@ -6,7 +6,7 @@ import Sequelize, {
 } from "sequelize";
 
 
-import { merge, isArray, isObject, isDate } from "lodash";
+import { merge, isArray } from "lodash";
 // import DataLoader from "dataloader";
 
 import { createTables } from "./models";
