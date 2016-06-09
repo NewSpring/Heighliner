@@ -2,14 +2,15 @@ import { orderBy } from "lodash";
 import { Cache, defaultCache } from "../../../util/cache";
 
 import {
-  Person,
+  Person as PersonTable,
   PersonAlias,
 } from "./tables";
 
 import { Rock } from "../rock";
 
-export class People extends Rock {
-  private cache: Cache
+export class Person extends Rock {
+  public cache: Cache
+  public __type: string = "Person";
 
   constructor({ cache } = { cache: defaultCache }) {
     super();
@@ -31,7 +32,7 @@ export class People extends Rock {
     return await this.cache.get(`PersonAlias:${id}`, () => PersonAlias.findOne({
       where: { Id: id },
       attributes: fields,
-      include: { model: Person.model },
+      include: { model: PersonTable.model },
     })
       .then(x => x.Person)
       .then(data => {
@@ -50,5 +51,5 @@ export class People extends Rock {
 }
 
 export default {
-  People,
+  Person,
 };
