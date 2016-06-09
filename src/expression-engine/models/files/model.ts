@@ -26,7 +26,8 @@ import {
 import { EE } from "../ee";
 
 export class File extends EE {
-  private cache: Cache
+  public cache: Cache
+  public __type: string = "File";
 
   constructor({ cache } = { cache: defaultCache }) {
     super();

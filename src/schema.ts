@@ -33,7 +33,7 @@ import ExpressionEngine, {
 // Import Google Site Search
 // import GoogleSS, { queries as GoogleSSQueries } from "./google-site-search";
 
-import { People } from "./rock/models/people/model";
+import { Person } from "./rock/models/people/model";
 import { User } from "./apollos/models/users/model";
 
 // Merge all applications together
@@ -149,7 +149,7 @@ export async function createApp() {
       context.user = user;
 
       let person;
-      const Peoples = new People(context);
+      const Peoples = new Person(context);
       if (user) {
         person = await Peoples.getFromAliasId(user.services.rock.PrimaryAliasId);
         person.PrimaryAliasId = user.services.rock.PrimaryAliasId;

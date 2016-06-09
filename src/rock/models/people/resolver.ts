@@ -5,7 +5,7 @@ import { createGlobalId } from "../../../util";
 export default {
 
   Query: {
-    people: (_, { email }, { models }) => models.People.findByEmail(email),
+    people: (_, { email }, { models }) => models.Person.findByEmail(email),
     currentPerson: (_: any, args: any, { person }: any): any => person,
   },
 

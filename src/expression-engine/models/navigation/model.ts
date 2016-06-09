@@ -18,7 +18,7 @@ import {
 import { EE } from "../ee";
 
 export class Navigation extends EE {
-  private cache: Cache
+  public cache: Cache
 
   constructor({ cache } = { cache: defaultCache }) {
     super();
