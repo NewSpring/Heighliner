@@ -4,10 +4,27 @@ import { createGlobalId } from "../../../util";
 export default {
 
   Query: {
-    savedPayments: (_, $, { models }) => models.SavedPayments.get(),
-    transactions: (_, $, { models }) => models.Transcations.get(),
-    scheduledTransactions: (_, $, { models }) => models.ScheduledTransactions.get(),
-    financialAccounts: (_, args, { models }) => models.FinancialAccounts.find(args),
+    savedPayments: (_, { limit, cache, skip } , { models, person }) => {
+      return models.SavedPayment.findByPersonAlias(person.aliases, {
+          limit, offset: skip
+        }, { cache }
+      );
+    },
+    transactions: (_, { limit, cache, skip } , { models, person }) => {
+      return models.Transaction.findByPersonAlias(person.aliases, { limit, offset: skip}, { cache });
+    },
+    scheduledTransactions: (_, { limit, cache, skip, isActive } , { models, person }) => {
+      return models.ScheduledTransaction.findByPersonAlias(person.aliases, {
+        limit, offset: skip, isActive
+      }, { cache });
+    },
+    accounts: (_, { name, isActive, isPublic }, { models }) => {
+      return models.FinancialAccount.find({
+        Name: name,
+        IsActive: isActive,
+        IsPublic: isPublic,
+      });
+    },
   },
 
   ScheduleFrequency: {
@@ -18,12 +35,10 @@ export default {
   TransactionDetail: {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     amount: ({ Amount }) => Amount,
-    date: ({ CreatedDate, ModifiedDate }) => (ModifiedDate || CreatedDate),
     account: ({ AccountId, Account }, _, { models }) => {
       if (Account) return Account;
 
-      const globalId = createGlobalId(AccountId, "FinancialAccount");
-      return models.FinancialAccount.getById(AccountId, globalId)
+      return models.FinancialAccount.getFromId(AccountId);
     },
   },
 
@@ -34,39 +49,41 @@ export default {
     next: ({ NextPaymentDate }) => NextPaymentDate,
     end: ({ EndDate }) => EndDate,
     code: ({ TransactionCode }) => TransactionCode,
-    gateway: ({ GatewayId }) => createGlobalId(GatewayId, "FinancialGateway"),
+    gateway: ({ FinancialGatewayId }) => FinancialGatewayId,
     numberOfPayments: ({ NumberOfPayments }) => NumberOfPayments,
     date: ({ CreatedDate, ModifiedDate }) => (ModifiedDate || CreatedDate),
-    details: ({ Id, ScheduledTransactionDetails }, _, { models }, { parentType }) => {
-      if (ScheduledTransactionDetails) return ScheduledTransactionDetails;
+    details: ({ Id, FinancialScheduledTransactionDetails }, _, { models }, { parentType }) => {
+      if (FinancialScheduledTransactionDetails) return FinancialScheduledTransactionDetails;
 
-      return models.ScheduledTransactions.getDetailsByScheduleId(Id);
+      return models.ScheduledTransaction.getDetailsByScheduleId(Id);
     },
-    schedule: ({ ScheduleFrequencyId, ScheduleFrequency }, _, { models }) => {
-      if (ScheduleFrequency) return ScheduleFrequency;
+    schedule: ({ TransactionFrequencyValueId, TransactionFrequencyValue }, _, { models }) => {
+      if (TransactionFrequencyValue) return TransactionFrequencyValue;
+      return models.ScheduledTransaction.getDefinedValueId(TransactionFrequencyValueId);
+    },
+    payment: ({ FinancialPaymentDetailId, FinancialPaymentDetail }, _, { models }) => {
+      if (FinancialPaymentDetail) return FinancialPaymentDetail;
 
-      return models.ScheduledTransaction.getScheduleFrequency(ScheduleFrequencyId);
+      return models.Transaction.getPaymentDetailsById(FinancialPaymentDetailId);
     },
-    payment: ({ PaymentDetailId, PaymentDetail }, _, { models }) => {
-      if (PaymentDetail) return PaymentDetail;
-
-      return models.ScheduledTransaction.getPaymentDetailsById(PaymentDetailId);
-    },
+    transactions: ({ Id }, _, { models }) => {
+      return models.ScheduledTransaction.getTransactionsById(Id);
+    }
   },
 
   Transaction: {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     summary: ({ Summary }) => Summary,
-    date: ({ CreatedDate, ModifiedDate }) => (ModifiedDate || CreatedDate),
+    date: ({ TransactionDateTime, CreatedDate, ModifiedDate }) => (TransactionDateTime ||ModifiedDate || CreatedDate),
     details: ({ Id, TransactionDetails }, _, { models }, { parentType }) => {
       if (TransactionDetails) return TransactionDetails;
 
-      return models.Transactions.getDetailsById(Id);
+      return models.Transaction.getDetailsById(Id);
     },
-    payment: ({ PaymentDetailId, PaymentDetail }, _, { models }) => {
-      if (PaymentDetail) return PaymentDetail;
+    payment: ({ FinancialPaymentDetailId, FinancialPaymentDetail }, _, { models }) => {
+      if (FinancialPaymentDetail) return FinancialPaymentDetail;
 
-      return models.ScheduledTransaction.getPaymentDetailsById(PaymentDetailId);
+      return models.Transaction.getPaymentDetailsById(FinancialPaymentDetailId);
     },
   },
 
@@ -74,8 +91,8 @@ export default {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     name: ({ Name }) => Name,
     order: ({ Order }) => Order,
-    description: ({ Description }) => Description,
-    summary: ({ Summary }) => Summary,
+    description: ({ PublicDescription }) => PublicDescription,
+    summary: ({ Description }) => Description,
     image: ({ Url, ImageBinaryFieldId }, _, { models }) => {
       if (Url) return Url;
 
@@ -103,31 +120,28 @@ export default {
       CreditCardTypeValue,
     }, _, { models }) => {
 
-      return ""
-
-      // XXX
-      if (CreditCardTypeValueId && CreditCardTypeValue) return CreditCardTypeValue;
-
+      if (CreditCardTypeValueId && CreditCardTypeValue) return CreditCardTypeValue.Value;
       if (CreditCardTypeValueId) {
-        return models.Transactions.getPaymentTypeById(CreditCardTypeValueId, "CreditCard");
+        return models.Transaction.getDefinedValueId(CreditCardTypeValueId)
+          .then(x => x.Value);
       }
 
-      if (CurrencyTypeValueId && CurrencyTypeValue) return CurrencyTypeValue;
-
-      return models.Transactions.getPaymentTypeById(CurrencyTypeValueId);
+      if (CurrencyTypeValueId && CurrencyTypeValue) return CurrencyTypeValue.Value;
+      return models.Transaction.getDefinedValueId(CurrencyTypeValueId)
+        .then(x => x.Value);
     },
   },
 
-  SavedAccount: {
+  SavedPayment: {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     name: ({ Name }) => Name,
     guid: ({ Guid }) => Guid,
     code: ({ ReferenceNumber }) => ReferenceNumber,
     date: ({ CreatedDate, ModifiedDate }) => (ModifiedDate || CreatedDate),
-    payment: ({ PaymentDetailId, PaymentDetail }, _, { models }) => {
-      if (PaymentDetail) return PaymentDetail;
+    payment: ({ FinancialPaymentDetailId, FinancialPaymentDetail }, _, { models }) => {
+      if (FinancialPaymentDetail) return FinancialPaymentDetail;
 
-      return models.SavedAccounts.getPaymentDetailsById(PaymentDetailId);
+      return models.Transaction.getPaymentDetailsById(FinancialPaymentDetailId);
     },
   },
 

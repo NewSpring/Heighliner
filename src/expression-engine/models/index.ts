@@ -4,9 +4,9 @@ import { Tables } from "../mysql";
 
 import channels from "./../models/content/tables";
 import assets from "./../models/files/tables";
-import matrix from "./matrix";
-import playa from "./playa";
-import sites from "./sites";
+import matrix from "./ee/matrix";
+import playa from "./ee/playa";
+import sites from "./ee/sites";
 import navee from "./../models/navigation/tables";
 
 let tables = {

@@ -4,7 +4,7 @@ import {
   CHAR,
 } from "sequelize";
 
-import { MySQLConnector, Tables } from "../mysql";
+import { MySQLConnector, Tables } from "../../mysql";
 
 const playaSchema: Object = {
   rel_id: { type: INTEGER, primaryKey: true },
@@ -25,7 +25,7 @@ export {
 
 export function connect(): Tables {
   Playa = new MySQLConnector("exp_playa_relationships", playaSchema);
-  
+
   return {
     Playa,
   }
@@ -40,13 +40,13 @@ export function bind({
     // get access to matrix from channel data
     ChannelData.model.hasMany(Playa.model, { foreignKey: "entry_id" });
     Playa.model.belongsTo(ChannelData.model, { foreignKey: "entry_id" });
- 
+
   } catch (e) {
     console.log(e);
   }
- 
-  
-  
+
+
+
 };
 
 export default {

@@ -6,7 +6,7 @@ import {
   PersonAlias,
 } from "./tables";
 
-import { Rock } from "../../rock";
+import { Rock } from "../rock";
 
 export class People extends Rock {
   private cache: Cache
@@ -34,6 +34,15 @@ export class People extends Rock {
       include: { model: Person.model },
     })
       .then(x => x.Person)
+      .then(data => {
+        // XXX make this faster
+        return PersonAlias.find({ where: { PersonId: data.Id } })
+          .then(x => x.map(y => y.Id))
+          .then(x => {
+            data.aliases = x;
+            return data;
+          })
+      })
     );
 
   }

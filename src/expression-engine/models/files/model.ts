@@ -10,7 +10,7 @@ import {
 import {
   Matrix,
   MatrixCol,
-} from "../../database/matrix";
+} from "../ee/matrix";
 
 import {
   Assets,
@@ -23,7 +23,7 @@ import {
   assetsSourcesSchema,
 } from "../files/tables";
 
-import { EE } from "../../ee";
+import { EE } from "../ee";
 
 export class File extends EE {
   private cache: Cache

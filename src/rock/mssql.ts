@@ -5,10 +5,11 @@ import Sequelize, {
   DefineOptions,
 } from "sequelize";
 
-import { merge, isArray, isObject } from "lodash";
+
+import { merge, isArray, isObject, isDate } from "lodash";
 // import DataLoader from "dataloader";
 
-import { createTables } from "./database";
+import { createTables } from "./models";
 
 let db;
 export function connect(
@@ -20,10 +21,12 @@ export function connect(
   return new Promise((cb) => {
     opts = merge({}, opts, {
       dialect: "mssql",
-      logging: (...args) => {}, // tslint:disable-line
-      // logging: console.log.bind(console, "MSSQL:"), // tslint:disable-line
+      // logging: (...args) => {}, // tslint:disable-line
+      logging: console.log.bind(console, "MSSQL:"), // tslint:disable-line
       benchmark: process.env.NODE_ENV !== "production",
-
+      dialectOptions: {
+        readOnlyIntent: true,
+      },
       define: {
         timestamps: false,
         freezeTableName: true,
@@ -66,11 +69,13 @@ export class MSSQLConnector {
 
   public findOne(...args): Promise<Object> {
     return this.time(this.model.findOne.apply(this.model, args)
-      .then((x) => x.dataValues)
+      .then((x) => x && x.dataValues)
       .then(this.mergeData));
   }
 
   private mergeData = (data: any): any => {
+    if (!data) return data;
+
     const keys: string[] = [];
     for (let key in data) {
       if (key.indexOf(this.prefix) > -1) {
@@ -80,10 +85,11 @@ export class MSSQLConnector {
 
     for (let key of keys) {
       const table = data[key];
+      if (!data[key]) continue;
 
       if (isArray(table)) {
         data[key] = this.getValues(table).map(this.mergeData);
-      } else if (isObject(table)) {
+      } else if (data[key] && data[key].dataValues) {
         data[key] = this.mergeData(data[key].dataValues);
       }
     }
@@ -92,7 +98,7 @@ export class MSSQLConnector {
   }
 
   private getValues(data: any[]): any[] {
-    return data.map(x => x.dataValues);
+    return data.map(x => x.dataValues || x);
   }
 
   private queryCount(): number {

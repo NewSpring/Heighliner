@@ -17,21 +17,27 @@ import {
   queries as peopleQueries,
 } from "./models/people";
 
-
+import {
+  schema as financeSchema,
+  resolver as Finance,
+  model as Finances,
+  queries as financeQueries,
+} from "./models/finances";
 
 export const schema = [
   ...personSchema,
-  // ...fileSchema,
+  ...financeSchema,
   // ...navigationSchema,
 ];
 
 export const resolvers = merge(
-  Person
+  Person,
+  Finance
 ) as Resolvers;
 
 export const models = merge(
-  People
-  // Files,
+  People,
+  Finances
   // Navigations
 ) as Models;
 
@@ -39,6 +45,7 @@ export const models = merge(
 // use `after` for ^^
 export const queries = [
   ...peopleQueries,
+  ...financeQueries,
 ];
 
 export let mocks = merge({

@@ -12,6 +12,14 @@ declare module "graphql-tools" {
   }
 }
 
+declare module "dataloader" {
+
+  export class Dataloader {
+    constructor(method: () => any)
+    load(id: string | number): any
+  }
+}
+
 declare module "apollo-server" {
   // XXX actually type this project
   function apolloServer(config: any): any

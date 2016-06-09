@@ -13,9 +13,9 @@ import {
 
 import {
   Sites,
-} from "../../database/sites";
+} from "../ee/sites";
 
-import { EE } from "../../ee";
+import { EE } from "../ee";
 
 export class Navigation extends EE {
   private cache: Cache

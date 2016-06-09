@@ -2,7 +2,7 @@ import { Cache } from "./cache";
 const Crypto = require("crypto");
 
 import Redis from "redis";
-// import DataLoader from "dataloader";
+import DataLoader from "dataloader";
 
 let db;
 export function connect(address: string, port: number = 6379): Promise<boolean> {
@@ -30,9 +30,19 @@ export function connect(address: string, port: number = 6379): Promise<boolean> 
 export class RedisCache implements Cache {
   private count: number = 0;
   private secret: string;
+  private idLoader: any;
 
   constructor(secret: string = "RedisCache"){
     this.secret = secret;
+
+    this.idLoader = new DataLoader(keys => new Promise((resolve, reject) => {
+      db.mget(keys, (error, results) => {
+        if (error) return reject(error);
+        resolve(results.map((result, index) =>
+          result !== null ? result : new Error(`No key: ${keys[index]}`)
+        ));
+      });
+    }));
   }
 
   private getCount() {
@@ -52,19 +62,21 @@ export class RedisCache implements Cache {
       if (!cache && lookup) {
         return lookup().then(done);
       }
-      db.get(id, (err, data) => {
-        if (err) return lookup().then(done);
-        if (!data) return lookup().then(done);
 
-        try {
-          data = JSON.parse(data);
-        } catch (e) {
-          return lookup().then(done);
-        }
+      return this.idLoader.load(id)
+        .then(data => {
+          if (!data) return lookup().then(done);
 
-        fromCache = true;
-        done(data);
-      });
+          try {
+            data = JSON.parse(data);
+          } catch (e) {
+            return lookup().then(done);
+          }
+
+          fromCache = true;
+          done(data);
+        })
+        .catch(x => lookup().then(done));
     }).then((data) => {
 
       if (data && !fromCache) {
@@ -73,7 +85,7 @@ export class RedisCache implements Cache {
           this.set(id, data, ttl);
         });
       }
-      console.timeEnd(label);
+      if (fromCache) console.timeEnd(label);
       return data;
     });
   }
