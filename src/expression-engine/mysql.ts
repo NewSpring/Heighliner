@@ -5,7 +5,7 @@ import Sequelize, {
   DefineOptions,
 } from "sequelize";
 
-import { merge, isArray, isObject } from "lodash";
+import { merge, isArray } from "lodash";
 // import DataLoader from "dataloader";
 
 import { createTables } from "./models";
@@ -78,12 +78,13 @@ export class MySQLConnector {
       }
     }
 
-    for (let key of keys) {
+     for (let key of keys) {
       const table = data[key];
+      if (!data[key]) continue;
 
       if (isArray(table)) {
         data[key] = this.getValues(table).map(this.mergeData);
-      } else if (isObject(table)) {
+      } else if (data[key] && data[key].dataValues) {
         data[key] = this.mergeData(data[key].dataValues);
       }
     }
