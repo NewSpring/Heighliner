@@ -33,7 +33,7 @@ import ExpressionEngine, {
 // Import Google Site Search
 // import GoogleSS, { queries as GoogleSSQueries } from "./google-site-search";
 
-import { People } from "./rock/models/person/model";
+import { People } from "./rock/models/people/model";
 import { User } from "./apollos/models/users/model";
 
 // Merge all applications together

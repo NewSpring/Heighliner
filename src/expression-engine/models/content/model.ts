@@ -17,9 +17,9 @@ import {
 import {
   Matrix,
   MatrixCol,
-} from "../../database/matrix";
+} from "../ee/matrix";
 
-import { EE } from "../../ee";
+import { EE } from "../ee";
 
 export interface ChannelField {
   field_id: number;
@@ -28,7 +28,7 @@ export interface ChannelField {
   field_label: string;
 }
 export class Content extends EE {
-  private cache: Cache
+  __type: string =  "Content";
 
   constructor({ cache } = { cache: defaultCache }) {
     super();
@@ -162,9 +162,7 @@ export class Content extends EE {
       limit,
       offset
     })
-      .then(data => Promise.all(data.map(x => this.getFromId(
-        x.entry_id, createGlobalId(x.entry_id, "Content")
-      ))))
+      .then(this.getFromIds.bind(this))
     , { ttl: 3600, cache });
   }
 

@@ -2,13 +2,14 @@ import { merge } from "lodash";
 
 import { Tables } from "../mssql";
 
-import people from "./../models/people/tables";
-import finances from "./../models/people/tables";
-
+import people from "./people/tables";
+import finances from "./finances/tables";
+import rock from "./rock/tables";
 
 let tables = {
   people,
   finances,
+  rock,
 } as {
   [key: string]: {
     connect: () => Tables;

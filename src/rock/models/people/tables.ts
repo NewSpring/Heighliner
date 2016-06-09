@@ -65,4 +65,4 @@ export function bind({
 export default {
   connect,
   bind,
-};;
+};

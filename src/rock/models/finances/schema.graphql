@@ -6,8 +6,7 @@ type ScheduleFrequency {
 
 type TransactionDetail implements Node {
   id: ID!
-  amount: Float
-  date: String
+  amount: Float!
   account: FinancialAccount
 }
 
@@ -17,16 +16,17 @@ type ScheduledTransaction implements Node {
   start: String
   next: String
   code: String
-  gateway: ID!
+  gateway: Int # we use this on the client I think?
   end: String
   numberOfPayments: Int
   date: String
   details: [TransactionDetail]
+  transactions: [Transaction]
   schedule: ScheduleFrequency
   payment: PaymentDetail
 }
 
-type Transcation implements Node {
+type Transaction implements Node {
   id: ID!
   summary: String
   status: String
@@ -49,8 +49,8 @@ type FinancialAccount implements Node {
 
 type PaymentDetail implements Node {
   id: ID!
-  accountNumber: String!
-  paymentType: String
+  accountNumber: String
+  paymentType: String!
 }
 
 type SavedPayment implements Node {
