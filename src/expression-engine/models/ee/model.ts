@@ -1,29 +1,9 @@
 
 import { flatten, merge, isUndefined } from "lodash";
-import { Cache, defaultCache } from "../../../util/cache";
-import { createGlobalId } from "../../../util";
+import { createGlobalId, Heighliner } from "../../../util";
 
-export class EE {
-  public cache: Cache;
+export class EE extends Heighliner {
   public __type: string = "RockSystem";
-
-  constructor({ cache } = { cache: defaultCache }) {
-    this.cache = cache;
-  }
-
-  public async getFromId(id, globalId) {
-    return Promise.reject(new Error("Not implemented on this model"));
-  }
-
-  public async getFromIds(data: any[]): Promise<any[]> {
-    return Promise.all(data.map(x => this.getFromId(x.Id, createGlobalId(x.Id, this.__type))))
-      .then(x => flatten(x as any[]))
-  }
-
-  public debug(data: any): any {
-    console.log("DEBUG:", data); // tslint:disable-line
-    return data;
-  }
 
   public getDate(day: string, month: string, year: string): string {
     return `${new Date(Number(year), Number(month) - 1 , Number(day))}`;
