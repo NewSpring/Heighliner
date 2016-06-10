@@ -1,11 +1,11 @@
 
-import { flatten, merge, isUndefined } from "lodash";
+import { flatten } from "lodash";
 import { Cache, defaultCache } from "./cache";
 import { createGlobalId } from "./node/model";
 
 export class Heighliner {
   public cache: Cache;
-  public __type: string;
+  public __type: string; // tslint:disable-line
 
   constructor({ cache } = { cache: defaultCache }) {
     this.cache = cache;
@@ -17,7 +17,7 @@ export class Heighliner {
 
   public async getFromIds(data: any[]): Promise<any[]> {
     return Promise.all(data.map(x => this.getFromId(x.Id, createGlobalId(x.Id, this.__type))))
-      .then(x => flatten(x as any[]))
+      .then(x => flatten(x as any[]));
   }
 
   public debug(data: any): any {
