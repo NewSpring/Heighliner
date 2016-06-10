@@ -25,21 +25,29 @@ import {
   queries as financeQueries,
 } from "./models/finances";
 
+import {
+  schema as campusSchema,
+  resolver as Campus,
+  model as Campuses,
+  queries as campusQueries,
+} from "./models/campuses";
+
 export const schema = [
   ...personSchema,
   ...financeSchema,
-  // ...navigationSchema,
+  ...campusSchema,
 ];
 
 export const resolvers = merge(
   Person,
-  Finance
+  Finance,
+  Campus
 ) as Resolvers;
 
 export const models = merge(
   People,
-  Finances
-  // Navigations
+  Finances,
+  Campuses
 ) as Models;
 
 // XXX implement pagination instead of skip
@@ -47,6 +55,7 @@ export const models = merge(
 export const queries = [
   ...peopleQueries,
   ...financeQueries,
+  ...campusQueries,
 ];
 
 export let mocks = merge({

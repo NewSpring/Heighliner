@@ -1,4 +1,4 @@
 
 export default [
-  `campuses: [Campus]`,
+  `campuses(id: Int, name: String): [Campus]`,
 ]
