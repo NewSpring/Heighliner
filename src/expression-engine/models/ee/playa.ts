@@ -36,16 +36,9 @@ export function bind({
   Playa,
 }: Tables): void {
 
-  try {
-    // get access to matrix from channel data
-    ChannelData.model.hasMany(Playa.model, { foreignKey: "entry_id" });
-    Playa.model.belongsTo(ChannelData.model, { foreignKey: "entry_id" });
-
-  } catch (e) {
-    console.log(e);
-  }
-
-
+  // get access to matrix from channel data
+  ChannelData.model.hasMany(Playa.model, { foreignKey: "entry_id" });
+  Playa.model.belongsTo(ChannelData.model, { foreignKey: "entry_id" });
 
 };
 

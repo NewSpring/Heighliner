@@ -19,7 +19,7 @@ import {
   PersonAlias,
 } from "../people/tables"
 
-import { Rock } from "../rock";
+import { Rock } from "../system";
 
 class FinancialModel extends Rock {
 

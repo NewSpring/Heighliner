@@ -1,65 +1,18 @@
 
-import { merge } from "lodash";
-
 import { connect } from "./mysql";
 
-import {
-  ApplicationDefinition,
-  Resolvers,
-  Models,
-  Mocks,
-} from "../util/application";
+import { ApplicationDefinition } from "../util/application";
+import { createApplication } from "../util/heighliner";
 
-import {
-  schema as contentSchema,
-  resolver as Content,
-  model as Contents,
-  queries as contentQueries,
-} from "./models/content";
+import Content from "./models/content";
+import Files from "./models/files";
+import Navigation from "./models/navigation";
 
-import {
-  schema as fileSchema,
-  resolver as File,
-  model as Files,
-} from "./models/files";
-
-import {
-  schema as navigationSchema,
-  resolver as Navigation,
-  model as Navigations,
-  queries as navigationQueries,
-} from "./models/navigation";
-
-export const schema = [
-  ...contentSchema,
-  ...fileSchema,
-  ...navigationSchema,
-];
-
-export const resolvers = merge(
+export const { models, resolvers, mocks, schema, queries } = createApplication([
   Content,
-  File,
-  Navigation
-) as Resolvers;
-
-export const models = merge(
-  Contents,
   Files,
-  Navigations
-) as Models;
-
-export const queries = [
-  ...contentQueries,
-  ...navigationQueries,
-];
-
-export let mocks = merge({
-    Query: {
-      content() { return {}; },
-    },
-  }
-  // userMocks
-) as Mocks;
+  Navigation,
+]);
 
 export default {
   models,

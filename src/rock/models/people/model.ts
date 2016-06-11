@@ -6,7 +6,7 @@ import {
   PersonAlias,
 } from "./tables";
 
-import { Rock } from "../rock";
+import { Rock } from "../system";
 
 export class Person extends Rock {
   public cache: Cache

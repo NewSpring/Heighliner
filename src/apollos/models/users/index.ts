@@ -1,15 +1,18 @@
 import { gql } from "../../../util";
 const schema = gql("./schema");
-import resolver from "./resolver";
-import model, { UserDocument } from "./model";
+import resolvers from "./resolver";
+import models, { UserDocument } from "./model";
 import mocks from "./mocks";
 import queries from "./queries";
 
-export {
+export default {
   schema,
-  resolver,
-  model,
+  resolvers,
+  models,
   mocks,
   queries,
-  UserDocument,
 };
+
+export {
+  UserDocument,
+}

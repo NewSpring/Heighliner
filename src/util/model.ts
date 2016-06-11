@@ -6,6 +6,7 @@ import { createGlobalId } from "./node/model";
 export class Heighliner {
   public cache: Cache;
   public __type: string; // tslint:disable-line
+  public id: string;
 
   constructor({ cache } = { cache: defaultCache }) {
     this.cache = cache;
@@ -16,7 +17,7 @@ export class Heighliner {
   }
 
   public async getFromIds(data: any[]): Promise<any[]> {
-    return Promise.all(data.map(x => this.getFromId(x.Id, createGlobalId(x.Id, this.__type))))
+    return Promise.all(data.map(x => this.getFromId(x[this.id], createGlobalId(x[this.id], this.__type))))
       .then(x => flatten(x as any[]));
   }
 

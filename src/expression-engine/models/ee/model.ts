@@ -4,6 +4,7 @@ import { createGlobalId, Heighliner } from "../../../util";
 
 export class EE extends Heighliner {
   public __type: string = "RockSystem";
+  public id: string = "entry_id";
 
   public getDate(day: string, month: string, year: string): string {
     return `${new Date(Number(year), Number(month) - 1 , Number(day))}`;

@@ -9,7 +9,6 @@ export default {
   },
   Node: () => ({
     __resolveType: (data, _: any, { schema }: any) => {
-      console.log("here", data)
       return schema.getType(data.__type);
     },
   }),

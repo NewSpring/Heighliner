@@ -34,8 +34,9 @@ export interface ApplicationDefinition {
   schema: string[];
   models: Models;
   resolvers: Resolvers;
-  mocks: Mocks;
+  mocks?: Mocks;
   connect?: Function;
+  queries?: string[];
 }
 
 export interface SchemaShorthand {

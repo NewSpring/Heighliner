@@ -7,7 +7,7 @@ import {
   Location as LocationTable, // XXX move to its own model
 } from "./tables";
 
-import { Rock } from "../rock";
+import { Rock } from "../system";
 
 export class Campus extends Rock {
   public cache: Cache
