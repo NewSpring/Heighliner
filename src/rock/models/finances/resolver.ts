@@ -27,11 +27,6 @@ export default {
     },
   },
 
-  ScheduleFrequency: {
-    value: ({ Value }) => Value,
-    description: ({ Description }) => Description,
-  },
-
   TransactionDetail: {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     amount: ({ Amount }) => Amount,

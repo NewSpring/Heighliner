@@ -4,13 +4,13 @@ import { Tables } from "../mssql";
 
 import people from "./people/tables";
 import finances from "./finances/tables";
-import rock from "./rock/tables";
+import system from "./system/tables";
 import campuses from "./campuses/tables";
 
 let tables = {
   people,
   finances,
-  rock,
+  system,
   campuses,
 } as {
   [key: string]: {

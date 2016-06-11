@@ -31,6 +31,10 @@ export interface UserMocks {
 
 export default {
 
+  Query: {
+    currentUser() { return {}; },
+  },
+
   Hashes: () => ({
     when: () => (`${new Date(casual.unix_time)}`),
   }),

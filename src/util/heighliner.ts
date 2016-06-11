@@ -34,6 +34,27 @@ export function createMutations(mutations: string[] = []): string[] {
   `];
 }
 
+export function createApplication(models: ApplicationDefinition[]): ApplicationDefinition {
+  const joined = {
+    schema: [],
+    models: {},
+    resolvers: {},
+    mocks: {},
+    queries: [],
+  } as ApplicationDefinition;
+
+  for (let model of models) {
+    joined.schema = [...joined.schema, ...model.schema];
+    joined.models = merge(joined.models, model.models);
+    joined.resolvers = merge(joined.resolvers, model.resolvers);
+
+    if (model.queries) joined.queries = [...joined.queries, ...model.queries];
+    if (model.mocks) joined.mocks = merge(joined.mocks, model.mocks);
+  }
+
+  return joined;
+}
+
 export function loadApplications(applications: { [key: string]: ApplicationDefinition }): ApplicationDefinition {
 
   const joined = {
@@ -48,7 +69,7 @@ export function loadApplications(applications: { [key: string]: ApplicationDefin
     joined.schema = [...joined.schema, ...app.schema];
     joined.models = merge(joined.models, app.models);
     joined.resolvers = merge(joined.resolvers, app.resolvers);
-    joined.mocks = merge(joined.mocks, app.mocks);
+    if (app.mocks) joined.mocks = merge(joined.mocks, app.mocks);
   });
 
   // dynmically create the root query mock

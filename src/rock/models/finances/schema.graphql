@@ -1,9 +1,4 @@
 
-type ScheduleFrequency {
-  value: String
-  description: String
-}
-
 type TransactionDetail implements Node {
   id: ID!
   amount: Float!
@@ -22,7 +17,7 @@ type ScheduledTransaction implements Node {
   date: String
   details: [TransactionDetail]
   transactions: [Transaction]
-  schedule: ScheduleFrequency
+  schedule: DefinedValue
   payment: PaymentDetail
 }
 

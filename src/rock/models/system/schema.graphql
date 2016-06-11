@@ -1,0 +1,6 @@
+
+type DefinedValue implements Node {
+  id: ID!
+  value: String
+  description: String
+}

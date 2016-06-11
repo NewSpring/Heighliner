@@ -30,9 +30,7 @@ export default function(doc){
     orphans.push(row)
   }
 
-  if (orphans.length) {
-    console.log("@TODO")
-  }
+  // XXX handle tertiary nav
 
   let results = []
 
