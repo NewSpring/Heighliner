@@ -98,9 +98,10 @@ module.exports = {
 
         // Wrap these lines at 100 characters
         var body = wrap(body, wrapOptions);
-        var footer = wrap(answers.footer, wrapOptions);
 
-        commit(head + '\n\n' + body + '\n\n' + footer);
+        if (!body) body = '';
+
+        commit(head + '\n\n' + body);
       } catch (e) {
         console.log("COMMIT ERROR: ", e);
       }
