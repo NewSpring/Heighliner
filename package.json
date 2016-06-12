@@ -6,6 +6,7 @@
   "scripts": {
     "pretest": "rm -rf ./dist && mkdir ./dist && npm run build",
     "test": "npm run testonly --",
+    "commit": "node bin/git-cz",
     "test:watch": "ava --watch",
     "copy-schemas": "norma build",
     "testonly": "nyc ava",
