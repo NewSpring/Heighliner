@@ -50,11 +50,12 @@ export default {
       type: GraphQLInt
     },
     cache: {
-      type: GraphQLBoolean
+      type: GraphQLBoolean,
+      defaultValue: true
     },
   },
   description: "All dynamic content channels",
-  resolve: (_, { channel, collectionId, limit, skip, ttl, cache = true }) => {
+  resolve: (_, { channel, collectionId, limit, skip, ttl, cache }) => {
     // hotfix
     if (channel === "albums") {
       channel = "newspring_albums"

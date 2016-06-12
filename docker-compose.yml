@@ -1,12 +1,12 @@
-heighliner:
-  build: .
-  volumes:
-    - .:/usr/src/app/
-  ports:
-    - "80:80"
-  links:
-    - mySQL
-    - redis
+# heighliner:
+#   build: .
+#   volumes:
+#     - .:/usr/src/app/
+#   ports:
+#     - "80:80"
+#   links:
+#     - mySQL
+#     - redis
 
 mySQL:
   image: mysql:5.5
@@ -19,10 +19,10 @@ mySQL:
     MYSQL_DATABASE: ee_local
     MYSQL_USER: root
 
-# mongoDB:
-#   image: mongo:latest
-#   ports:
-#     - "27017:27017"
+mongoDB:
+  image: mongo:latest
+  ports:
+    - "27017:27017"
 
 redis:
   image: redis

@@ -25,6 +25,8 @@ import feed from "./feed";
 import allLowReorderSets, { lowReorderSet } from "./lowReorderSets"
 import { navigation } from "./navigation"
 
+import live from "./live"
+
 import search from "./search"
 
 let schema = new GraphQLSchema({
@@ -53,6 +55,7 @@ let schema = new GraphQLSchema({
       allLowReorderSets,
       lowReorderSet,
       navigation,
+      live, // live feed node
 
       // rock financial
       allFinanicalTransactions,
