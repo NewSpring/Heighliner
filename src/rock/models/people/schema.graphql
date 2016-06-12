@@ -13,7 +13,7 @@ type Person implements Node {
   birthMonth: Int
   birthYear: Int
   email: String
-  # campus: [Campus]
+  campus: Campus
   # home: [Location]
   # likes: [Content] // XXX should this be on user?
 }
