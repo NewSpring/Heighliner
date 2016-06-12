@@ -65,8 +65,6 @@
     "babel-runtime": "^6.9.2",
     "codecov": "^1.0.1",
     "coveralls": "^2.11.9",
-    "cz-conventional-changelog": "^1.1.6",
-    "cz-jira-smart-commit": "^1.0.3",
     "eslint": "^2.10.2",
     "graphql-tester": "0.0.4",
     "normajs": "^1.7.10",
@@ -75,11 +73,12 @@
     "supervisor": "^0.10.0",
     "tslint": "^3.10.2",
     "typescript": "^1.8.10",
-    "typings": "^1.0.4"
+    "typings": "^1.0.4",
+    "word-wrap": "^1.1.0"
   },
   "config": {
     "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
+      "path": "./scripts/commit"
     }
   }
 }
