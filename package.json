@@ -82,7 +82,7 @@
       "path": "./scripts/commit"
     },
     "ghooks": {
-      "pre-commit": "echo 'Linting project' && npm run lint"
+      "pre-commit": "npm run lint"
     }
 
   }
