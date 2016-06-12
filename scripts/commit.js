@@ -95,7 +95,6 @@ module.exports = {
         var issues = answers.issues.trim();
         var subject = answers.subject ? '#comment ' + answers.subject.trim(): '';
         var ci = answers.confirm ? '' : ' [ci skip]';
-        console.log(answers);
 
         // Hard limit this line
         var head = wrap(answers.type + ': ' + issues + ' ' + subject + ci);
