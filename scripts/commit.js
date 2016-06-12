@@ -73,11 +73,7 @@ module.exports = {
       }, {
         type: 'input',
         name: 'body',
-        message: 'Provide a longer description of the change (optional):\n'
-      }, {
-        type: 'input',
-        name: 'footer',
-        message: 'List any breaking changes or issues closed by this change (optional):\n'
+        message: 'Provide a longer description of the change [Sent to JIRA] (optional):\n'
       }, {
         type: 'confirm',
         name: 'ci',
@@ -98,6 +94,7 @@ module.exports = {
 
         // Hard limit this line
         var head = answers.type + ': ' + answers.subject + ' ' + issues + ci;
+        if (body) head = head + ' ' + body;
 
         // Wrap these lines at 100 characters
         var body = wrap(body, wrapOptions);
