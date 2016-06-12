@@ -93,14 +93,14 @@ module.exports = {
         };
 
         var issues = answers.issues.trim();
-        var subject = answers.subject ? '#comment ' + answers.subject.trim(): '';
+        var body = answers.body ? '#comment ' + answers.body.trim(): '';
         var ci = answers.ci ? '' : ' [ci skip]';
 
         // Hard limit this line
-        var head = answers.type + ': ' + issues + ' ' + subject + ci;
+        var head = answers.type + ': ' + answers.subject + ' ' + issues + ci;
 
         // Wrap these lines at 100 characters
-        var body = wrap(answers.body, wrapOptions);
+        var body = wrap(body, wrapOptions);
         var footer = wrap(answers.footer, wrapOptions);
 
         commit(head + '\n\n' + body + '\n\n' + footer);
