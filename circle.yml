@@ -32,8 +32,8 @@ deployment:
     commands:
       - echo deploying to rancher
       - .rancher/deploy.sh
-  rancher-beta:
-    branch: rancher-beta
+  ecs-beta:
+    branch: ecs-beta
     commands:
       - echo deploying to ecs
       - .ecs/deploy-beta.sh
