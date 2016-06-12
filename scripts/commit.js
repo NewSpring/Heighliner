@@ -93,10 +93,12 @@ module.exports = {
         };
 
         var issues = answers.issues.trim();
-        var subject = '#comment ' + answers.subject.trim();
+        var subject = answers.subject ? '#comment ' + answers.subject.trim(): '';
+        var ci = answers.confirm ? '' : ' [ci skip]';
+        console.log(answers);
 
         // Hard limit this line
-        var head = wrap(answers.type + ': ' + issues + ' ' + subject);
+        var head = wrap(answers.type + ': ' + issues + ' ' + subject + ci);
 
         // Wrap these lines at 100 characters
         var body = wrap(answers.body, wrapOptions);
