@@ -92,7 +92,7 @@ module.exports = {
         var subject = '#comment ' + answers.subject.trim();
 
         // Hard limit this line
-        var head = wrap(answers.type + ': ' + issues + ': ' + subject);
+        var head = wrap(answers.type + ' ' + issues + ': ' + subject);
 
         // Wrap these lines at 100 characters
         var body = wrap(answers.body, wrapOptions);
