@@ -70,11 +70,11 @@ make_task_def() {
         },
         {
           "name": "ROCK_URL",
-          "value": "'"$BETA_ROCK_URL"'"
+          "value": "'"$ROCK_URL"'"
         },
         {
           "name": "ROCK_TOKEN",
-          "value": "'"$BETA_ROCK_TOKEN"'"
+          "value": "'"$ROCK_TOKEN"'"
         },
         {
           "name": "SEARCH_URL",
