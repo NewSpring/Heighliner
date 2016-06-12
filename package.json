@@ -66,6 +66,7 @@
     "codecov": "^1.0.1",
     "coveralls": "^2.11.9",
     "eslint": "^2.10.2",
+    "ghooks": "^1.2.3",
     "graphql-tester": "0.0.4",
     "normajs": "^1.7.10",
     "nyc": "^6.4.4",
