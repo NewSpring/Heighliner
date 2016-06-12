@@ -108,6 +108,17 @@ const getQuery = (file, data) => {
 
   }
 
+  // ensure entry is not closed
+  // open entries may be open, featured, promoted, or something
+  if (query.indexOf("t.status") > -1) {
+    if (query.indexOf("WHERE") === -1) {
+      query += " WHERE";
+    } else {
+      query += " AND"
+    }
+    query += ` t.status != "closed"`;
+  }
+
   if (data.sort) {
     if (!data.future) {
       if (query.indexOf("WHERE") === -1) {
