@@ -6,14 +6,12 @@
 
 */
 declare module "graphql-tools" {
-
   export class MockList {
     constructor(count: number, method: () => any)
   }
 }
 
 declare module "dataloader" {
-
   export class Dataloader {
     constructor(method: () => any)
     load(id: string | number): any
@@ -30,7 +28,6 @@ declare module "casual" {
   export var email: string;
   export var unix_time: string;
 }
-
 
 declare module "php-unserialize" {
   function unserialize(data: string): any
