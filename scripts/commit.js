@@ -78,6 +78,10 @@ module.exports = {
         type: 'input',
         name: 'footer',
         message: 'List any breaking changes or issues closed by this change:\n'
+      }, {
+        type: 'confirm',
+        name: 'ci',
+        message: 'Run this build on CI?\n'
       }
     ]).then(function(answers) {
       try {
@@ -92,7 +96,7 @@ module.exports = {
         var subject = '#comment ' + answers.subject.trim();
 
         // Hard limit this line
-        var head = wrap(answers.type + ' ' + issues + ': ' + subject);
+        var head = wrap(answers.type + ': ' + issues + ' ' + subject);
 
         // Wrap these lines at 100 characters
         var body = wrap(answers.body, wrapOptions);
