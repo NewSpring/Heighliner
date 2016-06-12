@@ -27,6 +27,9 @@ export default {
     birthMonth: ({ BirthMonth }) => BirthMonth,
     birthYear: ({ BirthYear }) => BirthYear,
     email: ({ Email }) => Email,
+    campus: ({ Id }, _, { models }) => {
+
+    },
   },
 
 }
