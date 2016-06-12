@@ -69,7 +69,7 @@ module.exports = {
       }, {
       type: 'input',
       name: 'subject',
-      message: 'Write a short description of the change:\n',
+      message: 'Write a short description of the change (required):\n',
       }, {
         type: 'input',
         name: 'body',
@@ -77,7 +77,7 @@ module.exports = {
       }, {
         type: 'input',
         name: 'footer',
-        message: 'List any breaking changes or issues closed by this change:\n'
+        message: 'List any breaking changes or issues closed by this change (optional):\n'
       }, {
         type: 'confirm',
         name: 'ci',
@@ -94,7 +94,7 @@ module.exports = {
 
         var issues = answers.issues.trim();
         var subject = answers.subject ? '#comment ' + answers.subject.trim(): '';
-        var ci = answers.confirm ? '' : ' [ci skip]';
+        var ci = answers.ci ? '' : ' [ci skip]';
 
         // Hard limit this line
         var head = wrap(answers.type + ': ' + issues + ' ' + subject + ci);
