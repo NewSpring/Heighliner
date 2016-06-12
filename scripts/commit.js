@@ -97,7 +97,7 @@ module.exports = {
         var ci = answers.ci ? '' : ' [ci skip]';
 
         // Hard limit this line
-        var head = wrap(answers.type + ': ' + issues + ' ' + subject + ci);
+        var head = answers.type + ': ' + issues + ' ' + subject + ci;
 
         // Wrap these lines at 100 characters
         var body = wrap(answers.body, wrapOptions);
