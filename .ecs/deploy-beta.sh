@@ -38,7 +38,11 @@ make_task_def() {
         },
         {
           "name": "REDIS_HOST",
-          "value": "'"$BETA_REDIS_HOST"'"
+          "value": "'"$REDIS_HOST"'"
+        },
+        {
+          "name": "REDIS_NAMESPACE",
+          "value": "beta"
         },
         {
           "name": "MONGO_URL",
