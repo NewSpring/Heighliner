@@ -15,8 +15,9 @@
     "start": "tsc --watch | supervisor -w lib index.js",
     "build": "tsc & norma build",
     "coverage": "npm run build && ./node_modules/.bin/nyc report --reporter=json",
-    "postcoverage": "remap-istanbul --input coverage/coverage-final.json --type lcovonly --output coverage/lcov.info && npm run send:coverage",
-    "send:coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "postcoverage": "remap-istanbul --input coverage/coverage-final.json --type lcovonly --output coverage/lcov.info && npm run send:coverage:coveralls && npm run send:coverage:codecov",
+    "send:coverage:coveralls": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "send:coverage:codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "author": "jbaxleyiii",
   "ava": {
