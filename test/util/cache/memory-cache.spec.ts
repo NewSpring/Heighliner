@@ -1,20 +1,20 @@
 
 import test from "ava";
 import casual from "casual";
-import { InMemoryCache } from "../../../lib/util/cache/memory-cache";
+import { InMemoryCache } from "../../../src/util/cache/memory-cache";
 
-test("`InMemoryCache` should have a way to get items from the cache", async t => {
+test("`InMemoryCache` should have a way to get items from the cache", async (t) => {
   const id = casual.word;
   const data = { test: casual.word };
 
   const cacheData = { [id]: data };
   const cache = new InMemoryCache(cacheData);
 
-  const result = await cache.get(id)
+  const result = await cache.get(id, () => Promise.resolve())
   t.deepEqual(result, data);
 });
 
-test("`InMemoryCache` should use a lookup method if no cache entry exists", async t => {
+test("`InMemoryCache` should use a lookup method if no cache entry exists", async (t) => {
   const id = casual.word;
   const data = { test: casual.word };
 
@@ -53,7 +53,7 @@ test("`InMemoryCache` should have a way to set items in the cache with a ttl", t
 });
 
 
-test("should have a way to set items in the cache", async t => {
+test("should have a way to set items in the cache", async (t) => {
   const id = casual.word;
   const data = { test: casual.word };
 
@@ -65,7 +65,7 @@ test("should have a way to set items in the cache", async t => {
   t.deepEqual(cacheData[id], data);
 });
 
-test("should eventually return true if successfully set", async t => {
+test("should eventually return true if successfully set", async (t) => {
   const id = casual.word;
   const data = { test: casual.word };
 
@@ -78,14 +78,14 @@ test("should eventually return true if successfully set", async t => {
   t.true(success)
 });
 
-test("should have a way to set items in the cache with a ttl", async t => {
+test("should have a way to set items in the cache with a ttl", async (t) => {
   const id = casual.word;
   const data = { test: casual.word };
 
   const cacheData = {};
   const cache = new InMemoryCache(cacheData);
 
-  await cache.set(id, data, { ttl: .1 });
+  await cache.set(id, data, .1);
 
   t.deepEqual(cacheData[id], data);
 

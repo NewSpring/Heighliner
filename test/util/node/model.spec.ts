@@ -1,7 +1,7 @@
 
 import test from "ava";
 import casual from "casual";
-import Node, { createGlobalId, parseGlobalId } from "../../../lib/util/node/model";
+import Node, { createGlobalId, parseGlobalId } from "../../../src/util/node/model";
 
 test("`createGlobalId` should take two arguments and return a string", t => {
   const id = casual.word;
@@ -27,7 +27,7 @@ test("`parseGlobalId` should take a global id and return the type and id", t => 
 });
 
 
-test("Node class should parse an encoded id to get the type to resolve", async t => {
+test("Node class should parse an encoded id to get the type to resolve", async (t) => {
   const id = casual.word;
   const __type = "Test";
   const globalId = createGlobalId(id, __type);
@@ -49,7 +49,7 @@ test("Node class should parse an encoded id to get the type to resolve", async t
 
 });
 
-test("Node class should return data from the models `getFromId` method", async t => {
+test("Node class should return data from the models `getFromId` method", async (t) => {
   const id = casual.word;
   const __type = "Test";
   const globalId = createGlobalId(id, __type);
@@ -66,13 +66,13 @@ test("Node class should return data from the models `getFromId` method", async t
   };
 
   const node = new Node(context);
-  const result = await node.get(globalId);
+  const result = await node.get(globalId) as any;
 
   t.is(result.test, data.test);
 
 });
 
-test("Node class should attach the __type to the resulting data", async t => {
+test("Node class should attach the __type to the resulting data", async (t) => {
   const id = casual.word;
   const __type = "Test";
   const globalId = createGlobalId(id, __type);
@@ -89,7 +89,7 @@ test("Node class should attach the __type to the resulting data", async t => {
   };
 
   const node = new Node(context);
-  const result = await node.get(globalId);
+  const result = await node.get(globalId) as any;
 
   t.is(result.__type, __type);
 

@@ -24,7 +24,7 @@ test("allows for generators", function* (t) {
 
 });
 
-test("allows for async functions", async t => {
+test("allows for async functions", async (t) => {
 
   const value = await new Promise((r) => {
     setTimeout(r, 10);

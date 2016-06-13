@@ -5,15 +5,20 @@
     "sourceMap": true,
     "declaration": false,
     "noImplicitAny": false,
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "lib",
     "allowSyntheticDefaultImports": true,
     "pretty": true,
     "removeComments": true,
     "allowJs": false
   },
-  "files": [
-    "typings/index.d.ts",
-    "src/server.ts"
+  "exclude": [
+    "typings/globals",
+    "typings/modules",
+    "node_modules",
+    "**/.git",
+    "dist",
+    "lib",
+    "global.d.ts"
   ]
 }
