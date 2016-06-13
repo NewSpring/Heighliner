@@ -14,11 +14,11 @@ export interface UserEmails {
 
 export interface UserLoginTokens {
   when: Date
-  hashToken: string
+  hashedToken: string
 }
 
 export interface UserResume {
-  loginTokens: [UserLoginTokens]
+  loginTokens: UserLoginTokens[]
 }
 
 export interface UserRock {
@@ -40,7 +40,7 @@ export interface UserDocument {
   _id: string
   createdAt: Date
   services: UserServices
-  emails: [UserEmails]
+  emails: UserEmails[]
   profile: UserProfile
 }
 
@@ -62,20 +62,20 @@ const schema: Object = {
 const Model = new MongoConnector("user", schema);
 
 export class User {
-  private model: MongoConnector
-  private cache: Cache
+  public model: MongoConnector;
+  public cache: Cache;
 
-  constructor({ cache } = { cache: defaultCache }) {
+  constructor({ cache }: { cache: Cache | any } = { cache: defaultCache }) {
     this.cache = cache;
     this.model = Model;
   }
 
-  async getFromId(_id: string, globalId: string): Promise<UserDocument> {
+  async getFromId(_id: string, globalId: string): Promise<UserDocument | void> {
     // try a cache lookup
-    return await this.cache.get(globalId, () => this.model.findOne({ _id })) as UserDocument;
+    return await this.cache.get(globalId, () => this.model.findOne({ _id })) as UserDocument | void;
   }
 
-  async getByHashedToken(token: string): Promise<UserDocument> {
+  async getByHashedToken(token: string): Promise<UserDocument | void> {
     let rawToken = token;
 
     // allow for client or server side auth calls
@@ -88,7 +88,7 @@ export class User {
         { "services.resume.loginTokens.hashedToken": token },
         { "services.resume.loginTokens.hashedToken": rawToken },
       ],
-    })) as UserDocument;
+    })) as UserDocument | void;
   }
 }
 

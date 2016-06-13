@@ -1,15 +1,14 @@
 
 import test from "ava";
 import crypto from "crypto";
+import { User } from "../../../../src/apollos/models/users/model";
 
-import { User } from "../../../../lib/apollos/models/users/model";
-
-test("should expose the model as 'model'", t => {
-  const users = new User();
+test("should expose the model", t => {
+  const users = new User() as any;
   t.truthy(users.model);
 });
 
-test("`getByHashedToken` should allow searching for a raw token", async t => {
+test("`getByHashedToken` should allow searching for a raw token", async (t) => {
   let token = "testToken";
   const users = new User();
   users.model.findOne = function mockedFindOne(mongoQuery) {
@@ -22,17 +21,18 @@ test("`getByHashedToken` should allow searching for a raw token", async t => {
       }
 
       t.is(tok, token);
-      return true;
+      return Promise.resolve({});
     }
 
     // we should never get here
     t.fail();
+    return Promise.resolve({});
   };
 
   return await users.getByHashedToken(token);
 });
 
-test("`getByHashedToken` should allow searching for an encrypted token", async t => {
+test("`getByHashedToken` should allow searching for an encrypted token", async (t) => {
   const token = "testToken";
   const users = new User();
   const encyptedToken = crypto.createHash("sha256")
@@ -48,17 +48,18 @@ test("`getByHashedToken` should allow searching for an encrypted token", async t
       }
 
       t.is(tok, encyptedToken);
-      return true;
+      return Promise.resolve({});
     }
 
     // we should never get here
     t.fail();
+    return Promise.resolve({});
   };
 
   return await users.getByHashedToken(token);
 });
 
-// test("`getFromId` should allow searching by an id", async t => {
+// test("`getFromId` should allow searching by an id", async (t) => {
 //   let id = "id";
 //   const users = new User();
 //   users.model.findOne = function mockedFindOne({ _id }) {
@@ -69,7 +70,7 @@ test("`getByHashedToken` should allow searching for an encrypted token", async t
 //   return await users.getFromId(id)
 // });
 
-test("`getFromId` should try and read the data from the cache using the globalId", async t => {
+test("`getFromId` should try and read the data from the cache using the globalId", async (t) => {
   let id = "id";
   let globalId = "foo";
 
@@ -80,6 +81,7 @@ test("`getFromId` should try and read the data from the cache using the globalId
       return Promise.resolve();
     },
   };
+
 
   const tempUsers = new User({ cache })
 

@@ -4,18 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "pretest": "rm -rf ./dist && mkdir ./dist && npm run build",
+    "pretest": "rm -rf ./lib && mkdir ./lib && npm run build",
     "test": "npm run testonly --",
-    "commit": "node bin/git-cz",
-    "test:watch": "ava --watch",
+    "commit": "git-cz",
+    "test:watch": "tsc --watch | ava ./lib/test/**/* --watch",
     "copy-schemas": "norma build",
-    "testonly": "nyc ava",
+    "testonly": "nyc --cache ava ./lib/test/**/*",
     "lint": "tslint src/**/*.ts && tslint test/**/*.ts",
     "posttest": "npm run lint",
     "start": "tsc --watch | supervisor -w lib index.js",
     "build": "tsc & norma build",
-    "build-coverage": "BABEL_ENV=production babel --out-dir=dist index.js",
-    "coverage": "npm run build && npm run build-coverage && ./node_modules/.bin/nyc report --reporter=json",
+    "coverage": "npm run build && ./node_modules/.bin/nyc report --reporter=json",
     "postcoverage": "remap-istanbul --input coverage/coverage-final.json --type lcovonly --output coverage/lcov.info && npm run send:coverage",
     "send:coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
@@ -65,6 +64,7 @@
     "babel-preset-stage-0": "^6.5.0",
     "babel-runtime": "^6.9.2",
     "codecov": "^1.0.1",
+    "commitizen": "^2.8.2",
     "coveralls": "^2.11.9",
     "eslint": "^2.10.2",
     "ghooks": "^1.2.3",
@@ -85,6 +85,11 @@
     "ghooks": {
       "pre-commit": "npm run lint"
     }
-
+  },
+  "nyc": {
+    "exclude": [
+      "**/*.spec.js",
+      "**/*.integration.js"
+    ]
   }
 }

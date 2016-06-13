@@ -1,7 +1,7 @@
 
 import test from "ava";
 import casual from "casual";
-import Resolver from "../../../lib/util/node/resolver";
+import Resolver from "../../../src/util/node/resolver";
 
 const sampleData = {
   _id: casual.word,

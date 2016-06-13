@@ -145,12 +145,12 @@ export async function createApp() {
       // bind the logged in user to the context overall
       // XXX should we remove the `User` and `People models from `models`?
       const Users = new User(context);
-      let user = await Users.getByHashedToken(context.hashedToken);
+      let user = await Users.getByHashedToken(context.hashedToken) as UserDocument;
       context.user = user;
 
       let person;
       const Peoples = new Person(context);
-      if (user) {
+      if (user && user.services && user.services.rock) {
         person = await Peoples.getFromAliasId(user.services.rock.PrimaryAliasId);
         person.PrimaryAliasId = user.services.rock.PrimaryAliasId;
       }

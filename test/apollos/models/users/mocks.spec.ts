@@ -1,7 +1,7 @@
 
 import test from "ava";
-import Mocks from "../../../../lib/apollos/models/users/mocks";
-import { mocks } from "../../../../lib/apollos";
+import Mocks from "../../../../src/apollos/models/users/mocks";
+import { mocks } from "../../../../src/apollos";
 
 test("Hashes should have a 'when' key with a unix date", t => {
   const { Hashes } = Mocks;

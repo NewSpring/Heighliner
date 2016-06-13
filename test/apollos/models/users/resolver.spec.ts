@@ -1,13 +1,19 @@
 
 import test from "ava";
 import casual from "casual";
-import Resolver from "../../../../lib/apollos/models/users/resolver";
-import { parseGlobalId } from "../../../../lib/util";
+import Resolver from "../../../../src/apollos/models/users/resolver";
+import { parseGlobalId } from "../../../../src/util";
 
 const sampleData = {
   _id: casual.word,
   createdAt: new Date(casual.unix_time),
+  profile: {
+    lastLogin: new Date(casual.unix_time),
+  },
   services: {
+    password: {
+      bcrypt: casual.word,
+    },
     rock: {
       PersonId: casual.integer(0, 10000),
       PrimaryAliasId: casual.integer(0, 10000),

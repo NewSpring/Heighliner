@@ -2,16 +2,16 @@
 import test from "ava";
 import { Schema } from "mongoose";
 
-import { MongoConnector, connect } from "../../lib/apollos/mongo";
+import { MongoConnector, connect } from "../../src/apollos/mongo";
 
-test("\'connect\' should allow for a connection status to be returned", async t => {
+test("\'connect\' should allow for a connection status to be returned", async (t) => {
   const status = await connect("fake address");
   t.false(status);
 });
 
 let testModel;
-test.before(async t => {
-  const connected = await connect("fake address");
+test.before(async (t) => {
+  await connect("fake address");
   const schema = { _id: String };
   testModel = new MongoConnector("test", schema);
 });
@@ -37,16 +37,16 @@ test("should use the schema passed as the second argument", t => {
   t.is(schema.paths._id.instance, "String");
 });
 
-test("findOne should be a sugared passthrough to the models findOne", async t => {
+test("findOne should be a sugared passthrough to the models findOne", async (t) => {
   const oldFindOne = testModel.model.findOne;
 
   testModel.model.findOne = function mockedFindOne(...args) {
-    t.is(args[0], "test")
+    t.is(args[0], "test");
     return new Promise((r) => r([1]));
   };
 
   const tests = await testModel.findOne("test");
-  t.is(tests[0], 1)
+  t.is(tests[0], 1);
 
   testModel.model.findOne = oldFindOne;
 

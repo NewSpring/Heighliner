@@ -26,6 +26,7 @@
     ".env*": true,
     "**/*.yml": true,
     "scripts": true,
-    ".nyc_output": true
+    ".nyc_output": true,
+    "global.d.ts": true,
   }
 }
