@@ -17,7 +17,7 @@ export default {
           "series_newspring",
           "sermons",
           "stories",
-          "albums",
+          "albums_newspring",
         ];
 
         // only include what user hasn't excluded

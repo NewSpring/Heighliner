@@ -162,9 +162,7 @@ export class Content extends EE {
       limit,
       offset
     })
-      .then(this.debug)
       .then(this.getFromIds.bind(this))
-      .then(this.debug)
     , { ttl: 3600, cache });
   }
 
