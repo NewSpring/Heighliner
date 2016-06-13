@@ -21,6 +21,6 @@ if (process.env.NEW_RELIC_KEY){
 
 require("babel-core/register");
 require("babel-polyfill");
-require("./lib/server");
+require("./lib/src/server");
 
 
