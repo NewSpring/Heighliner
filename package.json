@@ -15,9 +15,8 @@
     "start": "tsc --watch | supervisor -w lib index.js",
     "build": "tsc & norma build",
     "coverage": "./node_modules/.bin/nyc report --reporter=json",
-    "postcoverage": "remap-istanbul --input coverage/coverage-final.json --type lcovonly --output coverage/lcov.info && npm run send:coverage:coveralls && npm run send:coverage:codecov",
-    "send:coverage:coveralls": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-    "send:coverage:codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
+    "postcoverage": "remap-istanbul --input coverage/coverage-final.json --type lcovonly --output coverage/lcov.info && npm run send:coverage",
+    "send:coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "author": "jbaxleyiii",
   "ava": {
@@ -64,7 +63,6 @@
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-0": "^6.5.0",
     "babel-runtime": "^6.9.2",
-    "codecov": "^1.0.1",
     "commitizen": "^2.8.2",
     "coveralls": "^2.11.9",
     "eslint": "^2.10.2",
