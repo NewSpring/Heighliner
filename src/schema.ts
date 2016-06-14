@@ -17,7 +17,7 @@ import Apollos, {
   queries as ApollosQueries,
   // mutations as ApollosMutations,
   UserDocument,
-} from "./apollos";
+} from "./apollos"
 
 // Import Rock
 import Rock, {
