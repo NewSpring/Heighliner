@@ -10,6 +10,7 @@ export default function(doc){
   const speakers = Helpers.splitByNewlines(doc.speakers);
   const tags = Helpers.splitByNewlines(doc.tags);
 
+  const body = Helpers.cleanMarkup(doc.body);
   const description = Helpers.cleanMarkup(doc.description);
 
   const scripture = doc.scripture === "1" ? false : doc.scripture;
@@ -64,7 +65,7 @@ export default function(doc){
       actualDate: actualDate
     },
     content: {
-      body: doc.body,
+      body: body,
       scripture: scripture,
       week: week,
       speakers: speakers,
