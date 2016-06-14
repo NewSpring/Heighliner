@@ -31,6 +31,13 @@ make_task_def() {
           "protocol": "http"
         }
       ],
+      "logConfiguration": {
+        "logDriver": "syslog",
+        "options": {
+          "syslog-address": "udp://logs.papertrailapp.com:23588",
+          "tag": "{{.Name}}"
+        }
+      },
       "environment": [
         {
           "name": "NODE_ENV",
