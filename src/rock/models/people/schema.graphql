@@ -1,11 +1,20 @@
 
+type PhoneNumber implements Node {
+  id: ID!
+  countryCode: String
+  description: String
+  canText: Boolean!
+  rawNumber: String!
+  number: String!
+  person: Person
+}
 
 type Person implements Node {
   id: ID!
   firstName: String!
   lastName: String!
   nickName: String
-  # phoneNumbers: [PhoneNumber]
+  phoneNumbers: [PhoneNumber]
   photo: String
   age: String
   birthDate: String
@@ -14,6 +23,5 @@ type Person implements Node {
   birthYear: Int
   email: String
   campus: Campus
-  # home: [Location]
-  # likes: [Content] // XXX should this be on user?
+  home: Location
 }

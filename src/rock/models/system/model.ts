@@ -58,6 +58,7 @@ export class Rock extends Heighliner {
   public cache: Cache;
   public __type: string = "RockSystem";
   public id: string = "Id";
+  public baseUrl: string = "https://rock.newspring.cc"; // XXX make dynamic
 
   private processDefinedValues(values: DefinedValueSearch[]): Promise<DefinedValue[]> {
     const promises = values.map(x => {

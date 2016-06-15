@@ -7,6 +7,7 @@
     "global": "file:./global.d.ts",
     "mime": "registry:dt/mime#0.0.0+20160316155526",
     "mocha": "registry:dt/mocha#2.2.5+20160317120654",
+    "moment": "registry:dt/moment#2.8.0+20160316155526",
     "mongoose": "registry:dt/mongoose#3.8.5+20160517033907",
     "morgan": "registry:dt/morgan#1.2.2+20160317120654",
     "node": "registry:env/node#4.0.0+20160507210304",

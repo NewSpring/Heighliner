@@ -6,12 +6,16 @@ import people from "./people/tables";
 import finances from "./finances/tables";
 import system from "./system/tables";
 import campuses from "./campuses/tables";
+import groups from "./groups/tables";
+import binaryFiles from "./binary-files/tables";
 
 let tables = {
   people,
   finances,
   system,
   campuses,
+  groups,
+  binaryFiles,
 } as {
   [key: string]: {
     connect: () => Tables;
