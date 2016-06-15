@@ -3,15 +3,15 @@ import { Cache, defaultCache } from "../../../util/cache";
 import { createGlobalId } from "../../../util";
 
 import {
-  Campus as CampusTable,
-  Location as LocationTable, // XXX move to its own model
+  Group as GroupTable,
+  // Location as LocationTable, // XXX move to its own model
 } from "./tables";
 
 import { Rock } from "../system";
 
-export class Campus extends Rock {
+export class Group extends Rock {
   public cache: Cache;
-  public __type: string = "Campus";
+  public __type: string = "Group";
 
   constructor({ cache } = { cache: defaultCache }) {
     super();
@@ -20,21 +20,13 @@ export class Campus extends Rock {
 
   public async getFromId(id: string | number, globalId: string): Promise<any> { // XXX type
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
-    return this.cache.get(globalId, () => CampusTable.find({ where: { Id: id }}));
+    return this.cache.get(globalId, () => GroupTable.find({ where: { Id: id }}));
   }
 
-  public async findByLocationId(id: string | number, globalId: string): Promise<any> {
-    globalId = globalId ? globalId : createGlobalId(`${id}`, "Location");
-    return this.cache.get(globalId, () => LocationTable.findOne({ where: { Id: id }}));
-  }
-
-  // public async findByPersonId(id: string | number): Promise<any> {
-  //   return
-  // }
-
+  // public async getFromPerson
   public async find(query): Promise<any> {
     query = merge({ IsActive: true }, query);
-    return this.cache.get(this.cache.encode(query), () => CampusTable.find({
+    return this.cache.get(this.cache.encode(query), () => GroupTable.find({
       where: query,
       attributes: ["Id"],
     })
@@ -47,5 +39,5 @@ export class Campus extends Rock {
 }
 
 export default {
-  Campus,
+  Group,
 };

@@ -119,8 +119,6 @@ export class Content extends EE {
 
   public async find(query: any = {}, cache): Promise<any> {
     const { limit, offset } = query; // true options
-    delete query.limit;
-    delete query.offset;
 
     // channel data fields
     const channelData = pick(query,  Object.keys(channelDataSchema));

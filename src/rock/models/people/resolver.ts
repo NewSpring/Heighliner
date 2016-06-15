@@ -1,4 +1,5 @@
 
+import Moment from "moment";
 import { createGlobalId } from "../../../util";
 
 export default {
@@ -13,26 +14,38 @@ export default {
     firstName: ({ FirstName }) => FirstName,
     lastName: ({ LastName }) => LastName,
     nickName: ({ NickName }) => NickName,
-    // photo: ({ PhotoId }, _, { models }) => {
-    //   return "XXX";
-    //   // return models.BinaryFile.getUrlFromId(PhotoId)
-    // },
-    // age: ({ BirthDate }) => {
-    //   return "XXX";
-    // },
+    phoneNumbers: ({ Id }, _, { models }) => models.Person.getPhoneNumbersFromId(Id),
+    photo: ({ PhotoId }, _, { models }) => {
+      if (!PhotoId) return "//dg0ddngxdz549.cloudfront.net/images/cached/images/remote/http_s3.amazonaws.com/ns.images/all/member_images/members.nophoto_1000_1000_90_c1.jpg"; // tslint:disable-line
+
+      return models.BinaryFile.getFromId(PhotoId)
+        .then(x => x.Path);
+
+    },
+    age: ({ BirthDate }) => `${Moment().diff(Moment(BirthDate), "years")}`,
     birthDate: ({ BirthDate }) => BirthDate,
     birthDay: ({ BirthDay }) => BirthDay,
     birthMonth: ({ BirthMonth }) => BirthMonth,
     birthYear: ({ BirthYear }) => BirthYear,
     email: ({ Email }) => Email,
-    // campus: ({ Id }, _, { models }) => {
+    campus: ({ Id }, _, { models }) => models.Person.getCampusFromId(Id),
+    home: ({ Id }, _, { models }) => {
+      return models.Person.getHomesFromId(Id).then(x => x[0]); // only return the first home for now
+    },
+  },
 
-    // },
+  PhoneNumber: {
+    id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    countryCode: ({ CountryCode }) => CountryCode,
+    description: ({ Description }) => Description,
+    canText: ({ IsMessagingEnabled }) => IsMessagingEnabled,
+    rawNumber: ({ Number }) => Number,
+    number: ({ NumberFormatted, Number }) => NumberFormatted || Number,
+    person: ({ PersonId }, _, { models }) => models.Person.getFromId(PersonId),
   },
 
 };
 
 
-  // # campus: [Campus]
   // # home: [Location]
   // # likes: [Content] // XXX should this be on user?
