@@ -30,7 +30,7 @@ import ExpressionEngine, {
 } from "./expression-engine";
 
 // Import Google Site Search
-// import GoogleSS, { queries as GoogleSSQueries } from "./google-site-search";
+import GoogleSS, { queries as GoogleSSQueries } from "./google-site-search";
 
 import { Person } from "./rock/models/people/model";
 import { User } from "./apollos/models/users/model";
@@ -40,7 +40,7 @@ let { schema, models, resolvers, mocks } = loadApplications({
   Apollos,
   ExpressionEngine,
   Rock,
-  // GoogleSS,
+  GoogleSS,
 });
 
 // join all application queries and generate base query
@@ -49,7 +49,7 @@ schema = createSchema({
     ...ApollosQueries,
     ...ExpressionEngineQueries,
     ...RockQueries,
-    // ...GoogleSSQueries,
+    ...GoogleSSQueries,
   ],
   mutations: [
     // ...ApollosMutations,
@@ -124,11 +124,10 @@ export async function createApp() {
     }
 
     const REDIS = await RedisConnect(process.env.REDIS_HOST || dockerhost);
-    if (REDIS) {
-      cache = new RedisCache();
-    } else {
-      cache = new InMemoryCache();
-    }
+    cache = REDIS ? new RedisCache() : new InMemoryCache();
+
+    const SS = await GoogleSS.connect();
+    if (SS) useMocks = false;
 
   }
 
