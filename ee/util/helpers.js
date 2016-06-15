@@ -40,6 +40,11 @@ const Helpers = {
 
     });
 
+    // convert s3 urls to cloudfront
+    markup = markup.replace(
+      /s3.amazonaws.com\/ns.images/g, "dg0ddngxdz549.cloudfront.net"
+    );
+
     // make all links protocal relative
     return markup.replace(/https*:\/\//g, "\/\/");
 
