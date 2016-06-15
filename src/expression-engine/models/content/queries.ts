@@ -19,4 +19,6 @@ export default [
     cache: Boolean = true
   ): [Content]`,
 
+  `lowReorderSets(setName: String!): [Content]`,
+
 ];
