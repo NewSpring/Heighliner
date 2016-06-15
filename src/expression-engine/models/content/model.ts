@@ -128,7 +128,7 @@ export class Content extends EE {
       include: [{ model: LowReorder.model, where: { set_name: setName } }],
     })
       .then(x => x.sort_order.split("|"))
-      .then(x => x.filter(x => !!x).map(y => ({ entry_id: y }))) // used so the next line can work
+      .then(x => x.filter(y => !!y).map(z => ({ entry_id: z }))) // used so the next line can work
       .then(this.getFromIds.bind(this))
     , { ttl: 3600 }); // expire this lookup every hour
   }
