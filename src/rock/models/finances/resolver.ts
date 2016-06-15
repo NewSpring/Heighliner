@@ -98,10 +98,19 @@ export default {
     end: ({ EndDate }) => EndDate,
     start: ({ StartDate }) => StartDate,
     images: ({ Id }, _, { models }) => { // tslint:disable-line
+      let field_id = "field_id_1513"; // rock account id
+      let channel_id = "69"; // give items
+      return models.Content.getEntryFromFieldValue(Id, field_id, channel_id)
+        .then(({ image, exp_channel, entry_id }) => {
+          if (!image) return Promise.resolve([]);
 
-      return [];
-      // XXX
-      // return models.File.getByFieldValue({ })
+          let position;
+          if (image) {
+            position = Number(exp_channel.exp_channel_fields.image.split("_").pop());
+          }
+
+        return models.File.getFilesFromContent(entry_id, image, position);
+      });
     },
   },
 

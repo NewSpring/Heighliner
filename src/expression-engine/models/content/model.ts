@@ -133,6 +133,27 @@ export class Content extends EE {
     , { ttl: 3600 }); // expire this lookup every hour
   }
 
+  public async getEntryFromFieldValue(
+    value: any, field_id: string, channel_id?: string
+  ): Promise<any> {
+
+    let include = [];
+    if (channel_id) {
+      include = [{ model: Channels.model, where: { channel_id } }];
+    }
+
+    let vars = { value, field_id, channel_id };
+    return this.cache.get(this.cache.encode(vars), () => ChannelData.findOne({
+      attributes: ["entry_id"],
+      where: { [field_id]: value },
+      include,
+    })
+      .then(x => ([x]))// used so the next line can work
+      .then(this.getFromIds.bind(this))
+      .then(x => (x[0]))
+    );
+  }
+
   public async find(query: any = {}, cache): Promise<any> {
     const { limit, offset } = query; // true options
 
