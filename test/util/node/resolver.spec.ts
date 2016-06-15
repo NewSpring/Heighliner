@@ -21,7 +21,7 @@ test("Node should return the type from the data passed to it", t => {
   const { Node } = Resolver;
 
   const schema = {
-    getType(type){
+    getType(type) {
       t.is(type, sampleData.__type);
       return type;
     },
@@ -37,7 +37,7 @@ test("Query node should return the data via the `Node` class", t => {
   const fakeId = casual.word;
   const models = {
     Node: {
-      get(id){
+      get(id) {
         t.is(id, fakeId);
         return sampleData;
       },

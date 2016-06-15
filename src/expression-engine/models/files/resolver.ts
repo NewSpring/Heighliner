@@ -15,6 +15,6 @@ export default {
     fileType: ({ fileType }) => fileType || null,
     fileLabel: ({ fileLabel }) => fileLabel || null,
 
-  }
+  },
 
-}
+};

@@ -1,7 +1,8 @@
+/* tslint:disable:no-shadowed-variable */
+
 import {
   INTEGER,
   STRING,
-  CHAR,
   BOOLEAN,
 } from "sequelize";
 
@@ -15,7 +16,7 @@ const definedTypeSchema: Object = {
   Name: { type: INTEGER },
   Description: { type: INTEGER },
   HelpText: { type: STRING },
-  CategoryId: { type: INTEGER }
+  CategoryId: { type: INTEGER },
 };
 
 const definedValueSchema: Object = {
@@ -33,7 +34,7 @@ const fieldTypeSchema: Object = {
   Name: { type: INTEGER },
   Description: { type: STRING },
   Assembly: { type: STRING },
-  Class: { type: STRING }
+  Class: { type: STRING },
 };
 
 let DefinedType;
@@ -59,7 +60,7 @@ export function connect(): Tables {
     DefinedType,
     DefinedValue,
     FieldType,
-  }
+  };
 };
 
 export function bind({

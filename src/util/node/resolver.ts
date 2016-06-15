@@ -10,4 +10,4 @@ export default {
       return schema.getType(__type);
     },
   },
-}
+};

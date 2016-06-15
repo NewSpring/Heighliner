@@ -1,9 +1,9 @@
+/* tslint:disable:no-shadowed-variable */
+
 import {
   INTEGER,
   STRING,
-  CHAR,
 } from "sequelize";
-
 import { unserialize } from "php-unserialize";
 
 import { MySQLConnector, Tables } from "../../mysql";
@@ -27,22 +27,22 @@ export function connect(): Tables {
   // helper to parse through the sites pages module
   Sites.parsePage = function (page: string): any {
     return unserialize(new Buffer(page, "base64").toString());
-  }
+  };
 
   return {
     Sites,
-  }
+  };
 };
 
-export function bind({
-  ChannelData,
-  Sites,
-}: Tables): void {
+// export function bind({
+//   ChannelData,
+//   Sites,
+// }: Tables): void {
 
 
-};
+// };
 
 export default {
   connect,
-  bind,
+  // bind,
 };

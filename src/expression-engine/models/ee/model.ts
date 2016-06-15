@@ -1,12 +1,12 @@
 
-import { flatten, merge, isUndefined } from "lodash";
-import { createGlobalId, Heighliner } from "../../../util";
+import { Heighliner } from "../../../util";
 
 export class EE extends Heighliner {
   public __type: string = "RockSystem";
   public id: string = "entry_id";
 
   public getDate(day: string, month: string, year: string): string {
+    if (!day || !month || !year) throw new Error("Missing information from `getDate`");
     return `${new Date(Number(year), Number(month) - 1 , Number(day))}`;
   }
 

@@ -1,10 +1,10 @@
-import { merge, pick, flatten, pickBy } from "lodash";
+import { merge } from "lodash";
 
 import { Cache, defaultCache } from "../../../util/cache";
 
 import {
   ChannelData,
-  channelDataSchema,
+  // channelDataSchema,
 } from "../content/tables";
 
 import {
@@ -14,19 +14,19 @@ import {
 
 import {
   Assets,
-  assetsFilesSchema,
+  // assetsFilesSchema,
   AssetsSelections,
-  assetsSelectionSchema,
+  // assetsSelectionSchema,
   AssetsFolders,
-  assetsFoldersSchema,
+  // assetsFoldersSchema,
   AssetsSources,
-  assetsSourcesSchema,
+  // assetsSourcesSchema,
 } from "../files/tables";
 
 import { EE } from "../ee";
 
 export class File extends EE {
-  public cache: Cache
+  public cache: Cache;
   public __type: string = "File";
 
   constructor({ cache } = { cache: defaultCache }) {
@@ -61,7 +61,6 @@ export class File extends EE {
       )))
     );
 
-
   }
 
   // XXX type this
@@ -72,8 +71,8 @@ export class File extends EE {
 
 
     const settings = JSON.parse(exp_assets_source.settings);
-    if (settings.subfolder[settings.subfolder.length -1 ] != "/") {
-      settings.subfolder = settings.subfolder + "/"
+    if (settings.subfolder[settings.subfolder.length - 1 ] !== "/") {
+      settings.subfolder = settings.subfolder + "/";
     }
     const s3 = settings.url_prefix + settings.subfolder + full_path + file_name;
     let cloudfront: string | boolean = false;
@@ -85,7 +84,7 @@ export class File extends EE {
       fileName: file_name,
       s3,
       cloudfront,
-    }
+    };
   }
 
   private fuzzyMatchKey(obj: { [key: string]: any }, key: string): any {
@@ -96,7 +95,9 @@ export class File extends EE {
     }
   }
 
-  public async getFilesFromContent(entry_id: number, name: string = "Hero Image", field_id: number ): Promise<any> { // replace with FileType
+  public async getFilesFromContent(
+    entry_id: number, name: string = "Hero Image", field_id: number
+  ): Promise<any> { // replace with FileType
     if (!entry_id || !field_id) return [];
 
     // XXX make this more dynamic
@@ -108,7 +109,7 @@ export class File extends EE {
           { model: AssetsSources.model, attributes: ["settings"] },
           { model: AssetsFolders.model, attributes: ["full_path"] },
         ],
-      }
+      },
     ] as any[]; // XXX typescript weirdness
 
     if (name.indexOf(".") === -1) {

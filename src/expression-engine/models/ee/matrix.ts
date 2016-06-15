@@ -1,7 +1,7 @@
+/* tslint:disable:no-shadowed-variable */
+
 import {
   INTEGER,
-  STRING,
-  CHAR,
 } from "sequelize";
 
 import { MySQLConnector, Tables } from "../../mysql";
@@ -36,7 +36,7 @@ export function connect(): Tables {
   return {
     Matrix,
     MatrixCol,
-  }
+  };
 };
 
 export function bind({

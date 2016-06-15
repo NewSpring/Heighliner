@@ -28,5 +28,6 @@
     "scripts": true,
     ".nyc_output": true,
     "global.d.ts": true,
+    "npm-debug.log": true
   }
 }

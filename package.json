@@ -10,7 +10,7 @@
     "test:watch": "tsc --watch | ava ./lib/test/**/* --watch",
     "copy-schemas": "norma build",
     "testonly": "nyc ava ./lib/test/**/*",
-    "lint": "tslint src/**/*.ts && tslint test/**/*.ts",
+    "lint": "tslint 'src/**/*.ts' && tslint 'test/**/*.ts'",
     "posttest": "npm run lint",
     "start": "tsc --watch | supervisor -w lib index.js",
     "build": "tsc & norma build",

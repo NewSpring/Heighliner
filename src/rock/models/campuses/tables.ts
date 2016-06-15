@@ -1,7 +1,8 @@
+/* tslint:disable:no-shadowed-variable */
+
 import {
   INTEGER,
   STRING,
-  CHAR,
   BOOLEAN,
   GEOGRAPHY,
 } from "sequelize";
@@ -16,7 +17,7 @@ const campusSchema: Object = {
   LocationID: { type: INTEGER },
   PhoneNumber: { type: STRING },
   Description: { type: STRING },
-  IsActive: { type: BOOLEAN }
+  IsActive: { type: BOOLEAN },
 };
 
 const locationSchema: Object = {
@@ -51,7 +52,7 @@ export function connect(): Tables {
   return {
     Campus,
     Location,
-  }
+  };
 };
 
 export function bind({

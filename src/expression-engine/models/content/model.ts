@@ -1,12 +1,11 @@
-import { merge, pick, flatten } from "lodash";
-import { createGlobalId } from "../../../util/node/model";
+import { pick, flatten } from "lodash";
 import { Cache, defaultCache } from "../../../util/cache";
 
 import {
   Channels,
   channelSchema,
   ChannelFields,
-  channelFieldSchema,
+  // channelFieldSchema,
   ChannelTitles,
   channelTitleSchema,
   ChannelData,
@@ -28,7 +27,8 @@ export interface ChannelField {
   field_label: string;
 }
 export class Content extends EE {
-  __type: string =  "Content";
+  public __type: string =  "Content";
+  public cache: Cache;
 
   constructor({ cache } = { cache: defaultCache }) {
     super();
@@ -38,7 +38,7 @@ export class Content extends EE {
   public pickField(name: string, fields: any): string {
     let fieldName = name;
     fields.forEach(x => {
-      if (x.field_name != name) return;
+      if (x.field_name !== name) return;
 
       fieldName = `field_id_${x.field_id}`;
     });
@@ -62,28 +62,6 @@ export class Content extends EE {
     });
   }
 
-  private cleanFieldNames(data: any): any {
-    for (let key in data) {
-
-      if (key.indexOf("@dynamic") > -1) {
-        let newKey = key.replace("@dynamic", "").split("_");
-        newKey.shift();
-
-        let value = data[key];
-
-        if (value) {
-          delete data[key];
-
-          key = newKey.join("_");
-          data[key] = value;
-        }
-
-        continue;
-      }
-    }
-    return data
-  }
-
   public async getFromId(id: string, guid: string): Promise<any> { // replace with ContentType
     const fields = await this.cache.get(`fields:${id}`, () => ChannelData.find({
       where: { entry_id: Number(id) },
@@ -100,7 +78,7 @@ export class Content extends EE {
       include: [
         { model: Channels.model},
         { model: ChannelTitles.model },
-      ]
+      ],
     })
       .then(x => {
         x.exp_channel.exp_channel_fields = exp_channel_fields;
@@ -114,7 +92,7 @@ export class Content extends EE {
     fields.forEach(x => {
       const [fieldId, fieldName] = x;
       fieldObject[fieldName] = fieldId;
-    })
+    });
     return fieldObject;
   }
 
@@ -147,20 +125,20 @@ export class Content extends EE {
     // channel data fields
     const channelData = pick(query,  Object.keys(channelDataSchema));
     const channel = pick(query, Object.keys(channelSchema));
-    const channelFields = pick(query, Object.keys(channelFieldSchema));
+    // const channelFields = pick(query, Object.keys(channelFieldSchema));
     const channelTitle = pick(query, Object.keys(channelTitleSchema));
     return await this.cache.get(this.cache.encode(query), () => ChannelData.find({
       where: channelData,
       attributes: ["entry_id"],
       order: [
-        [ChannelTitles.model, "entry_date", "DESC"]
+        [ChannelTitles.model, "entry_date", "DESC"],
       ],
       include: [
         { model: Channels.model, where: channel },
         { model: ChannelTitles.model, where: channelTitle },
       ],
       limit,
-      offset
+      offset,
     })
       .then(this.getFromIds.bind(this))
     , { ttl: 3600, cache });

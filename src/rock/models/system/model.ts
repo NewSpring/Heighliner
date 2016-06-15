@@ -1,6 +1,6 @@
 
-import { flatten, merge, isUndefined, pick, sortBy } from "lodash";
-import { Cache, defaultCache } from "../../../util/cache";
+import { pick, sortBy } from "lodash";
+import { Cache } from "../../../util/cache";
 import { createGlobalId, Heighliner } from "../../../util";
 
 import {
@@ -9,7 +9,7 @@ import {
   FieldType as FieldTypeModel,
 } from "./tables";
 
-import DefinedValueResolvers from "./definedTypeResolvers"
+import DefinedValueResolvers from "./definedTypeResolvers";
 
 export interface FieldType {
   Id: number;
@@ -28,7 +28,7 @@ export interface DefinedType {
   Name: string;
   Description: string;
   HelpText: string;
-  CategoryId: number
+  CategoryId: number;
   FieldType: FieldType;
 }
 
@@ -51,7 +51,7 @@ export const definedValueKeys = [
   "DefinedTypeId",
   "Order",
   "Value",
-  "Description"
+  "Description",
 ];
 
 export class Rock extends Heighliner {
@@ -96,10 +96,7 @@ export class Rock extends Heighliner {
     );
   }
 
-  public async getDefinedValueId(
-    id: string | number,
-    { limit, offset }: { limit: number, offset: number }
-  ): Promise<any> {
+  public async getDefinedValueId(id: string | number): Promise<any> {
     const globalId = createGlobalId(`${id}`, "RockDefinedValue");
     return this.cache.get(globalId, () => DefinedValueModel.findOne({
         where: { Id: id },
@@ -116,4 +113,4 @@ export class Rock extends Heighliner {
 
 export default {
   Rock,
-}
+};

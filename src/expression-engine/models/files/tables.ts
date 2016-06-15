@@ -1,7 +1,8 @@
+/* tslint:disable:no-shadowed-variable */
+
 import {
   INTEGER,
   STRING,
-  CHAR,
 } from "sequelize";
 
 import { MySQLConnector, Tables } from "../../mysql";
@@ -28,7 +29,7 @@ const assetsFoldersSchema: Object = {
   source_id: { type: INTEGER },
   parent_id: { type: INTEGER },
   full_path: { type: STRING },
-}
+};
 
 const assetsSourcesSchema: Object = {
   source_id: { type: INTEGER, primaryKey: true },
@@ -67,7 +68,7 @@ export function connect(): Tables {
     AssetsSelections,
     AssetsFolders,
     AssetsSources,
-  }
+  };
 };
 
 export function bind({

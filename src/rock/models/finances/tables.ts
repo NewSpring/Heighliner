@@ -1,11 +1,11 @@
+/* tslint:disable:no-shadowed-variable */
+
 import {
   INTEGER,
   STRING,
-  CHAR,
   BOOLEAN,
   DATE,
   FLOAT,
-  DATEONLY,
 } from "sequelize";
 
 import { MSSQLConnector, Tables } from "../../mssql";
@@ -35,7 +35,7 @@ const transactionRefundSchema: Object = {
   CreatedDateTime: { type: DATE },
   ModifiedDateTime: { type: DATE },
   OriginalTransactionId: { type: INTEGER },
-}
+};
 
 const transactionDetailSchema: Object = {
   Id: { type: INTEGER, primaryKey: true },
@@ -118,7 +118,7 @@ const financialPaymentDetailSchema: Object = {
   CreditCardTypeValueId: { type: INTEGER },
   CreatedDateTime: { type: DATE },
   ModifiedDateTime: { type: DATE },
-}
+};
 
 const financialGatewaySchema: Object = {
   Id: { type: INTEGER, primaryKey: true },
@@ -196,7 +196,7 @@ export function connect(): Tables {
     FinancialAccount,
     FinancialGateway,
     FinancialPaymentDetail,
-  }
+  };
 };
 
 export function bind({
@@ -207,35 +207,35 @@ export function bind({
   ScheduledTransaction,
   ScheduledTransactionDetail,
   SavedPayment,
-  FinancialAccount,
-  FinancialGateway,
+  // FinancialAccount,
+  // FinancialGateway,
 }: Tables): void {
 
   Transaction.model.belongsTo(PersonAlias.model, {
-    foreignKey: "AuthorizedPersonAliasId", targetKey: "Id"
+    foreignKey: "AuthorizedPersonAliasId", targetKey: "Id",
   });
 
   TransactionRefund.model.belongsTo(Transaction.model, {
-    foreignKey: "OriginalTransactionId", targetKey: "Id"
+    foreignKey: "OriginalTransactionId", targetKey: "Id",
   });
 
   Transaction.model.hasMany(TransactionDetail.model, { foreignKey: "Id"} );
   TransactionDetail.model.belongsTo(Transaction.model, {
-    foreignKey: "TransactionId", targetKey: "Id"
+    foreignKey: "TransactionId", targetKey: "Id",
   });
 
   ScheduledTransaction.model.hasMany(Transaction.model, { foreignKey: "Id" });
   Transaction.model.belongsTo(ScheduledTransaction.model, {
-    foreignKey: "ScheduledTransactionId", targetKey: "Id"
+    foreignKey: "ScheduledTransactionId", targetKey: "Id",
   });
 
   ScheduledTransaction.model.hasMany(ScheduledTransactionDetail.model, { foreignKey: "Id"} );
   ScheduledTransactionDetail.model.belongsTo(ScheduledTransaction.model, {
-    foreignKey: "ScheduledTransactionId", targetKey: "Id"
+    foreignKey: "ScheduledTransactionId", targetKey: "Id",
   });
 
   SavedPayment.model.belongsTo(PersonAlias.model, {
-    foreignKey: "PersonAliasId", targetKey: "Id"
+    foreignKey: "PersonAliasId", targetKey: "Id",
   });
 
   // FinancialGateway.model.
@@ -245,4 +245,4 @@ export function bind({
 export default {
   connect,
   bind,
-};;
+};

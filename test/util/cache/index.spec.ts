@@ -13,13 +13,12 @@ test("the cache mutation should delete the id from the cache", async (t) => {
 
   const { Mutation } = resolvers;
 
-  function get(id) {
-    return Promise.resolve({ [id]: { test: casual.word }});
+  function get(_id) {
+    return Promise.resolve({ [_id]: { test: casual.word }});
   }
   const context = { cache, models: { Node: { get } } };
 
-  const result = await Mutation.cache(null, { id, type: null }, context)
-
+  await Mutation.cache(null, { id, type: null }, context);
   t.falsy(cacheData[id]);
 });
 
@@ -32,8 +31,8 @@ test("the cache mutation should refetch and save the data in the cache", t => {
 
   const { Mutation } = resolvers;
 
-  function get(id) {
-    return cache.get(id, () => (Promise.resolve(data2)));
+  function get(_id) {
+    return cache.get(_id, () => (Promise.resolve(data2)));
   }
   const context = { cache, models: { Node: { get } } };
 

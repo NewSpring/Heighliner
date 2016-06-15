@@ -1,5 +1,5 @@
 import { Cache } from "./cache";
-const Crypto = require("crypto");
+import * as Crypto from "crypto";
 
 import Redis from "redis";
 import DataLoader from "dataloader";
@@ -22,8 +22,8 @@ export function connect(address: string, port: number = 6379): Promise<boolean> 
         cb(false);
       }
 
-      console.error("REDIS error:", error);
-    })
+      console.error("REDIS error:", error); // tslint:disable-line
+    });
   });
 }
 
@@ -32,7 +32,7 @@ export class RedisCache implements Cache {
   private secret: string;
   private idLoader: any;
 
-  constructor(secret: string = "RedisCache"){
+  constructor(secret: string = "RedisCache") {
     this.secret = secret;
 
     this.idLoader = new DataLoader(keys => new Promise((resolve, reject) => {
@@ -57,7 +57,7 @@ export class RedisCache implements Cache {
   ): Promise<Object | void> {
     let fromCache = false;
     const label = `RedisCache-${this.getCount()}`;
-    console.time(label);
+    console.time(label); // tslint:disable-line
     return new Promise((done) => {
       if (!cache && lookup) {
         return lookup().then(done);
@@ -85,7 +85,7 @@ export class RedisCache implements Cache {
           this.set(id, data, ttl);
         });
       }
-      if (fromCache) console.timeEnd(label);
+      if (fromCache) console.timeEnd(label); // tslint:disable-line
       return data;
     });
   }

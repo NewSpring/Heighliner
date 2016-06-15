@@ -1,23 +1,22 @@
-import { flatten, merge, isUndefined } from "lodash";
-import { Cache, defaultCache } from "../../../util/cache";
+import { merge, isUndefined } from "lodash";
 import { createGlobalId } from "../../../util";
 
 import {
   Transaction as TransactionTable,
-  TransactionRefund,
+  // TransactionRefund,
   TransactionDetail,
   ScheduledTransaction as ScheduledTransactionTable,
   ScheduledTransactionDetail,
   SavedPayment as SavedPaymentTable,
   FinancialAccount as FinancialAccountTable,
-  FinancialGateway,
+  // FinancialGateway,
   FinancialPaymentDetail,
 } from "./tables";
 
-import {
-  Person,
-  PersonAlias,
-} from "../people/tables"
+// import {
+//   Person,
+//   PersonAlias,
+// } from "../people/tables"
 
 import { Rock } from "../system";
 
@@ -30,7 +29,7 @@ export class Transaction extends FinancialModel {
 
   public async getFromId(id: string, globalId: string): Promise<any> { // XXX correctly type
     globalId = globalId ? globalId : createGlobalId(id, this.__type);
-    return this.cache.get(globalId, () => TransactionTable.find({ where: { Id: id }}))
+    return this.cache.get(globalId, () => TransactionTable.find({ where: { Id: id }}));
   }
 
   public async getDetailsById(id: string | number): Promise<any> {
@@ -42,9 +41,9 @@ export class Transaction extends FinancialModel {
   public async getPaymentDetailsById(id: string | number): Promise<any> {
     if (!id) return Promise.resolve(null);
 
-    const globalId = createGlobalId(`${id}`, "PaymentDetail")
+    const globalId = createGlobalId(`${id}`, "PaymentDetail");
     return this.cache.get(globalId, () => FinancialPaymentDetail.findOne({
-        where: { Id: id }
+        where: { Id: id },
       })
     );
   }
@@ -61,7 +60,7 @@ export class Transaction extends FinancialModel {
         ],
         attributes: ["Id"],
         limit,
-        offset
+        offset,
       })
         .then(this.getFromIds.bind(this))
     , { cache });
@@ -81,7 +80,7 @@ export class ScheduledTransaction extends FinancialModel {
     if (!id) return Promise.resolve(null);
     const globalId = createGlobalId(`${id}`, "ScheduledTransactionTransactions");
     return this.cache.get(globalId, () => TransactionTable.find({
-        where: { ScheduledTransactionId: id }
+        where: { ScheduledTransactionId: id },
       })
     );
   }
@@ -91,7 +90,7 @@ export class ScheduledTransaction extends FinancialModel {
     const globalId = createGlobalId(`${id}`, "ScheduledTransactionDetails");
     // XXX why isn't this caching?
     return this.cache.get(globalId, () => ScheduledTransactionDetail.find({
-        where: { ScheduledTransactionId: id }
+        where: { ScheduledTransactionId: id },
       })
     );
   }
@@ -108,7 +107,7 @@ export class ScheduledTransaction extends FinancialModel {
         ],
         attributes: ["Id"],
         limit,
-        offset
+        offset,
       })
         .then(this.getFromIds.bind(this))
     , { cache });
@@ -121,7 +120,7 @@ export class SavedPayment extends FinancialModel {
 
   public async getFromId(id: string, globalId: string): Promise<any> { // XXX correctly type
     globalId = globalId ? globalId : createGlobalId(id, this.__type);
-    return this.cache.get(globalId, () => SavedPaymentTable.find({ where: { Id: id }}))
+    return this.cache.get(globalId, () => SavedPaymentTable.find({ where: { Id: id }}));
   }
 
   public async findByPersonAlias(
@@ -136,10 +135,10 @@ export class SavedPayment extends FinancialModel {
         ],
         attributes: ["Id"],
         limit,
-        offset
+        offset,
       })
         .then(this.getFromIds.bind(this))
-    , { cache })
+    , { cache });
 
   }
 }
@@ -171,7 +170,7 @@ export class FinancialAccount extends FinancialModel {
       ParentAccountId: null,
       PublicDescription: { $not: null },
       IsTaxDeductible: true,
-    }, where)
+    }, where);
     return await this.cache.get(
       this.cache.encode(where),
       () => FinancialAccountTable.find({ where, attributes: ["Id"], order: ["Order"] })

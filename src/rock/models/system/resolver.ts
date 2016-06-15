@@ -15,4 +15,4 @@ export default {
     description: ({ Description }) => Description,
   },
 
-}
+};

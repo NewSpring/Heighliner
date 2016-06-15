@@ -1,7 +1,6 @@
 import { apolloServer } from "apollo-server";
 import express from "express";
 import bodyParser from "body-parser";
-import morgan from "morgan";
 import cors from "cors";
 
 import { createApp } from "./schema";
@@ -54,12 +53,14 @@ async function start() {
   let PORT = process.env.PORT || 80;
   // Listen for incoming HTTP requests
   const listener = app.listen(PORT, () => {
-    var host = listener.address().address;
+    let host = listener.address().address;
     if (host === "::") {
       host = "localhost";
     }
-    var port = listener.address().port;
-    console.log("Listening at http://%s%s", host, port === 80 ? "" : ":" + port);
+    const port = listener.address().port;
+    console.log( // tslint:disable-line
+      "Listening at http://%s%s", host, port === 80 ? "" : ":" + port
+    );
   });
 }
 

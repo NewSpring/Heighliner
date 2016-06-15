@@ -14,5 +14,5 @@ export default {
 };
 
 export {
-  UserDocument,
-}
+  UserDocument
+};

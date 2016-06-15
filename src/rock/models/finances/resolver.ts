@@ -6,7 +6,7 @@ export default {
   Query: {
     savedPayments: (_, { limit, cache, skip } , { models, person }) => {
       return models.SavedPayment.findByPersonAlias(person.aliases, {
-          limit, offset: skip
+          limit, offset: skip,
         }, { cache }
       );
     },
@@ -15,7 +15,7 @@ export default {
     },
     scheduledTransactions: (_, { limit, cache, skip, isActive } , { models, person }) => {
       return models.ScheduledTransaction.findByPersonAlias(person.aliases, {
-        limit, offset: skip, isActive
+        limit, offset: skip, isActive,
       }, { cache });
     },
     accounts: (_, { name, isActive, isPublic }, { models }) => {
@@ -47,7 +47,7 @@ export default {
     gateway: ({ FinancialGatewayId }) => FinancialGatewayId,
     numberOfPayments: ({ NumberOfPayments }) => NumberOfPayments,
     date: ({ CreatedDate, ModifiedDate }) => (ModifiedDate || CreatedDate),
-    details: ({ Id, FinancialScheduledTransactionDetails }, _, { models }, { parentType }) => {
+    details: ({ Id, FinancialScheduledTransactionDetails }, _, { models }) => {
       if (FinancialScheduledTransactionDetails) return FinancialScheduledTransactionDetails;
 
       return models.ScheduledTransaction.getDetailsByScheduleId(Id);
@@ -63,14 +63,14 @@ export default {
     },
     transactions: ({ Id }, _, { models }) => {
       return models.ScheduledTransaction.getTransactionsById(Id);
-    }
+    },
   },
 
   Transaction: {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     summary: ({ Summary }) => Summary,
-    date: ({ TransactionDateTime, CreatedDate, ModifiedDate }) => (TransactionDateTime ||ModifiedDate || CreatedDate),
-    details: ({ Id, TransactionDetails }, _, { models }, { parentType }) => {
+    date: ({ TransactionDateTime, CreatedDate, ModifiedDate }) => (TransactionDateTime || ModifiedDate || CreatedDate),
+    details: ({ Id, TransactionDetails }, _, { models }) => {
       if (TransactionDetails) return TransactionDetails;
 
       return models.Transaction.getDetailsById(Id);
@@ -88,7 +88,7 @@ export default {
     order: ({ Order }) => Order,
     description: ({ PublicDescription }) => PublicDescription,
     summary: ({ Description }) => Description,
-    image: ({ Url, ImageBinaryFieldId }, _, { models }) => {
+    image: ({ Url, ImageBinaryFieldId }, _, { models }) => { // tslint:disable-line
       if (Url) return Url;
 
       return;
@@ -97,9 +97,9 @@ export default {
     },
     end: ({ EndDate }) => EndDate,
     start: ({ StartDate }) => StartDate,
-    images: ({ Id }, _, { models }) => {
+    images: ({ Id }, _, { models }) => { // tslint:disable-line
 
-      return []
+      return [];
       // XXX
       // return models.File.getByFieldValue({ })
     },
@@ -140,4 +140,4 @@ export default {
     },
   },
 
-}
+};

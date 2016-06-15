@@ -16,7 +16,7 @@ test("`getByHashedToken` should allow searching for a raw token", async (t) => {
 
     for (let match of matches) {
       const tok = match["services.resume.loginTokens.hashedToken"];
-      if (tok != token) {
+      if (tok !== token) {
         continue;
       }
 
@@ -43,7 +43,7 @@ test("`getByHashedToken` should allow searching for an encrypted token", async (
     const matches = mongoQuery["$or"];
     for (let match of matches) {
       const tok = match["services.resume.loginTokens.hashedToken"];
-      if (tok != encyptedToken) {
+      if (tok !== encyptedToken) {
         continue;
       }
 
@@ -75,7 +75,7 @@ test("`getFromId` should try and read the data from the cache using the globalId
   let globalId = "foo";
 
   const cache = {
-    get(global){
+    get(global) {
       t.is(globalId, global);
       t.pass();
       return Promise.resolve();
@@ -83,7 +83,7 @@ test("`getFromId` should try and read the data from the cache using the globalId
   };
 
 
-  const tempUsers = new User({ cache })
+  const tempUsers = new User({ cache });
 
   return await tempUsers.getFromId(id, globalId);
 });

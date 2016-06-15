@@ -5,4 +5,4 @@ export default [
     limit: Int = 20,
     skip: Int = 0
   ): [DefinedValue]`,
-]
+];

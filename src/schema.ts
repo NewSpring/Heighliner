@@ -1,4 +1,3 @@
-import Url from "url";
 import Node from "./util/node/model";
 import {
   InMemoryCache,
@@ -17,7 +16,7 @@ import Apollos, {
   queries as ApollosQueries,
   // mutations as ApollosMutations,
   UserDocument,
-} from "./apollos"
+} from "./apollos";
 
 // Import Rock
 import Rock, {
@@ -78,7 +77,7 @@ export async function createApp() {
   if (!process.env.CI) {
 
     // local development
-    let dockerhost = "192.168.99.100"
+    let dockerhost = "192.168.99.100";
 
     // MONGO
     const APOLLOS = await Apollos.connect(process.env.MONGO_URL || "mongodb://localhost/meteor");
@@ -91,7 +90,7 @@ export async function createApp() {
       user        : process.env.MYSQL_USER || "root",
       password    : process.env.MYSQL_PASSWORD || "password",
       database    : process.env.MYSQL_DB || "ee_local",
-      ssl: process.env.MYSQL_SSL || false
+      ssl: process.env.MYSQL_SSL || false,
     };
     {
       const { database, user, password } = EESettings;
@@ -112,8 +111,8 @@ export async function createApp() {
       dialectOptions: {
         // instanceName: process.env.MSSQL_INSTANCE,
         // connectTimeout: 90000,
-      }
-    }
+      },
+    };
     {
       const { database, user, password } = RockSettings;
       const ROCK = await Rock.connect(database, user, password, {
@@ -158,7 +157,7 @@ export async function createApp() {
     }
 
     let createdModels = {};
-    Object.keys(models).filter(x => (x != "User" && x != "People")).forEach((name) => {
+    Object.keys(models).filter(x => (x !== "User" && x !== "People")).forEach((name) => {
       createdModels[name] = new models[name](context);
     });
 
@@ -166,10 +165,10 @@ export async function createApp() {
     context.models.Node = new Node(context);
 
     return {
-      graphiql: process.env.NODE_ENV != "production",
+      graphiql: process.env.NODE_ENV !== "production",
       pretty: false,
       context: context as Context,
-      resolvers: useMocks ? false: resolvers, // required if schema is an array of type definitions
+      resolvers: useMocks ? false : resolvers, // required if schema is an array of type definitions
       mocks: useMocks ? mocks : false,
       schema,
     };
@@ -178,8 +177,8 @@ export async function createApp() {
 };
 
 export interface Context {
-  hashedToken: string
-  cache: Cache
-  user: UserDocument
-  models: any
+  hashedToken: string;
+  cache: Cache;
+  user: UserDocument;
+  models: any;
 }

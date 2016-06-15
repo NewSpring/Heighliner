@@ -1,10 +1,10 @@
 
-declare function require(name:string);
-const Crypto = require("crypto");
+declare function require(name: string);
+import * as Crypto from "crypto";
 const secret = process.env.SECRET || "LZEVhlgzFZKClu1r";
 
 export default class Node {
-  private models: Object[]
+  private models: Object[];
 
   constructor(context) {
     this.models = context.models;

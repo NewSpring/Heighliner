@@ -4,44 +4,44 @@ import { MongoConnector } from "../../mongo";
 import { Cache, defaultCache } from "../../../util/cache";
 
 export interface UserProfile {
-  lastLogin: Date
+  lastLogin: Date;
 }
 
 export interface UserEmails {
-  address: string
-  verified: boolean
+  address: string;
+  verified: boolean;
 }
 
 export interface UserLoginTokens {
-  when: Date
-  hashedToken: string
+  when: Date;
+  hashedToken: string;
 }
 
 export interface UserResume {
-  loginTokens: UserLoginTokens[]
+  loginTokens: UserLoginTokens[];
 }
 
 export interface UserRock {
-  PersonId: number
-  PrimaryAliasId: number
+  PersonId: number;
+  PrimaryAliasId: number;
 }
 
 export interface UserPassword {
-  bcrypt: string
+  bcrypt: string;
 }
 
 export interface UserServices {
-  password: UserPassword
-  rock: UserRock
-  resume: UserResume
+  password: UserPassword;
+  rock: UserRock;
+  resume: UserResume;
 }
 
 export interface UserDocument {
-  _id: string
-  createdAt: Date
-  services: UserServices
-  emails: UserEmails[]
-  profile: UserProfile
+  _id: string;
+  createdAt: Date;
+  services: UserServices;
+  emails: UserEmails[];
+  profile: UserProfile;
 }
 
 
@@ -70,12 +70,12 @@ export class User {
     this.model = Model;
   }
 
-  async getFromId(_id: string, globalId: string): Promise<UserDocument | void> {
+  public async getFromId(_id: string, globalId: string): Promise<UserDocument | void> {
     // try a cache lookup
     return await this.cache.get(globalId, () => this.model.findOne({ _id })) as UserDocument | void;
   }
 
-  async getByHashedToken(token: string): Promise<UserDocument | void> {
+  public async getByHashedToken(token: string): Promise<UserDocument | void> {
     let rawToken = token;
 
     // allow for client or server side auth calls
