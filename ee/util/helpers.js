@@ -56,6 +56,7 @@ const Helpers = {
     }
 
     let newImages = [];
+    if (!images) return [];
     images.map((image) => {
       let newImage = image.slice(5, -1);
       if (newImage !== "") {
@@ -110,7 +111,8 @@ const Helpers = {
       fields: fields,
       entryId: entryId
     });
-
+    
+    if (!matrixData.rows) return [];
     matrixData.rows = matrixData.rows.map(document => {
 
       // cast instanceOf RowDataPacket to plain object
@@ -136,6 +138,7 @@ const Helpers = {
     }
 
     let data = Helpers.getMatrixData(entryId, fields);
+    if (!data) return [];
     data = data.map(document => {
 
       // lookup s3 link of file
@@ -166,7 +169,8 @@ const Helpers = {
         imageName: name
       }
     );
-
+  
+    if (!imageData.rows) return [];
     imageData.rows.map(row => {
       const settings = JSON.parse(row.settings);
       if (settings.subfolder[settings.subfolder.length -1 ] != "/") {

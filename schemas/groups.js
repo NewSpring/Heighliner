@@ -73,7 +73,7 @@ const GroupType = new GraphQLObjectType({
     typeId: { type: GraphQLInt, resolve: group => group.GroupTypeId },
     childCare: generateAttribute(GraphQLBoolean, "Childcare"),
     ageRange: generateAttribute(new GraphQLList(GraphQLInt), "AgeRange"),
-    demographic: generateAttribute(GraphQLString, "Topic"),
+    demographic: generateAttribute(GraphQLString, "Category"),
     maritalStatus: generateAttribute(GraphQLString, "MaritalStatus"),
     photo: generateAttribute(GraphQLString, "GroupPhoto", null, 3600),
     campusId: { type: GraphQLInt, resolve: group => group.CampusId },
