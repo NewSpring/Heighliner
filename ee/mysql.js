@@ -69,6 +69,10 @@ const getQuery = (file, data) => {
     data = {};
   }
 
+  if (!data) {
+    data = {}
+  }
+
   let query = Fs.readFileSync(
     file,
     { encoding: "utf8" }
@@ -102,6 +106,17 @@ const getQuery = (file, data) => {
 
     query += ` d.channel_id IN (${channels})`;
 
+  }
+
+  // ensure entry is not closed
+  // open entries may be open, featured, promoted, or something
+  if (query.indexOf("t.status") > -1) {
+    if (query.indexOf("WHERE") === -1) {
+      query += " WHERE";
+    } else {
+      query += " AND"
+    }
+    query += ` t.status != "closed"`;
   }
 
   if (data.sort) {
@@ -365,6 +380,71 @@ const getImagesFromAccount = (AccountId, ttl, cache) => {
 
 }
 
+
+const getLiveFeed = (site, ttl, cache) => {
+  const scheduleQuery = Path.join(__dirname, "../ee/util/liveSchedule.sql");
+  const contentQuery = Path.join(__dirname, "../ee/util/liveContent.sql");
+
+  return mysql(scheduleQuery, { site_name: site }, ttl, cache)
+    .then((schedules) => {
+      const currentDate = new Date();
+      const dayOfWeek = currentDate.getDay();
+      const time = currentDate.getHours() * 100 + currentDate.getMinutes();
+
+      let data = {
+        title: null,
+        content: {
+          images: [],
+          body: null
+        },
+        live: false,
+        media: {
+          embedCode: null
+        }
+      };
+
+      if (!schedules.rows.length) {
+        return [];
+      }
+
+      for(let i in schedules.rows) {
+        let s = schedules.rows[i];
+
+        if(s.dayOfWeek == dayOfWeek && time >= s.startTime && time <= s.endTime) {
+          data.live = true;
+        }
+      }
+
+      return mysql(contentQuery, { site_name: site }, ttl, cache)
+        .then((content) => {
+
+          if (!content.rows.length) {
+            return [];
+          }
+
+          content = content.rows[0];
+          data.title = content.title;
+          data.content.body = content.body;
+          data.media.embedCode = content.embedCode;
+
+          data.content.images.push({
+            cloudfront: content.wideImage,
+            fileLabel: "2x1"
+          });
+          data.content.images.push({
+            cloudfront: content.squareImage,
+            fileLabel: "1x1"
+          });
+          data.content.images.push({
+            cloudfront: content.tallImage,
+            fileLabel: "1x2"
+          });
+
+          return data;
+        });
+    })
+}
+
 export {
   lookupById,
   lookupByChannel,
@@ -372,5 +452,6 @@ export {
   lookupSet,
   lookupNav,
   getImagesFromAccount,
+  getLiveFeed,
 }
 export default mysql

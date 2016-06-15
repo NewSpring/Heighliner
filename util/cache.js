@@ -47,10 +47,16 @@ const load = (key, fetchMethod, ttl = ttLength, cache = true) => new Promise((re
     return fetchMethod()
       .then((data) => {
         resolve(data)
-        client.set(key, JSON.stringify(data))
-        ttl = Number(ttl)
-        if (typeof ttl === "number" && !isNaN(ttl)) {
-          client.expire(key, ttl)
+        if (!data) return;
+        try {
+          const json = JSON.stringify(data);
+          client.set(key, json)
+          ttl = Number(ttl)
+          if (typeof ttl === "number" && !isNaN(ttl)) {
+            client.expire(key, ttl)
+          }
+        } catch (error) {
+          console.log(error);
         }
 
       })

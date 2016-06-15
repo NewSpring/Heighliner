@@ -46,11 +46,12 @@ const GroupLocationType = new GraphQLObjectType({
   })
 })
 
-function generateAttribute(type, key, defaultValue){
+function generateAttribute(type, key, defaultValue, defaultTTL){
+  // 3600000
   let attr = {
     type: type,
     args: {
-      ttl: { type: GraphQLInt, defaultValue: 604800 },
+      ttl: { type: GraphQLInt, defaultValue: defaultTTL ? defaultTTL : 604800 },
       cache: { type: GraphQLBoolean, defaultValue: true },
     },
     resolve: ({ Id }, { ttl, cache }) => {
@@ -74,7 +75,7 @@ const GroupType = new GraphQLObjectType({
     ageRange: generateAttribute(new GraphQLList(GraphQLInt), "AgeRange"),
     demographic: generateAttribute(GraphQLString, "Topic"),
     maritalStatus: generateAttribute(GraphQLString, "MaritalStatus"),
-    photo: generateAttribute(GraphQLString, "GroupPhoto", null),
+    photo: generateAttribute(GraphQLString, "GroupPhoto", null, 3600),
     campusId: { type: GraphQLInt, resolve: group => group.CampusId },
     campus: {
       type: CampusType,
@@ -252,7 +253,7 @@ export default {
     lng: { type: GraphQLFloat },
     campus: { type: GraphQLInt },
     name: { type: GraphQLString },
-    distance: { type: GraphQLInt, defaultValue: 25 },
+    distance: { type: GraphQLInt, defaultValue: 50 },
     sortByDistance: { type: GraphQLBoolean, defaultValue: true },
     ttl: { type: GraphQLInt },
     cache: { type: GraphQLBoolean, defaultValue: true },
@@ -289,6 +290,11 @@ export default {
             IsPublic eq true
 
       `)
+
+      // filter addons first
+      if (campus) {
+        query += ` and CampusId eq ${campus}`
+      }
     } else {
       query = parseEndpoint(`
         Groups?
@@ -304,32 +310,71 @@ export default {
             IsPublic eq true
 
       `)
+
+      // filter addons first
+      if (campus) {
+        query += ` and CampusId eq ${campus}`
+      }
+
+      if (name) {
+        query += ` and (substringof('${name.replace("'", "''")}', Name) eq true or substringof('${name.replace("'", "''")}', Description))`
+      }
+
+      // then limits
+      if (first) {
+        query += `&$top=${first}`
+      }
+
+      // then offeset
+      if (after) {
+        query += `&$skip=${after}`
+      }
     }
 
-    // filter addons first
-    if (campus) {
-      query += ` and CampusId eq ${campus}`
-    }
 
-    if (name) {
-      query += ` and substringof('${name}', Name) eq true`
-    }
 
-    // then limits
-    if (first) {
-      query += `&$top=${first}`
-    }
-
-    // then offeset
-    if (after) {
-      query += `&$skip=${after}`
-    }
 
     return api.get(query, ttl, cache)
       .then((results) => {
         return results.filter((result) => {
           return result.IsActive && result.IsPublic
         })
+      })
+      .then((results) => {
+        // XXX remove when ByLatLong respects oData filters correctly
+        if (!lat || !lng || !name) {
+          return results
+        }
+
+
+        let query = name.toLowerCase();
+        return results.filter((group) => {
+          return (
+            (
+              group.Name &&
+              group.Name.toLowerCase().indexOf(query) > -1
+            ) ||
+            (
+              group.Description &&
+              group.Description.toLowerCase().indexOf(query) > -1
+            )
+          );
+        });
+
+      })
+      .then((items) => {
+        // XXX oData doesn't work with locations
+        if (after && lat && lng) {
+          return [...items].slice(after, items.length);
+        }
+        return items
+      })
+      .then((items) => {
+        // XXX oData doesn't work with locations
+        if (first && lat && lng) {
+          return [...items].slice(0, first);
+        }
+        return items
       })
       .then((items) => {
         let paginatedItems = [...items].slice(0, 10)
@@ -348,6 +393,8 @@ export default {
         }
 
       })
+
+      // https://rock.newspring.cc/api/Groups/ByLatLong?groupTypeId=25&latitude=34.582899&longitude=-82.673204&sortByDistance=true&$filter=IsActive
       // .then((results) => {
       //   // pre lookup all campuses because its way cheaper than a lookup for each
       //   // group

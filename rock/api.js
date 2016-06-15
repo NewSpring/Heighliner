@@ -126,6 +126,9 @@ const parseEndpoint = (str) => {
       trimmed += " "
     }
 
+    // if (trimmed.indexOf("'") > -1) {
+    //   trimmed = trimmed.replace("'", "''") // weird oDATA method for single quotes
+    // }
     return trimmed
   }).join("")
 }

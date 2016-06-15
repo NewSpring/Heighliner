@@ -8,8 +8,8 @@ import {
   GraphQLList,
 } from "graphql"
 
+import ColorType from "./color"
 import ContentType from "./content"
-import AuthorType from "./author"
 import TrackType from "./tracks"
 
 const MetaType = new GraphQLObjectType({
@@ -21,7 +21,7 @@ const MetaType = new GraphQLObjectType({
     actualDate: { type: GraphQLString },
     channelId: { type: GraphQLInt }
   }
-})
+});
 
 const PersonLikeType = new GraphQLObjectType({
   name: "Likes",
@@ -54,9 +54,9 @@ const PersonLikeType = new GraphQLObjectType({
       type: ContentType,
       resolve: like => like.content
     },
-    author: {
-      type: AuthorType,
-      resolve: like => like.author
+    authors: {
+      type: new GraphQLList(GraphQLString),
+      resolve: like => like.authors
     },
     tracks: {
       type: new GraphQLList(TrackType),

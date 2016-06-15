@@ -26,11 +26,18 @@ make_task_def() {
       "image": "newspring/heighliner:%s",
       "portMappings": [
         {
-          "hostPort": 8081,
+          "hostPort": 8071,
           "containerPort": 80,
           "protocol": "http"
         }
       ],
+      "logConfiguration": {
+        "logDriver": "syslog",
+        "options": {
+          "syslog-address": "udp://logs.papertrailapp.com:23588",
+          "tag": "{{.Name}}"
+        }
+      },
       "environment": [
         {
           "name": "NODE_ENV",
@@ -41,8 +48,12 @@ make_task_def() {
           "value": "'"$REDIS_HOST"'"
         },
         {
+          "name": "REDIS_NAMESPACE",
+          "value": "beta"
+        },
+        {
           "name": "MONGO_URL",
-          "value": "'"$MONGO_URL"'"
+          "value": "'"$BETA_MONGO_URL"'"
         },
         {
           "name": "MYSQL_HOST",
@@ -63,10 +74,6 @@ make_task_def() {
         {
           "name": "MYSQL_SSL",
           "value": "'"$MYSQL_SSL"'"
-        },
-        {
-          "name": "NEW_RELIC_KEY",
-          "value": "'"$NEW_RELIC_KEY"'"
         },
         {
           "name": "PORT",
@@ -94,7 +101,7 @@ make_task_def() {
         },
         {
           "name": "TRACER_APP_KEY",
-          "value": "'"$PROD_TRACER_APP_KEY"'"
+          "value": "'"$TRACER_APP_KEY"'"
         }
       ]
     }
@@ -118,13 +125,12 @@ register_definition() {
 
 deploy_cluster() {
 
-  host_port=8081
   family="heighliner"
 
   make_task_def
 
   register_definition
-  if [[ $(aws ecs update-service --cluster apollos --service heighliner --task-definition $revision | \
+  if [[ $(aws ecs update-service --cluster apollos --service beta-heighliner --task-definition $revision | \
                  $JQ '.service.taskDefinition') != $revision ]]; then
       echo "Error updating service."
       return 1

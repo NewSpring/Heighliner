@@ -27,18 +27,13 @@ test:
     - curl --retry 10 --retry-delay 5 http://localhost:8080/alive | grep true
 
 deployment:
-  rancher:
-    branch: rancher
+  beta:
+    branch: beta
     commands:
-      - echo deploying to rancher
-      - .rancher/deploy.sh
+      - echo deploying to ecs
+      - .ecs/deploy-beta.sh
   production:
     branch: master
     commands:
       - echo deploying to ecs
       - .ecs/deploy.sh
-  # beta:
-  #   branch: beta
-  #   commands:
-  #     - echo deploying to rancher
-  #     - .rancher/deploy-beta.sh

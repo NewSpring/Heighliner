@@ -53,9 +53,6 @@ export default {
   type: new GraphQLList(SavedAccountsType),
   args: {
     primaryAliasId: { type: GraphQLInt },
-    mongoId: {
-      type: GraphQLString
-    },
     ttl: {
       type: GraphQLInt
     },
@@ -64,10 +61,10 @@ export default {
       defaultValue: true
     },
   },
-  resolve: (_, { primaryAliasId, mongoId, ttl, cache }) => {
+  resolve: (_, { ttl, cache }, context) => {
 
-    if (!mongoId && !primaryAliasId) {
-      throw new Error("An id is required for payment detail lookup")
+    if (context.user === null || !context.user.services.rock.PrimaryAliasId) {
+      throw new Error("No person found")
     }
 
     function get(ids) {
@@ -110,28 +107,11 @@ export default {
       return api.get(query, {}, ttl, cache)
     }
 
-    let allPaymentDetails;
-    if (!primaryAliasId) {
-      allPaymentDetails = load(
-        JSON.stringify({"user-_id": mongoId }),
-        () => (Users.findOne({"_id": mongoId }, "services.rock.PersonId"))
-      , ttl, cache)
-        .then((user) => {
 
-          if (user) {
-            return getAliasIdsFromPersonId(user.services.rock.PersonId, ttl, cache)
-              .then((ids) => {
-                return get(ids)
-              })
-          }
-          return []
-        })
-    } else {
-      allPaymentDetails = getAliasIds(primaryAliasId, ttl, cache)
-        .then((ids) => {
-          return get(ids)
-        })
-    }
+    let allPaymentDetails = getAliasIds(context.user.services.rock.PrimaryAliasId, ttl, cache)
+      .then((ids) => {
+        return get(ids)
+      })
 
     return allPaymentDetails
   }

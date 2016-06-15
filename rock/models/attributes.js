@@ -16,6 +16,13 @@ function RockTypeToGraphType(type, value){
         .then(value => value[0])
         .then(value => value ? value.Url : null)
     },
+
+    ["Rock.Field.Types.ImageFieldType"]: (value) => {
+      return api.get(`BinaryFiles?$filter=Guid eq guid'${value}'`)
+        .then(value => value[0])
+        .then(value => value ? value.Url : null)
+    },
+
     ["Rock.Field.Types.DefinedValueFieldType"]: (value) => {
 
       const GuidRegex = /^[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}$/gmi
@@ -71,7 +78,13 @@ function RockTypeToGraphType(type, value){
   }
 
   return new Promise((resolve) => resolve())
-    .then(() => types[type](value))
+    .then(() => {
+      try {
+        return types[type](value);
+      } catch (e) {
+        return null;
+      }
+    })
 
 }
 
