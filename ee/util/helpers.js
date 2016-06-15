@@ -25,14 +25,8 @@ const Helpers = {
       return false;
     }
 
-    let parsed = markup.match(/src="{assets_\d*.*}"/);
-
-    if (!parsed) {
-      return markup;
-    }
-
     // remove {assets_IDSTRING:} and make protocal relative
-    markup = markup.replace(/{assets_\d*.*}/, function(link) {
+    markup = markup.replace(/{assets_\d*.*}/g, function(link) {
 
       link = link.trim().substring(0, link.length - 1);
       link = link.replace(/{assets_\d*:/, "");
