@@ -11,6 +11,8 @@ import {
   ChannelData,
   channelDataSchema,
 
+  LowReorder,
+  LowReorderOrder,
 } from "./tables";
 
 import {
@@ -96,7 +98,9 @@ export class Content extends EE {
     return fieldObject;
   }
 
-  public async getContentFromMatrix(entry_id: string, name: string, field_id: number): Promise<any> {
+  public async getContentFromMatrix(
+    entry_id: string, name: string, field_id: number
+  ): Promise<any> {
     if (!entry_id || !field_id) return [];
 
     const columns = await this.cache.get(`matrix:${field_id}`, () => MatrixCol.find({
@@ -116,6 +120,18 @@ export class Content extends EE {
     })
       .then(x => flatten(x.map(y => y.exp_matrix_data))));
   };
+
+  public async getFromLowReorderSet(setName): Promise<any> {
+    // XXX cache breaking on this set
+    return await this.cache.get(`${setName}:LowReorderSetName`, () => LowReorderOrder.findOne({
+      attributes: ["sort_order"],
+      include: [{ model: LowReorder.model, where: { set_name: setName } }],
+    })
+      .then(x => x.sort_order.split("|"))
+      .then(x => x.filter(x => !!x).map(y => ({ entry_id: y }))) // used so the next line can work
+      .then(this.getFromIds.bind(this))
+    , { ttl: 3600 }); // expire this lookup every hour
+  }
 
   public async find(query: any = {}, cache): Promise<any> {
     const { limit, offset } = query; // true options

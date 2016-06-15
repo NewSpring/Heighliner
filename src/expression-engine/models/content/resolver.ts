@@ -26,6 +26,10 @@ export default {
           channel_name: { $or: channels }, offset: skip, limit, status,
         }, cache);
       },
+
+      lowReorderSets(_, { setName }, { models }) {
+        return models.Content.getFromLowReorderSet(setName);
+      },
   },
 
   ContentColor: {

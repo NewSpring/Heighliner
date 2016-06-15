@@ -39,10 +39,22 @@ const channelDataSchema: Object = {
   site_id: { type: INTEGER },
 };
 
+const lowReorderSetSchema: Object = {
+  set_id: { type: INTEGER, primaryKey: true },
+  set_name: { type: STRING },
+};
+
+const lowReorderOrderSchema: Object = {
+  set_id: { type: INTEGER, primaryKey: true },
+  sort_order: { type: STRING },
+};
+
 let Channels;
 let ChannelFields;
 let ChannelTitles;
 let ChannelData;
+let LowReorder;
+let LowReorderOrder;
 export {
   Channels,
   channelSchema,
@@ -55,6 +67,12 @@ export {
 
   ChannelData,
   channelDataSchema,
+
+  LowReorder,
+  lowReorderSetSchema,
+
+  LowReorderOrder,
+  lowReorderOrderSchema,
 };
 
 export function connect(): Tables {
@@ -62,12 +80,16 @@ export function connect(): Tables {
   ChannelFields = new MySQLConnector("exp_channel_fields", channelFieldSchema);
   ChannelTitles =  new MySQLConnector("exp_channel_titles", channelTitleSchema);
   ChannelData = new MySQLConnector("exp_channel_data", channelDataSchema);
+  LowReorder = new MySQLConnector("exp_low_reorder_sets", lowReorderSetSchema);
+  LowReorderOrder = new MySQLConnector("exp_low_reorder_orders", lowReorderOrderSchema);
 
   return {
     Channels,
     ChannelFields,
     ChannelTitles,
     ChannelData,
+    LowReorder,
+    LowReorderOrder,
   };
 };
 
@@ -76,6 +98,8 @@ export function bind({
   ChannelTitles,
   ChannelData,
   ChannelFields,
+  LowReorder,
+  LowReorderOrder,
 }: Tables): void {
   Channels.model.hasMany(ChannelTitles.model, { foreignKey: "channel_id" });
   Channels.model.hasMany(ChannelData.model, { foreignKey: "channel_id" });
@@ -88,6 +112,9 @@ export function bind({
 
   ChannelData.model.belongsTo(Channels.model, { foreignKey: "channel_id" });
   ChannelData.model.belongsTo(ChannelTitles.model, { foreignKey: "entry_id" });
+
+  LowReorderOrder.model.belongsTo(LowReorder.model, { foreignKey: "set_id", targetKey: "set_id" });
+
 };
 
 export default {
