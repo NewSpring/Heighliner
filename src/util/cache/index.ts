@@ -12,17 +12,17 @@ export {
   Cache,
   InMemoryCache,
   RedisCache,
-  RedisConnect
+  RedisConnect,
 }
 
 export const defaultCache: Cache = {
-  get(id: string, lookup: () => Promise<Object | void>){
+  get(id: string, lookup: () => Promise<Object | void>) {
     return Promise.resolve().then(lookup);
   },
-  set(id: string){ return Promise.resolve().then(() => true); },
-  del(){},
-  encode(obj, prefix){ return `${prefix}${JSON.stringify(obj)}`;}
-}
+  set(id: string) { return Promise.resolve().then(() => true); },
+  del() {}, // tslint:disable-line
+  encode(obj, prefix) { return `${prefix}${JSON.stringify(obj)}`; },
+};
 
 export const resolvers = {
   Mutation: {
@@ -38,7 +38,7 @@ export const resolvers = {
         .then(() => models.Node.get(id));
     },
   },
-}
+};
 
 export const mutations = [
   "cache(id: ID!, type: String): Node",

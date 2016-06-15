@@ -1,8 +1,9 @@
+/* tslint:disable:no-shadowed-variable */
+
 import {
   INTEGER,
   STRING,
   CHAR,
-  AssociationOptionsHasMany,
 } from "sequelize";
 
 import { MySQLConnector, Tables } from "../../mysql";
@@ -66,8 +67,8 @@ export function connect(): Tables {
     Channels,
     ChannelFields,
     ChannelTitles,
-    ChannelData
-  }
+    ChannelData,
+  };
 };
 
 export function bind({

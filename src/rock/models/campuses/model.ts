@@ -10,7 +10,7 @@ import {
 import { Rock } from "../system";
 
 export class Campus extends Rock {
-  public cache: Cache
+  public cache: Cache;
   public __type: string = "Campus";
 
   constructor({ cache } = { cache: defaultCache }) {

@@ -23,7 +23,7 @@ export default {
         // only include what user hasn't excluded
         channels = difference(channels, excludeChannels);
         return models.Content.find({
-          channel_name: { $or: channels }, offset: skip, limit, status
+          channel_name: { $or: channels }, offset: skip, limit, status,
         }, cache);
       },
   },
@@ -46,12 +46,12 @@ export default {
     tags: ({ tags }, _, { models }) => models.Content.splitByNewLines(tags),
     speaker: ({speaker}) => speaker,
     hashtag: ({ hashtag }) => hashtag,
-    isLight: ({ lightswitch }) => lightswitch != "dark",
+    isLight: ({ lightswitch }) => lightswitch !== "dark",
     scripture: ({ entry_id, scripture, exp_channel }, _, { models }) => {
       if (!scripture) return [];
 
       const position = Number(exp_channel.exp_channel_fields.scripture.split("_").pop());
-      return models.Content.getContentFromMatrix(entry_id, scripture, position)
+      return models.Content.getContentFromMatrix(entry_id, scripture, position);
     },
     images: ({ image, image_blurred, exp_channel, entry_id }, _, { models }) => {
       if (!image && !image_blurred) return Promise.all([]);
@@ -77,14 +77,14 @@ export default {
 
       return [{
         value: color || bgcolor,
-        description: "primary"
-      }]
+        description: "primary",
+      }];
     },
     tracks: ({ entry_id, tracks, exp_channel }, _, { models }) => {
       if (!tracks) return [];
 
       const position = Number(exp_channel.exp_channel_fields.tracks.split("_").pop());
-      return models.File.getFilesFromContent(entry_id, tracks, position)
+      return models.File.getFilesFromContent(entry_id, tracks, position);
     },
   },
 
@@ -126,7 +126,7 @@ export default {
     meta: data => data,
     content: data => data,
     authors: ({ editorial_authors }) => {
-      return editorial_authors ? editorial_authors.split(","): null
+      return editorial_authors ? editorial_authors.split(",") : null;
     },
 
     // deprecated
@@ -134,7 +134,7 @@ export default {
       if (!tracks) return [];
 
       const position = Number(exp_channel.exp_channel_fields.tracks.split("_").pop());
-      return models.File.getFilesFromContent(entry_id, tracks, position)
+      return models.File.getFilesFromContent(entry_id, tracks, position);
     },
     seriesId: ({ series_id }, _, $, { parentType }) => createGlobalId(series_id, parentType.name),
   },

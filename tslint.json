@@ -10,12 +10,12 @@
     "class-name": true,
     "curly": false,
     "eofline": true,
-    "forin": true,
+    "forin": false,
     "indent": [
       true,
       "spaces"
     ],
-    "interface-name": false,
+    "interface-name": [false],
     "jsdoc-format": true,
     "label-position": true,
     "label-undefined": true,
@@ -26,7 +26,7 @@
     "member-access": true,
     "member-ordering": [
       true,
-      "public-before-private",
+      "private-before-public",
       "static-before-instance",
       "variables-before-functions"
     ],
@@ -125,7 +125,7 @@
       false
     ],
     "variable-name": [
-      true,
+      false,
       "check-format",
       "allow-leading-underscore",
       "ban-keywords"

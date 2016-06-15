@@ -9,5 +9,5 @@ export default [
 
   `accounts(
     name: String, isActive: Boolean = true, isPublic: Boolean = true
-  ): [FinancialAccount]`
-]
+  ): [FinancialAccount]`,
+];

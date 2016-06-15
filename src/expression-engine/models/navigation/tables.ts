@@ -1,7 +1,8 @@
+/* tslint:disable:no-shadowed-variable */
+
 import {
   INTEGER,
   STRING,
-  CHAR,
 } from "sequelize";
 
 import { MySQLConnector, Tables } from "../../mysql";
@@ -44,7 +45,7 @@ export function connect(): Tables {
   return {
     Navee,
     NaveeNav,
-  }
+  };
 };
 
 export function bind({

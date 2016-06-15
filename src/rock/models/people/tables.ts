@@ -1,7 +1,8 @@
+/* tslint:disable:no-shadowed-variable */
+
 import {
   INTEGER,
   STRING,
-  CHAR,
   BOOLEAN,
 } from "sequelize";
 
@@ -49,7 +50,7 @@ export function connect(): Tables {
   return {
     Person,
     PersonAlias,
-  }
+  };
 };
 
 export function bind({

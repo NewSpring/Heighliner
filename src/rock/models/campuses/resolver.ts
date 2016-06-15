@@ -1,5 +1,4 @@
 
-import { flatten } from "lodash";
 import { createGlobalId } from "../../../util";
 
 export default {
@@ -18,7 +17,7 @@ export default {
       if (!LocationId) return null;
 
       return models.Campus.findByLocationId(LocationId);
-    }
+    },
   },
 
   Location: {
@@ -32,13 +31,13 @@ export default {
     zip: ({ PostalCode }) => PostalCode,
     latitude: ({ Latitude }) => Latitude,
     longitude: ({ Longitude }) => Longitude,
-    distance: ({ Id, Distance }) => {
+    distance: ({ Id, Distance }) => { // tslint:disable-line
       if (Distance) return Distance;
 
       return null;
       // XXX get distance from the person
       // this is typically used from a geo based lookup
     },
-  }
+  },
 
-}
+};

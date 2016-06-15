@@ -1,32 +1,31 @@
 
-import { MockList } from "graphql-tools";
 import casual from "casual";
 
 import { createGlobalId } from "../../../util/node/model";
 
 export interface HashTypeMocks {
-  when(): string
+  when(): string;
 }
 
 export interface UserRockTypeMocks {
-  id(): number
-  alias(): number
+  id(): number;
+  alias(): number;
 }
 
 export interface UserRockTypeMocks {
-  id(): number
-  alias(): number
+  id(): number;
+  alias(): number;
 }
 
 export interface UserTypeMocks {
-  createdAt(): string
-  emails(): [{ address: string }]
+  createdAt(): string;
+  emails(): [{ address: string }];
 }
 
 export interface UserMocks {
-  Hashes(): HashTypeMocks
-  UserRock(): UserRockTypeMocks
-  User(): UserTypeMocks
+  Hashes(): HashTypeMocks;
+  UserRock(): UserRockTypeMocks;
+  User(): UserTypeMocks;
 }
 
 export default {

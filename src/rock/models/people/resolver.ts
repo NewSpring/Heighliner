@@ -1,5 +1,4 @@
 
-import { flatten } from "lodash";
 import { createGlobalId } from "../../../util";
 
 export default {
@@ -14,25 +13,25 @@ export default {
     firstName: ({ FirstName }) => FirstName,
     lastName: ({ LastName }) => LastName,
     nickName: ({ NickName }) => NickName,
-    photo: ({ PhotoId }, _, { models }) => {
-      console.log(PhotoId, models)
-      return "XXX";
-      // return models.BinaryFile.getUrlFromId(PhotoId)
-    },
-    age: ({ BirthDate }) => {
-      return "XXX";
-    },
+    // photo: ({ PhotoId }, _, { models }) => {
+    //   return "XXX";
+    //   // return models.BinaryFile.getUrlFromId(PhotoId)
+    // },
+    // age: ({ BirthDate }) => {
+    //   return "XXX";
+    // },
     birthDate: ({ BirthDate }) => BirthDate,
     birthDay: ({ BirthDay }) => BirthDay,
     birthMonth: ({ BirthMonth }) => BirthMonth,
     birthYear: ({ BirthYear }) => BirthYear,
     email: ({ Email }) => Email,
-    campus: ({ Id }, _, { models }) => {
+    // campus: ({ Id }, _, { models }) => {
 
-    },
+    // },
   },
 
-}
+};
+
 
   // # campus: [Campus]
   // # home: [Location]

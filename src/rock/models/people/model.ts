@@ -1,4 +1,3 @@
-import { orderBy } from "lodash";
 import { Cache, defaultCache } from "../../../util/cache";
 
 import {
@@ -9,7 +8,7 @@ import {
 import { Rock } from "../system";
 
 export class Person extends Rock {
-  public cache: Cache
+  public cache: Cache;
   public __type: string = "Person";
 
   constructor({ cache } = { cache: defaultCache }) {
@@ -42,7 +41,7 @@ export class Person extends Rock {
           .then(x => {
             data.aliases = x;
             return data;
-          })
+          });
       })
     );
 

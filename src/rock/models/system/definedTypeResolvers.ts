@@ -6,5 +6,5 @@ export default {
   ["Rock.Field.Types.TextFieldType"]: (value: DefinedValueSearch): DefinedValue => {
     // textfields are just string represetations. so lets just return the defined type
     return pick(value, definedValueKeys) as DefinedValue;
-  }
+  },
 };

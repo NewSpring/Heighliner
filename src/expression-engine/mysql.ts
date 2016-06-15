@@ -20,8 +20,8 @@ export function connect(
   return new Promise((cb) => {
     opts = merge({}, opts, {
       dialect: "mysql",
-      logging: (...args) => {}, // tslint:disable-line
-      // logging: console.log.bind(console, "MYSQL:"), // use for debugging mysql
+      // logging: (...args) => {}, // tslint:disable-line
+      logging: console.log.bind(console, "MYSQL:"), // use for debugging mysql
       benchmark: process.env.NODE_ENV !== "production",
       define: {
         timestamps: false,

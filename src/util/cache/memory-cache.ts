@@ -1,11 +1,11 @@
 import { Cache } from "./cache";
-const Crypto = require("crypto");
+import * as Crypto from "crypto";
 
 export class InMemoryCache extends Cache {
   private cache;
   private secret: string;
 
-  constructor(cache = {}, secret = "InMemoryCache"){
+  constructor(cache = {}, secret = "InMemoryCache") {
     super(cache, secret);
 
     // XXX this is really only used for testing purposes

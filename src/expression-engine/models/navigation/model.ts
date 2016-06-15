@@ -1,10 +1,10 @@
 import { orderBy } from "lodash";
 import { Cache, defaultCache } from "../../../util/cache";
 
-import {
-  ChannelTitles,
-  channelTitleSchema,
-} from "../content/tables";
+// import {
+//   ChannelTitles,
+//   channelTitleSchema,
+// } from "../content/tables";
 
 import {
   Navee,
@@ -18,7 +18,7 @@ import {
 import { EE } from "../ee";
 
 export class Navigation extends EE {
-  public cache: Cache
+  public cache: Cache;
 
   constructor({ cache } = { cache: defaultCache }) {
     super();
@@ -35,8 +35,8 @@ export class Navigation extends EE {
       ],
     })
       .then(x => {
-        x.site_pages = Sites.parsePage(x.exp_site.site_pages)[x.site_id]
-        return x
+        x.site_pages = Sites.parsePage(x.exp_site.site_pages)[x.site_id];
+        return x;
       })
       .then(x => {
 
@@ -69,8 +69,8 @@ export class Navigation extends EE {
       ],
     })
       .then(data => data.map(x => {
-        x.exp_navee.site_pages = Sites.parsePage(x.exp_site.site_pages)[x.site_id]
-        return x.exp_navee
+        x.exp_navee.site_pages = Sites.parsePage(x.exp_site.site_pages)[x.site_id];
+        return x.exp_navee;
       }))
       .then(data => data.map(x => {
 
@@ -95,9 +95,9 @@ export class Navigation extends EE {
           return;
         });
         // get all children
-        data.filter(x => x.parent != 0).forEach(x => {
+        data.filter(x => x.parent !== 0).forEach(x => {
           if (navigation[x.parent]) {
-            navigation[x.parent].children || (navigation[x.parent].children = []);
+            navigation[x.parent].children || (navigation[x.parent].children = []); // tslint:disable-line
             navigation[x.parent].children.push(x);
             return;
           }
