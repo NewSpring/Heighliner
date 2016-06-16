@@ -24,6 +24,11 @@ const groupSchema: Object = {
   ScheduleId: { type: INTEGER },
 };
 
+const groupTypeSchema: Object = {
+  Id: { type: INTEGER, primaryKey: true },
+  Name: { type: STRING },
+};
+
 const groupMemberSchema: Object = {
   Id: { type: INTEGER, primaryKey: true },
   DateTimeAdded: { type: DATE },
@@ -46,11 +51,15 @@ const groupLocationSchema: Object = {
 };
 
 let Group;
+let GroupType;
 let GroupMember;
 let GroupLocation;
 export {
   Group,
   groupSchema,
+
+  GroupType,
+  groupTypeSchema,
 
   GroupMember,
   groupMemberSchema,
@@ -63,18 +72,22 @@ export function connect(): Tables {
   Group = new MSSQLConnector("Group", groupSchema);
   GroupMember = new MSSQLConnector("GroupMember", groupMemberSchema);
   GroupLocation = new MSSQLConnector("GroupLocation", groupLocationSchema);
+  GroupType = new MSSQLConnector("GroupType", groupTypeSchema);
 
   return {
     Group,
     GroupMember,
     GroupLocation,
+    GroupType,
   };
 };
 
 export function bind({
   Group,
+  GroupType,
   GroupMember,
   Campus,
+  AttributeValue,
   GroupLocation,
   Location,
 }: Tables): void {
@@ -87,6 +100,10 @@ export function bind({
 
   GroupLocation.model.belongsTo(Location.model, { foreignKey: "LocationId", targetKey: "Id" });
 
+  Group.model.belongsTo(GroupType.model, { foreignKey: "GroupTypeId", targetKey: "Id" });
+  AttributeValue.model.belongsTo(Group.model, { foreignKey: "EntityId", targetKey: "Id" });
+
+  Group.model.hasMany(AttributeValue.model, { foreignKey: "EntityId" });
 };
 
 export default {

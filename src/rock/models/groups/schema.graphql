@@ -1,4 +1,8 @@
 
 type Group implements Node {
   id: ID!
+  name: String
+  description: String
+  active: Boolean
+  photo: String
 }

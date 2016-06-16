@@ -4,6 +4,7 @@ import {
   INTEGER,
   STRING,
   BOOLEAN,
+  UUID,
 } from "sequelize";
 
 import { MSSQLConnector, Tables } from "../../mssql";
@@ -21,6 +22,7 @@ const definedTypeSchema: Object = {
 
 const definedValueSchema: Object = {
   Id: { type: INTEGER, primaryKey: true },
+  Guid: { type: UUID },
   IsSystem: { type: BOOLEAN },
   DefinedTypeId: { type: INTEGER },
   Order: { type: INTEGER },
@@ -37,9 +39,41 @@ const fieldTypeSchema: Object = {
   Class: { type: STRING },
 };
 
+const attributeSchema: Object = {
+  Id: { type: INTEGER, primaryKey: true },
+  DefaultValue: { type: STRING },
+  Description: { type: STRING },
+  EntityTypeId: { type: INTEGER },
+  EntityTypeQualifierColumn: { type: STRING },
+  EntityTypeQualifierValue: { type: STRING },
+  FieldTypeId: { type: INTEGER },
+  Key: { type: STRING },
+  Name: { type: STRING },
+};
+
+const attributeValueSchema: Object = {
+  Id: { type: INTEGER, primaryKey: true },
+  AttributeId: { type: INTEGER },
+  EntityId: { type: INTEGER },
+  Value: { type: STRING },
+};
+
+const entityTypeSchema: Object = {
+  Id: { type: INTEGER, primaryKey: true },
+  AssemblyName: { type: STRING },
+  FriendlyName: { type: STRING },
+  IsEntity: { type: BOOLEAN },
+  IsSecured: { type: BOOLEAN },
+  MultiValueFieldTypeId: { type: INTEGER },
+  Name: { type: STRING },
+};
+
 let DefinedType;
 let DefinedValue;
 let FieldType;
+let Attribute;
+let AttributeValue;
+let EntityType;
 export {
   DefinedType,
   definedTypeSchema,
@@ -49,17 +83,33 @@ export {
 
   FieldType,
   fieldTypeSchema,
+
+  Attribute,
+  attributeSchema,
+
+  AttributeValue,
+  attributeValueSchema,
+
+  EntityType,
+  entityTypeSchema,
+
 };
 
 export function connect(): Tables {
   DefinedType = new MSSQLConnector("DefinedType", definedTypeSchema);
   DefinedValue = new MSSQLConnector("DefinedValue", definedValueSchema);
   FieldType = new MSSQLConnector("FieldType", fieldTypeSchema);
+  Attribute = new MSSQLConnector("Attribute", attributeSchema);
+  AttributeValue = new MSSQLConnector("AttributeValue", attributeValueSchema);
+  EntityType = new MSSQLConnector("EntityType", entityTypeSchema);
 
   return {
     DefinedType,
     DefinedValue,
     FieldType,
+    Attribute,
+    AttributeValue,
+    EntityType,
   };
 };
 
@@ -67,6 +117,9 @@ export function bind({
   DefinedType,
   DefinedValue,
   FieldType,
+  Attribute,
+  AttributeValue,
+  EntityType,
 }: Tables): void {
 
   DefinedType.model.belongsTo(FieldType.model, { foreignKey: "FieldTypeId", targetKey: "Id" });
@@ -74,6 +127,17 @@ export function bind({
 
   DefinedValue.model.belongsTo(DefinedType.model, { foreignKey: "DefinedTypeId", targetKey: "Id" });
   DefinedType.model.hasMany(DefinedValue.model, { foreignKey: "Id" });
+
+  AttributeValue.model.belongsTo(Attribute.model, { foreignKey: "AttributeId", targetKey: "Id" });
+  Attribute.model.hasMany(AttributeValue.model, { foreignKey: "Id" });
+
+  Attribute.model.belongsTo(EntityType.model, { foreignKey: "EntityTypeId", targetKey: "Id" });
+
+  // DefinedValue.model.belongsTo(AttributeValue.model, { foreignKey: "Value", targetKey: "Guid"});
+  // AttributeValue.model.hasMany(DefinedValue.model, { foreignKey: "Guid"  });
+
+  AttributeValue.model.belongsTo(DefinedValue.model, { foreignKey: "Value", targetKey: "Guid" });
+  DefinedValue.model.hasMany(AttributeValue.model, { foreignKey: "Guid" });
 
 };
 
