@@ -4,7 +4,7 @@ machine:
   python:
     version: 2.7.9
   node:
-    version: 4.2.1
+    version: 6.2.1
   services:
     - docker
 
