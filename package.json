@@ -11,6 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "apollo-server": "github:apollostack/apollo-server#logging-support-release",
+    "apollo-tracer": "github:apollostack/apollo-tracer-agent#logging-support-release",
     "babel": "^5.8.34",
     "babel-core": "^6.4.5",
     "basic-auth": "^1.0.3",
