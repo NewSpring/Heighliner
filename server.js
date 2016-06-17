@@ -1,7 +1,8 @@
 
 import express from "express"
 // import graphqlHTTP from "express-graphql"
-import { apolloServer, Tracer } from "graphql-tools"
+import { Tracer } from "apollo-tracer"
+import { apolloServer } from "apollo-server";
 import { graphql } from "graphql"
 import Schema from "./schemas"
 import bodyParser from "body-parser"
@@ -38,7 +39,7 @@ if (process.env.NODE_ENV === "production") {
 
     next()
   })
-  
+
   app.use(morgan("combined"))
 
 }
