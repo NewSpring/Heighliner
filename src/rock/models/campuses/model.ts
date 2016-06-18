@@ -20,7 +20,7 @@ export class Campus extends Rock {
 
   public async getFromId(id: string | number, globalId: string): Promise<any> { // XXX type
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
-    return this.cache.get(globalId, () => CampusTable.find({ where: { Id: id }}));
+    return this.cache.get(globalId, () => CampusTable.findOne({ where: { Id: id }}));
   }
 
   public async findByLocationId(id: string | number, globalId: string): Promise<any> {

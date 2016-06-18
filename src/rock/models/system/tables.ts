@@ -132,6 +132,7 @@ export function bind({
   Attribute.model.hasMany(AttributeValue.model, { foreignKey: "Id" });
 
   Attribute.model.belongsTo(EntityType.model, { foreignKey: "EntityTypeId", targetKey: "Id" });
+  Attribute.model.belongsTo(FieldType.model, { foreignKey: "FieldTypeId", targetKey: "Id" });
 
   // DefinedValue.model.belongsTo(AttributeValue.model, { foreignKey: "Value", targetKey: "Guid"});
   // AttributeValue.model.hasMany(DefinedValue.model, { foreignKey: "Guid"  });

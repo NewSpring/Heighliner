@@ -1,4 +1,5 @@
 import { Cache, defaultCache } from "../../../util/cache";
+import { createGlobalId } from "../../../util";
 
 import {
   Person as PersonTable,
@@ -29,8 +30,9 @@ export class Person extends Rock {
   }
 
 
-  public async getFromId(id: string): Promise<any> { // XXX correctly type
-    return Promise.resolve();
+  public async getFromId(id: string, globalId?: string): Promise<any> { // XXX correctly type
+    globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
+    return this.cache.get(globalId, () => PersonTable.findOne({ where: { Id: id }}));
   }
 
   // public async getGroupsFromId(...args): Promise<any> {
