@@ -42,6 +42,11 @@ const groupMemberSchema: Object = {
   PersonId: { type: INTEGER },
 };
 
+const groupTypeRoleSchema: Object = {
+  Id: { type: INTEGER, primaryKey: true },
+  Name: { type: STRING },
+};
+
 const groupLocationSchema: Object = {
   Id: { type: INTEGER, primaryKey: true },
   GroupId: { type: INTEGER },
@@ -50,10 +55,25 @@ const groupLocationSchema: Object = {
   LocationId: { type: INTEGER },
 };
 
+// XXX abstract
+const scheduleSchema: Object = {
+  Id: { type: INTEGER, primaryKey: true },
+  Description: { type: STRING },
+  Name: { type: STRING },
+  WeeklyDayOfWeek: { type: INTEGER },
+  WeeklyTimeOfDay: { type: INTEGER },
+  EffectiveEndDate: { type: DATE },
+  EffectiveStartDate: { type: DATE },
+};
+
 let Group;
 let GroupType;
+let GroupTypeRole;
 let GroupMember;
 let GroupLocation;
+
+// XXX abstract
+let Schedule;
 export {
   Group,
   groupSchema,
@@ -61,11 +81,18 @@ export {
   GroupType,
   groupTypeSchema,
 
+  GroupTypeRole,
+  groupTypeRoleSchema,
+
   GroupMember,
   groupMemberSchema,
 
   GroupLocation,
   groupLocationSchema,
+
+  // XXX abstract
+  Schedule,
+  scheduleSchema,
 };
 
 export function connect(): Tables {
@@ -73,18 +100,24 @@ export function connect(): Tables {
   GroupMember = new MSSQLConnector("GroupMember", groupMemberSchema);
   GroupLocation = new MSSQLConnector("GroupLocation", groupLocationSchema);
   GroupType = new MSSQLConnector("GroupType", groupTypeSchema);
+  GroupTypeRole = new MSSQLConnector("GroupTypeRole", groupTypeRoleSchema);
+
+  // XXX abstract
+  Schedule = new MSSQLConnector("Schedule", scheduleSchema);
 
   return {
     Group,
     GroupMember,
     GroupLocation,
     GroupType,
+    GroupTypeRole,
   };
 };
 
 export function bind({
   Group,
   GroupType,
+  GroupTypeRole,
   GroupMember,
   Campus,
   AttributeValue,
@@ -104,6 +137,8 @@ export function bind({
   AttributeValue.model.belongsTo(Group.model, { foreignKey: "EntityId", targetKey: "Id" });
 
   Group.model.hasMany(AttributeValue.model, { foreignKey: "EntityId" });
+
+  GroupMember.model.belongsTo(GroupTypeRole.model, { foreignKey: "GroupRoleId", targetKey: "Id" });
 };
 
 export default {
