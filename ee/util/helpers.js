@@ -266,7 +266,7 @@ const Helpers = {
 
   getChannels: (excludeChannels) => {
     const channels = [
-      { channelId: 27, displayName: "Devotions" },
+      { channelId: 27, displayName: "Devotionals" },
       { channelId: 30, displayName: "Articles" },
       { channelId: 4, displayName: "Series" },
       { channelId: 5, displayName: "Stories" },
