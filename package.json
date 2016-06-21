@@ -23,7 +23,10 @@
     "require": [
       "babel-core/register",
       "babel-polyfill"
-    ]
+    ],
+    "babel": "inherit",
+    "concurrency": 5,
+    "failFast": true
   },
   "license": "ISC",
   "dependencies": {
