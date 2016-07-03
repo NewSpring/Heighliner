@@ -13,7 +13,7 @@ cache:
 before_install:
   - npm i -g tslint typings
   - typings i
-  - pip install awscli
+  - sudo pip install awscli
   - aws --version
 
 script:
