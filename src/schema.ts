@@ -73,7 +73,7 @@ export async function createApp() {
 
   */
   let cache;
-  if (!process.env.CI) {
+  if (!process.env.CI && !process.env.TEST) {
 
     // local development
     let dockerhost = "192.168.99.100";

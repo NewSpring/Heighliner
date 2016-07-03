@@ -90,7 +90,7 @@ declare module "google-geocoding" {
 }
 
 declare module "striptags" {
-  export default function(html: string, allowedTags: string): string;
+  export default function(html: string, allowedTags?: string): string;
 }
 
 declare module "truncate" {

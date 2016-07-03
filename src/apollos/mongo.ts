@@ -8,7 +8,8 @@ import mongoose, {
 // import DataLoader from "dataloader";
 
 // Use native promises
-mongoose.Promise = global.Promise;
+// XXX typscript throws an error here
+// mongoose.Promise = global.Promise;
 
 let db;
 

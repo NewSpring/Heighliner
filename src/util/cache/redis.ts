@@ -1,5 +1,5 @@
 import { Cache } from "./cache";
-import * as Crypto from "crypto";
+import Crypto from "crypto";
 
 // XXX replace with https://github.com/h0x91b/redis-fast-driver
 import Redis from "redis";
