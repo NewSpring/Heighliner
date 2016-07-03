@@ -23,8 +23,6 @@ yecho () {
 
 # force script to error out at first error
 set -e
-set -u
-set -o pipefail
 
 CURRENT_TAG=`git describe --exact-match --abbrev=0 --tags`
 
@@ -96,7 +94,8 @@ make_task_def() {
         { "name": "MSSQL_PASSWORD", "value": "'"$PROD_MSSQL_PASSWORD"'" },
         { "name": "MSSQL_DB", "value": "'"$PROD_MSSQL_DB"'" },
         { "name": "MSSQL_INSTANCE", "value": "'"$PROD_MSSQL_INSTANCE"'" },
-        { "name": "TRACER_APP_KEY", "value": "'"$PROD_TRACER_APP_KEY"'" }
+        { "name": "TRACER_APP_KEY", "value": "'"$PROD_TRACER_APP_KEY"'" },
+        { "name": "SECRET", "value": "'"$PROD_SECRET"'" }
       ]
     }
   ]'
