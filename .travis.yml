@@ -30,6 +30,7 @@ script:
 
 after_success:
   - npm run coverage
+  - "./scripts/app.sh"
 
 notifications:
   slack:
