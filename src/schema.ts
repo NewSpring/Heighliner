@@ -95,7 +95,7 @@ export async function createApp() {
       const { database, user, password } = EESettings;
       const EE = await ExpressionEngine.connect(database, user, password, {
         host: EESettings.host,
-        // ssl: MySQLSettings.ssl,
+        ssl: EESettings.ssl,
       });
       if (EE) useMocks = false;
     }
