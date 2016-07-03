@@ -16,6 +16,7 @@ type Location implements Node {
 
 type Campus implements Node {
   id: ID!
+  entityId: Int!
   name: String
   shortCode: String
   guid: String

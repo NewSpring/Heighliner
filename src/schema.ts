@@ -106,7 +106,6 @@ export async function createApp() {
       user        : process.env.MSSQL_USER,
       password    : process.env.MSSQL_PASSWORD,
       database    : process.env.MSSQL_DB,
-      ssl: process.env.MYSQL_SSL || false,
       dialectOptions: {
         // instanceName: process.env.MSSQL_INSTANCE,
         // connectTimeout: 90000,
@@ -117,7 +116,6 @@ export async function createApp() {
       const ROCK = await Rock.connect(database, user, password, {
         host: RockSettings.host,
         dialectOptions: RockSettings.dialectOptions,
-        // ssl: MySQLSettings.ssl,
       });
 
       if (ROCK) useMocks = false;
