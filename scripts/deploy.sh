@@ -62,47 +62,42 @@ deploy_image() {
 
 # reads $TRAVIS_COMMIT, $host_port
 # sets $k_def() {
-make_task_def() {
-
-  task_template='[
-    {
-      "name": "heighliner",
-      "memory": 512,
-      "cpu": 512,
-      "essential": true,
-      "image": "newspring/heighliner:%s",
-      "portMappings": [
-        { "hostPort": 8061, "containerPort": 80, "protocol": "http" }
-      ],
-      "environment": [
-        { "name": "NODE_ENV", "value": "production" },
-        { "name": "REDIS_HOST", "value": "'"$PROD_REDIS_HOST"'" },
-        { "name": "MONGO_URL", "value": "'"$PROD_MONGO_URL"'" },
-        { "name": "MYSQL_HOST", "value": "'"$PROD_MYSQL_HOST"'" },
-        { "name": "MYSQL_USER", "value": "'"$PROD_MYSQL_USER"'" },
-        { "name": "MYSQL_PASSWORD", "value": "'"$PROD_MYSQL_PASSWORD"'" },
-        { "name": "MYSQL_DB", "value": "'"$PROD_MYSQL_DB"'" },
-        { "name": "MYSQL_SSL", "value": "'"$PROD_MYSQL_SSL"'" },
-        { "name": "NEW_RELIC_KEY", "value": "'"$PROD_NEW_RELIC_KEY"'" },
-        { "name": "PORT", "value": "'"$PORT"'" },
-        { "name": "ROCK_URL", "value": "'"$PROD_ROCK_URL"'" },
-        { "name": "ROCK_TOKEN", "value": "'"$PROD_ROCK_TOKEN"'" },
-        { "name": "SEARCH_URL", "value": "'"$PROD_SEARCH_URL"'" },
-        { "name": "SEARCH_CX", "value": "'"$PROD_SEARCH_CX"'" },
-        { "name": "SEARCH_KEY", "value": "'"$PROD_SEARCH_KEY"'" },
-        { "name": "MSSQL_HOST", "value": "'"$PROD_MSSQL_HOST"'" },
-        { "name": "MSSQL_USER", "value": "'"$PROD_MSSQL_USER"'" },
-        { "name": "MSSQL_PASSWORD", "value": "'"$PROD_MSSQL_PASSWORD"'" },
-        { "name": "MSSQL_DB", "value": "'"$PROD_MSSQL_DB"'" },
-        { "name": "MSSQL_INSTANCE", "value": "'"$PROD_MSSQL_INSTANCE"'" },
-        { "name": "TRACER_APP_KEY", "value": "'"$PROD_TRACER_APP_KEY"'" },
-        { "name": "SECRET", "value": "'"$PROD_SECRET"'" }
-      ]
-    }
-  ]'
-
-  task_def=$(printf "$task_template" $TRAVIS_COMMIT)
-}
+task_def='[
+  {
+    "name": "heighliner",
+    "memory": 512,
+    "cpu": 512,
+    "essential": true,
+    "image": "newspring/heighliner:$TRAVIS_COMMIT",
+    "portMappings": [
+      { "hostPort": 8061, "containerPort": 80, "protocol": "http" }
+    ],
+    "environment": [
+      { "name": "NODE_ENV", "value": "production" },
+      { "name": "REDIS_HOST", "value": "'"$PROD_REDIS_HOST"'" },
+      { "name": "MONGO_URL", "value": "'"$PROD_MONGO_URL"'" },
+      { "name": "MYSQL_HOST", "value": "'"$PROD_MYSQL_HOST"'" },
+      { "name": "MYSQL_USER", "value": "'"$PROD_MYSQL_USER"'" },
+      { "name": "MYSQL_PASSWORD", "value": "'"$PROD_MYSQL_PASSWORD"'" },
+      { "name": "MYSQL_DB", "value": "'"$PROD_MYSQL_DB"'" },
+      { "name": "MYSQL_SSL", "value": "'"$PROD_MYSQL_SSL"'" },
+      { "name": "NEW_RELIC_KEY", "value": "'"$PROD_NEW_RELIC_KEY"'" },
+      { "name": "PORT", "value": "'"$PORT"'" },
+      { "name": "ROCK_URL", "value": "'"$PROD_ROCK_URL"'" },
+      { "name": "ROCK_TOKEN", "value": "'"$PROD_ROCK_TOKEN"'" },
+      { "name": "SEARCH_URL", "value": "'"$PROD_SEARCH_URL"'" },
+      { "name": "SEARCH_CX", "value": "'"$PROD_SEARCH_CX"'" },
+      { "name": "SEARCH_KEY", "value": "'"$PROD_SEARCH_KEY"'" },
+      { "name": "MSSQL_HOST", "value": "'"$PROD_MSSQL_HOST"'" },
+      { "name": "MSSQL_USER", "value": "'"$PROD_MSSQL_USER"'" },
+      { "name": "MSSQL_PASSWORD", "value": "'"$PROD_MSSQL_PASSWORD"'" },
+      { "name": "MSSQL_DB", "value": "'"$PROD_MSSQL_DB"'" },
+      { "name": "MSSQL_INSTANCE", "value": "'"$PROD_MSSQL_INSTANCE"'" },
+      { "name": "TRACER_APP_KEY", "value": "'"$PROD_TRACER_APP_KEY"'" },
+      { "name": "SECRET", "value": "'"$PROD_SECRET"'" }
+    ]
+  }
+]'
 
 # reads $family
 # sets $revision
@@ -121,8 +116,6 @@ deploy_cluster() {
 
   host_port=8081
   family="heighliner"
-
-  make_task_def
 
   register_definition
   # XXX make master heighliner service name master-heighliner so we can use
