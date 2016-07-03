@@ -13,10 +13,8 @@ cache:
 before_install:
   - npm i -g tslint typings
   - typings i
-  - sudo pip install --upgrade pip
   - sudo pip install awscli
   - aws --version
-  - curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq
 
 script:
   - npm i
