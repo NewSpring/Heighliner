@@ -12,7 +12,7 @@ fi
 #   exit 0
 # fi
 
-if [ $TRAVIS_TAG == "" ]; then
+if [ "$TRAVIS_TAG" == "" ]; then
   echo "No tags found, no need for a release."
   exit 0
 fi
@@ -30,7 +30,7 @@ CURRENT_TAG=`git describe --exact-match --abbrev=0 --tags`
 PREVIOUS_TAG=`git describe HEAD^1 --abbrev=0 --tags --always`
 GIT_HISTORY=`git log --no-merges --format="- %s" $PREVIOUS_TAG..HEAD`
 
-if [ $PREVIOUS_TAG == "" ]; then
+if [ "$PREVIOUS_TAG" == "" ]; then
   GIT_HISTORY=`git log --no-merges --format="- %s"`
 fi
 
