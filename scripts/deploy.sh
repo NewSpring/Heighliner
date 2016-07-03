@@ -12,7 +12,7 @@ fi
 #   exit 0
 # fi
 
-if [ "$TRAVIS_TAG" == "" ]; then
+if [ -z "$TRAVIS_TAG" ]; then
   echo "No tags found, no need for a release."
   exit 0
 fi
