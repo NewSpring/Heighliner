@@ -33,6 +33,7 @@ type Transaction implements Node {
 
 type FinancialAccount implements Node {
   id: ID!
+  entityId: Int!
   name: String
   order: Int
   description: String
@@ -51,6 +52,7 @@ type PaymentDetail implements Node {
 
 type SavedPayment implements Node {
   id: ID!
+  entityId: Int!
   name: String
   guid: String
   code: String!

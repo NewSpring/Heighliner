@@ -111,6 +111,7 @@ export default {
 
   FinancialAccount: {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    entityId: ({ Id }) => Id,
     name: ({ PublicName }) => PublicName,
     order: ({ Order }) => Order,
     description: ({ PublicDescription }) => PublicDescription,
@@ -165,6 +166,7 @@ export default {
 
   SavedPayment: {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    entityId: ({ Id }) => Id,
     name: ({ Name }) => Name,
     guid: ({ Guid }) => Guid,
     code: ({ ReferenceNumber }) => ReferenceNumber,

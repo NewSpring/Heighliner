@@ -9,6 +9,7 @@ export default {
 
   Campus: {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    entityId: ({ Id }) => Id,
     name: ({ Name }) => Name,
     shortCode: ({ ShortCode }) => ShortCode,
     guid: ({ Guid }) => Guid,

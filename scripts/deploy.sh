@@ -57,7 +57,7 @@ JQ="jq --raw-output --exit-status"
 deploy_image() {
   docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASSWORD -e $DOCKERHUB_EMAIL
   docker tag heighliner:latest newspring/heighliner:$TRAVIS_COMMIT
-  # docker push newspring/heighliner:$TRAVIS_COMMIT | cat # workaround progress weirdness
+  docker push newspring/heighliner:$TRAVIS_COMMIT | cat # workaround progress weirdness
 }
 
 # reads $TRAVIS_COMMIT, $host_port
@@ -72,7 +72,7 @@ make_task_def() {
       "essential": true,
       "image": "newspring/heighliner:%s",
       "portMappings": [
-        { "hostPort": 8081, "containerPort": 80, "protocol": "http" }
+        { "hostPort": 8061, "containerPort": 80, "protocol": "http" }
       ],
       "environment": [
         { "name": "NODE_ENV", value": "production" },
@@ -124,12 +124,14 @@ deploy_cluster() {
 
   make_task_def
 
-  # register_definition
-  # if [[ $(aws ecs update-service --cluster apollos --service heighliner --task-definition $revision | \
-  #                $JQ '.service.taskDefinition') != $revision ]]; then
-  #     echo "Error updating service."
-  #     return 1
-  # fi
+  register_definition
+  # XXX make master heighliner service name master-heighliner so we can use
+  # branch names for the service
+  if [[ $(aws ecs update-service --cluster guild --service alpha-heighliner --task-definition $revision | \
+                 $JQ '.service.taskDefinition') != $revision ]]; then
+      echo "Error updating service."
+      return 1
+  fi
 
   return 0
 }
