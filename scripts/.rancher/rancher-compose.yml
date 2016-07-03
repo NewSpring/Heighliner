@@ -1,8 +1,0 @@
-heighliner:
-  scale: 3
-  upgrade_strategy:
-    start_first: true
-heighliner-beta:
-  scale: 1
-  upgrade_strategy:
-    start_first: true
