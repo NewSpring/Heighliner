@@ -9,9 +9,9 @@ import { createApp } from "../../../../src/schema";
 let Heighliner;
 test.before(async (t) => {
   const app = express();
-  const endpoint = await createApp();
+  const { graphql } = await createApp();
 
-  app.use("/graphql", apolloServer(endpoint));
+  app.use("/graphql", apolloServer(graphql));
 
   Heighliner = tester({
     server: create(app),

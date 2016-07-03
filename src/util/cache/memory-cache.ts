@@ -1,5 +1,5 @@
 import { Cache } from "./cache";
-import * as Crypto from "crypto";
+import Crypto from "crypto";
 
 export class InMemoryCache extends Cache {
   private cache;
