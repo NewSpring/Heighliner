@@ -19,9 +19,10 @@ before_install:
 script:
   - npm i
   - sed -i 's/tracerLogger.submit()/ /g' node_modules/apollo-server/dist/apolloServer.js
-  - docker build --rm=true -t heighliner . | cat # workaround progress weirdness
   - npm test
   - npm run build
+  - ls -a
+  - docker build --rm=true -t heighliner . | cat # workaround progress weirdness
   - ./scripts/run.sh
   - sleep 5
   - docker logs heighliner
