@@ -9,11 +9,11 @@ JQ="jq --raw-output --exit-status"
 
 deploy_image() {
   docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASSWORD -e $DOCKERHUB_EMAIL
-  docker tag heighliner:latest newspring/heighliner:$CIRCLE_SHA1
-  docker push newspring/heighliner:$CIRCLE_SHA1 | cat # workaround progress weirdness
+  docker tag heighliner:latest newspring/heighliner:$TRAVIS_COMMIT
+  # docker push newspring/heighliner:$TRAVIS_COMMIT | cat # workaround progress weirdness
 }
 
-# reads $CIRCLE_SHA1, $host_port
+# reads $TRAVIS_COMMIT, $host_port
 # sets $k_def() {
 make_task_def() {
 
@@ -77,11 +77,11 @@ deploy_cluster() {
   make_task_def
 
   register_definition
-  if [[ $(aws ecs update-service --cluster apollos --service heighliner --task-definition $revision | \
-                 $JQ '.service.taskDefinition') != $revision ]]; then
-      echo "Error updating service."
-      return 1
-  fi
+  # if [[ $(aws ecs update-service --cluster apollos --service heighliner --task-definition $revision | \
+  #                $JQ '.service.taskDefinition') != $revision ]]; then
+  #     echo "Error updating service."
+  #     return 1
+  # fi
 
   return 0
 }
