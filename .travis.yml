@@ -17,16 +17,15 @@ before_install:
   - aws --version
 
 script:
-  - npm i
   - sed -i 's/tracerLogger.submit()/ /g' node_modules/apollo-server/dist/apolloServer.js
-  # - npm test
+  - npm test
   - npm run build
   - ls -a
   - docker build --rm=true -t heighliner . | cat # workaround progress weirdness
   - ./scripts/run.sh
   - sleep 5
   - docker logs heighliner
-  - curl --retry 10 --retry-delay 5 http://127.0.0.1:8080/alive
+  - curl --retry 10 --retry-delay 5 http://localhost:8080/alive | grep true
 
 after_success:
   - npm run coverage
