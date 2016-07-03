@@ -7,7 +7,7 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
   exit 0
 fi
 
-# if [[ "$TRAVIS_BRANCH" != "master" ]]; then
+# if [ "$TRAVIS_BRANCH" != "master" ]; then
 #   echo "Testing on a branch other than master. No deployment will be done."
 #   exit 0
 # fi
@@ -30,7 +30,7 @@ CURRENT_TAG=`git describe --exact-match --abbrev=0 --tags`
 PREVIOUS_TAG=`git describe HEAD^1 --abbrev=0 --tags --always`
 GIT_HISTORY=`git log --no-merges --format="- %s" $PREVIOUS_TAG..HEAD`
 
-if [ "$PREVIOUS_TAG" == "" ]; then
+if [ -z "$PREVIOUS_TAG" ]; then
   GIT_HISTORY=`git log --no-merges --format="- %s"`
 fi
 
@@ -101,7 +101,7 @@ make_task_def() {
     }
   ]'
 
-  task_def=$(printf "$task_template" $CIRCLE_SHA1)
+  task_def=$(printf "$task_template" $TRAVIS_COMMIT)
 }
 
 # reads $family
@@ -109,7 +109,7 @@ make_task_def() {
 register_definition() {
 
   if revision=$(aws ecs register-task-definition --container-definitions "$task_def" --family $family | $JQ '.taskDefinition.taskDefinitionArn'); then
-    echo "Revision: $revision"
+    yecho "### Revision: $revision"
   else
     echo "Failed to register task definition"
     return 1
@@ -124,7 +124,7 @@ deploy_cluster() {
 
   make_task_def
 
-  register_definition
+  # register_definition
   # if [[ $(aws ecs update-service --cluster apollos --service heighliner --task-definition $revision | \
   #                $JQ '.service.taskDefinition') != $revision ]]; then
   #     echo "Error updating service."
