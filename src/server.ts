@@ -77,7 +77,7 @@ async function start() {
     res.status(200).send({ message: `Cache cleared for ${type} ${id}`});
   });
 
-  app.use("/", apolloServer(graphql));
+  app.use("/graphql", apolloServer(graphql));
 
 
   let PORT = process.env.PORT || 80;
