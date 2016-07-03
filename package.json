@@ -13,7 +13,7 @@
     "lint": "tslint 'src/**/*.ts' && tslint 'test/**/*.ts'",
     "posttest": "npm run lint",
     "start": "tsc --watch | supervisor -w lib index.js",
-    "build": "tsc & norma build",
+    "build": "tsc && norma build",
     "coverage": "./node_modules/.bin/nyc report --reporter=json",
     "postcoverage": "remap-istanbul --input coverage/coverage-final.json --type lcovonly --output coverage/lcov.info && npm run send:coverage",
     "send:coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
