@@ -1,5 +1,5 @@
 
-import { pick, sortBy } from "lodash";
+import { pick, sortBy, flatten } from "lodash";
 import { Cache } from "../../../util/cache";
 import { createGlobalId, Heighliner } from "../../../util";
 
@@ -9,6 +9,7 @@ import {
   FieldType as FieldTypeModel,
   Attribute as AttributeModel,
   AttributeValue as AttributeValueModel,
+  AttributeQualifier as AttributeQualifierModel,
   // EntityType as EntityTypeModel,
 } from "./tables";
 
@@ -37,9 +38,9 @@ export interface DefinedType {
 
 export interface DefinedValue {
   Id: number;
-  IsSystem: boolean;
-  DefinedTypeId: number;
-  Order: number;
+  IsSystem?: boolean;
+  DefinedTypeId?: number;
+  Order?: number;
   Value: string;
   Description: string;
 }
@@ -128,7 +129,7 @@ export class Rock extends Heighliner {
 
   public async getDefinedValuesByTypeId(
     id: string | number,
-    { limit, offset }: { limit: number, offset: number }
+    { limit, offset }: { limit?: number, offset?: number } = {}
   ): Promise<any> {
     const query = { limit, offset, id };
     return this.cache.get(this.cache.encode(query), () => DefinedValueModel.find({
@@ -182,6 +183,35 @@ export class Rock extends Heighliner {
     })
       .then(this.processAttributeValue.bind(context))
     );
+  }
+
+  public async getAttributesFromId(id, context): Promise<any> {
+
+    return this.cache.get(`${id}:getAttributeValues`, () => AttributeModel.findOne({
+      where: { Id: id },
+      include: [
+        { model: FieldTypeModel.model },
+        { model: AttributeQualifierModel.model },
+      ],
+    })
+      .then((x: any): any => {
+        if (!x) return null;
+        const { FieldType } = x;
+        // 70
+        if (FieldType.Class !== "Rock.Field.Types.DefinedValueFieldType") {
+          return [{
+            Id: x.Id,
+            Value: x.Name,
+            Description: x.Description,
+          }] as any;
+        }
+        const definedTypeId = x.AttributeQualifiers
+          .filter(y => y.Key === "definedtype");
+
+        return this.getDefinedValuesByTypeId(definedTypeId[0].Value);
+      })
+      .then(flatten)
+    , { cache: false });
   }
 
 }

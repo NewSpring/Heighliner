@@ -27,6 +27,7 @@ type Group implements Node {
   campus: Campus
   demographic: String
   description: String
+  entityId: Int
   id: ID!
   kidFriendly: Boolean
   name: String
@@ -36,4 +37,9 @@ type Group implements Node {
   schedule: GroupSchedule
   members: [GroupMember]
   locations: [GroupLocation]
+}
+
+type GroupSearch {
+  count: Int
+  results: [Group]
 }

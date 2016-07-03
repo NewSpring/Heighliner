@@ -2,6 +2,7 @@ import { apolloServer } from "apollo-server";
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+// import { pick } from "lodash";
 
 import { createApp } from "./schema";
 
@@ -46,8 +47,37 @@ async function start() {
     Apollo Server
 
   */
-  const endpoint = await createApp();
-  app.use("/", apolloServer(endpoint));
+  const { graphql, models, cache } = await createApp();
+
+  app.post("/cache/flush", (req, res) => {
+    cache.clearAll();
+    res.end();
+  });
+
+  app.post("/cache", (req, res) => {
+    const { type, id } = req.body;
+    if (!type || !id ) {
+      res.status(500).send({ error: "Missing `id` or `type` for request" });
+      return;
+    }
+    let clearingCache;
+    for (let model in models) {
+      const Model = models[model] as any;
+      if (!Model.cacheTypes) continue;
+      if (Model.cacheTypes.indexOf(type) === -1) continue;
+      clearingCache = true;
+      // XXX should we hold off the res until this responds?
+      Model.clearCacheFromRequest(req);
+    }
+    if (!clearingCache) {
+      res.status(404).send({ error: `No model found for ${type}` });
+      return;
+    }
+
+    res.status(200).send({ message: `Cache cleared for ${type} ${id}`});
+  });
+
+  app.use("/", apolloServer(graphql));
 
 
   let PORT = process.env.PORT || 80;

@@ -7,12 +7,17 @@ import mongoose, {
 } from "mongoose";
 // import DataLoader from "dataloader";
 
+// Use native promises
+mongoose.Promise = global.Promise;
+
 let db;
 
 export function connect(address: string): Promise<boolean> {
   return new Promise((cb) => {
 
-    db = mongoose.connect(address, (err) => {
+    db = mongoose.connect(address, {
+      server: { reconnectTries: Number.MAX_VALUE },
+    }, (err) => {
       if (err) { cb(false); return; }
 
       cb(true);

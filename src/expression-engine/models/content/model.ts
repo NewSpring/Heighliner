@@ -20,6 +20,15 @@ import {
   MatrixCol,
 } from "../ee/matrix";
 
+import {
+  Playa,
+} from "../ee/playa";
+
+import {
+  Tags,
+  TagEntries,
+} from "../ee/tags";
+
 import { EE } from "../ee";
 
 export interface ChannelField {
@@ -154,6 +163,68 @@ export class Content extends EE {
     );
   }
 
+  public async findByParentId(entry_id: string | number, channels: string[]): Promise<any> {
+    // XXX make this single request by relating entries via ChannelData
+    return this.cache.get(`${entry_id}:Playa`, () => Playa.find({
+        where: { child_entry_id: entry_id },
+        attributes: [["parent_entry_id", "entry_id"]],
+      })
+    )
+      .then(this.getFromIds.bind(this))
+      // XXX remove when channel is part of query
+      .then((x: any[]) => x.filter(
+        y => !channels.length || channels.indexOf(y.exp_channel.channel_name) > -1
+      ))
+      ;
+  }
+
+  public async findByChildId(entry_id: string | number): Promise<any> {
+    return this.cache.get(`${entry_id}:Playa`, () => Playa.findOne({
+        where: { parent_entry_id: entry_id },
+        attributes: [["child_entry_id", "entry_id"]],
+      })
+    )
+      .then(x => [x])
+      .then(this.getFromIds.bind(this))
+      .then(x => x[0])
+      ;
+  }
+
+  public async findByTagName(
+    { tagName, includeChannels }: { tagName: string, includeChannels?: string[]},
+    { limit, offset },
+    cache
+  ): Promise<any> {
+    const query = { tagName, limit, offset, includeChannels };
+
+    return this.cache.get(this.cache.encode(query, this.__type), () => ChannelData.find({
+        attributes: ["entry_id"],
+        order: [
+          [ChannelTitles.model, "entry_date", "DESC"],
+        ],
+        include: [
+          { model: ChannelTitles.model, where: { status: "Open" } },
+          { model: Channels.model, where: { channel_name: { $or: includeChannels }} },
+          {
+            model: TagEntries.model,
+            include: [
+              {
+                model: Tags.model,
+                where: { tag_name: { $like: tagName }},
+              },
+            ],
+          },
+        ],
+      })
+    , { ttl: 3600, cache })
+      .then((x: any[]) => {
+        // XXX find how to do this in the query?
+        return x.slice(offset, limit + offset);
+      })
+      .then(this.getFromIds.bind(this))
+      ;
+  }
+
   public async find(query: any = {}, cache): Promise<any> {
     const { limit, offset } = query; // true options
 
@@ -162,7 +233,7 @@ export class Content extends EE {
     const channel = pick(query, Object.keys(channelSchema));
     // const channelFields = pick(query, Object.keys(channelFieldSchema));
     const channelTitle = pick(query, Object.keys(channelTitleSchema));
-    return await this.cache.get(this.cache.encode(query), () => ChannelData.find({
+    return await this.cache.get(this.cache.encode(query, this.__type), () => ChannelData.find({
       where: channelData,
       attributes: ["entry_id"],
       order: [
@@ -175,8 +246,9 @@ export class Content extends EE {
       limit,
       offset,
     })
+    , { ttl: 3600, cache })
       .then(this.getFromIds.bind(this))
-    , { ttl: 3600, cache });
+      ;
   }
 
 }

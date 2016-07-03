@@ -127,6 +127,7 @@ export function bind({
 
   Group.model.hasMany(GroupMember.model, { foreignKey: "GroupId" });
   Group.model.belongsTo(Campus.model, { foreignKey: "CampusId", targetKey: "Id" });
+  Group.model.hasMany(GroupLocation.model, { foreignKey: "GroupId" });
 
   GroupMember.model.belongsTo(Group.model, { foreignKey: "GroupId", targetKey: "Id" });
   GroupLocation.model.belongsTo(Group.model, { foreignKey: "GroupId", targetKey: "Id" });

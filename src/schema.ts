@@ -1,3 +1,5 @@
+import { timeout } from "promise-timeout";
+
 import Node from "./util/node/model";
 import {
   InMemoryCache,
@@ -31,9 +33,6 @@ import ExpressionEngine, {
 
 // Import Google Site Search
 import GoogleSS, { queries as GoogleSSQueries } from "./google-site-search";
-
-import { Person } from "./rock/models/people/model";
-import { User } from "./apollos/models/users/model";
 
 // Merge all applications together
 let { schema, models, resolvers, mocks } = loadApplications({
@@ -120,6 +119,7 @@ export async function createApp() {
         dialectOptions: RockSettings.dialectOptions,
         // ssl: MySQLSettings.ssl,
       });
+
       if (ROCK) useMocks = false;
     }
 
@@ -131,46 +131,66 @@ export async function createApp() {
 
   }
 
-  return async function(request){
+  // create all of the models on app start up
+  let createdModels = {} as any;
+  Object.keys(models).forEach((name) => {
+    createdModels[name] = new models[name]({ cache });
+  });
+  createdModels.Node = new Node({ cache, models: createdModels });
+  function getIp(request) {
+    return request.headers["x-forwarded-for"] ||
+      request.connection.remoteAddress ||
+      request.socket.remoteAddress ||
+      request.connection.socket.remoteAddress;
+  }
+  return {
+    cache,
+    models: createdModels,
+    graphql: async function(request){
+      let ip = getIp(request);
+      // Anderson, SC
+      if (ip === "::1") ip = "2602:306:b81a:c420:ed84:6327:b58e:6a2d";
 
-    let context: any = {
-      hashedToken: request.headers.authorization,
-      cache,
-    };
+      let context: any = {
+        hashedToken: request.headers.authorization,
+        cache,
+        ip,
+      };
 
-    if (context.hashedToken) {
-      // we instansiate the
-      // bind the logged in user to the context overall
-      // XXX should we remove the `User` and `People models from `models`?
-      const Users = new User(context);
-      let user = await Users.getByHashedToken(context.hashedToken) as UserDocument;
-      context.user = user;
+      if (context.hashedToken) {
+        // we instansiate the
+        // bind the logged in user to the context overall
+        let user;
+        try {
+          user = await timeout(
+            createdModels.User.getByHashedToken(context.hashedToken)
+          , 500) as UserDocument;
+          context.user = user;
+        } catch (e) {/* tslint:disable-line */}
 
-      let person;
-      const Peoples = new Person(context);
-      if (user && user.services && user.services.rock) {
-        person = await Peoples.getFromAliasId(user.services.rock.PrimaryAliasId);
-        person.PrimaryAliasId = user.services.rock.PrimaryAliasId;
+        let person;
+        if (user && user.services && user.services.rock) {
+          try {
+            person = await timeout(
+              createdModels.Person.getFromAliasId(user.services.rock.PrimaryAliasId)
+            , 500);
+            person.PrimaryAliasId = user.services.rock.PrimaryAliasId;
+          } catch (e) {/* tslint:disable-line */}
+        }
+        context.person = person;
       }
-      context.person = person;
-    }
 
-    let createdModels = {};
-    Object.keys(models).filter(x => (x !== "User" && x !== "People")).forEach((name) => {
-      createdModels[name] = new models[name](context);
-    });
+      context.models = createdModels;
 
-    context.models = createdModels;
-    context.models.Node = new Node(context);
-
-    return {
-      graphiql: process.env.NODE_ENV !== "production",
-      pretty: false,
-      context: context as Context,
-      resolvers: useMocks ? false : resolvers, // required if schema is an array of type definitions
-      mocks: useMocks ? mocks : false,
-      schema,
-    };
+      return {
+        graphiql: process.env.NODE_ENV !== "production",
+        pretty: false,
+        context: context as Context,
+        resolvers: useMocks ? false : resolvers, // required if schema is an array of type definitions
+        mocks: useMocks ? mocks : false,
+        schema,
+      };
+    },
   };
 
 };
