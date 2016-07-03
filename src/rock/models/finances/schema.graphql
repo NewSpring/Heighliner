@@ -28,6 +28,7 @@ type Transaction implements Node {
   date: String
   details: [TransactionDetail]
   payment: PaymentDetail
+  person: Person
 }
 
 type FinancialAccount implements Node {

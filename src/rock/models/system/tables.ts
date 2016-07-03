@@ -58,6 +58,13 @@ const attributeValueSchema: Object = {
   Value: { type: STRING },
 };
 
+const attributeQualifierSchema: Object = {
+  Id: { type: INTEGER, primaryKey: true },
+  AttributeId: { type: INTEGER },
+  Value: { type: STRING },
+  Key: { type: STRING },
+};
+
 const entityTypeSchema: Object = {
   Id: { type: INTEGER, primaryKey: true },
   AssemblyName: { type: STRING },
@@ -72,6 +79,7 @@ let DefinedType;
 let DefinedValue;
 let FieldType;
 let Attribute;
+let AttributeQualifier;
 let AttributeValue;
 let EntityType;
 export {
@@ -87,6 +95,9 @@ export {
   Attribute,
   attributeSchema,
 
+  AttributeQualifier,
+  attributeQualifierSchema,
+
   AttributeValue,
   attributeValueSchema,
 
@@ -100,6 +111,9 @@ export function connect(): Tables {
   DefinedValue = new MSSQLConnector("DefinedValue", definedValueSchema);
   FieldType = new MSSQLConnector("FieldType", fieldTypeSchema);
   Attribute = new MSSQLConnector("Attribute", attributeSchema);
+  AttributeQualifier = new MSSQLConnector(
+    "AttributeQualifier", attributeQualifierSchema
+  );
   AttributeValue = new MSSQLConnector("AttributeValue", attributeValueSchema);
   EntityType = new MSSQLConnector("EntityType", entityTypeSchema);
 
@@ -109,6 +123,7 @@ export function connect(): Tables {
     FieldType,
     Attribute,
     AttributeValue,
+    AttributeQualifier,
     EntityType,
   };
 };
@@ -118,6 +133,7 @@ export function bind({
   DefinedValue,
   FieldType,
   Attribute,
+  AttributeQualifier,
   AttributeValue,
   EntityType,
 }: Tables): void {
@@ -130,6 +146,9 @@ export function bind({
 
   AttributeValue.model.belongsTo(Attribute.model, { foreignKey: "AttributeId", targetKey: "Id" });
   Attribute.model.hasMany(AttributeValue.model, { foreignKey: "Id" });
+
+  AttributeQualifier.model.belongsTo(Attribute.model, { foreignKey: "AttributeId", targetKey: "Id" });
+  Attribute.model.hasMany(AttributeQualifier.model, { foreignKey: "AttributeId" });
 
   Attribute.model.belongsTo(EntityType.model, { foreignKey: "EntityTypeId", targetKey: "Id" });
   Attribute.model.belongsTo(FieldType.model, { foreignKey: "FieldTypeId", targetKey: "Id" });

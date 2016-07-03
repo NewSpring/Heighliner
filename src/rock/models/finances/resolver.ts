@@ -5,15 +5,20 @@ export default {
 
   Query: {
     savedPayments: (_, { limit, cache, skip } , { models, person }) => {
+      if (!person) return null;
       return models.SavedPayment.findByPersonAlias(person.aliases, {
           limit, offset: skip,
         }, { cache }
       );
     },
     transactions: (_, { limit, cache, skip } , { models, person }) => {
-      return models.Transaction.findByPersonAlias(person.aliases, { limit, offset: skip}, { cache });
+      if (!person) return null;
+      return models.Transaction.findByPersonAlias(
+        person.aliases, { limit, offset: skip}, { cache }
+      );
     },
     scheduledTransactions: (_, { limit, cache, skip, isActive } , { models, person }) => {
+      if (!person) return null;
       return models.ScheduledTransaction.findByPersonAlias(person.aliases, {
         limit, offset: skip, isActive,
       }, { cache });
@@ -24,6 +29,25 @@ export default {
         IsActive: isActive,
         IsPublic: isPublic,
       });
+    },
+    accountFromCashTag: (_, { cashTag }, { models }) => {
+      return models.FinancialAccount.find({
+        IsActive: true,
+        IsPublic: true,
+      })
+        .then(x => {
+          let correctAccount = null;
+          for (let account of x) {
+            let cashTagName = account.PublicName
+              .replace(/\s+/g, "")
+              .toLowerCase();
+            if (cashTagName === cashTag.replace("$", "")) {
+              correctAccount = account;
+              break;
+            }
+          }
+          return correctAccount;
+        });
     },
   },
 
@@ -80,11 +104,14 @@ export default {
 
       return models.Transaction.getPaymentDetailsById(FinancialPaymentDetailId);
     },
+    person: ({ AuthorizedPersonAliasId }, _, { models }) => {
+      return models.Person.getFromAliasId(AuthorizedPersonAliasId);
+    },
   },
 
   FinancialAccount: {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
-    name: ({ Name }) => Name,
+    name: ({ PublicName }) => PublicName,
     order: ({ Order }) => Order,
     description: ({ PublicDescription }) => PublicDescription,
     summary: ({ Description }) => Description,

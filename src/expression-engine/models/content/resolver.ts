@@ -1,4 +1,6 @@
 import { flatten, difference } from "lodash";
+import StripTags from "striptags";
+import Truncate from "truncate";
 import { createGlobalId } from "../../../util";
 
 export default {
@@ -10,26 +12,30 @@ export default {
         return models.Content.find({ channel_name: channel, offset: skip, limit, status }, cache);
       },
 
-      feed(_, { excludeChannels, limit, skip, status, cache }, { models }) {
-        let channels = [
-          "devotionals",
-          "articles",
-          "series_newspring",
-          "sermons",
-          "stories",
-          "albums_newspring",
-        ];
+    feed(_, { excludeChannels, limit, skip, status, cache }, { models }) {
+      let channels = [
+        "devotionals",
+        "articles",
+        "series_newspring",
+        "sermons",
+        "stories",
+        "albums_newspring",
+      ];
 
-        // only include what user hasn't excluded
-        channels = difference(channels, excludeChannels);
-        return models.Content.find({
-          channel_name: { $or: channels }, offset: skip, limit, status,
-        }, cache);
-      },
+      // only include what user hasn't excluded
+      channels = difference(channels, excludeChannels);
+      return models.Content.find({
+        channel_name: { $or: channels }, offset: skip, limit, status,
+      }, cache);
+    },
 
-      lowReorderSets(_, { setName }, { models }) {
-        return models.Content.getFromLowReorderSet(setName);
-      },
+    taggedContent(_, { includeChannels, tagName, limit, skip, cache }, { models }) {
+      return models.Content.findByTagName({ tagName, includeChannels }, { offset: skip, limit }, cache);
+    },
+
+    lowReorderSets(_, { setName }, { models }) {
+      return models.Content.getFromLowReorderSet(setName);
+    },
   },
 
   ContentColor: {
@@ -67,12 +73,12 @@ export default {
 
       let blurredPosition;
       if (image_blurred) {
-        Number(exp_channel.exp_channel_fields.image_blurred.split("_").pop());
+        blurredPosition = Number(exp_channel.exp_channel_fields.image_blurred.split("_").pop());
       }
 
       return Promise.all([
-        models.File.getFilesFromContent(entry_id, image_blurred, blurredPosition),
         models.File.getFilesFromContent(entry_id, image, position),
+        models.File.getFilesFromContent(entry_id, image_blurred, blurredPosition),
       ])
         .then(data => flatten(data));
     },
@@ -97,6 +103,13 @@ export default {
     channel: ({ channel_id }: any) => createGlobalId(channel_id, "Channel"),
     series: ({ series_id }, _, $, { parentType }) => createGlobalId(series_id, parentType.name),
     urlTitle: ({ exp_channel_title }) => exp_channel_title.url_title,
+    summary: async ({ summary, body, legacy_body }, _, { models }) => {
+      if (summary) return summary;
+
+      const markup = await models.Content.cleanMarkup(body || legacy_body);
+      if (markup) return Truncate(StripTags(markup), 140);
+      return null;
+    },
 
     date: ({ exp_channel_title }, _, { models }) => {
       const { day, month, year } = exp_channel_title;
@@ -127,12 +140,15 @@ export default {
     channelName: ({ exp_channel }) => exp_channel.channel_name,
     title: ({ exp_channel_title }) => exp_channel_title.title,
     status: ({ exp_channel_title }) => exp_channel_title.status,
+    parent: ({ entry_id }, _, { models }) => models.Content.findByChildId(entry_id),
     meta: data => data,
     content: data => data,
     authors: ({ editorial_authors }) => {
       return editorial_authors ? editorial_authors.split(",") : null;
     },
-
+    children: ({ entry_id }, { channels }, { models }) => {
+      return models.Content.findByParentId(entry_id, channels);
+    },
     // deprecated
     tracks: ({ entry_id, tracks, exp_channel }, _, { models }) => {
       if (!tracks) return [];

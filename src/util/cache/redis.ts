@@ -1,8 +1,11 @@
 import { Cache } from "./cache";
 import * as Crypto from "crypto";
 
+// XXX replace with https://github.com/h0x91b/redis-fast-driver
 import Redis from "redis";
 import DataLoader from "dataloader";
+
+import { parseGlobalId } from "./../node/model";
 
 let db;
 export function connect(address: string, port: number = 6379): Promise<boolean> {
@@ -35,6 +38,8 @@ export class RedisCache implements Cache {
   constructor(secret: string = "RedisCache") {
     this.secret = secret;
 
+    // XXX we should move data loader to being a per request batching system
+    // until then, we disabled the cache
     this.idLoader = new DataLoader(keys => new Promise((resolve, reject) => {
       db.mget(keys, (error, results) => {
         if (error) return reject(error);
@@ -42,7 +47,7 @@ export class RedisCache implements Cache {
           result !== null ? result : new Error(`No key: ${keys[index]}`)
         ));
       });
-    }));
+    }), { cache: false });
   }
 
   private getCount() {
@@ -62,6 +67,12 @@ export class RedisCache implements Cache {
       if (!cache && lookup) {
         return lookup().then(done);
       }
+
+      try {
+        // try to nest information based on global id
+        let { __type } = parseGlobalId(id);
+        id = `${__type}:${id}`;
+      } catch (e) { /* tslint:disable-line */ };
 
       return this.idLoader.load(id)
         .then(data => {
@@ -97,6 +108,9 @@ export class RedisCache implements Cache {
         // save to cache
         db.set(id, JSON.stringify(data));
 
+        // save to dataloader
+        this.idLoader.prime(id, JSON.stringify(data));
+
         // clear cache
         db.expire(id, ttl);
 
@@ -108,13 +122,21 @@ export class RedisCache implements Cache {
   }
 
   public del(id: string): void {
-    db.del(id);
+    db.del(id); // clear redis
+    this.idLoader.clear(id); // clear dataloader
   }
 
-  public encode(obj: Object, prefix: string = ""): string {
+  public encode(obj: Object, type?: string, user?: string): string {
     const cipher = Crypto.createHmac("sha256", this.secret);
-    const str = `${prefix}${JSON.stringify(obj)}`;
-    return cipher.update(str).digest("hex");
+    type = type ? type + ":" : "";
+    user = user ? user + ":" : "";
+    const str = cipher.update(JSON.stringify(obj)).digest("hex");
+
+    return `query:${type}${user}${str}`;
+  }
+
+  public clearAll() {
+    db.flushdb();
   }
 
 }

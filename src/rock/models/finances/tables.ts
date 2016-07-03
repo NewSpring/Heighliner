@@ -65,7 +65,7 @@ const scheduledTransactionSchema: Object = {
   AuthorizedPersonAliasId: { type: INTEGER },
   FinancialGatewayId: { type: INTEGER },
   FinancialPaymentDetailId: { type: INTEGER },
-  SourceTypeValueId: { type: INTEGER },
+  // SourceTypeValueId: { type: INTEGER },
 };
 
 const scheduledTransactionDetailSchema: Object = {

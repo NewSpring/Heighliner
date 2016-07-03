@@ -19,7 +19,7 @@ type ContentData {
   speaker: String
   isLight: Boolean
   hashtag: String
-  
+
   tags: [String] # XXX create global tag type
   colors: [ContentColor]
   images: [File]
@@ -32,12 +32,13 @@ type ContentMeta {
   channel: ID
   series: ID
   urlTitle: String
-  
+  summary: String
+
   date: String
   entryDate: String
   startDate: String
   endDate: String
-  
+
   # XXX should this be named better?
   actualDate: String
 
@@ -49,14 +50,15 @@ type ContentMeta {
 type Content implements Node {
   id: ID!
   title: String!
-  collectionId: ID
   status: String!
   channel: ID!
   channelName: String
   meta: ContentMeta
   content: ContentData
   authors: [String]
-  
+  parent: Content # XXX determine if this can be multiple
+  children(channels: [String]): [Content]
+
   # deprecated (moved to other types)
   tracks: [File]
   seriesId: ID

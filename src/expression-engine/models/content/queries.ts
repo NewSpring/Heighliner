@@ -19,6 +19,15 @@ export default [
     cache: Boolean = true
   ): [Content]`,
 
+  `taggedContent(
+    includeChannels: [String],
+    tagName: String!,
+    limit: Int = 20,
+    skip: Int = 0,
+    status: String = "open",
+    cache: Boolean = true
+  ): [Content]`,
+
   `lowReorderSets(setName: String!): [Content]`,
 
 ];

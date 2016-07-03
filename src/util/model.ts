@@ -7,6 +7,7 @@ export class Heighliner {
   public cache: Cache;
   public __type: string; // tslint:disable-line
   public id: string;
+  public cacheTypes: string[];
 
   constructor({ cache } = { cache: defaultCache }) {
     this.cache = cache;
@@ -14,6 +15,12 @@ export class Heighliner {
 
   public async getFromId(id, globalId) {
     return Promise.reject(new Error("Not implemented on this model"));
+  }
+
+  public async clearCacheFromRequest(
+    { body }: { body: any }
+  ): Promise<any> {
+    return Promise.reject(new Error(`Caching not implement on ${body.type}`));
   }
 
   public async getFromIds(data: any[]): Promise<any[]> {

@@ -1,4 +1,4 @@
-
+import { geography } from "mssql-geoparser";
 import { createGlobalId } from "../../../util";
 
 export default {
@@ -29,8 +29,21 @@ export default {
     state: ({ State }) => State,
     country: ({ Country }) => Country,
     zip: ({ PostalCode }) => PostalCode,
-    latitude: ({ Latitude }) => Latitude,
-    longitude: ({ Longitude }) => Longitude,
+    latitude: ({ GeoPoint }) => {
+      if (!GeoPoint) return null;
+      try {
+        const { points } = geography(GeoPoint);
+        return points[0].x;
+      } catch (e) { return null; }
+
+    },
+    longitude: ({ GeoPoint }) => {
+      if (!GeoPoint) return null;
+      try {
+        const { points } = geography(GeoPoint);
+        return points[0].y;
+      } catch (e) { return null; }
+    },
     distance: ({ Id, Distance }) => { // tslint:disable-line
       if (Distance) return Distance;
 

@@ -6,6 +6,7 @@ import channels from "./../models/content/tables";
 import assets from "./../models/files/tables";
 import matrix from "./ee/matrix";
 import playa from "./ee/playa";
+import tags from "./ee/tags";
 import sites from "./ee/sites";
 import navee from "./../models/navigation/tables";
 
@@ -15,6 +16,7 @@ let tables = {
   matrix,
   playa,
   sites,
+  tags,
   navee,
 } as {
   [key: string]: {

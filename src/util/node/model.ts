@@ -33,17 +33,17 @@ export default class Node {
 export function createGlobalId(id: string, type: string): string {
   const cipher = Crypto.createCipher("aes192", secret);
 
-  let encrypted = cipher.update(`${type}:${id}`, "utf8", "base64");
-  encrypted += cipher.final("base64");
+  let encrypted = cipher.update(`${type}:${id}`, "utf8", "hex");
+  encrypted += cipher.final("hex");
 
-  return encrypted;
+  return encodeURI(encrypted);
 }
 
-export function parseGlobalId(encodedId: string): { id: string, __type: string } {
+export function parseGlobalId(encodedId: string): { id: string, __type?: string } {
 
   const decipher = Crypto.createDecipher("aes192", secret);
 
-  let decrypted = decipher.update(encodedId, "base64", "utf8");
+  let decrypted = decipher.update(decodeURI(encodedId), "hex", "utf8");
   decrypted += decipher.final("utf8");
 
   const [ __type, id ] = decrypted.toString().split(":");

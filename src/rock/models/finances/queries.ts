@@ -10,4 +10,6 @@ export default [
   `accounts(
     name: String, isActive: Boolean = true, isPublic: Boolean = true
   ): [FinancialAccount]`,
+
+  `accountFromCashTag(cashTag: String!): FinancialAccount`,
 ];

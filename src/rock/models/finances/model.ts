@@ -29,7 +29,7 @@ export class Transaction extends FinancialModel {
 
   public async getFromId(id: string, globalId: string): Promise<any> { // XXX correctly type
     globalId = globalId ? globalId : createGlobalId(id, this.__type);
-    return this.cache.get(globalId, () => TransactionTable.find({ where: { Id: id }}));
+    return this.cache.get(globalId, () => TransactionTable.findOne({ where: { Id: id }}), { cache: false });
   }
 
   public async getDetailsById(id: string | number): Promise<any> {
@@ -62,8 +62,8 @@ export class Transaction extends FinancialModel {
         limit,
         offset,
       })
-        .then(this.getFromIds.bind(this))
-    , { cache });
+    , { cache })
+      .then(this.getFromIds.bind(this));
 
   }
 }
@@ -73,7 +73,7 @@ export class ScheduledTransaction extends FinancialModel {
 
   public async getFromId(id: string, globalId: string): Promise<any> { // XXX correctly type
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
-    return this.cache.get(globalId, () => ScheduledTransactionTable.find({ where: { Id: id }}));
+    return this.cache.get(globalId, () => ScheduledTransactionTable.findOne({ where: { Id: id }}), { cache: false });
   }
 
   public async getTransactionsById(id: string | number): Promise<any> {
@@ -109,8 +109,9 @@ export class ScheduledTransaction extends FinancialModel {
         limit,
         offset,
       })
-        .then(this.getFromIds.bind(this))
-    , { cache });
+    , { cache })
+      .then(this.getFromIds.bind(this))
+      ;
 
   }
 }

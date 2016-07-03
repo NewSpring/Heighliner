@@ -23,12 +23,56 @@ import { Rock } from "../system";
 export class Person extends Rock {
   public cache: Cache;
   public __type: string = "Person";
+  public cacheTypes: string[] = [
+    "Rock.Model.Person",
+    "Rock.Model.PersonAlias",
+  ];
 
   constructor({ cache } = { cache: defaultCache }) {
     super();
     this.cache = cache;
   }
 
+  private createGlobalAliasId(id: string | number) {
+    return createGlobalId(`${id}`, "PersonAlias");
+  }
+
+  public async clearCacheFromRequest({ body }): Promise<any> {
+    const { id, type, action } = body;
+    return Promise.resolve()
+      .then(x => {
+        if (type === "Rock.Model.Person") {
+          return this.clearCacheFromId(id, null, action);
+        }
+        if (type === "Rock.Model.PersonAlias") {
+          return this.clearCacheFromPersoAliasId(id, null, action);
+        }
+      });
+  }
+
+  public async clearCacheFromId(id: string, globalId: string, action: string): Promise<any> {
+    globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
+    // delete the cache entry
+    return Promise.resolve()
+      .then(x => this.cache.del(globalId))
+      .then(x => {
+        if (action && action === "delete") return;
+        return this.getFromId(id, globalId);
+      });
+  }
+
+  public async clearCacheFromPersoAliasId(
+    id: string, globalId: string, action: string
+  ): Promise<any> {
+    globalId = globalId ? globalId : this.createGlobalAliasId(id);
+    // delete the cache entry
+    return Promise.resolve()
+      .then(x => this.cache.del(globalId))
+      .then(x => {
+        if (action && action === "delete") return;
+        return this.getFromAliasId(id);
+      });
+  }
 
   public async getFromId(id: string, globalId?: string): Promise<any> { // XXX correctly type
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
@@ -83,8 +127,9 @@ export class Person extends Rock {
     fields: string[] | string[][] = []
   ): Promise<any> {
     id = Number(id) as number;
+    let globalId = this.createGlobalAliasId(id);
 
-    return await this.cache.get(`PersonAlias:${id}`, () => PersonAlias.findOne({
+    return await this.cache.get(globalId, () => PersonAlias.findOne({
       where: { Id: id },
       attributes: fields,
       include: { model: PersonTable.model },
