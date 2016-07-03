@@ -23,7 +23,7 @@ script:
   - ls -a
   - docker build --rm=true -t heighliner . | cat # workaround progress weirdness
   - ./scripts/run.sh
-  - sleep 5
+  - sleep 20
   - docker logs heighliner
   - curl --retry 10 --retry-delay 5 http://localhost:8080/alive | grep true
 

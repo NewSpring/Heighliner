@@ -47,7 +47,8 @@ make_task_def() {
         { "name": "MSSQL_USER", "value": "'"$PROD_MSSQL_USER"'" },
         { "name": "MSSQL_PASSWORD", "value": "'"$PROD_MSSQL_PASSWORD"'" },
         { "name": "MSSQL_DB", "value": "'"$PROD_MSSQL_DB"'" },
-        { "name": "MSSQL_INSTANCE", "value": "'"$PROD_MSSQL_INSTANCE"'" }
+        { "name": "MSSQL_INSTANCE", "value": "'"$PROD_MSSQL_INSTANCE"'" },
+        { "name": "TRACER_APP_KEY", "value": "'"$PROD_TRACER_APP_KEY"'" }
       ]
     }
   ]'
