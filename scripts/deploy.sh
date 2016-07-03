@@ -75,7 +75,7 @@ make_task_def() {
         { "hostPort": 8061, "containerPort": 80, "protocol": "http" }
       ],
       "environment": [
-        { "name": "NODE_ENV", value": "production" },
+        { "name": "NODE_ENV", "value": "production" },
         { "name": "REDIS_HOST", "value": "'"$PROD_REDIS_HOST"'" },
         { "name": "MONGO_URL", "value": "'"$PROD_MONGO_URL"'" },
         { "name": "MYSQL_HOST", "value": "'"$PROD_MYSQL_HOST"'" },
@@ -127,8 +127,8 @@ deploy_cluster() {
   register_definition
   # XXX make master heighliner service name master-heighliner so we can use
   # branch names for the service
-  if [[ $(aws ecs update-service --cluster guild --service alpha-heighliner --task-definition $revision | \
-                 $JQ '.service.taskDefinition') != $revision ]]; then
+  if [ $(aws ecs update-service --cluster guild --service alpha-heighliner --task-definition $revision | \
+                 $JQ '.service.taskDefinition') != "$revision" ]; then
       echo "Error updating service."
       return 1
   fi
