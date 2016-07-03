@@ -13,9 +13,8 @@ cache:
 before_install:
   - npm i -g tslint typings
   - typings i
-  - pip install --upgrade pip
-  - pip install --user awscli
-  - export PATH=$PATH:$HOME/.local/bin
+  - sudo pip install --upgrade pip
+  - sudo pip install awscli
   - aws --version
   - curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq
 
