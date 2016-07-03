@@ -1,20 +1,34 @@
+sudo: required
+services:
+  - docker
+
 language: node_js
 node_js:
-- '6'
+  - '6'
 
 cache:
   directories:
   - node_modules
   - typings
 before_install:
-- npm i -g tslint typings
-- typings i
+  - npm i -g tslint typings
+  - typings i
+  - aws --version
+  - pip install awscli
+  - aws --version
+  - curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq
+
 script:
-- npm i
-- sed -i 's/tracerLogger.submit()/ /g' node_modules/apollo-server/dist/apolloServer.js
-- npm test
+  - npm i
+  - sed -i 's/tracerLogger.submit()/ /g' node_modules/apollo-server/dist/apolloServer.js
+  - docker build --rm=true -t heighliner . | cat # workaround progress weirdness
+  - npm test
+  - ./scripts/run.sh
+  - sleep 5
+  - curl --retry 10 --retry-delay 5 http://localhost:8080/alive | grep true
+
 after_success:
-- npm run coverage
+  - npm run coverage
 
 notifications:
   slack:
