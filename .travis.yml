@@ -25,8 +25,8 @@ script:
   - docker build --rm=true -t heighliner . | cat # workaround progress weirdness
   - ./scripts/run.sh
   - sleep 5
-  - docker logs heighliner
-  - curl --retry 10 --retry-delay 5 http://localhost:8080/alive | grep true
+  - docker logs -f heighliner
+  - curl --retry 10 --retry-delay 5 http://127.0.0.1:8080/alive | grep true
 
 after_success:
   - npm run coverage
