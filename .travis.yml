@@ -27,10 +27,10 @@ script:
   # - sleep 5
   # - docker logs heighliner
   # - curl -v --retry 10 --retry-delay 5 http://localhost:8080/alive
-
+  - "./scripts/app.sh"
+  
 after_success:
   - npm run coverage
-  - "./scripts/app.sh"
 
 notifications:
   slack:
