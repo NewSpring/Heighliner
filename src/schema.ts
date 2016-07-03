@@ -107,7 +107,7 @@ export async function createApp() {
       password    : process.env.MSSQL_PASSWORD,
       database    : process.env.MSSQL_DB,
       dialectOptions: {
-        // instanceName: process.env.MSSQL_INSTANCE,
+        instanceName: process.env.MSSQL_INSTANCE,
         // connectTimeout: 90000,
       },
     };
@@ -181,7 +181,8 @@ export async function createApp() {
       context.models = createdModels;
 
       return {
-        graphiql: process.env.NODE_ENV !== "production",
+        // graphiql: process.env.NODE_ENV !== "production",
+        graphiql: true, // XXX can we dynamically do this on alpha?
         pretty: false,
         context: context as Context,
         resolvers: useMocks ? false : resolvers, // required if schema is an array of type definitions
