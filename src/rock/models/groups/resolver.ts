@@ -78,7 +78,7 @@ export default {
             }
 
             // search > tags
-            results = uniqBy(reverse(results), "Id");
+            results = uniqBy(results, "Id");
 
             // XXX how do we get an accurate count?
             return {
