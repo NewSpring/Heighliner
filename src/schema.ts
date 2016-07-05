@@ -81,7 +81,10 @@ export async function createApp() {
     // MONGO
     const APOLLOS = await Apollos.connect(process.env.MONGO_URL || "mongodb://localhost/meteor");
     // XXX find a way to just use mocks for Apollos
-    if (APOLLOS) useMocks = false;
+    if (APOLLOS) {
+      console.log("CONNECTION: Apollos ✓"); // tslint:disable-line
+      useMocks = false;
+    }
 
     // MySQL connections
     const EESettings = {
@@ -97,7 +100,10 @@ export async function createApp() {
         host: EESettings.host,
         ssl: EESettings.ssl,
       });
-      if (EE) useMocks = false;
+      if (EE) {
+        console.log("CONNECTION: EE ✓"); // tslint:disable-line
+        useMocks = false;
+      }
     }
 
     // MSSQL connection
@@ -118,11 +124,15 @@ export async function createApp() {
         dialectOptions: RockSettings.dialectOptions,
       });
 
-      if (ROCK) useMocks = false;
+      if (ROCK) {
+        console.log("CONNECTION: Rock ✓"); // tslint:disable-line
+        useMocks = false;
+      }
     }
 
     const REDIS = await RedisConnect(process.env.REDIS_HOST || dockerhost);
     cache = REDIS ? new RedisCache() : new InMemoryCache();
+    if (REDIS) console.log("CONNECTION: Redis ✓"); // tslint:disable-line
 
     const SS = await GoogleSS.connect();
     if (SS) useMocks = false;
