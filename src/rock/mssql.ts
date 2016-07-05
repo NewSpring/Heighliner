@@ -38,7 +38,10 @@ export function connect(
     db.authenticate()
       .then(() => cb(true))
       .then(() => createTables())
-      .catch(() => cb(false));
+      .catch((e) => {
+        console.error(e); // tslint:disable-line
+        cb(false);
+      });
   });
 }
 
