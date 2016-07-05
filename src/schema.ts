@@ -107,7 +107,7 @@ export async function createApp() {
       password    : process.env.MSSQL_PASSWORD,
       database    : process.env.MSSQL_DB,
       dialectOptions: {
-        instanceName: process.env.MSSQL_INSTANCE,
+        // instanceName: process.env.MSSQL_INSTANCE,
         // connectTimeout: 90000,
       },
     };

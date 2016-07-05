@@ -1,4 +1,4 @@
-import { merge, filter } from "lodash";
+import { merge, filter, sortBy } from "lodash";
 import { Cache, defaultCache } from "../../../util/cache";
 import { createGlobalId } from "../../../util";
 import Sequelize from "sequelize";
@@ -39,19 +39,27 @@ export class Group extends Rock {
     // we use expand and fetch group attributes on this call
     // because they are needed in most fields
     // within the Group Schema
-    this.loader = new DataLoader(keys => GroupTable.find({
-        where: { Id: { $in: keys }},
+    this.loader = new DataLoader(keys => {
+      return GroupTable.find({
+        where: { Id: { $in: sortBy(keys) }},
+        order: ["Id"],
         include: [
           { model: GroupType.model, where: { Id: 25 }, attributes: [] },
           { model: AttributeValue.model, include: [{ model: Attribute.model }] },
         ],
-      })
-    , { cache: false }); // XXX make this per request somehow
+      });
+    }, { cache: false }); // XXX make this per request somehow
   }
 
   public async getFromId(id: string | number, globalId: string): Promise<any> { // XXX type
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
-    return this.cache.get(globalId, () => this.loader.load(id));
+    return this.cache.get(globalId, () => GroupTable.findOne({
+      where: { Id: id },
+      include: [
+        { model: GroupType.model, where: { Id: 25 }, attributes: [] },
+        { model: AttributeValue.model, include: [{ model: Attribute.model }] },
+      ],
+    }));
   }
 
   public async getMembersById(id: string | number): Promise<any> {
