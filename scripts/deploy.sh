@@ -54,6 +54,9 @@ yecho "### Updating ECS ###"
 # more bash-friendly output for jq
 JQ="jq --raw-output --exit-status"
 
+
+ECS_SERVICE="${CHANNEL}-heighliner"
+
 deploy_image() {
   docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASSWORD -e $DOCKERHUB_EMAIL
   docker tag heighliner:latest newspring/heighliner:$TRAVIS_COMMIT
@@ -71,6 +74,13 @@ make_task_def() {
       "cpu": 512,
       "essential": true,
       "image": "newspring/heighliner:%s",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "'"$ECS_SERVICE"'",
+          "awslogs-region": "us-east-1"
+        }
+      },
       "portMappings": [
         { "hostPort": 8061, "containerPort": 80, "protocol": "http" }
       ],
@@ -127,7 +137,7 @@ deploy_cluster() {
   register_definition
   # XXX make master heighliner service name master-heighliner so we can use
   # branch names for the service
-  if [ $(aws ecs update-service --cluster guild --service alpha-heighliner --task-definition $revision | \
+  if [ $(aws ecs update-service --cluster guild --service $ECS_SERVICE --task-definition $revision | \
                  $JQ '.service.taskDefinition') != "$revision" ]; then
       echo "Error updating service."
       return 1
