@@ -62,7 +62,7 @@ export class RedisCache implements Cache {
   ): Promise<Object | void> {
     let fromCache = false;
     const label = `RedisCache-${this.getCount()}`;
-    console.time(label); // tslint:disable-line
+    if (process.env.NODE_ENV !== "production") console.time(label); // tslint:disable-line
     return new Promise((done) => {
       if (!cache && lookup) {
         return lookup().then(done);
@@ -96,7 +96,9 @@ export class RedisCache implements Cache {
           this.set(id, data, ttl);
         });
       }
-      if (fromCache) console.timeEnd(label); // tslint:disable-line
+      if (fromCache && process.env.NODE_ENV !== "production") {
+        console.timeEnd(label); // tslint:disable-line
+      }
       return data;
     });
   }

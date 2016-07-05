@@ -10,7 +10,8 @@ import { merge, isArray } from "lodash";
 // import DataLoader from "dataloader";
 
 import { createTables } from "./models";
-
+let noop = (...args) => {}; // tslint:disable-line
+let loud = console.log.bind(console, "MSSQL:"); // tslint:disable-line
 let db;
 export function connect(
   database: string,
@@ -21,8 +22,7 @@ export function connect(
   return new Promise((cb) => {
     opts = merge({}, opts, {
       dialect: "mssql",
-      // logging: (...args) => {}, // tslint:disable-line
-      logging: console.log.bind(console, "MSSQL:"), // tslint:disable-line
+      logging: process.env.NODE_ENV !== "production" ? loud : noop, // tslint:disable-line
       benchmark: process.env.NODE_ENV !== "production",
       dialectOptions: {
         readOnlyIntent: true,
