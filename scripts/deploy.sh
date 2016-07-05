@@ -74,6 +74,13 @@ make_task_def() {
       "cpu": 512,
       "essential": true,
       "image": "newspring/heighliner:%s",
+      "dnsServers": [
+        "10.0.60.10",
+        "8.8.8.8"
+      ],
+      "dnsSearchDomains": [
+        "ad.newspring.cc"
+      ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
