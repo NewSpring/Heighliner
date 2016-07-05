@@ -75,8 +75,7 @@ make_task_def() {
       "essential": true,
       "image": "newspring/heighliner:%s",
       "dnsServers": [
-        "10.0.60.10",
-        "8.8.8.8"
+        "10.0.60.10"
       ],
       "dnsSearchDomains": [
         "ad.newspring.cc"
