@@ -51,6 +51,7 @@ export default {
       }
 
       if (attributes && attributes.length) {
+
         let promises = [];
 
         promises.push(models.Group.findByAttributes(attributes, {
