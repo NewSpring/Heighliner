@@ -23,8 +23,24 @@ export default {
         "series_newspring",
         "sermons",
         "stories",
-        "albums_newspring",
+        "newspring_albums",
       ];
+
+      /*
+
+        Currently excluded channels come in uppercase and not the actual
+        channel name. Here we fix that
+
+        XXX make the setting dynamic and pulled from heighliner
+
+      */
+      excludeChannels = excludeChannels
+        .map(x => x.toLowerCase())
+        .map(x => {
+          if (x === "series") return "series_newspring";
+          if (x === "music") return "albums_newspring";
+          return x;
+        });
 
       // only include what user hasn't excluded
       channels = difference(channels, excludeChannels);
