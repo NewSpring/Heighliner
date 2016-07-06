@@ -29,7 +29,7 @@ export class Transaction extends FinancialModel {
 
   public async getFromId(id: string, globalId: string): Promise<any> { // XXX correctly type
     globalId = globalId ? globalId : createGlobalId(id, this.__type);
-    return this.cache.get(globalId, () => TransactionTable.findOne({ where: { Id: id }}), { cache: false });
+    return this.cache.get(globalId, () => TransactionTable.findOne({ where: { Id: id }}));
   }
 
   public async getDetailsById(id: string | number): Promise<any> {
@@ -73,7 +73,7 @@ export class ScheduledTransaction extends FinancialModel {
 
   public async getFromId(id: string, globalId: string): Promise<any> { // XXX correctly type
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
-    return this.cache.get(globalId, () => ScheduledTransactionTable.findOne({ where: { Id: id }}), { cache: false });
+    return this.cache.get(globalId, () => ScheduledTransactionTable.findOne({ where: { Id: id }}));
   }
 
   public async getTransactionsById(id: string | number): Promise<any> {

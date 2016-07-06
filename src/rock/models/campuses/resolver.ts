@@ -30,7 +30,8 @@ export default {
     state: ({ State }) => State,
     country: ({ Country }) => Country,
     zip: ({ PostalCode }) => PostalCode,
-    latitude: ({ GeoPoint }) => {
+    latitude: ({ GeoPoint, latitude }) => {
+      if (latitude) return latitude;
       if (!GeoPoint) return null;
       try {
         const { points } = geography(GeoPoint);
@@ -38,7 +39,8 @@ export default {
       } catch (e) { return null; }
 
     },
-    longitude: ({ GeoPoint }) => {
+    longitude: ({ GeoPoint, longitude }) => {
+      if (longitude) return longitude;
       if (!GeoPoint) return null;
       try {
         const { points } = geography(GeoPoint);

@@ -211,7 +211,7 @@ export class Rock extends Heighliner {
         return this.getDefinedValuesByTypeId(definedTypeId[0].Value);
       })
       .then(flatten)
-    , { cache: false });
+    );
   }
 
 }
