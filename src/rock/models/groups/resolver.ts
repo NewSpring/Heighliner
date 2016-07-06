@@ -1,4 +1,4 @@
-import { flatten, uniqBy, reverse } from "lodash";
+import { flatten, uniqBy } from "lodash";
 import { allData } from "geo-from-ip";
 import { geocode } from "google-geocoding";
 import { createGlobalId } from "../../../util";
@@ -63,11 +63,10 @@ export default {
           let results = [];
           for (let queryType of x) {
             count += queryType.count;
-            // reverse location because of the second resversal below
-            results = results.concat(reverse(queryType.results));
+            results = results.concat(queryType.results);
           }
 
-          results = uniqBy(reverse(results), "Id");
+          results = uniqBy(results, "Id");
           // XXX how do we get an accurate count?
           return { count, results };
         })
