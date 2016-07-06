@@ -1,4 +1,6 @@
 import { merge, filter, sortBy } from "lodash";
+import { geography } from "mssql-geoparser";
+
 import { Cache, defaultCache } from "../../../util/cache";
 import { createGlobalId } from "../../../util";
 import Sequelize from "sequelize";
@@ -76,7 +78,16 @@ export class Group extends Rock {
     return this.cache.get(globalId, () => LocationTable.findOne({
         where: { Id },
       })
-    , { cache: false }); // XXX figure out how to cache geopoints
+        .then(x => {
+          if (!x.GeoPoint) return x;
+          try {
+            const { points } = geography(x.GeoPoint);
+            x.latitude = points[0].x;
+            x.longitude = points[0].y;
+            return x;
+          } catch (e) { return x; }
+        })
+    ); // XXX figure out how to cache geopoints
   }
 
   // XXX remove for Schedule Model
@@ -151,7 +162,7 @@ export class Group extends Rock {
         },
       ],
     })
-  , { cache: false })
+  )
     .then(this.sortByLocations)
     .then((x: any[]) => {
       count = x.length;

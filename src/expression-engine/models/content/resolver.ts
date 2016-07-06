@@ -103,7 +103,7 @@ export default {
         .then(data => flatten(data));
     },
     colors: ({ bgcolor, color }) => {
-      if (!bgcolor || !color) return [];
+      if (!bgcolor && !color) return [];
 
       return [{
         value: color || bgcolor,
