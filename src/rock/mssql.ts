@@ -65,6 +65,7 @@ export class MSSQLConnector {
   }
 
   public find(...args): Promise<Object[]> {
+    // console.log("finding", args)
     return this.time(this.model.findAll.apply(this.model, args)
       .then(this.getValues)
       .then(data => data.map(this.mergeData)));

@@ -98,11 +98,11 @@ export class Group extends Rock {
 
   public async findByAttributes(
     attributes: string[],
-    { limit, offset, geoPoint }: { limit: number, offset: number, geoPoint: { latitude: number | boolean, longitude: number | boolean }}
+    { limit, offset, geo }: { limit: number, offset: number, geo: { latitude: number | boolean, longitude: number | boolean }}
   ): Promise<any> {
-    if (!attributes) return Promise.resolve([]);
+    if (!attributes || !attributes.length) return Promise.resolve([]);
     let order: any = [];
-    const { latitude, longitude } = geoPoint;
+    const { latitude, longitude } = geo;
 
     if (latitude && longitude) {
       // tslint:disable-next-line
@@ -151,7 +151,7 @@ export class Group extends Rock {
         },
       ],
     })
-  )
+  , { cache: false })
     .then(this.sortByLocations)
     .then((x: any[]) => {
       count = x.length;
@@ -186,15 +186,15 @@ export class Group extends Rock {
 
   public async findByQuery(
     { query },
-    { limit, offset, geoPoint }: {
+    { limit, offset, geo }: {
       limit: number;
       offset: number;
-      geoPoint: { latitude: number | boolean, longitude: number | boolean };
+      geo: { latitude: number | boolean, longitude: number | boolean };
     }
   ): Promise<any> {
-    if (!query) return null;
+    if (!query) return Promise.resolve([]);
     let order: any = [];
-    const { latitude, longitude } = geoPoint;
+    const { latitude, longitude } = geo;
 
     if (latitude && longitude) {
       // tslint:disable-next-line

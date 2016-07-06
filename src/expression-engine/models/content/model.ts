@@ -1,5 +1,6 @@
 import { pick, flatten } from "lodash";
 import { Cache, defaultCache } from "../../../util/cache";
+import Sequelize from "sequelize";
 
 import {
   Channels,
@@ -232,7 +233,11 @@ export class Content extends EE {
     const channelData = pick(query,  Object.keys(channelDataSchema));
     const channel = pick(query, Object.keys(channelSchema));
     // const channelFields = pick(query, Object.keys(channelFieldSchema));
-    const channelTitle = pick(query, Object.keys(channelTitleSchema));
+    const channelTitle: any = pick(query, Object.keys(channelTitleSchema));
+    // This gets reset every hour currently
+    channelTitle.entry_date = {
+      $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())"),
+    };
     return await this.cache.get(this.cache.encode(query, this.__type), () => ChannelData.find({
       where: channelData,
       attributes: ["entry_id"],
@@ -246,7 +251,7 @@ export class Content extends EE {
       limit,
       offset,
     })
-    , { ttl: 3600, cache })
+    , { ttl: 3600, cache: false })
       .then(this.getFromIds.bind(this))
       ;
   }

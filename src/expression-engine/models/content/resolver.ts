@@ -8,9 +8,13 @@ export default {
   Query: {
 
     content(_, { channel, limit, skip, status, cache }, { models }) {
-        // XXX integrate collection argument?
-        return models.Content.find({ channel_name: channel, offset: skip, limit, status }, cache);
-      },
+      return models.Content.find({
+          channel_name: channel,
+          offset: skip,
+          limit,
+          status,
+        }, cache );
+    },
 
     feed(_, { excludeChannels, limit, skip, status, cache }, { models }) {
       let channels = [
