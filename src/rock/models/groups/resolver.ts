@@ -18,12 +18,12 @@ function resolveAttribute(id: number, resolver?): (d: any, a: any, c: any) => Pr
 export default {
 
   Query: {
-    groups: async (_, { offset, limit, attributes, query }, { models, ip }) => {
-      const geoPoint = { latitude: null, longitude: null };
+    groups: async (_, { offset, limit, attributes = [], query }, { models, ip }) => {
+      const geo = { latitude: null, longitude: null };
       // XXX lookup users lat and long from ip
       const geoData = allData(ip);
-      geoPoint.latitude = geoData.location.latitude;
-      geoPoint.longitude = geoData.location.longitude;
+      geo.latitude = geoData.location.latitude;
+      geo.longitude = geoData.location.longitude;
       attributes = attributes.filter(x => x); // only truthy values
 
       const zipRegex = /(\d{5}$)|(^\d{5}-\d{4}$)/;
@@ -38,60 +38,42 @@ export default {
         // find by zipcode
         const googleGeoData = await new Promise((resolve, reject) => {
           geocode(zip, (err, result) => {
-            if (err) {
-              reject(err);
-              return;
-            }
+            // XXX we don't really want to reject this because
+            // this is an additive feature
+            if (err) return resolve({});
             resolve(result);
           });
         }) as any;
 
-        geoPoint.latitude = googleGeoData.lat;
-        geoPoint.longitude = googleGeoData.lng;
+        geo.latitude = googleGeoData.lat;
+        geo.longitude = googleGeoData.lng;
       }
 
-      if (attributes && attributes.length) {
+      let promises = [
+        models.Group.findByQuery({ query }, { limit, offset, geo }),
+        models.Group.findByAttributes(attributes, { limit, offset, geo }),
+      ];
 
-        let promises = [];
+      return Promise.all(promises)
+        // flatten all results
+        .then(flatten)
+        // remove duplicates
+        .then(x => {
+          let count = 0;
+          let results = [];
+          for (let queryType of x) {
+            count += queryType.count;
+            // reverse location because of the second resversal below
+            results = results.concat(reverse(queryType.results));
+          }
 
-        promises.push(models.Group.findByAttributes(attributes, {
-          limit, offset, geoPoint,
-        }));
-
-        if (query) {
-          promises.push(models.Group.findByQuery({ query }, {
-            limit, offset, geoPoint,
-          }));
-        }
-
-        return Promise.all(promises)
-          // flatten all results
-          .then(flatten)
-          // remove duplicates
-          .then(x => {
-            let count = 0;
-
-            let results = [];
-            for (let queryType of x) {
-              count += queryType.count;
-              results = results.concat(queryType.results);
-            }
-
-            // search > tags
-            results = uniqBy(results, "Id");
-
-            // XXX how do we get an accurate count?
-            return {
-              count,
-              results,
-            };
-          })
-          // XXX sory by distance
-          .then(x => x)
-          ;
-      }
-
-      return models.Group.findByQuery({ query }, { limit, offset, geoPoint });
+          results = uniqBy(reverse(results), "Id");
+          // XXX how do we get an accurate count?
+          return { count, results };
+        })
+        // XXX sory by distance
+        .then(x => x)
+        ;
     },
     groupAttributes: (_, $, { models }) => {
       const ids = [
