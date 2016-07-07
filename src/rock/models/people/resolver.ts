@@ -14,7 +14,11 @@ export default {
     firstName: ({ FirstName }) => FirstName,
     lastName: ({ LastName }) => LastName,
     nickName: ({ NickName }) => NickName,
-    phoneNumbers: ({ Id }, _, { models }) => models.Person.getPhoneNumbersFromId(Id),
+    phoneNumbers: ({ Id }, _, { models }) => { // tslint:disable-line
+      return [];
+      // XXX
+      // return models.Person.getPhoneNumbersFromId(Id);
+    },
     photo: ({ PhotoId }, _, { models }) => {
       if (!PhotoId) return "//dg0ddngxdz549.cloudfront.net/images/cached/images/remote/http_s3.amazonaws.com/ns.images/all/member_images/members.nophoto_1000_1000_90_c1.jpg"; // tslint:disable-line
 
