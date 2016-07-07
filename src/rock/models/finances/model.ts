@@ -53,7 +53,7 @@ export class Transaction extends FinancialModel {
     { limit, offset }, { cache }
   ): Promise<any> {
     const query = { aliases, limit, offset };
-    return await this.cache.get(this.cache.encode(query), () => TransactionTable.find({
+    return this.cache.get(this.cache.encode(query), () => TransactionTable.find({
         where: { AuthorizedPersonAliasId: { $in: aliases }},
         order: [
           ["TransactionDateTime", "DESC"],
