@@ -157,6 +157,19 @@ export default {
     campus: ({ CampusId }, _, { models }) => models.Campus.getFromId(CampusId),
     demographic: resolveAttribute(1409, x => x && x.length && x[0].Value),
     description: ({ Description }) => Description,
+    distance: ({ Id, Distance }, _, { models, ip }) => {
+      if (Distance) return Distance * 0.000621371;
+
+      const geo = { latitude: null, longitude: null };
+      // XXX lookup users lat and long from ip
+      const geoData = allData(ip);
+      geo.latitude = geoData.location.latitude;
+      geo.longitude = geoData.location.longitude;
+
+      return models.Group.getDistanceFromLatLng(Id, geo)
+        .then(x => x && x * 0.000621371);
+
+    }, // convert to miles
     entityId: ({ Id }) => Id,
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     kidFriendly: resolveAttribute(5406),
