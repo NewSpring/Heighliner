@@ -76,7 +76,7 @@ export default {
     tags: ({ tags }, _, { models }) => models.Content.splitByNewLines(tags),
     speaker: ({speaker}) => speaker,
     hashtag: ({ hashtag }) => hashtag,
-    isLight: ({ lightswitch }) => lightswitch !== "dark",
+    isLight: ({ album_foreground_color }) => album_foreground_color !== "dark",
     scripture: ({ entry_id, scripture, exp_channel }, _, { models }) => {
       if (!scripture) return [];
 
