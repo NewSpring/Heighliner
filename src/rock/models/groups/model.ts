@@ -118,10 +118,18 @@ export class Group extends Rock {
     if (!attributes || !attributes.length) return Promise.resolve([]);
     let order: any = [];
     const { latitude, longitude } = geo;
-
+    let distance;
     if (latitude && longitude) {
       // tslint:disable-next-line
       order = Sequelize.literal(`[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326)) ASC`);
+
+      distance = [
+        // tslint:disable-next-line
+        Sequelize.literal(
+          `[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326))`
+        ),
+      "Distance",
+      ];
     }
 
     const $or = attributes.map(x => ({
@@ -133,7 +141,7 @@ export class Group extends Rock {
 
     return await this.cache.get(this.cache.encode(query), () => GroupTable.find({
       where: { IsPublic: true, IsActive: true },
-      attributes: ["Id"],
+      attributes: ["Id", distance],
       order,
       include: [
         { model: GroupType.model, where: { Id: 25 }, attributes: [] },
@@ -175,7 +183,7 @@ export class Group extends Rock {
     .then((x: any[]) => {
       return x.slice(offset, limit + offset);
     })
-    .then(this.getFromIds.bind(this))
+    .then(this.getFromIdsWithDistance)
     .then(results => ({ count, results }))
     ;
   }
@@ -199,6 +207,49 @@ export class Group extends Rock {
     return [...withLocations, ...withoutLocations];
   }
 
+  private getFromIdsWithDistance = (x: any[]): Promise<any> => {
+    let promises = [];
+    const createPromise = (y) => {
+      return this.getFromId(y.Id, null)
+        .then(group => {
+          group.Distance = y.Distance;
+          return group;
+        });
+    };
+    for (let y of x) promises.push(createPromise(y));
+
+    return Promise.all(promises);
+  }
+
+  public async getDistanceFromLatLng(
+    id: string | number,
+    geo: { latitude: number | boolean, longitude: number | boolean }
+  ): Promise<any> {
+    if (!geo || !id || !geo.latitude || !geo.longitude) return Promise.resolve([]);
+    const { latitude, longitude } = geo;
+    const distance =  [
+      // tslint:disable-next-line
+      Sequelize.literal(
+        `[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326))`
+      ),
+    "Distance",
+    ];
+
+    return this.cache.get(this.cache.encode({ id, geo }), () => GroupTable.findOne({
+        attributes: [ distance ],
+        where: { Id: id },
+        include: [
+          {
+            model: GroupLocationTable.model,
+            include: [{ model: LocationTable.model }],
+          },
+        ],
+      })
+    )
+      .then((x: any) => x.Distance)
+      ;
+  }
+
   public async findByQuery(
     { query },
     { limit, offset, geo }: {
@@ -210,12 +261,19 @@ export class Group extends Rock {
     if (!query) return Promise.resolve([]);
     let order: any = [];
     const { latitude, longitude } = geo;
-
+    let distance;
     if (latitude && longitude) {
       // tslint:disable-next-line
       order = Sequelize.literal(
         `[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326)) ASC`
       );
+      distance = [
+        // tslint:disable-next-line
+        Sequelize.literal(
+          `[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326))`
+        ),
+      "Distance",
+      ];
     }
 
     let count: number;
@@ -231,11 +289,11 @@ export class Group extends Rock {
           Sequelize.literal(`[Campus].[Name] LIKE N'%Clemson%'`),
         ],
       },
-      attributes: ["Id"],
+      attributes: ["Id", distance],
       order,
       include: [
         { model: GroupType.model, where: { Id: 25 }, attributes: [] },
-        { model: CampusTable.model },
+        { model: CampusTable.model, attributes: ["Name"] },
         {
           model: GroupLocationTable.model,
           include: [{ model: LocationTable.model }],
@@ -251,7 +309,7 @@ export class Group extends Rock {
     .then((x: any[]) => {
       return x.slice(offset, limit + offset);
     })
-    .then(this.getFromIds.bind(this))
+    .then(this.getFromIdsWithDistance)
     .then(results => ({ count, results }))
     ;
 }

@@ -27,6 +27,7 @@ type Group implements Node {
   campus: Campus
   demographic: String
   description: String
+  distance: Float
   entityId: Int
   id: ID!
   kidFriendly: Boolean
