@@ -144,7 +144,6 @@ export class Rock extends Heighliner {
         limit,
         offset,
       })
-        .then(this.debug)
         .then(this.processDefinedValues)
     );
   }
