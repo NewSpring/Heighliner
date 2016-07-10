@@ -16,6 +16,10 @@ import {
 } from "./tables";
 
 import {
+  Campus as CampusTable,
+} from "../campuses/tables";
+
+import {
   DefinedValue,
   Attribute,
   AttributeValue,
@@ -224,14 +228,14 @@ export class Group extends Rock {
         $or: [
           { Name: { $like: `%${query}%` } },
           { Description: { $like: `%${query}%` } },
-          // XXX search locaton names?
-          // { }
+          Sequelize.literal(`[Campus].[Name] LIKE N'%Clemson%'`),
         ],
       },
       attributes: ["Id"],
       order,
       include: [
         { model: GroupType.model, where: { Id: 25 }, attributes: [] },
+        { model: CampusTable.model },
         {
           model: GroupLocationTable.model,
           include: [{ model: LocationTable.model }],
