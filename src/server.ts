@@ -23,6 +23,8 @@ async function start() {
     "http://localhost:12392",
     "https://alpha-app.newspring.io",
     "https://beta-app.newspring.io",
+    "https://beta-my.newspring.cc",
+    "https://my.newspring.cc",
   ];
 
   const corsOptions = {
