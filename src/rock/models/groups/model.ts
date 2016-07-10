@@ -258,7 +258,6 @@ export class Group extends Rock {
       geo: { latitude: number | boolean, longitude: number | boolean };
     }
   ): Promise<any> {
-    if (!query) return Promise.resolve([]);
     let order: any = [];
     const { latitude, longitude } = geo;
     let distance;
@@ -286,7 +285,7 @@ export class Group extends Rock {
         $or: [
           { Name: { $like: `%${query}%` } },
           { Description: { $like: `%${query}%` } },
-          Sequelize.literal(`[Campus].[Name] LIKE N'%Clemson%'`),
+          Sequelize.literal(`[Campus].[Name] LIKE N'%${query}%'`),
         ],
       },
       attributes: ["Id", distance],
