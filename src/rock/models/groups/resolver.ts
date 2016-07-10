@@ -3,15 +3,50 @@ import { allData } from "geo-from-ip";
 import { geocode } from "google-geocoding";
 import { createGlobalId } from "../../../util";
 
+function getPhotoFromTag(tag) {
+  const photos = {
+    food: "//s3.amazonaws.com/ns.assets/apollos/groups/group-food.jpg",
+    gaming: "//s3.amazonaws.com/ns.assets/apollos/groups/group-games.jpg",
+    hobbies: "//s3.amazonaws.com/ns.assets/apollos/groups/group-hobbies.jpg",
+    moms: "//s3.amazonaws.com/ns.assets/apollos/groups/group-moms.jpg",
+    motorsports: "//s3.amazonaws.com/ns.assets/apollos/groups/group-motorsports.jpg", // tslint:disable-line
+    outdoor: "//s3.amazonaws.com/ns.assets/apollos/groups/group-outdoors.jpg",
+    "sports/fitness": "//s3.amazonaws.com/ns.assets/apollos/groups/group-sports.jpg", // tslint:disable-line
+  };
+  return photos[tag.toLowerCase()] || null;
+}
+
+function getPhotoFromDemo(demo) {
+  const photos = {
+    coed: "//s3.amazonaws.com/ns.assets/apollos/groups/group-coed.jpg",
+    married: "//s3.amazonaws.com/ns.assets/apollos/groups/group-married.jpg",
+    men: "//s3.amazonaws.com/ns.assets/apollos/groups/group-men.jpg",
+    women: "//s3.amazonaws.com/ns.assets/apollos/groups/group-women.jpg",
+  };
+  return photos[demo.toLowerCase()] || null;
+}
+
+function getPhotoFromType(type) {
+  const photos = {
+    care: "//s3.amazonaws.com/ns.assets/apollos/groups/group-care.jpg",
+    interests: "//s3.amazonaws.com/ns.assets/apollos/groups/group-interests.jpg", // tslint:disable-line
+    study: "//s3.amazonaws.com/ns.assets/apollos/groups/group-study.jpg",
+  };
+  return photos[type.toLowerCase()] || null;
+}
+
 function resolveAttribute(id: number, resolver?): (d: any, a: any, c: any) => Promise<any> {
   if (!resolver) resolver = x => x;
   // XXX type this better
-  return ({ AttributeValues }, _, { models }) => {
+  return (data, args, context) => {
+    const { AttributeValues } = data;
+    const { models } = context;
     const chunk = AttributeValues.filter(x => x.Attribute && x.Attribute.Id === id)[0];
+    if (!chunk) return Promise.resolve(null)
+      .then((x) => resolver(x, data, args, context));
 
-    if (!chunk) return Promise.resolve(null);
     return models.Rock.getAttributeValuesFromId(chunk.Id, { models })
-      .then(resolver);
+      .then((x) => resolver(x, data, args, context));
   };
 }
 
@@ -113,14 +148,14 @@ export default {
 
   Group: {
     active: ({ IsActive }) => IsActive,
-    ageRange: resolveAttribute(691, (x: number[]) => {
+    ageRange: resolveAttribute(691, (x: number[] = []) => {
       // don't consider [0,0] an age range
-      const hasAgeRange = x.reduce((start, finish) => (start && finish));
+      const hasAgeRange = x.length && x.reduce((start, finish) => (start && finish));
       if (!hasAgeRange) return null;
       return x;
     }),
     campus: ({ CampusId }, _, { models }) => models.Campus.getFromId(CampusId),
-    demographic: resolveAttribute(1409, x => x.length && x[0].Value),
+    demographic: resolveAttribute(1409, x => x && x.length && x[0].Value),
     description: ({ Description }) => Description,
     entityId: ({ Id }) => Id,
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
@@ -128,13 +163,38 @@ export default {
     locations: ({ Id }, _, { models }) => models.Group.getLocationsById(Id),
     members: ({ Id }, _, { models }) => models.Group.getMembersById(Id),
     name: ({ Name }) => Name,
-    photo: resolveAttribute(2569, x => x && x.Path),
+    photo: resolveAttribute(2569, async (photo, { AttributeValues }, _, { models }) => {
+      if (photo && photo.Path) return photo.Path;
+
+      // check for tags first
+      const firstTag = await resolveAttribute(16815, x => x && x.length && x[0].Value)(
+        { AttributeValues }, _, { models }
+      );
+
+      if (firstTag) return getPhotoFromTag(firstTag);
+
+      // photo from demographic
+      const demographic = await resolveAttribute(1409, x => x && x.length && x[0].Value)(
+        { AttributeValues }, _, { models }
+      );
+
+      if (demographic) return getPhotoFromDemo(demographic);
+
+      // type goes last since its required
+      const type = await resolveAttribute(16814, x => x && x.length && x[0].Value)(
+        { AttributeValues }, _, { models }
+      );
+
+      if (type) return getPhotoFromType(type);
+
+      return null;
+    }),
     schedule: ({ ScheduleId }, _, { models }) => models.Group.getScheduleFromScheduleId(ScheduleId),
     tags: resolveAttribute(16815, x => {
-      if (x.length) return x;
+      if (x && x.length) return x;
       return [];
     }),
-    type: resolveAttribute(16814, x => x.length && x[0].Value),
+    type: resolveAttribute(16814, x => x && x.length && x[0].Value),
   },
 
   GroupSearch: {

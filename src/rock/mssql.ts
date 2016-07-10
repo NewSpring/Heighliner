@@ -22,7 +22,7 @@ export function connect(
   return new Promise((cb) => {
     opts = merge({}, opts, {
       dialect: "mssql",
-      logging: process.env.NODE_ENV !== "production" ? loud : noop, // tslint:disable-line
+      logging: process.env.NODE_ENV !== "production" ? noop : noop, // tslint:disable-line
       benchmark: process.env.NODE_ENV !== "production",
       dialectOptions: {
         readOnlyIntent: true,
