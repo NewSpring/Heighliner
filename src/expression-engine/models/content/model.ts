@@ -192,6 +192,21 @@ export class Content extends EE {
       ;
   }
 
+  public async getLiveStream(/* site: string */): Promise<any> {
+    return ChannelData.find({
+        attributes: ["entry_id"],
+        order: [
+          [ChannelTitles.model, "entry_date", "DESC"],
+        ],
+        include: [
+          { model: ChannelTitles.model },
+          { model: Channels.model },
+        ],
+        limit: 10,
+      })
+      .then(this.debug);
+  }
+
   public async findByTagName(
     { tagName, includeChannels }: { tagName: string, includeChannels?: string[]},
     { limit, offset },

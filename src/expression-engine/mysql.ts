@@ -10,7 +10,7 @@ import { merge, isArray } from "lodash";
 
 import { createTables } from "./models";
 let noop = (...args) => {}; // tslint:disable-line
-let loud = console.log.bind(console, "MSSQL:"); // tslint:disable-line
+let loud = console.log.bind(console, "MYSQL:"); // tslint:disable-line
 let db;
 export function connect(
   database: string,

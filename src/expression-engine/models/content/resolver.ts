@@ -57,9 +57,9 @@ export default {
       return models.Content.getFromLowReorderSet(setName);
     },
 
-    live() {
-      return {};
-      // return models.Content.getFromLowReorderSet(setName);
+    live(_, $, { models }) {
+      // XXX pass in site
+      return models.Content.getLiveStream();
     },
   },
 
