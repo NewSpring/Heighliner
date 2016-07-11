@@ -75,6 +75,7 @@ export class Content extends EE {
   }
 
   public async getFromId(id: string, guid: string): Promise<any> { // replace with ContentType
+    if (!id) return Promise.resolve(null);
     const fields = await this.cache.get(`fields:${id}`, () => ChannelData.find({
       where: { entry_id: Number(id) },
       include: [ { model: Channels.model,  include: [ { model: ChannelFields.model } ] } ],
