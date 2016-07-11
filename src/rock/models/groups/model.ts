@@ -120,6 +120,7 @@ export class Group extends Rock {
     const { latitude, longitude } = geo;
     let distance;
     if (latitude && longitude) {
+      // XXX type check lat and lng for sql injection
       // tslint:disable-next-line
       order = Sequelize.literal(`[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326)) ASC`);
 
