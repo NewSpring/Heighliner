@@ -30,4 +30,6 @@ export default [
 
   `lowReorderSets(setName: String!): [Content]`,
 
+  `live: LiveFeed`,
+
 ];

@@ -75,7 +75,7 @@ export async function createApp() {
   let cache;
   if (!process.env.CI && !process.env.TEST) {
 
-    // local development
+    // XXX add in dynamic docker host development
     let dockerhost = "192.168.99.100";
 
     // MONGO

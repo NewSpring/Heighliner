@@ -1,4 +1,10 @@
 
+
+type LiveFeed {
+  live: Boolean!
+  streamUrl: String
+}
+
 # should this be a global type that implements Node?
 # XXX abstract from content if ^^
 type ContentColor {
