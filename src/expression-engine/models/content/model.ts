@@ -193,18 +193,27 @@ export class Content extends EE {
   }
 
   public async getLiveStream(/* site: string */): Promise<any> {
-    return ChannelData.find({
-        attributes: ["entry_id"],
-        order: [
-          [ChannelTitles.model, "entry_date", "DESC"],
-        ],
-        include: [
-          { model: ChannelTitles.model },
-          { model: Channels.model },
-        ],
-        limit: 10,
-      })
-      .then(this.debug);
+    // tslint:disable
+    return ChannelData.db.query(`
+      SELECT
+        ((WEEKDAY(NOW()) + 1) % 7) = m.col_id_366
+            AND (SELECT DATE_FORMAT(CONVERT_TZ(NOW(),'+00:00','America/Detroit'),'%H%i') TIMEONLY) BETWEEN m.col_id_367 AND m.col_id_368 AS IsLive
+      FROM
+        exp_sites s
+        JOIN exp_channel_data d ON d.site_id = s.site_id
+        JOIN exp_channel_titles t ON t.channel_id = d.channel_id AND t.entry_id = d.entry_id AND t.site_id = s.site_id
+        JOIN exp_matrix_data m ON m.entry_id = d.entry_id AND m.site_id = s.site_id
+      WHERE
+        s.site_name = 'newspring'
+        AND m.col_id_365 = s.site_name
+        AND d.channel_id = 175
+        AND d.entry_id = 128506
+        AND t.entry_date <= UNIX_TIMESTAMP()
+        AND (t.expiration_date = 0 OR t.expiration_date >= UNIX_TIMESTAMP())
+        AND m.col_id_366 IS NOT NULL;
+    `, { type: Sequelize.QueryTypes.SELECT})
+        .then((data) => data && data.length && data[0]);
+      // tslint:enable
   }
 
   public async findByTagName(

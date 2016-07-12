@@ -64,7 +64,7 @@ export default {
   },
 
   LiveFeed: {
-    live: (data) => false,
+    live: ({ isLive }) => !!isLive,
     streamUrl: (data) => "Hello World",
   },
 
