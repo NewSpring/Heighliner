@@ -64,7 +64,7 @@ export default {
 
   LiveFeed: {
     live: ({ isLive }) => !!isLive,
-    streamUrl: ({ snippet_contents }) => snippet_contents,
+    embedCode: ({ snippet_contents }) => snippet_contents,
   },
 
   ContentColor: {

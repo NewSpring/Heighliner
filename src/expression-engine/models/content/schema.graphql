@@ -2,7 +2,7 @@
 
 type LiveFeed {
   live: Boolean!
-  streamUrl: String
+  embedCode: String
 }
 
 # should this be a global type that implements Node?
