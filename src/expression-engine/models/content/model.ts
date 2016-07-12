@@ -30,6 +30,10 @@ import {
   TagEntries,
 } from "../ee/tags";
 
+import {
+  Snippets,
+} from "../ee/snippets";
+
 import { EE } from "../ee";
 
 export interface ChannelField {
@@ -192,7 +196,23 @@ export class Content extends EE {
       ;
   }
 
-  public async getLiveStream(/* site: string */): Promise<any> {
+  public async getLiveStream(): Promise<any> {
+    return this.getIsLive()
+      .then(({ isLive }) => {
+        if (!isLive) return { isLive, snippet_contents: null };
+
+        return this.getStreamUrl()
+            .then(({ snippet_contents }) => ({isLive, snippet_contents}));
+      });
+  }
+
+  private async getStreamUrl(): Promise<any> {
+    return this.cache.get("snippets:PUBLIC_EMBED_CODE", () => Snippets.findOne({
+      where: { snippet_name: "PUBLIC_EMBED_CODE" },
+    }));
+  }
+
+  private async getIsLive(): Promise<any> {
     // tslint:disable
     return this.cache.get("newspring:live", () => ChannelData.db.query(`
       SELECT
