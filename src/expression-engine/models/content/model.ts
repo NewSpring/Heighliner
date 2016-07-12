@@ -194,7 +194,7 @@ export class Content extends EE {
 
   public async getLiveStream(/* site: string */): Promise<any> {
     // tslint:disable
-    return ChannelData.db.query(`
+    return this.cache.get("newspring:live", () => ChannelData.db.query(`
       SELECT
         ((WEEKDAY(NOW()) + 1) % 7) = m.col_id_366
             AND (SELECT DATE_FORMAT(CONVERT_TZ(NOW(),'+00:00','America/Detroit'),'%H%i') TIMEONLY) BETWEEN m.col_id_367 AND m.col_id_368 AS IsLive
@@ -212,7 +212,8 @@ export class Content extends EE {
         AND (t.expiration_date = 0 OR t.expiration_date >= UNIX_TIMESTAMP())
         AND m.col_id_366 IS NOT NULL;
     `, { type: Sequelize.QueryTypes.SELECT})
-        .then((data) => data && data.length && data[0]);
+    , { ttl: 60 })
+        .then((data: any) => data && data.length && data[0]);
       // tslint:enable
   }
 
