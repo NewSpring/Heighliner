@@ -58,14 +58,13 @@ export default {
     },
 
     live(_, $, { models }) {
-      // XXX pass in site
       return models.Content.getLiveStream();
     },
   },
 
   LiveFeed: {
     live: ({ isLive }) => !!isLive,
-    streamUrl: (data) => "Hello World",
+    streamUrl: ({ snippet_contents }) => snippet_contents,
   },
 
   ContentColor: {
