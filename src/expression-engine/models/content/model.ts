@@ -30,6 +30,10 @@ import {
   TagEntries,
 } from "../ee/tags";
 
+import {
+  Snippets,
+} from "../ee/snippets";
+
 import { EE } from "../ee";
 
 export interface ChannelField {
@@ -190,6 +194,47 @@ export class Content extends EE {
       .then(this.getFromIds.bind(this))
       .then(x => x[0])
       ;
+  }
+
+  public async getLiveStream(): Promise<any> {
+    return this.getIsLive()
+      .then(({ isLive }) => {
+        if (!isLive) return { isLive, snippet_contents: null };
+
+        return this.getStreamUrl()
+            .then(({ snippet_contents }) => ({isLive, snippet_contents}));
+      });
+  }
+
+  private async getStreamUrl(): Promise<any> {
+    return this.cache.get("snippets:PUBLIC_EMBED_CODE", () => Snippets.findOne({
+      where: { snippet_name: "PUBLIC_EMBED_CODE" },
+    }));
+  }
+
+  private async getIsLive(): Promise<any> {
+    // tslint:disable
+    return this.cache.get("newspring:live", () => ChannelData.db.query(`
+      SELECT
+        ((WEEKDAY(NOW()) + 1) % 7) = m.col_id_366
+            AND (SELECT DATE_FORMAT(CONVERT_TZ(NOW(),'+00:00','America/Detroit'),'%H%i') TIMEONLY) BETWEEN m.col_id_367 AND m.col_id_368 AS IsLive
+      FROM
+        exp_sites s
+        JOIN exp_channel_data d ON d.site_id = s.site_id
+        JOIN exp_channel_titles t ON t.channel_id = d.channel_id AND t.entry_id = d.entry_id AND t.site_id = s.site_id
+        JOIN exp_matrix_data m ON m.entry_id = d.entry_id AND m.site_id = s.site_id
+      WHERE
+        s.site_name = 'newspring'
+        AND m.col_id_365 = s.site_name
+        AND d.channel_id = 175
+        AND d.entry_id = 128506
+        AND t.entry_date <= UNIX_TIMESTAMP()
+        AND (t.expiration_date = 0 OR t.expiration_date >= UNIX_TIMESTAMP())
+        AND m.col_id_366 IS NOT NULL;
+    `, { type: Sequelize.QueryTypes.SELECT})
+    , { ttl: 60 })
+        .then((data: any) => data && data.length && data[0]);
+      // tslint:enable
   }
 
   public async findByTagName(
