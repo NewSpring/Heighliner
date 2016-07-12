@@ -75,7 +75,7 @@ export async function createApp() {
   let cache;
   if (!process.env.CI && !process.env.TEST) {
 
-    // local development
+    // XXX add in dynamic docker host development
     let dockerhost = "192.168.99.100";
 
     // MONGO
@@ -113,7 +113,7 @@ export async function createApp() {
       password    : process.env.MSSQL_PASSWORD,
       database    : process.env.MSSQL_DB,
       dialectOptions: {
-        // instanceName: process.env.MSSQL_INSTANCE,
+        instanceName: process.env.MSSQL_INSTANCE,
         // connectTimeout: 90000,
       },
     };

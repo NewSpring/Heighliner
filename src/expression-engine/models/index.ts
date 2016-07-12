@@ -8,6 +8,7 @@ import matrix from "./ee/matrix";
 import playa from "./ee/playa";
 import tags from "./ee/tags";
 import sites from "./ee/sites";
+import snippets from "./ee/snippets";
 import navee from "./../models/navigation/tables";
 
 let tables = {
@@ -18,6 +19,7 @@ let tables = {
   sites,
   tags,
   navee,
+  snippets,
 } as {
   [key: string]: {
     connect: () => Tables;

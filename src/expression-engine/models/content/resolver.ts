@@ -56,6 +56,15 @@ export default {
     lowReorderSets(_, { setName }, { models }) {
       return models.Content.getFromLowReorderSet(setName);
     },
+
+    live(_, $, { models }) {
+      return models.Content.getLiveStream();
+    },
+  },
+
+  LiveFeed: {
+    live: ({ isLive }) => !!isLive,
+    embedCode: ({ snippet_contents }) => snippet_contents,
   },
 
   ContentColor: {
