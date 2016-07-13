@@ -286,7 +286,9 @@ export class Group extends Rock {
         $or: [
           { Name: { $like: `%${query}%` } },
           { Description: { $like: `%${query}%` } },
-          Sequelize.literal(`[Campus].[Name] LIKE N'%${query}%'`),
+          Sequelize.literal(`[Campus].[Name] LIKE N'%${
+            query && query.toLowerCase().replace("campus", "").trim()
+          }%'`),
         ],
       },
       attributes: ["Id", distance],
