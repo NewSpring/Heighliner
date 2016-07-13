@@ -117,7 +117,8 @@ export default {
         16814, // type
       ];
       const queries = ids.map(id => models.Rock.getAttributesFromId(id, { models }));
-      return Promise.all(queries).then(flatten);
+      return Promise.all(queries).then(flatten)
+        .then(x => x.filter(y => y.Value !== "Interests"));
     },
   },
 
