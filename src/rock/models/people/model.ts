@@ -37,6 +37,10 @@ export class Person extends Rock {
     return createGlobalId(`${id}`, "PersonAlias");
   }
 
+  private createGlobalGuidId(id: string | number) {
+    return createGlobalId(`${id}`, "PersonGuid");
+  }
+
   public async clearCacheFromRequest({ body }): Promise<any> {
     const { id, type, action } = body;
     return Promise.resolve()
@@ -146,6 +150,12 @@ export class Person extends Rock {
       })
     );
 
+  }
+
+  public async findOne({ guid }: { guid?: string }): Promise<any> {
+    return this.cache.get(this.createGlobalGuidId(guid), () => PersonTable.findOne({
+      where: { Guid: guid },
+    }));
   }
 
 }

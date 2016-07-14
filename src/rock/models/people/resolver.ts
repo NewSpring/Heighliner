@@ -6,11 +6,16 @@ export default {
 
   Query: {
     people: (_, { email }, { models }) => models.Person.findByEmail(email),
+    person: (_, { guid }, { models }) => {
+      if (!guid) return null;
+      return models.Person.findOne({ guid });
+    },
     currentPerson: (_: any, args: any, { person }: any): any => person,
   },
 
   Person: {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    entityId: ({ Id }) => Id,
     firstName: ({ FirstName }) => FirstName,
     lastName: ({ LastName }) => LastName,
     nickName: ({ NickName }) => NickName,
