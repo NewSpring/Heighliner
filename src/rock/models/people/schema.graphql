@@ -11,6 +11,7 @@ type PhoneNumber implements Node {
 
 type Person implements Node {
   id: ID!
+  entityId: Int!
   firstName: String!
   lastName: String!
   nickName: String
