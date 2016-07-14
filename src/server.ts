@@ -22,7 +22,7 @@ async function start() {
     "http://localhost:3000",
     "http://localhost:12392",
     "https://alpha-app.newspring.io",
-    "https://beta-app.newspring.io",
+    "https://beta-native.newspring.cc",
     "https://beta-my.newspring.cc",
     "https://my.newspring.cc",
   ];
