@@ -81,6 +81,7 @@ export class ScheduledTransaction extends FinancialModel {
     const globalId = createGlobalId(`${id}`, "ScheduledTransactionTransactions");
     return this.cache.get(globalId, () => TransactionTable.find({
         where: { ScheduledTransactionId: id },
+        order: [ ["TransactionDateTime", "DESC"] ],
       })
     );
   }
