@@ -63,6 +63,7 @@ export default {
 
   ScheduledTransaction: {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    entityId: ({ Id }) => Id,
     reminderDate: ({ ReminderDate }) => ReminderDate,
     start: ({ StartDate }) => StartDate,
     next: ({ NextPaymentDate }) => NextPaymentDate,
@@ -92,6 +93,7 @@ export default {
 
   Transaction: {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    entityId: ({ Id }) => Id,
     summary: ({ Summary }) => Summary,
     date: ({ TransactionDateTime, CreatedDate, ModifiedDate }) => (TransactionDateTime || ModifiedDate || CreatedDate),
     details: ({ Id, TransactionDetails }, _, { models }) => {

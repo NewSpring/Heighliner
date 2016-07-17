@@ -7,6 +7,7 @@ type TransactionDetail implements Node {
 
 type ScheduledTransaction implements Node {
   id: ID!
+  entityId: Int!
   reminderDate: String
   start: String
   next: String
@@ -23,6 +24,7 @@ type ScheduledTransaction implements Node {
 
 type Transaction implements Node {
   id: ID!
+  entityId: Int!
   summary: String
   status: String
   date: String
