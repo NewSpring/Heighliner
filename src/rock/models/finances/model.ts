@@ -138,8 +138,8 @@ export class SavedPayment extends FinancialModel {
         limit,
         offset,
       })
-        .then(this.getFromIds.bind(this))
-    , { cache });
+    , { cache })
+      .then(this.getFromIds.bind(this));
 
   }
 }
