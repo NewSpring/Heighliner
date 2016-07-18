@@ -250,7 +250,7 @@ export class Content extends EE {
           [ChannelTitles.model, "entry_date", "DESC"],
         ],
         include: [
-          { model: ChannelTitles.model, where: { status: "Open" } },
+          { model: ChannelTitles.model, where: { status: { $or: ["open", "featured"] } } },
           { model: Channels.model, where: { channel_name: { $or: includeChannels }} },
           {
             model: TagEntries.model,
