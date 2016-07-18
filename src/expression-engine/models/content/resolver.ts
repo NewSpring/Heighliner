@@ -131,7 +131,9 @@ export default {
     site: ({ site_id }) => createGlobalId(site_id, "Sites"),
     channel: ({ channel_id }: any) => createGlobalId(channel_id, "Channel"),
     series: ({ series_id }, _, $, { parentType }) => createGlobalId(series_id, parentType.name),
-    urlTitle: ({ exp_channel_title }) => exp_channel_title.url_title,
+    urlTitle: ({ url, exp_channel_title }) => (
+      url || exp_channel_title && exp_channel_title.url_title
+    ),
     summary: async ({ summary, body, legacy_body }, _, { models }) => {
       if (summary) return summary;
 
