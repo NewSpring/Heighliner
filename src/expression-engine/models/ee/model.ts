@@ -17,7 +17,7 @@ export class EE extends Heighliner {
   public contentImages(markup: string): any[] {
     if (!markup) return [];
 
-    let images = markup.match(/src=".*\.(jpg|jpeg|png)"/);
+    let images = markup.match(/src=".*\.(jpg|jpeg|png)"/gmi);
     if (!images) return [];
 
     return images
@@ -45,13 +45,13 @@ export class EE extends Heighliner {
   public cleanMarkup(markup: string): string | boolean {
     if (!markup) return false;
 
-    let parsed = markup.match(/src="{assets_\d*.*}"/);
+    let parsed = markup.match(/src="{assets_\d*.*}"/gmi);
     if (!parsed) return markup;
 
     // remove {assets_IDSTRING:} and make protocal relative
-    markup = markup.replace(/{assets_\d*.*}/, (link: string): string => {
+    markup = markup.replace(/{assets_\d*.*}/gmi, (link: string): string => {
       link = link.trim().substring(0, link.length - 1);
-      link = link.replace(/{assets_\d*:/, "");
+      link = link.replace(/{assets_\d*:/gmi, "");
       return link;
     });
 
