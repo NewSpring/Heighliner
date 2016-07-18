@@ -13,10 +13,15 @@ import {
   FinancialPaymentDetail,
 } from "./tables";
 
-// import {
-//   Person,
-//   PersonAlias,
-// } from "../people/tables"
+import {
+  Person,
+  PersonAlias,
+} from "../people/tables";
+
+import {
+  Group,
+  GroupMember,
+} from "../groups/tables";
 
 import { Rock } from "../system";
 
@@ -65,6 +70,39 @@ export class Transaction extends FinancialModel {
     , { cache })
       .then(this.getFromIds.bind(this));
 
+  }
+
+  public async findByGivingGroup(givingGroup: string, { limit, offset }, { cache }): Promise<any> {
+
+    return this.cache.get(`${givingGroup}:findByGivingGroup`, () => TransactionTable.find({
+        attributes: ["Id"],
+        order: [ ["TransactionDateTime", "DESC"] ],
+        include: [
+          {
+            model: PersonAlias.model,
+            attributes: [],
+            include: [
+              {
+                model: Person.model,
+                attributes: [],
+                include: [
+                  {
+                    model: GroupMember.model,
+                    attributes: [],
+                    include: [
+                      { model: Group.model, attributes: [], where: { Id: Number(givingGroup) } },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+    , { cache })
+      .then((x: any[]) => x.slice(offset, limit + offset))
+      .then(this.getFromIds.bind(this))
+      ;
   }
 }
 

@@ -215,6 +215,10 @@ export function bind({
     foreignKey: "AuthorizedPersonAliasId", targetKey: "Id",
   });
 
+  PersonAlias.model.hasMany(Transaction.model, {
+    foreignKey: "AuthorizedPersonAliasId",
+  });
+
   TransactionRefund.model.belongsTo(Transaction.model, {
     foreignKey: "OriginalTransactionId", targetKey: "Id",
   });
