@@ -238,19 +238,19 @@ export class Content extends EE {
   }
 
   public async findByTagName(
-    { tagName, includeChannels }: { tagName: string, includeChannels?: string[]},
+    { tagName, includeChannels }: { tagName: string, includeChannels: string[]},
     { limit, offset },
     cache
   ): Promise<any> {
+    includeChannels || (includeChannels = []); // tslint:disable-line
     const query = { tagName, limit, offset, includeChannels };
-
     return this.cache.get(this.cache.encode(query, this.__type), () => ChannelData.find({
         attributes: ["entry_id"],
         order: [
           [ChannelTitles.model, "entry_date", "DESC"],
         ],
         include: [
-          { model: ChannelTitles.model, where: { status: { $or: ["open", "featured"] } } },
+          { model: ChannelTitles.model, where: { status: { $or: ["open", "featured" ]} } },
           { model: Channels.model, where: { channel_name: { $or: includeChannels }} },
           {
             model: TagEntries.model,
