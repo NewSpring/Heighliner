@@ -125,6 +125,19 @@ export class Person extends Rock {
     );
   }
 
+  public async getFamilyFromId(id: string | number): Promise<any> {
+    // XXX model this in sequelize
+    return GroupMember.db.query(`
+      SELECT GroupMember.*
+      FROM [GroupMember] gm
+      LEFT JOIN [Group] g ON gm.[GroupId] = g.[Id]
+      LEFT JOIN [GroupMember] GroupMember ON GroupMember.GroupId = g.Id
+      WHERE gm.[PersonId] = ${id} AND g.[GroupTypeId] = 10
+    `)
+      .then(([members]) => members)
+      .then(this.debug);
+  }
+
   // XXX correctly type
   public async getFromAliasId(
     id: string | number,

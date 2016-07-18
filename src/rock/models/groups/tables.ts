@@ -123,6 +123,7 @@ export function bind({
   AttributeValue,
   GroupLocation,
   Location,
+  Person,
 }: Tables): void {
 
   Group.model.hasMany(GroupMember.model, { foreignKey: "GroupId" });
@@ -131,6 +132,9 @@ export function bind({
 
   GroupMember.model.belongsTo(Group.model, { foreignKey: "GroupId", targetKey: "Id" });
   GroupLocation.model.belongsTo(Group.model, { foreignKey: "GroupId", targetKey: "Id" });
+
+  GroupMember.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
+  Person.model.hasMany(GroupMember.model, { foreignKey: "PersonId" });
 
   GroupLocation.model.belongsTo(Location.model, { foreignKey: "LocationId", targetKey: "Id" });
 

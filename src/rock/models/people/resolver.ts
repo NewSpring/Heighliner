@@ -11,6 +11,11 @@ export default {
       return models.Person.findOne({ guid });
     },
     currentPerson: (_: any, args: any, { person }: any): any => person,
+    currentFamily: (_: any, args: any, { models, person }: any): any => {
+      if (!person) return null;
+      return models.Person.getFamilyFromId(person.Id);
+    },
+
   },
 
   Person: {
