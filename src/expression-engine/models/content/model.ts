@@ -284,6 +284,8 @@ export class Content extends EE {
     channelTitle.entry_date = {
       $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())"),
     };
+
+    if (channelTitle.status === "open") channelTitle.status = { $or: ["open", "featured"] };
     return await this.cache.get(this.cache.encode(query, this.__type), () => ChannelData.find({
       where: channelData,
       attributes: ["entry_id"],
