@@ -81,7 +81,7 @@ export function bind({
 }: Tables): void {
 
   PersonAlias.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
-  Person.model.hasOne(PersonAlias.model, { foreignKey: "Id" });
+  Person.model.hasOne(PersonAlias.model, { foreignKey: "PersonId" });
 
   PhoneNumber.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
 

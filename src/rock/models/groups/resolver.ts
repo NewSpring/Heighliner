@@ -1,4 +1,4 @@
-import { flatten, uniqBy } from "lodash";
+import { flatten } from "lodash";
 import { allData } from "geo-from-ip";
 import { geocode } from "google-geocoding";
 import { createGlobalId } from "../../../util";
@@ -84,30 +84,8 @@ export default {
         geo.longitude = googleGeoData.lng;
       }
 
-      let promises = [
-        models.Group.findByQuery({ query }, { limit, offset, geo }),
-        models.Group.findByAttributes(attributes, { limit, offset, geo }),
-      ];
 
-      return Promise.all(promises)
-        // flatten all results
-        .then(flatten)
-        // remove duplicates
-        .then(x => {
-          let count = 0;
-          let results = [];
-          for (let queryType of x) {
-            count += queryType.count;
-            results = results.concat(queryType.results);
-          }
-
-          results = uniqBy(results, "Id");
-          // XXX how do we get an accurate count?
-          return { count, results };
-        })
-        // XXX sory by distance
-        .then(x => x)
-        ;
+      return models.Group.findByAttributesAndQuery({ query, attributes }, { limit, offset, geo });
     },
     groupAttributes: (_, $, { models }) => {
       const ids = [
@@ -124,7 +102,7 @@ export default {
 
   GroupMember: {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
-    role: ({ GroupTypeRole }) => GroupTypeRole.Name, // XXX should we expand this?
+    role: ({ GroupTypeRole }) => GroupTypeRole && GroupTypeRole.Name, // XXX should we expand this?
     person: ({ PersonId }, _, { models }) => models.Person.getFromId(PersonId),
   },
 

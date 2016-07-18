@@ -5,4 +5,6 @@ export default [
   `person(guid: ID): Person`,
 
   `currentPerson: Person`,
+
+  `currentFamily: [GroupMember]`,
 ];

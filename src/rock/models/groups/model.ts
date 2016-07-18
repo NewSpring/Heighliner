@@ -316,6 +316,102 @@ export class Group extends Rock {
     ;
 }
 
+public async findByAttributesAndQuery({ attributes, query }, { limit, offset, geo }): Promise<any> {
+  let count = 0;
+
+  // XXX prevent sql injection
+
+  let point = `${Number(geo.latitude)}, ${Number(geo.longitude)}, 4326`;
+
+  let q = { attributes, query, geo };
+  // tslint:disable
+  // WILEY METHOD
+  return this.cache.get(this.cache.encode(q), () => GroupTable.db.query(`
+    DECLARE @search AS NVARCHAR(100) = '${query ? query : ""}';
+    DECLARE @metersPerMile AS DECIMAL = 1609.34;
+    DECLARE @smallGroupTypeId AS INT = 25;
+    DECLARE @groupEntityTypeId AS INT = (SELECT Id FROM EntityType WHERE Name = 'Rock.Model.Group');
+
+    DECLARE @tagAttributeId AS INT = 16815;
+    DECLARE @childcareAttributeId AS INT = 5406;
+    DECLARE @typeAttributeId AS INT = 16814;
+    DECLARE @categoryAttributeId AS INT = 1409;
+
+    IF OBJECT_ID('tempdb.dbo.#groupTags', 'U') IS NOT NULL DROP TABLE #groupTags;
+
+    SELECT g.Id AS GroupId, CONVERT(NVARCHAR(MAX), dv.Value) AS Tag, 1 as TagValue
+    INTO #groupTags
+    FROM [Group] g
+    JOIN AttributeValue av ON av.EntityId = g.Id
+    JOIN DefinedValue dv ON av.Value LIKE '%' + CONVERT(NVARCHAR(100), dv.[Guid]) + '%'
+    WHERE av.AttributeId = @tagAttributeId AND g.GroupTypeId = @smallGroupTypeId;
+
+    INSERT INTO #groupTags (GroupId, Tag, TagValue)
+    SELECT g.Id, dv.Value, 1
+    FROM [Group] g
+    JOIN AttributeValue av ON av.EntityId = g.Id
+    JOIN DefinedValue dv ON av.Value = CONVERT(NVARCHAR(100), dv.[Guid])
+    WHERE
+        av.AttributeId IN (@typeAttributeId, @categoryAttributeId)
+        AND g.GroupTypeId = @smallGroupTypeId;
+
+    INSERT INTO #groupTags (GroupId, Tag, TagValue)
+    SELECT g.Id, 'Childcare', 1
+    FROM [Group] g JOIN AttributeValue av ON av.EntityId = g.Id
+    WHERE
+        av.AttributeId = @childcareAttributeId
+        AND av.Value = 'True'
+        AND g.GroupTypeId = @smallGroupTypeId;
+
+    IF LEN(@search) > 0
+    BEGIN
+        INSERT INTO #groupTags (GroupId, Tag, TagValue)
+        SELECT g.Id, CONCAT(g.Name, ' ', g.[Description]), 2
+        FROM [Group] g
+        WHERE g.GroupTypeId = @smallGroupTypeId;
+
+        INSERT INTO #groupTags (GroupId, Tag, TagValue)
+        SELECT g.Id, c.Name, 2
+        FROM [Group] g JOIN Campus c ON c.Id = g.CampusId
+        WHERE g.GroupTypeId = @smallGroupTypeId;
+    END
+
+    SELECT
+        gt.GroupId as Id,
+        g.Name,
+        l.[GeoPoint].STDistance(geography::Point(${point})) AS Distance,
+        SUM(gt.TagValue) as RawValue,
+        SUM(gt.TagValue) - ISNULL(CONVERT(INT, l.[GeoPoint].STDistance(geography::Point(${point})) / @metersPerMile / 10), 1000) AS Score
+    FROM #groupTags gt
+        JOIN [Group] g ON g.Id = gt.GroupId
+        LEFT JOIN [GroupLocation] gl ON gl.GroupId = g.Id
+        LEFT JOIN Location l ON gl.LocationId = l.Id
+    WHERE
+        (LEN(@search) > 0 AND gt.Tag LIKE '%' + @search + '%')
+        ${attributes.length ? "OR gt.Tag IN (" + attributes.map(x => `'${x}'`).join(", ") + ")" : ""}
+        AND g.GroupTypeId = @smallGroupTypeId
+    GROUP BY
+        gt.GroupId,
+        g.Name,
+        l.[GeoPoint].STDistance(geography::Point(${point}))
+    ORDER BY
+        SUM(gt.TagValue) - ISNULL(CONVERT(INT, l.[GeoPoint].STDistance(geography::Point(${point})) / @metersPerMile / 10), 1000) DESC,
+        l.[GeoPoint].STDistance(geography::Point(${point})) ASC;
+    `).then(([x]) => x)
+  )
+    // tslint:enable
+    .then((x: any[]) => {
+      count = x.length;
+      return x;
+    })
+    .then((x: any[]) => {
+      return x.slice(offset, limit + offset);
+    })
+    .then(this.getFromIdsWithDistance)
+    .then(results => ({ count, results }))
+    ;
+  }
+
   // public async getFromPerson
   public async find(query): Promise<any> {
     query = merge({ IsActive: true }, query);
