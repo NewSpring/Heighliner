@@ -15,5 +15,7 @@ An Apollo GraphQL server for NewSpring Church
 
 ```
 npm i
+npm install -g typings
+typings i
 npm start
 ```
