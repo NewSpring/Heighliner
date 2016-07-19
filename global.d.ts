@@ -38,6 +38,8 @@ declare module "casual" {
   export var title: string;
   export var url: string;
   export var description: string;
+  export var url: string;
+  export var title: string;
 }
 
 declare module "php-unserialize" {
