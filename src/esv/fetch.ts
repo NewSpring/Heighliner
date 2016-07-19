@@ -13,7 +13,7 @@ export class ESVFetchConnector {
   private key: string = process.env.ESV_KEY;
   private count: number = 0;
 
-  public get(query: string): Promise<any> {
+  public getFromAPI(query: string): Promise<any> {
     const label = `ESVFetchConnector${this.getCount()}`;
 
     const request = this.getRequest(query);
@@ -26,7 +26,6 @@ export class ESVFetchConnector {
     const options = { method: "GET", headers };
 
     console.time(label); // tslint:disable-line
-    // XXX we CAN cache the ESV responses!
 
     return fetch(request, options)
       .then(x => x.text())
