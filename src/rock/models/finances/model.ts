@@ -183,7 +183,7 @@ export class SavedPayment extends FinancialModel {
     return await this.cache.get(this.cache.encode(query), () => SavedPaymentTable.find({
         where: { PersonAliasId: { $in: aliases }},
         order: [
-          ["ModifiedDateTime", "DESC"],
+          ["ModifiedDateTime", "ASC"],
         ],
         attributes: ["Id"],
         limit,
