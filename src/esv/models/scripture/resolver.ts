@@ -1,7 +1,7 @@
 
 export default {
   Query: {
-    scripture(_: any, { query }, { models }: any): any {
+    scripture(_: any, { query }, { models }: any): string {
       return models.ESV.get(query);
     },
   },

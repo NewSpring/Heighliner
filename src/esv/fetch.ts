@@ -13,7 +13,7 @@ export class ESVFetchConnector {
   private key: string = process.env.ESV_KEY;
   private count: number = 0;
 
-  public getFromAPI(query: string): Promise<any> {
+  public getFromAPI(query: string): Promise<string> {
     const label = `ESVFetchConnector${this.getCount()}`;
 
     const request = this.getRequest(query);

@@ -11,10 +11,10 @@ class ESV extends ESVFetchConnector {
     this.cache = cache;
   }
 
-  public async get(query: string): Promise<any> {
+  public async get(query: string): Promise<string> {
     return await this.cache.get(`${this.__type}:${query}`, () => (
       this.getFromAPI(query)
-    ));
+    )) as string;
   }
 };
 
