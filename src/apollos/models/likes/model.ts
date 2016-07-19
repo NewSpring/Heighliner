@@ -1,3 +1,4 @@
+import { Cache, defaultCache } from "../../../util/cache";
 import { MongoConnector } from "../../mongo";
 
 export interface LikeDocument {
@@ -31,14 +32,19 @@ const schema: Object = {
 const Model = new MongoConnector("like", schema);
 
 export class Like {
+  public __type: string = "Like";
   public model: MongoConnector;
+  public cache: Cache;
 
-  constructor() {
+  constructor({ cache }: { cache: Cache | any } = { cache: defaultCache }) {
     this.model = Model;
+    this.cache = cache;
   }
 
   public async getFromUserId(userId: string): Promise<LikeDocument[]> {
-    return await this.model.find({ userId }) as LikeDocument[];
+    return await this.cache.get(`${this.__type}:${userId}`, () => (
+      this.model.find({ userId })
+    )) as LikeDocument[];
   }
 
 }
