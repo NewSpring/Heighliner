@@ -19,3 +19,20 @@ test("`getFromUserId` should pass the userId along to the model find", async (t)
 
   await likes.getFromUserId(userId);
 });
+
+test("`getFromUserId` should try and read data from the cache", async (t) => {
+  const userId = "testId";
+  const testKey = `Like:${userId}`;
+
+  const cache = {
+    get(key) {
+      t.is(testKey, key);
+      t.pass();
+      return Promise.resolve();
+    },
+  };
+
+  const tempLikes = new Like({ cache });
+
+  await tempLikes.getFromUserId(userId);
+});
