@@ -4,6 +4,8 @@ import casual from "casual";
 import { ESVFetchConnector, connect } from "../../src/esv/fetch";
 
 test("`connect` should fail without any env vars", async (t) => {
+  delete process.env.ESV_KEY;
+
   const ESV = await connect();
   t.falsy(ESV);
 });
