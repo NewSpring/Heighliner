@@ -36,6 +36,8 @@ declare module "casual" {
   export var unix_time: string;
   export var word: string;
   export var description: string;
+  export var url: string;
+  export var title: string;
 }
 
 declare module "php-unserialize" {
