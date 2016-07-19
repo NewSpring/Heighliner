@@ -23,7 +23,7 @@ test("Valid queries should return sucess", async (t) => {
   const response = await Heighliner(`
     query UserLikes {
       likes {
-        _id
+        id
         userId
         entryId
         title

@@ -32,6 +32,7 @@ declare module "apollo-server" {
 declare module "casual" {
   function integer(low: number, high: number): number;
   function random_value(any): any;
+  function date(): any;
   export var email: string;
   export var unix_time: string;
   export var word: string;

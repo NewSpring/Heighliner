@@ -1,3 +1,6 @@
+import { LikeDocument } from "./model";
+import { createGlobalId } from "../../../util";
+
 export default {
   Query: {
     likes(_: any, args: any, { models, user }: any): any {
@@ -7,7 +10,7 @@ export default {
   },
 
   Like: {
-    _id: ({ _id }) => _id,
+    id: ({ _id }: LikeDocument, _, $, { parentType }) => createGlobalId(_id, parentType.name),
     userId: ({ userId }) => userId,
     entryId: ({ entryId }) => entryId,
     title: ({ title }) => title,
