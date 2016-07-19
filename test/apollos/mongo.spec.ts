@@ -51,3 +51,18 @@ test("findOne should be a sugared passthrough to the models findOne", async (t) 
   testModel.model.findOne = oldFindOne;
 
 });
+
+test("find should be a sugared passthrough to the models find", async (t) => {
+  const oldFind = testModel.model.find;
+
+  testModel.model.find = function mockedFind(...args) {
+    t.is(args[0], "test");
+    return new Promise((r) => r([1]));
+  };
+
+  const tests = await testModel.findOne("test");
+  t.is(tests[0], 1);
+
+  testModel.model.find = oldFind;
+
+});

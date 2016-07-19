@@ -52,6 +52,13 @@ export class MongoConnector {
       .then(x => { console.timeEnd(label); return x; });  // tslint:disable-line
   }
 
+  public find(...args): Promise<Object> {
+    const label = `MongoConnector${this.getCount()}`;
+    console.time(label); // tslint:disable-line
+    return this.model.find.apply(this.model, args)
+      .then(x => { console.timeEnd(label); return x; }); // tslint:disable-line
+  }
+
 
 
   private getCount(): number {
