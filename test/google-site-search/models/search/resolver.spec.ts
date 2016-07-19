@@ -39,6 +39,11 @@ const generateSearch = (items = []) => {
   };
 };
 
+test("`Query` should expose search method", t => {
+  const { Query } = Resolver;
+  t.truthy(Query.search);
+});
+
 test("`SSSearchResult` should return the id from the search result", t => {
   const { SSSearchResult } = Resolver;
   const sampleItem = generateSearchItem();
