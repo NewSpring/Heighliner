@@ -1,4 +1,5 @@
 import { merge, isUndefined } from "lodash";
+import Moment from "moment";
 import { createGlobalId } from "../../../util";
 
 import {
@@ -72,11 +73,21 @@ export class Transaction extends FinancialModel {
 
   }
 
-  public async findByGivingGroup(givingGroup: string, { limit, offset }, { cache }): Promise<any> {
+  public async findByGivingGroup(
+    {id, include, start, end } , { limit, offset }, { cache }
+  ): Promise<any> {
+    let query = { id, include, start, end };
 
-    return this.cache.get(`${givingGroup}:findByGivingGroup`, () => TransactionTable.find({
+    let TransactionDateTime;
+    if (start || end) TransactionDateTime = {};
+    if (start) TransactionDateTime.$gt = Moment(start, "MM/YY");
+    if (end) TransactionDateTime.$lt = Moment(end, "MM/YY");
+
+    return this.cache.get(
+      this.cache.encode(query, `findByGivingGroup`), () => TransactionTable.find({
         attributes: ["Id"],
         order: [ ["TransactionDateTime", "DESC"] ],
+        where: TransactionDateTime ? [ { TransactionDateTime } ] : null,
         include: [
           {
             model: PersonAlias.model,
@@ -85,12 +96,13 @@ export class Transaction extends FinancialModel {
               {
                 model: Person.model,
                 attributes: [],
+                where: include && include.length ? { Id: { $in: include } } : null,
                 include: [
                   {
                     model: GroupMember.model,
                     attributes: [],
                     include: [
-                      { model: Group.model, attributes: [], where: { Id: Number(givingGroup) } },
+                      { model: Group.model, attributes: [], where: { Id: Number(id) } },
                     ],
                   },
                 ],

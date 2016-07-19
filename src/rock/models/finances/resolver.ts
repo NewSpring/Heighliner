@@ -11,13 +11,18 @@ export default {
         }, { cache }
       );
     },
-    transactions: (_, { limit, cache, skip } , { models, person }) => {
+    transactions: (_, { people, start, end, limit, cache, skip } , { models, person }) => {
       if (!person) return null;
-      // if (person.GivingGroupId) {
-      //   return models.Transaction.findByGivingGroup(
-      //     person.GivingGroupId, { limit, offset: skip}, { cache }
-      //   );
-      // }
+      if (person.GivingGroupId) {
+        return models.Transaction.findByGivingGroup(
+          {
+            id: person.GivingGroupId,
+            include: people,
+            start,
+            end,
+          }, { limit, offset: skip }, { cache }
+        );
+      }
       return models.Transaction.findByPersonAlias(
         person.aliases, { limit, offset: skip}, { cache }
       );
