@@ -1,6 +1,7 @@
 import test from "ava";
 import casual from "casual";
 import Resolver from "../../../../src/apollos/models/likes/resolver";
+import { parseGlobalId } from "../../../../src/util";
 
 const sampleData = {
   _id: casual.word,
@@ -11,9 +12,9 @@ const sampleData = {
   link: casual.url,
   icon: casual.word,
   category: casual.word,
-  date: casual.word,
+  date: casual.date(),
   status: casual.word,
-  dateLiked: casual.word,
+  dateLiked: casual.date(),
 };
 
 test("`Query` should have the likes function", t => {
@@ -23,9 +24,10 @@ test("`Query` should have the likes function", t => {
 
 test("`Like` should return the id", t => {
   const { Like } = Resolver;
+  const parentType = { name: "Like" };
 
-  const _id = Like._id(sampleData);
-  t.is(_id, sampleData._id);
+  const { id } = parseGlobalId(Like.id(sampleData, null, null, { parentType }));
+  t.is(id, sampleData._id);
 });
 
 test("`Like` should return the userId", t => {

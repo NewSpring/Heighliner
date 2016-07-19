@@ -1,5 +1,5 @@
-type Like {
-  _id: String!,
+type Like implements Node{
+  id: ID!
   userId: String!,
   entryId: String!,
   title: String!,
