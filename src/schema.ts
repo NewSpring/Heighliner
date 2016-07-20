@@ -34,12 +34,16 @@ import ExpressionEngine, {
 // Import Google Site Search
 import GoogleSS, { queries as GoogleSSQueries } from "./google-site-search";
 
+// Import ESV API
+import ESV, { queries as ESVQueries } from "./esv";
+
 // Merge all applications together
 let { schema, models, resolvers, mocks } = loadApplications({
   Apollos,
   ExpressionEngine,
   Rock,
   GoogleSS,
+  ESV,
 });
 
 // join all application queries and generate base query
@@ -49,6 +53,7 @@ schema = createSchema({
     ...ExpressionEngineQueries,
     ...RockQueries,
     ...GoogleSSQueries,
+    ...ESVQueries,
   ],
   mutations: [
     // ...ApollosMutations,
@@ -136,6 +141,9 @@ export async function createApp() {
 
     const SS = await GoogleSS.connect();
     if (SS) useMocks = false;
+
+    const ESVConnection = await ESV.connect();
+    if (ESVConnection) useMocks = false;
 
   }
 
