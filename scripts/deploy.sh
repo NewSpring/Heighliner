@@ -55,7 +55,7 @@ yecho "### Updating ECS ###"
 JQ="jq --raw-output --exit-status"
 
 
-if [ "$CHANNEL" == "production" ]; then
+if [ "$CHANNEL" = "production" ]; then
   ECS_SERVICE="heighliner-${CHANNEL}"
 else
   ECS_SERVICE="${CHANNEL}-heighliner"
@@ -143,13 +143,13 @@ register_definition() {
 
 deploy_cluster() {
 
-  if [ "$CHANNEL" == "alpha" ]; then
+  if [ "$CHANNEL" = "alpha" ]; then
     host_port=8061
   fi
-  if [ "$CHANNEL" == "beta" ]; then
+  if [ "$CHANNEL" = "beta" ]; then
     host_port=8071
   fi
-  if [ "$CHANNEL" == "production" ]; then
+  if [ "$CHANNEL" = "production" ]; then
     host_port=8081
   fi
   yecho "HOST PORT"
