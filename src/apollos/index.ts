@@ -9,7 +9,7 @@ import { createApplication } from "../util/heighliner";
 export type UserDocument = UserDocument;
 export type LikeDocument = LikeDocument;
 
-export const { schema, resolvers, models, queries, mocks } = createApplication([
+export const { schema, resolvers, models, queries, mutations, mocks } = createApplication([
   Users,
   Likes,
 ]);
