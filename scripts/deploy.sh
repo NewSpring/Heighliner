@@ -95,7 +95,7 @@ make_task_def() {
         }
       },
       "portMappings": [
-        { "hostPort": "'"$host_port"'", "containerPort": 80, "protocol": "http" }
+        { "hostPort": '"$host_port"', "containerPort": 80, "protocol": "http" }
       ],
       "environment": [
         { "name": "NODE_ENV", "value": "production" },
