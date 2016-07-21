@@ -55,7 +55,14 @@ yecho "### Updating ECS ###"
 JQ="jq --raw-output --exit-status"
 
 
-ECS_SERVICE="${CHANNEL}-heighliner"
+if [ "$CHANNEL" == "production" ]; then
+  ECS_SERVICE="heighliner-${CHANNEL}"
+else
+  ECS_SERVICE="${CHANNEL}-heighliner"
+fi
+
+yecho "ECS_SERVICE"
+yecho $ECS_SERVICE
 
 deploy_image() {
   docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASSWORD -e $DOCKERHUB_EMAIL
@@ -88,7 +95,7 @@ make_task_def() {
         }
       },
       "portMappings": [
-        { "hostPort": 8061, "containerPort": 80, "protocol": "http" }
+        { "hostPort": "'"$host_port"'", "containerPort": 80, "protocol": "http" }
       ],
       "environment": [
         { "name": "NODE_ENV", "value": "production" },
@@ -136,7 +143,17 @@ register_definition() {
 
 deploy_cluster() {
 
-  host_port=8081
+  if [ "$CHANNEL" == "alpha" ]; then
+    host_port=8061
+  fi
+  if [ "$CHANNEL" == "beta" ]; then
+    host_port=8071
+  fi
+  if [ "$CHANNEL" == "production" ]; then
+    host_port=8081
+  fi
+  yecho "HOST PORT"
+  yecho $host_port
   family="heighliner"
 
   make_task_def
