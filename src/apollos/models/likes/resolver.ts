@@ -9,6 +9,14 @@ export default {
     },
   },
 
+  Mutation: {
+    toggleLike(_: any, { contentId }, { models, user }: any): any {
+      // XXX what should the response be if invalid/insufficient data?
+      if (!user || !contentId) return [];
+      return models.Like.toggleLike(contentId, user._id);
+    },
+  },
+
   Like: {
     id: ({ _id }: LikeDocument, _, $, { parentType }) => createGlobalId(_id, parentType.name),
     userId: ({ userId }) => userId,

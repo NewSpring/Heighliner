@@ -37,6 +37,7 @@ export interface ApplicationDefinition {
   mocks?: Mocks;
   connect?: Function;
   queries?: string[];
+  mutations?: string[];
 }
 
 export interface SchemaShorthand {
