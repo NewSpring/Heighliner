@@ -164,6 +164,8 @@ export async function createApp() {
     models: createdModels,
     graphql: async function(request){
       let ip = getIp(request);
+      // tslint:disable-next-line
+      console.log(`IP: ${ip}`); // debug for campus mapping test
       // Anderson, SC
       if (ip === "::1") ip = "2602:306:b81a:c420:ed84:6327:b58e:6a2d";
 
