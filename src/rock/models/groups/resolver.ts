@@ -60,7 +60,9 @@ export default {
       geo.latitude = geoData.location.latitude;
       geo.longitude = geoData.location.longitude;
       attributes = attributes.filter(x => x); // only truthy values
-
+      if (attributes.indexOf("kid friendly") > -1) {
+        attributes[attributes.indexOf("kid friendly")] = "childcare";
+      }
       const zipRegex = /(\d{5}$)|(^\d{5}-\d{4}$)/;
 
       // parse query for zipcodes
@@ -90,13 +92,17 @@ export default {
     groupAttributes: (_, $, { models }) => {
       const ids = [
         1409, // demographic
-        // 5406, // kid friendly
+        5406, // kid friendly
         16815, // tags
         16814, // type
       ];
       const queries = ids.map(id => models.Rock.getAttributesFromId(id, { models }));
       return Promise.all(queries).then(flatten)
-        .then(x => x.filter(y => y.Value !== "Interests"));
+        .then(x => x.filter(y => y.Value !== "Interests"))
+        .then(x => x.map(y => {
+          y.Value = y.Value === "Childcare" ? "kid friendly" : y.Value;
+          return y;
+        }));
     },
   },
 
