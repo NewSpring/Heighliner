@@ -4,7 +4,7 @@ export default [
 
   `person(guid: ID): Person`,
 
-  `currentPerson: Person`,
+  `currentPerson(cache: Boolean = true): Person`,
 
   `currentFamily: [GroupMember]`,
 ];

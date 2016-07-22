@@ -10,7 +10,12 @@ export default {
       if (!guid) return null;
       return models.Person.findOne({ guid });
     },
-    currentPerson: (_: any, args: any, { person }: any): any => person,
+    currentPerson: (_: any, { cache }, { person, models, user }: any): any => {
+      if (cache && person) return person;
+      if (user && user.services && user.services.rock) {
+        return models.Person.getFromAliasId(user.services.rock.PrimaryAliasId, { cache });
+      }
+    },
     currentFamily: (_: any, args: any, { models, person }: any): any => {
       if (!person) return null;
       return models.Person.getFamilyFromId(person.Id);
