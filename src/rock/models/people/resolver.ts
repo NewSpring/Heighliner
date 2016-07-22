@@ -48,8 +48,8 @@ export default {
     birthYear: ({ BirthYear }) => BirthYear,
     email: ({ Email }) => Email,
     campus: ({ Id }, _, { models }) => models.Person.getCampusFromId(Id),
-    home: ({ Id }, _, { models }) => {
-      return models.Person.getHomesFromId(Id).then(x => x[0]); // only return the first home for now
+    home: ({ Id }, { cache = true }, { models }) => {
+      return models.Person.getHomesFromId(Id, { cache }).then(x => x[0]); // only return the first home for now
     },
   },
 

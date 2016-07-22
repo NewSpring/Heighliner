@@ -24,5 +24,5 @@ type Person implements Node {
   birthYear: Int
   email: String
   campus: Campus
-  home: Location
+  home(cache: Boolean = true): Location
 }
