@@ -35,6 +35,8 @@ declare module "casual" {
   export var email: string;
   export var unix_time: string;
   export var word: string;
+  export var title: string;
+  export var url: string;
   export var description: string;
 }
 
