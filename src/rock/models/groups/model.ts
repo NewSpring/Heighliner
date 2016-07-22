@@ -344,7 +344,7 @@ public async findByAttributesAndQuery({ attributes, query }, { limit, offset, ge
     FROM [Group] g
     JOIN AttributeValue av ON av.EntityId = g.Id
     JOIN DefinedValue dv ON av.Value LIKE '%' + CONVERT(NVARCHAR(100), dv.[Guid]) + '%'
-    WHERE av.AttributeId = @tagAttributeId AND g.GroupTypeId = @smallGroupTypeId;
+    WHERE av.AttributeId = @tagAttributeId AND g.GroupTypeId = @smallGroupTypeId AND g.IsActive = 1 AND g.IsPublic = 1;
 
     INSERT INTO #groupTags (GroupId, Tag, TagValue)
     SELECT g.Id, dv.Value, 1
@@ -353,7 +353,7 @@ public async findByAttributesAndQuery({ attributes, query }, { limit, offset, ge
     JOIN DefinedValue dv ON av.Value = CONVERT(NVARCHAR(100), dv.[Guid])
     WHERE
         av.AttributeId IN (@typeAttributeId, @categoryAttributeId)
-        AND g.GroupTypeId = @smallGroupTypeId;
+        AND g.GroupTypeId = @smallGroupTypeId AND g.IsActive = 1 AND g.IsPublic = 1;
 
     INSERT INTO #groupTags (GroupId, Tag, TagValue)
     SELECT g.Id, 'Childcare', 1
@@ -361,7 +361,8 @@ public async findByAttributesAndQuery({ attributes, query }, { limit, offset, ge
     WHERE
         av.AttributeId = @childcareAttributeId
         AND av.Value = 'True'
-        AND g.GroupTypeId = @smallGroupTypeId;
+        AND g.GroupTypeId = @smallGroupTypeId
+        AND g.IsActive = 1 AND g.IsPublic = 1;
 
     IF LEN(@search) > 0
     BEGIN
@@ -373,7 +374,7 @@ public async findByAttributesAndQuery({ attributes, query }, { limit, offset, ge
         INSERT INTO #groupTags (GroupId, Tag, TagValue)
         SELECT g.Id, c.Name, 2
         FROM [Group] g JOIN Campus c ON c.Id = g.CampusId
-        WHERE g.GroupTypeId = @smallGroupTypeId;
+        WHERE g.GroupTypeId = @smallGroupTypeId AND g.IsActive = 1 AND g.IsPublic = 1;
     END
 
     SELECT
@@ -390,6 +391,7 @@ public async findByAttributesAndQuery({ attributes, query }, { limit, offset, ge
         (LEN(@search) > 0 AND gt.Tag LIKE '%' + @search + '%')
         ${attributes.length ? "OR gt.Tag IN (" + attributes.map(x => `'${x}'`).join(", ") + ")" : ""}
         AND g.GroupTypeId = @smallGroupTypeId
+        AND g.IsActive = 1 AND g.IsPublic = 1
     GROUP BY
         gt.GroupId,
         g.Name,
