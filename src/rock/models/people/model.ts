@@ -141,16 +141,12 @@ export class Person extends Rock {
   }
 
   // XXX correctly type
-  public async getFromAliasId(
-    id: string | number,
-    fields: string[] | string[][] = []
-  ): Promise<any> {
+  public async getFromAliasId(id: string | number, { cache }): Promise<any> {
     id = Number(id) as number;
     let globalId = this.createGlobalAliasId(id);
 
     return await this.cache.get(globalId, () => PersonAlias.findOne({
       where: { Id: id },
-      attributes: fields,
       include: { model: PersonTable.model },
     })
       .then(x => x.Person)
@@ -163,7 +159,7 @@ export class Person extends Rock {
             return data;
           });
       })
-    );
+    , { cache });
 
   }
 

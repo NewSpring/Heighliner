@@ -13,6 +13,7 @@ const personSchema: Object = {
   BirthDate: { type: INTEGER },
   BirthDay: { type: INTEGER },
   BirthMonth: { type: INTEGER },
+  BirthYear: { type: INTEGER },
   ConnectionStatusValueId: { type: INTEGER },
   Email: { type: STRING },
   EmailPreference: { type: STRING },
