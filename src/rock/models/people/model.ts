@@ -106,7 +106,7 @@ export class Person extends Rock {
     );
   }
 
-  public async getHomesFromId(id: string | number): Promise<any> {
+  public async getHomesFromId(id: string | number, { cache } = { cache: true }): Promise<any> {
     return await this.cache.get(`${id}:PersonHomes`, () => GroupLocation.find({
         where: { GroupLocationTypeValueId: 19 }, // Home
         attributes: [],
@@ -123,7 +123,7 @@ export class Person extends Rock {
         ],
       })
         .then(x => x.map(y => y.Location))
-    );
+    , { cache });
   }
 
   public async getFamilyFromId(id: string | number): Promise<any> {
@@ -141,7 +141,7 @@ export class Person extends Rock {
   }
 
   // XXX correctly type
-  public async getFromAliasId(id: string | number, { cache }): Promise<any> {
+  public async getFromAliasId(id: string | number, { cache } = { cache: true }): Promise<any> {
     id = Number(id) as number;
     let globalId = this.createGlobalAliasId(id);
 
