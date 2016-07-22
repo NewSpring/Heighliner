@@ -24,6 +24,7 @@ async function start() {
     "https://alpha-app.newspring.io",
     "https://beta-native.newspring.cc",
     "https://beta-my.newspring.cc",
+    "https://pre-my.newspring.cc",
     "https://my.newspring.cc",
   ];
 
