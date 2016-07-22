@@ -1,0 +1,13 @@
+type Like implements Node{
+  id: ID!
+  userId: String!,
+  entryId: String!,
+  title: String!,
+  image: String!,
+  link: String!,
+  icon: String!,
+  category: String!,
+  date: String!,
+  status: String!,
+  dateLiked: String!,
+}

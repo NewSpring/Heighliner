@@ -41,6 +41,7 @@ export function createApplication(models: ApplicationDefinition[]): ApplicationD
     resolvers: {},
     mocks: {},
     queries: [],
+    mutations: [],
   } as ApplicationDefinition;
 
   for (let model of models) {
@@ -49,6 +50,7 @@ export function createApplication(models: ApplicationDefinition[]): ApplicationD
     joined.resolvers = merge(joined.resolvers, model.resolvers);
 
     if (model.queries) joined.queries = [...joined.queries, ...model.queries];
+    if (model.mutations) joined.mutations = [...joined.mutations, ...model.mutations];
     if (model.mocks) joined.mocks = merge(joined.mocks, model.mocks);
   }
 
