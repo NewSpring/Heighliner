@@ -263,7 +263,19 @@ export class Content extends EE {
           [ChannelTitles.model, "entry_date", "DESC"],
         ],
         include: [
-          { model: ChannelTitles.model, where: { status: { $or: ["open", "featured" ]} } },
+          {
+            model: ChannelTitles.model,
+            where: {
+              status: { $or: ["open", "featured" ]},
+              entry_date: { $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+              expiration_date: {
+                $or: [
+                  { $eq: 0 },
+                  { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+                ],
+              },
+            },
+          },
           { model: Channels.model, where: { channel_name: { $or: includeChannels }} },
           {
             model: TagEntries.model,
@@ -282,6 +294,7 @@ export class Content extends EE {
         return x.slice(offset, limit + offset);
       })
       .then(this.getFromIds.bind(this))
+      .then((x: any[]) => x.filter(y => !!y))
       ;
   }
 
@@ -296,6 +309,12 @@ export class Content extends EE {
     // This gets reset every hour currently
     channelTitle.entry_date = {
       $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())"),
+    };
+    channelTitle.expiration_date = {
+      $or: [
+        { $eq: 0 },
+        { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+      ],
     };
 
     if (channelTitle.status === "open") channelTitle.status = { $or: ["open", "featured"] };
@@ -314,6 +333,7 @@ export class Content extends EE {
     })
     , { ttl: 3600, cache: false })
       .then(this.getFromIds.bind(this))
+      .then((x: any[]) => x.filter(y => !!y))
       ;
   }
 
