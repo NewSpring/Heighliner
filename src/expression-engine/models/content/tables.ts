@@ -31,6 +31,7 @@ const channelTitleSchema: Object = {
   day: { type: CHAR },
   month: { type: CHAR },
   entry_date: { type: INTEGER },
+  expiration_date: { type: INTEGER },
 };
 
 const channelDataSchema: Object = {
