@@ -94,10 +94,22 @@ export class Content extends EE {
       attributes:  ["entry_id", "channel_id", "site_id"].concat(fields as any[]), // why typescript
       include: [
         { model: Channels.model},
-        { model: ChannelTitles.model },
+        {
+          model: ChannelTitles.model,
+          where: {
+            entry_date: { $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+            expiration_date: {
+              $or: [
+                { $eq: 0 },
+                { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+              ],
+            },
+          },
+        },
       ],
     })
       .then(x => {
+        if (!x.exp_channel) return null;
         x.exp_channel.exp_channel_fields = exp_channel_fields;
         return x;
       })
@@ -145,6 +157,7 @@ export class Content extends EE {
       .then(x => x.sort_order.split("|"))
       .then(x => x.filter(y => !!y).map(z => ({ entry_id: z }))) // used so the next line can work
       .then(this.getFromIds.bind(this))
+      .then(x => x.filter(y => !!y))
     , { ttl: 3600 }); // expire this lookup every hour
   }
 
