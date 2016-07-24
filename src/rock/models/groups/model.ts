@@ -340,6 +340,7 @@ public async findByAttributesAndQuery({ attributes, query }, { limit, offset, ge
     DECLARE @categoryAttributeId AS INT = 1409;
 
     IF OBJECT_ID('tempdb.dbo.#groupTags', 'U') IS NOT NULL DROP TABLE #groupTags;
+    IF OBJECT_ID('tempdb.dbo.#searchPieces', 'U') IS NOT NULL DROP TABLE #searchPieces;
 
     SELECT g.Id AS GroupId, CONVERT(NVARCHAR(MAX), dv.Value) AS Tag, 1 as TagValue
     INTO #groupTags
@@ -368,14 +369,28 @@ public async findByAttributesAndQuery({ attributes, query }, { limit, offset, ge
 
     IF LEN(@search) > 0
     BEGIN
+        WITH ctePieces(pn, start, stop) AS (
+            SELECT 1, 1, CHARINDEX(' ', @search)
+            UNION ALL
+            SELECT pn + 1, stop + 1, CHARINDEX(' ', @search, stop + 1)
+            FROM ctePieces
+            WHERE stop > 0
+        ), cteSplit AS (
+            SELECT pn,
+                SUBSTRING(@search, start, CASE WHEN stop > 0 THEN stop-start ELSE 512 END) AS s
+            FROM ctePieces
+        )
+        SELECT * INTO #searchPieces FROM cteSplit;
+
         INSERT INTO #groupTags (GroupId, Tag, TagValue)
         SELECT g.Id, CONCAT(g.Name, ' ', g.[Description]), 2
         FROM [Group] g
-        WHERE g.GroupTypeId = @smallGroupTypeId;
+        WHERE g.GroupTypeId = @smallGroupTypeId AND g.IsActive = 1 AND g.IsPublic = 1;
 
         INSERT INTO #groupTags (GroupId, Tag, TagValue)
         SELECT g.Id, c.Name, 2
-        FROM [Group] g JOIN Campus c ON c.Id = g.CampusId
+        FROM [Group] g
+        JOIN Campus c ON c.Id = g.CampusId
         WHERE g.GroupTypeId = @smallGroupTypeId AND g.IsActive = 1 AND g.IsPublic = 1;
     END
 
@@ -390,7 +405,13 @@ public async findByAttributesAndQuery({ attributes, query }, { limit, offset, ge
         LEFT JOIN [GroupLocation] gl ON gl.GroupId = g.Id
         LEFT JOIN Location l ON gl.LocationId = l.Id
     WHERE
-        (LEN(@search) > 0 AND gt.Tag LIKE '%' + @search + '%')
+        (
+            LEN(@search) > 0
+            AND (
+                gt.Tag LIKE '%' + @search + '%'
+                OR gt.Tag IN (SELECT s FROM #searchPieces)
+            )
+        )
         ${attributes.length ? "OR gt.Tag IN (" + attributes.map(x => `'${x}'`).join(", ") + ")" : ""}
         AND g.GroupTypeId = @smallGroupTypeId
         AND g.IsActive = 1 AND g.IsPublic = 1
