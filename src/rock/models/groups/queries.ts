@@ -4,7 +4,9 @@ export default [
     attributes: [String],
     limit: Int = 20,
     offset: Int = 0,
-    query: String
+    query: String,
+    campus: String,
+    clientIp: String,
   ): GroupSearch`,
 
   // XXX should this take a group type id?
