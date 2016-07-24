@@ -322,10 +322,12 @@ public async findByAttributesAndQuery({ attributes, query }, { limit, offset, ge
   // XXX prevent sql injection
 
   let point = `${Number(geo.latitude)}, ${Number(geo.longitude)}, 4326`;
+  if (!attributes.length && !query) query = "group"; // most inclusive thing I could think of for blank query
 
   let q = { attributes, query, geo };
+
   // tslint:disable
-  // WILEY METHOD
+  // WILEYSORT
   return this.cache.get(this.cache.encode(q), () => GroupTable.db.query(`
     DECLARE @search AS NVARCHAR(100) = '${query ? query.toLowerCase().replace("campus", "") : ""}';
     DECLARE @metersPerMile AS DECIMAL = 1609.34;
