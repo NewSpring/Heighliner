@@ -229,7 +229,7 @@ export class Content extends EE {
     // tslint:disable
     return this.cache.get("newspring:live", () => ChannelData.db.query(`
       SELECT
-        ((WEEKDAY(NOW()) + 1) % 7) = m.col_id_366
+        (WEEKDAY(CONVERT_TZ(NOW(),'+00:00','America/Detroit') + 1) % 7) = m.col_id_366
             AND (SELECT DATE_FORMAT(CONVERT_TZ(NOW(),'+00:00','America/Detroit'),'%H%i') TIMEONLY) BETWEEN m.col_id_367 AND m.col_id_368 AS isLive
       FROM
         exp_sites s
