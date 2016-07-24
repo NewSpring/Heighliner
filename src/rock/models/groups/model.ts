@@ -327,7 +327,7 @@ public async findByAttributesAndQuery({ attributes, query }, { limit, offset, ge
   // tslint:disable
   // WILEY METHOD
   return this.cache.get(this.cache.encode(q), () => GroupTable.db.query(`
-    DECLARE @search AS NVARCHAR(100) = '${query ? query : ""}';
+    DECLARE @search AS NVARCHAR(100) = '${query ? query.toLowerCase().replace("campus", "") : ""}';
     DECLARE @metersPerMile AS DECIMAL = 1609.34;
     DECLARE @smallGroupTypeId AS INT = 25;
     DECLARE @groupEntityTypeId AS INT = (SELECT Id FROM EntityType WHERE Name = 'Rock.Model.Group');
