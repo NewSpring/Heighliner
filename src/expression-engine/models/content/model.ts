@@ -1,4 +1,4 @@
-import { pick, flatten } from "lodash";
+import { pick, flatten, find } from "lodash";
 import { Cache, defaultCache } from "../../../util/cache";
 import Sequelize from "sequelize";
 
@@ -230,23 +230,22 @@ export class Content extends EE {
     return this.cache.get("newspring:live", () => ChannelData.db.query(`
       SELECT
         ((WEEKDAY(CONVERT_TZ(NOW(),'+00:00','America/Detroit')) + 1) % 7) = m.col_id_366
-            AND (SELECT DATE_FORMAT(CONVERT_TZ(NOW(),'+00:00','America/Detroit'),'%H%i') TIMEONLY) BETWEEN m.col_id_367 AND m.col_id_368 AS isLive
+            AND (SELECT DATE_FORMAT(CONVERT_TZ(NOW(),'+00:00','America/Detroit'),'%H%i') TIMEONLY) BETWEEN m.col_id_367 AND m.col_id_368 AS isLive,
+            d.entry_id,
+            t.status
       FROM
-        exp_sites s
-        JOIN exp_channel_data d ON d.site_id = s.site_id
-        JOIN exp_channel_titles t ON t.channel_id = d.channel_id AND t.entry_id = d.entry_id AND t.site_id = s.site_id
-        JOIN exp_matrix_data m ON m.entry_id = d.entry_id AND m.site_id = s.site_id
+        exp_channel_data d
+        JOIN exp_channel_titles t ON t.entry_id = d.entry_id
+        JOIN exp_matrix_data m ON m.entry_id = d.entry_id
       WHERE
-        s.site_name = 'newspring'
-        AND m.col_id_365 = s.site_name
-        AND d.channel_id = 175
-        AND d.entry_id = 128506
+        d.channel_id = 175
+        AND t.status = 'Live Stream Schedule'
         AND t.entry_date <= UNIX_TIMESTAMP()
         AND (t.expiration_date = 0 OR t.expiration_date >= UNIX_TIMESTAMP())
         AND m.col_id_366 IS NOT NULL;
     `, { type: Sequelize.QueryTypes.SELECT})
     , { ttl: 60 })
-        .then((data: any) => data && data.length && data[0]);
+      .then((x: any[]) => find(x, { isLive: 1 }))
       // tslint:enable
   }
 
