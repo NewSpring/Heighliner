@@ -19,9 +19,12 @@ export default [
     cache: Boolean = true
   ): [Content]`,
 
+  // XXX deprecated tagName
   `taggedContent(
     includeChannels: [String],
-    tagName: String!,
+    excludedIds: [String],
+    tagName: String,
+    tags: [String],
     limit: Int = 20,
     skip: Int = 0,
     status: String = "open",

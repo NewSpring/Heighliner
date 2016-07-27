@@ -1,4 +1,5 @@
 import { timeout } from "promise-timeout";
+import Raven, { parsers } from "raven";
 
 import Node from "./util/node/model";
 import {
@@ -200,6 +201,11 @@ export async function createApp() {
 
       context.models = createdModels;
 
+      const sentry = new Raven.Client(process.env.SENTRY);
+      context.sentry = sentry;
+      if (context.person) {
+        sentry.setUserContext({ email: context.person.Email, id: context.person.PersonId });
+      }
       return {
         // graphiql: process.env.NODE_ENV !== "production",
         graphiql: true, // XXX can we dynamically do this on alpha?
@@ -208,6 +214,14 @@ export async function createApp() {
         resolvers: useMocks ? false : resolvers, // required if schema is an array of type definitions
         mocks: useMocks ? mocks : false,
         schema,
+        formatError:  error => {
+          context.sentry.captureError(error, parsers.parseRequest(request));
+          return {
+            message: error.message,
+            locations: error.locations,
+            stack: error.stack,
+          };
+        },
       };
     },
   };
