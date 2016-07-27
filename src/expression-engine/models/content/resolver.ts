@@ -49,8 +49,19 @@ export default {
       }, cache);
     },
 
-    taggedContent(_, { includeChannels, tagName, limit, skip, cache }, { models }) {
-      return models.Content.findByTagName({ tagName, includeChannels }, { offset: skip, limit }, cache);
+    taggedContent(
+      _, { includeChannels, tagName, tags, limit, skip, cache, excludedIds }, { models }
+    ) {
+
+      if (tagName) {
+        return models.Content.findByTagName({ tagName, includeChannels }, { offset: skip, limit }, cache);
+      }
+
+      if (tags) {
+        return models.Content.findByTags({ tags, includeChannels, excludedIds }, { offset: skip, limit }, cache);
+      }
+
+      return null;
     },
 
     lowReorderSets(_, { setName }, { models }) {
@@ -179,6 +190,12 @@ export default {
     },
     children: ({ entry_id }, { channels }, { models }) => {
       return models.Content.findByParentId(entry_id, channels);
+    },
+    related: ({ tags }, { includeChannels, limit, skip, cache }, { models }) => {
+      tags = models.Content.splitByNewLines(tags);
+      if (!tags || !tags.length)  return null;
+
+      return models.Content.findByTags({ tags, includeChannels }, { offset: skip, limit }, cache);
     },
     // deprecated
     tracks: ({ entry_id, tracks, exp_channel }, _, { models }) => {

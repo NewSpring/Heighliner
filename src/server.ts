@@ -2,12 +2,17 @@ import { apolloServer } from "apollo-server";
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import raven from "raven";
+// import DataDog from "connect-datadog";
 // import { pick } from "lodash";
 
 import { createApp } from "./schema";
 
 async function start() {
   const app = express();
+
+  // The request handler must be the first item
+  app.use(raven.middleware.express.requestHandler(process.env.SENTRY));
 
   /*
 
@@ -44,6 +49,8 @@ async function start() {
 
   app.use(bodyParser.json());
 
+  // const ddOpts = { "response_code": true, "tags": ["heighliner"] };
+  // app.use(DataDog(ddOpts));
 
   /*
 
@@ -95,6 +102,10 @@ async function start() {
       "Listening at http://%s%s", host, port === 80 ? "" : ":" + port
     );
   });
+
+  // The error handler must be before any other error middleware
+  app.use(raven.middleware.express.errorHandler(process.env.SENTRY));
+
 }
 
 start();
