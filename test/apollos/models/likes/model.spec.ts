@@ -101,7 +101,6 @@ test("`toggleLike` should look up existing like", async (t) => {
   const likes = new Like();
 
   likes.model.findOne = (options) => {
-    console.log("should look up existing like");
     t.is(options.entryId, contentId);
     t.is(options.userId, userId);
     return Promise.resolve([]);
@@ -119,7 +118,6 @@ test("`toggleLike` should create a like if no existing like", async (t) => {
   const likes = new Like();
 
   likes.model.create = (options) => {
-    console.log("should create a like");
     t.is(options.userId, userId);
     t.is(options.entryId, contentId);
     t.is(options.type, "Content");
