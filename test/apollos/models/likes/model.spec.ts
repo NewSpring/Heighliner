@@ -1,9 +1,20 @@
 import test from "ava";
 import { Like, LikeDocument } from "../../../../src/apollos/models/likes/model";
+import { createGlobalId } from "../../../../src/util/node/model";
 
 test("should expose the model", t => {
   const likes = new Like() as any;
   t.truthy(likes.model);
+});
+
+test("should expose the cache", t => {
+  const likes = new Like() as any;
+  t.truthy(likes.cache);
+});
+
+test("should expose the type", t => {
+  const likes = new Like() as any;
+  t.is(likes.__type, "Like");
 });
 
 test("`getFromUserId` should pass the userId along to the model find", async (t) => {
@@ -68,3 +79,57 @@ test("`getLikedContent` should use contentModel", async (t) => {
 
   await likes.getLikedContent(userId, contentModel);
 });
+
+test("`toggleLike` should return null if not content type", async (t) => {
+  const contentId = "testId";
+  const globalId = createGlobalId(contentId, "NotContent");
+  const userId = "userId";
+  const contentModel = {};
+
+  const likes = new Like();
+
+  const toggle = await likes.toggleLike(globalId, userId, contentModel);
+  t.falsy(toggle);
+});
+
+test("`toggleLike` should look up existing like", async (t) => {
+  const contentId = "testId";
+  const globalId = createGlobalId(contentId, "Content");
+  const userId = "userId";
+  const contentModel = {};
+
+  const likes = new Like();
+
+  likes.model.findOne = (options) => {
+    console.log("should look up existing like");
+    t.is(options.entryId, contentId);
+    t.is(options.userId, userId);
+    return Promise.resolve([]);
+  };
+
+  await likes.toggleLike(globalId, userId, contentModel);
+});
+
+test("`toggleLike` should create a like if no existing like", async (t) => {
+  const contentId = "testId";
+  const globalId = createGlobalId(contentId, "Content");
+  const userId = "userId";
+  const contentModel = {};
+
+  const likes = new Like();
+
+  likes.model.create = (options) => {
+    console.log("should create a like");
+    t.is(options.userId, userId);
+    t.is(options.entryId, contentId);
+    t.is(options.type, "Content");
+    t.truthy(options.createdAt);
+    return Promise.resolve([]);
+  };
+
+  await likes.toggleLike(globalId, userId, contentModel);
+});
+
+// test.todo("`toggleLike` should delete a like if one exists", async (t) => {
+
+// });
