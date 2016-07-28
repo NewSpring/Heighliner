@@ -106,7 +106,7 @@ test("`toggleLike` should look up existing like", async (t) => {
     return Promise.resolve([]);
   };
 
-  await likes.toggleLike(globalId, userId, contentModel);
+  likes.toggleLike(globalId, userId, contentModel);
 });
 
 test("`toggleLike` should create a like if no existing like", async (t) => {
@@ -125,7 +125,7 @@ test("`toggleLike` should create a like if no existing like", async (t) => {
     return Promise.resolve([]);
   };
 
-  await likes.toggleLike(globalId, userId, contentModel);
+  likes.toggleLike(globalId, userId, contentModel);
 });
 
 // test.todo("`toggleLike` should delete a like if one exists", async (t) => {
