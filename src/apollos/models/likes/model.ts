@@ -8,7 +8,6 @@ export interface LikeDocument {
   entryId: string;
   type: string;
   createdAt: Date;
-  title: string;
 }
 
 const schema: Object = {
