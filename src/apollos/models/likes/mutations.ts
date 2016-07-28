@@ -1,4 +1,4 @@
 
 export default [
-  "toggleLike(contentId: String!): [Like]",
+  "toggleLike(contentId: String!): [Content]",
 ];

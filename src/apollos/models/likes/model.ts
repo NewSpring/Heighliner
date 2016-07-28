@@ -1,32 +1,21 @@
 import { Cache, defaultCache } from "../../../util/cache";
 import { MongoConnector } from "../../mongo";
-import { parseGlobalId } from "../../../util/node/model";
+import { parseGlobalId, createGlobalId } from "../../../util/node/model";
 
 export interface LikeDocument {
   _id: string;
   userId: string;
   entryId: string;
+  type: string;
+  createdAt: Date;
   title: string;
-  image: string;
-  link: string;
-  icon: string;
-  category: string;
-  date: Date;
-  status: string;
-  dateLiked: Date;
 }
 
 const schema: Object = {
   userId: String,
   entryId: String,
-  title: String,
-  image: String,
-  link: String,
-  icon: String,
-  category: String,
-  date: Date,
-  status: String,
-  dateLiked: Date,
+  type: String,
+  createdAt: String,
 };
 
 const Model = new MongoConnector("like", schema);
@@ -47,10 +36,18 @@ export class Like {
     )) as LikeDocument[];
   }
 
-  public async toggleLike(contentId: string, userId: string): Promise<LikeDocument[]> {
+  public async getLikedContent(userId: string, contentModel: any): Promise<any[]> {
+    const likes = await this.getFromUserId(userId);
+    return await likes.map(async (like) => {
+      const guid = createGlobalId(like.entryId, like.type);
+      return await contentModel.getFromId(like.entryId, guid);
+    });
+  }
+
+  public async toggleLike(contentId: string, userId: string, contentModel: any): Promise<any[]> {
     const entry = parseGlobalId(contentId);
     // XXX what should the response be if not a content type?
-    if (entry.__type !== "Content") return [];
+    if (entry.__type !== "Content") return null;
 
     const existingLike = await this.model.findOne({
       entryId: entry.id,
@@ -65,10 +62,12 @@ export class Like {
       await this.model.create({
         userId,
         entryId: entry.id,
+        type: entry.__type,
+        createdAt: new Date(),
       });
     }
     await this.cache.del(`${this.__type}:${userId}`);
-    return this.getFromUserId(userId);
+    return this.getLikedContent(userId, contentModel);
   }
 
 }

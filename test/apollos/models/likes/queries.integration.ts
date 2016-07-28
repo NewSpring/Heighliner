@@ -24,16 +24,80 @@ test("Valid queries should return sucess", async (t) => {
     query UserLikes {
       likes {
         id
-        userId
-        entryId
         title
-        image
-        link
-        icon
-        category
-        date
         status
-        dateLiked
+        channel
+        channelName
+        meta {
+          site
+          channel
+          series
+          urlTitle
+          summary
+          date
+          entryDate
+          startDate
+          endDate
+          actualDate
+          siteId
+          channelId
+        }
+        content {
+          body
+          description
+          ooyalaId
+          speaker
+          isLight
+          hashtag
+          tags
+          colors {
+            id
+            value
+            description
+          }
+          images {
+            id
+            file
+            label
+            s3
+            cloudfront
+            duration
+            title
+            fileName
+            fileType
+            fileLabel
+          }
+          tracks {
+            id
+            file
+            label
+            s3
+            cloudfront
+            duration
+            title
+            fileName
+            fileType
+            fileLabel
+          }
+          scripture {
+            book
+            passage
+          }
+        }
+      }
+    }
+  `);
+
+  t.true(response.success);
+  t.is(response.status, 200);
+  t.truthy(response.data);
+});
+
+test("Valid mutation should return sucess", async (t) => {
+  const response = await Heighliner(`
+    mutation toggleLike {
+      toggleLike(contentId: "testId") {
+        id
       }
     }
   `);

@@ -1,4 +1,4 @@
 
 export default [
-  "likes: [Like]",
+  "likes: [Content]",
 ];
