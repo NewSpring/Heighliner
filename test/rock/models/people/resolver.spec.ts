@@ -72,7 +72,7 @@ test("`Person` has an approximate age.", t => {
   const { Person } = Resolver;
 
   const age = Person.age(sampleData.person);
-  t.deepEqual(age, Moment().diff(Moment(sampleData.person.BirthDate)));
+  t.deepEqual(age, `${Moment().diff(Moment(sampleData.person.BirthDate), "years")}`);
 });
 
 
