@@ -23,19 +23,55 @@ const sampleData = {
   },
 };
 
-test("`Campus` should return basic information about a campus.", t => {
+test("`Campus` queries data from either Id or Name.", t => {
+  const { Query } = Resolver;
+
+  const sampleId = 7;
+  const sampleName = "Greenville";
+  const models = {
+    Campus: {
+      find({ Id , Name }) {
+        t.is(Id, sampleId);
+        t.is(Name, sampleName);
+      },
+    },
+  };
+
+  Query.campuses(null, { id: sampleId,  name: sampleName}, { models });
+});
+
+test("`Campus` should have an Id.", t => {
   const { Campus } = Resolver;
 
   const entityId = Campus.entityId(sampleData.campuses);
-  const name = Campus.name(sampleData.campuses);
-  const shortCode = Campus.shortCode(sampleData.campuses);
-  const guid = Campus.guid(sampleData.campuses);
-  const locationId = Campus.locationId(sampleData.campuses);
-
   t.deepEqual(entityId, sampleData.campuses.Id);
+});
+
+test("`Campus` should have a name.", t => {
+  const { Campus } = Resolver;
+
+  const name = Campus.name(sampleData.campuses);
   t.deepEqual(name, sampleData.campuses.Name);
+});
+
+test("`Campus` should have a shortCode.", t => {
+  const { Campus } = Resolver;
+
+  const shortCode = Campus.shortCode(sampleData.campuses);
   t.deepEqual(shortCode, sampleData.campuses.ShortCode);
+});
+
+test("`Campus` should have a guid.", t => {
+  const { Campus } = Resolver;
+
+  const guid = Campus.guid(sampleData.campuses);
   t.deepEqual(guid, sampleData.campuses.Guid);
+});
+
+test("`Campus` should have a locationId.", t => {
+  const { Campus } = Resolver;
+
+  const locationId = Campus.locationId(sampleData.campuses);
   t.deepEqual(locationId, sampleData.campuses.LocationId);
 });
 
@@ -57,19 +93,38 @@ test("`Campus` should return valid location data.", t => {
   t.is(null, noLocationId);
 });
 
-test("`Location` should return address.", t => {
+test("`Location` should return address name.", t => {
   const { Location } = Resolver;
 
   const Name = Location.name(sampleData.location);
-  const Street1 = Location.street1(sampleData.location);
-  const Street2 = Location.street2(sampleData.location);
-  const State = Location.state(sampleData.location);
-  const Zip = Location.zip(sampleData.location);
-
   t.deepEqual(Name, sampleData.location.Name);
+});
+
+test("`Location` should return address street1.", t => {
+  const { Location } = Resolver;
+
+  const Street1 = Location.street1(sampleData.location);
   t.deepEqual(Street1, sampleData.location.Street1);
+});
+
+test("`Location` should return address street2.", t => {
+  const { Location } = Resolver;
+
+  const Street2 = Location.street2(sampleData.location);
   t.deepEqual(Street2, sampleData.location.Street2);
+});
+
+test("`Location` should return address state.", t => {
+  const { Location } = Resolver;
+
+  const State = Location.state(sampleData.location);
   t.deepEqual(State, sampleData.location.State);
+});
+
+test("`Location` should return address zip code.", t => {
+  const { Location } = Resolver;
+
+  const Zip = Location.zip(sampleData.location);
   t.deepEqual(Zip, sampleData.location.PostalCode);
 });
 
