@@ -38,7 +38,7 @@
     "dataloader": "^1.1.0",
     "deasync": "^0.1.6",
     "express": "^4.13.3",
-    "geo-from-ip": "^1.0.4",
+    "geo-from-ip": "^1.0.6",
     "google-geocoding": "^0.1.7",
     "graphql": "^0.6.2",
     "graphql-tools": "^0.6.1",
