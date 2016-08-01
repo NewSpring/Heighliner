@@ -45,7 +45,7 @@
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.12.0",
     "moment": "^2.13.0",
-    "mongoose": "^4.3.6",
+    "mongoose": "^4.5.8",
     "morgan": "^1.7.0",
     "mssql-geoparser": "0.0.1",
     "mysql": "^2.10.2",
