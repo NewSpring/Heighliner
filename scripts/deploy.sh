@@ -36,6 +36,7 @@ fi
 
 APP=$(echo $CURRENT_TAG | cut -d'/' -f1)
 CHANNEL=$(echo $CURRENT_TAG | cut -d'/' -f2)
+VERSION=$(echo $CURRENT_TAG | cut -d'/' -f3)
 
 yecho "### Deploying $APP to $CHANNEL ###"
 
@@ -122,6 +123,8 @@ make_task_def() {
         { "name": "SECRET", "value": "'"$PROD_SECRET"'" },
         { "name": "ESV_KEY", "value": "'"$ESV_KEY"'" },
         { "name": "GOOGLE_GEO_LOCATE", "value": "'"$GOOGLE_GEO_LOCATE"'" },
+        { "name": "SENTRY_RELEASE", "value": "'"$SENTRY"'" },
+        { "name": "SENTRY_ENVIRONMENT", "value": "'"$VERSION"'" }
       ]
     }
   ]'
