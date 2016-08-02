@@ -37,10 +37,10 @@ import test from "ava";
 //   t.pass();
 // });
 
-test.plan("`TransactionDetail` has amount and account.");
-test.plan("`ScheduledTransaction` has start and end date.");
-test.plan("`ScheduledTransaction` has required meta data.");
-test.plan("`Transaction` has payment details.");
-test.plan("`FinancialAccount` is a valid account for contributions.");
-test.plan("`PaymentDetail` has detailed information about a single payment.");
-test.plan("`SavedPayment` has the required information to repeat transactions.");
+test.todo("`TransactionDetail` has amount and account.");
+test.todo("`ScheduledTransaction` has start and end date.");
+test.todo("`ScheduledTransaction` has required meta data.");
+test.todo("`Transaction` has payment details.");
+test.todo("`FinancialAccount` is a valid account for contributions.");
+test.todo("`PaymentDetail` has detailed information about a single payment.");
+test.todo("`SavedPayment` has the required information to repeat transactions.");
