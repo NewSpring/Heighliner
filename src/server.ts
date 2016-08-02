@@ -31,6 +31,12 @@ async function start() {
     "https://beta-my.newspring.cc",
     "https://pre-my.newspring.cc",
     "https://my.newspring.cc",
+    "https://newspring.cc",
+    "https://newspringfuse.com",
+    "https://newspringnetwork.com",
+    "http://newspring.dev",
+    "http://newspringfuse.dev",
+    "http://newspringnetwork.dev",
   ];
 
   const corsOptions = {
