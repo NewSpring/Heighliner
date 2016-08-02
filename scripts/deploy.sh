@@ -123,8 +123,9 @@ make_task_def() {
         { "name": "SECRET", "value": "'"$PROD_SECRET"'" },
         { "name": "ESV_KEY", "value": "'"$ESV_KEY"'" },
         { "name": "GOOGLE_GEO_LOCATE", "value": "'"$GOOGLE_GEO_LOCATE"'" },
-        { "name": "SENTRY_RELEASE", "value": "'"$SENTRY"'" },
-        { "name": "SENTRY_ENVIRONMENT", "value": "'"$VERSION"'" }
+        { "name": "SENTRY", "value": "'"$SENTRY"'" },
+        { "name": "SENTRY_RELEASE", "value": "'"$VERSION"'" },
+        { "name": "SENTRY_ENVIRONMENT", "value": "'"$CHANNEL"'" }
       ]
     }
   ]'
