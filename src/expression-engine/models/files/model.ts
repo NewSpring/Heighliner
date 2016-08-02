@@ -1,4 +1,7 @@
 import { merge } from "lodash";
+import { get as httpGet } from "http";
+import { existsSync, mkdirSync, createWriteStream, unlink } from "fs";
+import mp3Duration from "mp3-duration";
 
 import { Cache, defaultCache } from "../../../util/cache";
 
@@ -95,6 +98,42 @@ export class File extends EE {
     }
   }
 
+  private getDuration(file: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const fileName = file.exp_assets_file.file_name;
+      if (fileName.slice(fileName.length - 3) !== "mp3") return null;
+
+      const duration = file.exp_matrix_datum && this.fuzzyMatchKey(file.exp_matrix_datum, "duration");
+      if (duration) return resolve(duration);
+
+      // create ./tmp/audio directory
+      if (!existsSync("./tmp")) mkdirSync("./tmp");
+      if (!existsSync("./tmp/audio")) mkdirSync("./tmp/audio");
+
+      // if no duration, try to calcuate it
+      const url = `http:${this.generateFileName(file.exp_assets_file).s3}`;
+      const tmpFileName = `./tmp/audio/${file.exp_assets_file.file_name}`;
+      const tmpFile = createWriteStream(tmpFileName);
+      httpGet(url, (response) => {
+        response.pipe(tmpFile);
+        tmpFile.on("finish", () => {
+          tmpFile.close();
+          mp3Duration(tmpFileName, (err, calcDuration) => {
+            const seconds = Math.round(calcDuration % 60);
+            const minutes = Math.round(calcDuration / 60);
+            const paddedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+            unlink(tmpFileName);
+            return resolve(`${minutes}:${paddedSeconds}`);
+          });
+        });
+      }).on("error", (error) => {
+        console.log(error.message); // tslint:disable-line
+        unlink(tmpFileName);
+        resolve(null);
+      });
+    });
+  }
+
   public async getFilesFromContent(
     entry_id: number, name: string = "Hero Image", field_id: number
   ): Promise<any> { // replace with FileType
@@ -143,7 +182,7 @@ export class File extends EE {
           file_id: x.file_id,
           fileLabel: x.exp_matrix_col && x.exp_matrix_col.col_label,
           title: x.exp_matrix_datum && this.fuzzyMatchKey(x.exp_matrix_datum, "title"),
-          duration: x.exp_matrix_datum && this.fuzzyMatchKey(x.exp_matrix_datum, "duration"),
+          duration: this.getDuration(x),
         },
         this.generateFileName(x.exp_assets_file)
       ))))

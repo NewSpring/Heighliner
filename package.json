@@ -49,6 +49,7 @@
     "moment": "^2.13.0",
     "mongoose": "^4.5.8",
     "morgan": "^1.7.0",
+    "mp3-duration": "^1.0.10",
     "mssql-geoparser": "0.0.1",
     "mysql": "^2.10.2",
     "newrelic": "^1.25.0",

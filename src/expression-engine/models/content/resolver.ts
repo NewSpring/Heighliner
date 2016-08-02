@@ -130,6 +130,7 @@ export default {
         description: "primary",
       }];
     },
+    // deprecated
     tracks: ({ entry_id, tracks, exp_channel }, _, { models }) => {
       if (!tracks) return [];
 
