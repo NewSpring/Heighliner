@@ -98,13 +98,16 @@ export class File extends EE {
     }
   }
 
-  private getDuration(file: any): Promise<any> {
+  private addDuration(file: any): Promise<any> {
     return new Promise((resolve, reject) => {
       const fileName = file.exp_assets_file.file_name;
-      if (fileName.slice(fileName.length - 3) !== "mp3") return null;
+      if (fileName.slice(fileName.length - 3) !== "mp3") return resolve(file);
 
       const duration = file.exp_matrix_datum && this.fuzzyMatchKey(file.exp_matrix_datum, "duration");
-      if (duration) return resolve(duration);
+      if (duration) {
+        file.duration = duration;
+        return resolve(file);
+      }
 
       // create ./tmp/audio directory
       if (!existsSync("./tmp")) mkdirSync("./tmp");
@@ -123,13 +126,15 @@ export class File extends EE {
             const minutes = Math.round(calcDuration / 60);
             const paddedSeconds = seconds < 10 ? `0${seconds}` : seconds;
             unlink(tmpFileName);
-            return resolve(`${minutes}:${paddedSeconds}`);
+            file.duration = `${minutes}:${paddedSeconds}`;
+            return resolve(file);
           });
         });
       }).on("error", (error) => {
         console.log(error.message); // tslint:disable-line
         unlink(tmpFileName);
-        resolve(null);
+        file.duration = null;
+        return reject(file);
       });
     });
   }
@@ -177,12 +182,13 @@ export class File extends EE {
       ],
     })
       .then(data => data.map(x => x.exp_assets_selection))
+      .then(data => (Promise.all(data.map(file => ( this.addDuration(file) )))))
       .then(data => data.map(x => (merge(
         {
           file_id: x.file_id,
           fileLabel: x.exp_matrix_col && x.exp_matrix_col.col_label,
           title: x.exp_matrix_datum && this.fuzzyMatchKey(x.exp_matrix_datum, "title"),
-          duration: this.getDuration(x),
+          duration: x.duration,
         },
         this.generateFileName(x.exp_assets_file)
       ))))
