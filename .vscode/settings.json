@@ -11,6 +11,7 @@
     "node_modules": true,
     "test-lib": true,
     "lib": true,
+    "Dockerfile": true,
     "dist": true,
     "coverage": true,
     "npm": true,
