@@ -120,7 +120,8 @@ make_task_def() {
         { "name": "MSSQL_INSTANCE", "value": "'"$PROD_MSSQL_INSTANCE"'" },
         { "name": "TRACER_APP_KEY", "value": "'"$PROD_TRACER_APP_KEY"'" },
         { "name": "SECRET", "value": "'"$PROD_SECRET"'" },
-        { "name": "ESV_KEY", "value": "'"$ESV_KEY"'" }
+        { "name": "ESV_KEY", "value": "'"$ESV_KEY"'" },
+        { "name": "GOOGLE_GEO_LOCATE", "value": "'"$GOOGLE_GEO_LOCATE"'" },
       ]
     }
   ]'
