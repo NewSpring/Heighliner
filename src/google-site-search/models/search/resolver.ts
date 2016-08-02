@@ -22,7 +22,7 @@ export default {
         query += `&=${site}`;
       }
 
-      return models.SSearch.get(query)
+      return models.SSearch.query(query)
         .then(x => {
           let next, previous;
           if (x.queries) {

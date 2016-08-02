@@ -36,6 +36,7 @@ fi
 
 APP=$(echo $CURRENT_TAG | cut -d'/' -f1)
 CHANNEL=$(echo $CURRENT_TAG | cut -d'/' -f2)
+VERSION=$(echo $CURRENT_TAG | cut -d'/' -f3)
 
 yecho "### Deploying $APP to $CHANNEL ###"
 
@@ -120,7 +121,14 @@ make_task_def() {
         { "name": "MSSQL_INSTANCE", "value": "'"$PROD_MSSQL_INSTANCE"'" },
         { "name": "TRACER_APP_KEY", "value": "'"$PROD_TRACER_APP_KEY"'" },
         { "name": "SECRET", "value": "'"$PROD_SECRET"'" },
-        { "name": "ESV_KEY", "value": "'"$ESV_KEY"'" }
+        { "name": "ESV_KEY", "value": "'"$ESV_KEY"'" },
+        { "name": "GOOGLE_GEO_LOCATE", "value": "'"$GOOGLE_GEO_LOCATE"'" },
+        { "name": "SENTRY", "value": "'"$SENTRY"'" },
+        { "name": "SENTRY_RELEASE", "value": "'"$VERSION"'" },
+        { "name": "VERSION", "value": "'"$VERSION"'" },
+        { "name": "SENTRY_ENVIRONMENT", "value": "'"$CHANNEL"'" },
+        { "name": "DATADOG_API_KEY", "value": "'"$DATADOG_API_KEY"'" },
+        { "name": "DEBUG", "value": "metrics" }
       ]
     }
   ]'
