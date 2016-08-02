@@ -136,6 +136,23 @@ export default {
       const position = Number(exp_channel.exp_channel_fields.tracks.split("_").pop());
       return models.File.getFilesFromContent(entry_id, tracks, position);
     },
+    audio: ({ entry_id, audio, tracks, exp_channel }, _, { models }) => {
+      if (!audio && !tracks) return Promise.all([]);
+      const getAllFiles = [];
+
+      if (audio) {
+        const audioPosition = Number(exp_channel.exp_channel_fields.audio.split("_").pop());
+        getAllFiles.push(models.File.getFilesFromContent(entry_id, audio, audioPosition));
+      }
+
+      if (tracks) {
+        const trackPosition = Number(exp_channel.exp_channel_fields.tracks.split("_").pop());
+        getAllFiles.push(models.File.getFilesFromContent(entry_id, tracks, trackPosition));
+      }
+
+      return Promise.all(getAllFiles)
+        .then(data => flatten(data));
+    },
   },
 
   ContentMeta: {
