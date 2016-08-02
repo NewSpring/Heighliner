@@ -125,7 +125,9 @@ export class File extends EE {
             const seconds = Math.round(calcDuration % 60);
             const minutes = Math.round(calcDuration / 60);
             const paddedSeconds = seconds < 10 ? `0${seconds}` : seconds;
-            unlink(tmpFileName);
+
+            // check first in case multiple requests come in before cache
+            if (existsSync(tmpFileName)) unlink(tmpFileName);
             file.duration = `${minutes}:${paddedSeconds}`;
             return resolve(file);
           });
