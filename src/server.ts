@@ -3,7 +3,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import raven from "raven";
-// import DataDog from "connect-datadog";
+import DataDog from "connect-datadog";
 // import { pick } from "lodash";
 
 import { createApp } from "./schema";
@@ -19,6 +19,10 @@ async function start() {
     Middleware
 
   */
+
+  const ddOpts = { "response_code": true, "tags": ["heighliner"] };
+  app.use(DataDog(ddOpts));
+
   app.get("/alive", (req, res) => {
     res.status(200).json({ alive: true });
   });
@@ -54,9 +58,6 @@ async function start() {
   }));
 
   app.use(bodyParser.json());
-
-  // const ddOpts = { "response_code": true, "tags": ["heighliner"] };
-  // app.use(DataDog(ddOpts));
 
   /*
 

@@ -99,6 +99,10 @@ declare module "truncate" {
   export default function(string: string, length: number): string;
 }
 
+declare module "connect-datadog" {
+  export default function(opts: any): any;
+}
+
 
 declare module "raven" {
   export interface IOptions {
