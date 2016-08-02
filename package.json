@@ -36,6 +36,7 @@
     "casual": "^1.5.3",
     "connect-datadog": "0.0.6",
     "cors": "^2.7.1",
+    "datadog-metrics": "^0.3.0",
     "dataloader": "^1.1.0",
     "deasync": "^0.1.6",
     "express": "^4.13.3",

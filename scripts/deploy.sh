@@ -124,9 +124,11 @@ make_task_def() {
         { "name": "ESV_KEY", "value": "'"$ESV_KEY"'" },
         { "name": "GOOGLE_GEO_LOCATE", "value": "'"$GOOGLE_GEO_LOCATE"'" },
         { "name": "SENTRY", "value": "'"$SENTRY"'" },
-        { "name": "SENTRY_RELEASE", "value": "'"$SENTRY_RELEASE"'" },
+        { "name": "SENTRY_RELEASE", "value": "'"$VERSION"'" },
         { "name": "VERSION", "value": "'"$VERSION"'" },
-        { "name": "SENTRY_ENVIRONMENT", "value": "'"$CHANNEL"'" }
+        { "name": "SENTRY_ENVIRONMENT", "value": "'"$CHANNEL"'" },
+        { "name": "DATADOG_API_KEY", "value": "'"$DATADOG_API_KEY"'" },
+        { "name": "DEBUG", "value": "metrics" }
       ]
     }
   ]'
