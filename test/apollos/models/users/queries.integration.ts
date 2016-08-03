@@ -45,7 +45,6 @@ test("Valid queries should return success", async (t) => {
       }
     }
   `);
-
   t.true(response.success);
   t.is(response.status, 200);
   t.truthy(response.data);

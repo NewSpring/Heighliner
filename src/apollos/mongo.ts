@@ -13,7 +13,7 @@ import mongoose, {
 
 let db;
 let dd;
-export function connect(address: string, monitor: any): Promise<boolean> {
+export function connect(address: string, monitor?: any): Promise<boolean> {
   dd = monitor && monitor.datadog;
   return new Promise((cb) => {
 

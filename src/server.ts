@@ -5,19 +5,22 @@ import cors from "cors";
 import raven from "raven";
 import Metrics from "datadog-metrics";
 
-const dogstatsd = new Metrics.BufferedMetricsLogger({
-  apiKey: process.env.DATADOG_API_KEY,
-  appKey: process.env.DATADOG_APP_KEY,
-  prefix: "heighliner.",
-  flushIntervalSeconds: 15,
-});
+let dogstatsd;
+if (process.env.DATADOG_API_KEY) {
+  dogstatsd = new Metrics.BufferedMetricsLogger({
+    apiKey: process.env.DATADOG_API_KEY,
+    appKey: process.env.DATADOG_APP_KEY,
+    prefix: "heighliner.",
+    flushIntervalSeconds: 15,
+  });
 
-setInterval(() => {
-  const memUsage = process.memoryUsage();
-  dogstatsd.gauge("memory.rss", memUsage.rss);
-  dogstatsd.gauge("memory.heapTotal", memUsage.heapTotal);
-  dogstatsd.gauge("memory.heapUsed", memUsage.heapUsed);
-}, 5000);
+  setInterval(() => {
+    const memUsage = process.memoryUsage();
+    dogstatsd.gauge("memory.rss", memUsage.rss);
+    dogstatsd.gauge("memory.heapTotal", memUsage.heapTotal);
+    dogstatsd.gauge("memory.heapUsed", memUsage.heapUsed);
+  }, 5000);
+}
 
 import { createApp } from "./schema";
 
@@ -33,29 +36,32 @@ async function start() {
 
   */
   // datadog
-  app.use((req: any, res, next) => {
-    if (!req._startTime) req._startTime = new Date();
-    const end = res.end;
-    res.end = (chunk, encoding) => {
-      res.end = end;
-      res.end(chunk, encoding);
-      const baseUrl = req.baseUrl;
-      const statTags = [ "route:" + baseUrl + req.path ];
+  if (dogstatsd) {
+    app.use((req: any, res, next) => {
+      if (!req._startTime) req._startTime = new Date();
+      const end = res.end;
+      res.end = (chunk, encoding) => {
+        res.end = end;
+        res.end(chunk, encoding);
+        const baseUrl = req.baseUrl;
+        const statTags = [ "route:" + baseUrl + req.path ];
 
-      statTags.push("method:" + req.method.toLowerCase());
-      statTags.push("protocol:" + req.protocol);
-      statTags.push("path:" + baseUrl + req.path);
-      statTags.push("response_code:" + res.statusCode);
+        statTags.push("method:" + req.method.toLowerCase());
+        statTags.push("protocol:" + req.protocol);
+        statTags.push("path:" + baseUrl + req.path);
+        statTags.push("response_code:" + res.statusCode);
 
-      dogstatsd.increment("response_code." + res.statusCode , 1, statTags);
-      dogstatsd.increment("response_code.all" , 1, statTags);
+        dogstatsd.increment("response_code." + res.statusCode , 1, statTags);
+        dogstatsd.increment("response_code.all" , 1, statTags);
 
-      let now = (new Date() as any) - req._startTime;
-      dogstatsd.histogram("response_time", now, 1, statTags);
-    };
+        let now = (new Date() as any) - req._startTime;
+        dogstatsd.histogram("response_time", now, 1, statTags);
+      };
 
-    next();
-  });
+      next();
+    });
+  }
+
 
   app.get("/alive", (req, res) => {
     res.status(200).json({ alive: true });
