@@ -12,8 +12,9 @@ import mongoose, {
 // mongoose.Promise = global.Promise;
 
 let db;
-
-export function connect(address: string): Promise<boolean> {
+let dd;
+export function connect(address: string, monitor: any): Promise<boolean> {
+  dd = monitor && monitor.datadog;
   return new Promise((cb) => {
 
     db = mongoose.connect(address, {
@@ -46,10 +47,30 @@ export class MongoConnector {
   }
 
   public findOne(...args): Promise<Object> {
-    const label = `MongoConnector${this.getCount()}`;
+    return this.time(this.model.findOne.apply(this.model, args));
+  }
+
+  private time(promise: Promise<any>): Promise<any> {
+    const prefix = "MongoConnector";
+    const count = this.getCount();
+    const start = new Date() as any;
+    const label = `${prefix}-${count}`;
+    if (dd) dd.increment(`${prefix}.transaction.count`);
     console.time(label); // tslint:disable-line
-    return this.model.findOne.apply(this.model, args)
-      .then(x => { console.timeEnd(label); return x; });  // tslint:disable-line
+    return promise
+      .then(x => {
+        const end = new Date() as any;
+        if (dd) dd.histogram(`${prefix}.transaction.time`, start - end);
+        console.timeEnd(label); // tslint:disable-line
+        return x;
+      })
+      .catch(x => {
+        const end = new Date() as any;
+        if (dd) dd.histogram(`${prefix}.transaction.time`, start - end);
+        if (dd) dd.increment(`${prefix}.transaction.error`);
+        console.timeEnd(label); // tslint:disable-line
+        return x;
+      });
   }
 
 

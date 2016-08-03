@@ -63,7 +63,7 @@ schema = createSchema({
   schema,
 });
 
-export async function createApp() {
+export async function createApp({ datadog }) {
 
   let useMocks = true;
   /*
@@ -85,7 +85,7 @@ export async function createApp() {
     let dockerhost = "192.168.99.100";
 
     // MONGO
-    const APOLLOS = await Apollos.connect(process.env.MONGO_URL || "mongodb://localhost/meteor");
+    const APOLLOS = await Apollos.connect(process.env.MONGO_URL, { datadog });
     // XXX find a way to just use mocks for Apollos
     if (APOLLOS) {
       console.log("CONNECTION: Apollos ✓"); // tslint:disable-line
@@ -105,7 +105,7 @@ export async function createApp() {
       const EE = await ExpressionEngine.connect(database, user, password, {
         host: EESettings.host,
         ssl: EESettings.ssl,
-      });
+      }, { datadog });
       if (EE) {
         console.log("CONNECTION: EE ✓"); // tslint:disable-line
         useMocks = false;
@@ -128,7 +128,7 @@ export async function createApp() {
       const ROCK = await Rock.connect(database, user, password, {
         host: RockSettings.host,
         dialectOptions: RockSettings.dialectOptions,
-      });
+      }, { datadog });
 
       if (ROCK) {
         console.log("CONNECTION: Rock ✓"); // tslint:disable-line
@@ -136,7 +136,7 @@ export async function createApp() {
       }
     }
 
-    const REDIS = await RedisConnect(process.env.REDIS_HOST || dockerhost);
+    const REDIS = await RedisConnect(process.env.REDIS_HOST || dockerhost, 6379, { datadog });
     cache = REDIS ? new RedisCache() : new InMemoryCache();
     if (REDIS) console.log("CONNECTION: Redis ✓"); // tslint:disable-line
 
@@ -164,9 +164,11 @@ export async function createApp() {
     cache,
     models: createdModels,
     graphql: async function(request){
+      const { operationName } = request.body;
+      datadog.increment(`graphql.operation.${operationName}`);
+      datadog.increment("graphql.request");
       let ip = getIp(request);
       // tslint:disable-next-line
-      console.log(`IP: ${ip}`); // debug for campus mapping test
       // Anderson, SC
       if (ip === "::1") ip = "2602:306:b81a:c420:ed84:6327:b58e:6a2d";
 
@@ -177,6 +179,7 @@ export async function createApp() {
       };
 
       if (context.hashedToken) {
+        datadog.increment("graphql.authenticated.request");
         // we instansiate the
         // bind the logged in user to the context overall
         let user;
@@ -215,6 +218,7 @@ export async function createApp() {
         mocks: useMocks ? mocks : false,
         schema,
         formatError:  error => {
+          datadog.increment("graphql.error");
           context.sentry.captureError(error, parsers.parseRequest(request));
           return {
             message: error.message,

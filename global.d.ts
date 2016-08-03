@@ -145,3 +145,11 @@ declare module "raven" {
   let client: Raven;
   export default client;
 }
+
+declare module "datadog-metrics" {
+  export interface DDog {
+    BufferedMetricsLogger: { new(opts?: any): any };
+  }
+  let client: DDog;
+  export default client;
+}
