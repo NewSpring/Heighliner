@@ -1,6 +1,6 @@
 import test from "ava";
 import express from "express";
-import { apolloServer } from "apollo-server";
+import { apolloExpress } from "apollo-server";
 import { tester } from "graphql-tester";
 import { create } from "graphql-tester/lib/main/servers/express";
 
@@ -11,7 +11,7 @@ test.before(async (t) => {
   const app = express();
   const { graphql } = await createApp();
 
-  app.use("/graphql", apolloServer(graphql));
+  app.use("/graphql", apolloExpress(graphql));
 
   Heighliner = tester({
     server: create(app),

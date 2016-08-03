@@ -1,5 +1,7 @@
 import { timeout } from "promise-timeout";
 import Raven, { parsers } from "raven";
+import { makeExecutableSchema } from "graphql-tools";
+import { GraphQLSchema } from "graphql";
 
 import Node from "./util/node/model";
 import {
@@ -39,7 +41,7 @@ import GoogleSS, { queries as GoogleSSQueries } from "./google-site-search";
 import ESV, { queries as ESVQueries } from "./esv";
 
 // Merge all applications together
-let { schema, models, resolvers, mocks } = loadApplications({
+let { schema, models, resolvers } = loadApplications({
   Apollos,
   ExpressionEngine,
   Rock,
@@ -62,6 +64,11 @@ schema = createSchema({
   ],
   schema,
 });
+
+const executabledSchema = makeExecutableSchema({
+  typeDefs: schema,
+  resolvers,
+}) as GraphQLSchema;
 
 export async function createApp(monitor?) {
   const datadog = monitor && monitor.datadog;
@@ -214,14 +221,10 @@ export async function createApp(monitor?) {
           sentry.setUserContext({ email: context.person.Email, id: context.person.PersonId });
         }
       }
+
       return {
-        // graphiql: process.env.NODE_ENV !== "production",
-        graphiql: true, // XXX can we dynamically do this on alpha?
-        pretty: false,
         context: context as Context,
-        resolvers: useMocks ? false : resolvers, // required if schema is an array of type definitions
-        mocks: useMocks ? mocks : false,
-        schema,
+        schema: executabledSchema,
         formatError:  error => {
           if (process.env.NODE_ENV === "production") {
             if (datadog) datadog.increment("graphql.error");
