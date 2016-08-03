@@ -63,8 +63,8 @@ schema = createSchema({
   schema,
 });
 
-export async function createApp({ datadog }) {
-
+export async function createApp(monitor?) {
+  const datadog = monitor && monitor.datadog;
   let useMocks = true;
   /*
 
@@ -164,9 +164,12 @@ export async function createApp({ datadog }) {
     cache,
     models: createdModels,
     graphql: async function(request){
-      const { operationName } = request.body;
-      datadog.increment(`graphql.operation.${operationName}`);
-      datadog.increment("graphql.request");
+      if (request && request.body && request.body.operationName) {
+        const { operationName } = request.body;
+        if (datadog) datadog.increment(`graphql.operation.${operationName}`);
+      }
+
+      if (datadog) datadog.increment("graphql.request");
       let ip = getIp(request);
       // tslint:disable-next-line
       // Anderson, SC
@@ -179,7 +182,7 @@ export async function createApp({ datadog }) {
       };
 
       if (context.hashedToken) {
-        datadog.increment("graphql.authenticated.request");
+        if (datadog) datadog.increment("graphql.authenticated.request");
         // we instansiate the
         // bind the logged in user to the context overall
         let user;
@@ -218,7 +221,7 @@ export async function createApp({ datadog }) {
         mocks: useMocks ? mocks : false,
         schema,
         formatError:  error => {
-          datadog.increment("graphql.error");
+          if (datadog) datadog.increment("graphql.error");
           context.sentry.captureError(error, parsers.parseRequest(request));
           return {
             message: error.message,
