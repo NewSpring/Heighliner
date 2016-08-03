@@ -55,7 +55,7 @@ async function start() {
         dogstatsd.increment("response_code.all" , 1, statTags);
 
         let now = (new Date() as any) - req._startTime;
-        dogstatsd.histogram("response_time", now, 1, statTags);
+        dogstatsd.histogram("response_time", now, statTags);
       };
 
       next();
