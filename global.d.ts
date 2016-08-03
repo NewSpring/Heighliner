@@ -147,6 +147,7 @@ declare module "datadog-metrics" {
   }
   let client: DDog;
   export default client;
+}
 
 declare module "mp3-duration" {
   export default function(filename: string, callback: any);
