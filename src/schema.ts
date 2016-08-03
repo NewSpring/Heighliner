@@ -1,5 +1,6 @@
 import { timeout } from "promise-timeout";
 import Raven, { parsers } from "raven";
+import { Tracer } from "apollo-tracer";
 
 import Node from "./util/node/model";
 import {
@@ -214,7 +215,8 @@ export async function createApp(monitor?) {
           sentry.setUserContext({ email: context.person.Email, id: context.person.PersonId });
         }
       }
-      return {
+
+      let graphql = {
         // graphiql: process.env.NODE_ENV !== "production",
         graphiql: true, // XXX can we dynamically do this on alpha?
         pretty: false,
@@ -234,6 +236,12 @@ export async function createApp(monitor?) {
           };
         },
       };
+
+      if (process.env.TRACER_APP_KEY) {
+        (graphql as any).tracer = new Tracer({ TRACER_APP_KEY: process.env.TRACER_APP_KEY });
+      }
+
+      return graphql;
     },
   };
 

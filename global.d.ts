@@ -29,6 +29,12 @@ declare module "apollo-server" {
   function apolloServer(config: any): any
 }
 
+declare module "apollo-tracer" {
+  export class Tracer {
+    constructor(opts: any);
+  }
+}
+
 declare module "casual" {
   function integer(low: number, high: number): number;
   function random_value(any): any;
