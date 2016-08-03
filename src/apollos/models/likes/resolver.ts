@@ -7,10 +7,10 @@ export default {
   },
 
   Mutation: {
-    toggleLike(_: any, { contentId }, { models, user }: any): any {
+    toggleLike(_: any, { nodeId }, { models, user }: any): any {
       // XXX what should the response be if invalid/insufficient data?
-      if (!user || !contentId) return [];
-      return models.Like.toggleLike(contentId, user._id, models.Content);
+      if (!user || !nodeId) return [];
+      return models.Like.toggleLike(nodeId, user._id, models.Content);
     },
   },
 };

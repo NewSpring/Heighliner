@@ -1,4 +1,0 @@
-type Like implements Node{
-  id: ID!,
-  title: String!,
-}

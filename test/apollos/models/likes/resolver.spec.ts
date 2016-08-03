@@ -42,5 +42,5 @@ test("`toggleLike` should call toggleLike with params", async (t) => {
   };
   const { Mutation } = Resolver;
 
-  await Mutation.toggleLike({}, { contentId: "id" }, { models, user });
+  await Mutation.toggleLike({}, { nodeId: "id" }, { models, user });
 });

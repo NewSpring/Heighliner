@@ -24,64 +24,66 @@ test("Valid queries should return sucess", async (t) => {
     query UserLikes {
       likes {
         id
-        title
-        status
-        channel
-        channelName
-        meta {
-          site
+        ... on Content {
+          title
+          status
           channel
-          series
-          urlTitle
-          summary
-          date
-          entryDate
-          startDate
-          endDate
-          actualDate
-          siteId
-          channelId
-        }
-        content {
-          body
-          description
-          ooyalaId
-          speaker
-          isLight
-          hashtag
-          tags
-          colors {
-            id
-            value
+          channelName
+          meta {
+            site
+            channel
+            series
+            urlTitle
+            summary
+            date
+            entryDate
+            startDate
+            endDate
+            actualDate
+            siteId
+            channelId
+          }
+          content {
+            body
             description
-          }
-          images {
-            id
-            file
-            label
-            s3
-            cloudfront
-            duration
-            title
-            fileName
-            fileType
-            fileLabel
-          }
-          tracks {
-            id
-            file
-            label
-            s3
-            cloudfront
-            duration
-            title
-            fileName
-            fileType
-            fileLabel
-          }
-          scripture {
-            book
-            passage
+            ooyalaId
+            speaker
+            isLight
+            hashtag
+            tags
+            colors {
+              id
+              value
+              description
+            }
+            images {
+              id
+              file
+              label
+              s3
+              cloudfront
+              duration
+              title
+              fileName
+              fileType
+              fileLabel
+            }
+            tracks {
+              id
+              file
+              label
+              s3
+              cloudfront
+              duration
+              title
+              fileName
+              fileType
+              fileLabel
+            }
+            scripture {
+              book
+              passage
+            }
           }
         }
       }
@@ -96,7 +98,7 @@ test("Valid queries should return sucess", async (t) => {
 test("Valid mutation should return sucess", async (t) => {
   const response = await Heighliner(`
     mutation toggleLike {
-      toggleLike(contentId: "testId") {
+      toggleLike(nodeId: "testId") {
         id
       }
     }

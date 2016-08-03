@@ -43,8 +43,8 @@ export class Like {
     });
   }
 
-  public async toggleLike(contentId: string, userId: string, contentModel: any): Promise<any[]> {
-    const entry = parseGlobalId(contentId);
+  public async toggleLike(nodeId: string, userId: string, contentModel: any): Promise<any[]> {
+    const entry = parseGlobalId(nodeId);
     // XXX what should the response be if not a content type?
     if (entry.__type !== "Content") return null;
 
