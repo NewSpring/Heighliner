@@ -2,18 +2,68 @@ import { apolloServer } from "apollo-server";
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-// import { pick } from "lodash";
+import raven from "raven";
+import Metrics from "datadog-metrics";
+
+let dogstatsd;
+if (process.env.DATADOG_API_KEY && process.env.NODE_ENV === "production") {
+  dogstatsd = new Metrics.BufferedMetricsLogger({
+    apiKey: process.env.DATADOG_API_KEY,
+    appKey: process.env.DATADOG_APP_KEY,
+    prefix: `heighliner.${process.env.SENTRY_ENVIRONMENT}.`,
+    flushIntervalSeconds: 15,
+  });
+
+  setInterval(() => {
+    const memUsage = process.memoryUsage();
+    dogstatsd.gauge("memory.rss", memUsage.rss);
+    dogstatsd.gauge("memory.heapTotal", memUsage.heapTotal);
+    dogstatsd.gauge("memory.heapUsed", memUsage.heapUsed);
+  }, 5000);
+}
 
 import { createApp } from "./schema";
 
 async function start() {
   const app = express();
 
+  if (process.env.NODE_ENV === "production") {
+    // The request handler must be the first item
+    app.use(raven.middleware.express.requestHandler(process.env.SENTRY));
+  }
   /*
 
     Middleware
 
   */
+  // datadog
+  if (dogstatsd) {
+    app.use((req: any, res, next) => {
+      if (!req._startTime) req._startTime = new Date();
+      const end = res.end;
+      res.end = (chunk, encoding) => {
+        res.end = end;
+        res.end(chunk, encoding);
+        const baseUrl = req.baseUrl;
+        const statTags = [ "route:" + baseUrl + req.path ];
+
+        statTags.push("method:" + req.method.toLowerCase());
+        statTags.push("protocol:" + req.protocol);
+        statTags.push("path:" + baseUrl + req.path);
+        statTags.push("response_code:" + res.statusCode);
+
+        dogstatsd.increment("response_code." + res.statusCode , 1, statTags);
+        dogstatsd.increment("response_code.all" , 1, statTags);
+
+        let now = (new Date() as any) - req._startTime;
+        dogstatsd.histogram("response_time", now, statTags);
+      };
+
+      next();
+    });
+  }
+
+
   app.get("/alive", (req, res) => {
     res.status(200).json({ alive: true });
   });
@@ -26,6 +76,12 @@ async function start() {
     "https://beta-my.newspring.cc",
     "https://pre-my.newspring.cc",
     "https://my.newspring.cc",
+    "https://newspring.cc",
+    "https://newspringfuse.com",
+    "https://newspringnetwork.com",
+    "http://newspring.dev",
+    "http://newspringfuse.dev",
+    "http://newspringnetwork.dev",
   ];
 
   const corsOptions = {
@@ -44,13 +100,12 @@ async function start() {
 
   app.use(bodyParser.json());
 
-
   /*
 
     Apollo Server
 
   */
-  const { graphql, models, cache } = await createApp();
+  const { graphql, models, cache } = await createApp({ datadog: dogstatsd });
 
   app.post("/cache/flush", (req, res) => {
     cache.clearAll();
@@ -95,6 +150,12 @@ async function start() {
       "Listening at http://%s%s", host, port === 80 ? "" : ":" + port
     );
   });
+
+  // The error handler must be before any other error middleware
+  if (process.env.NODE_ENV === "production") {
+    app.use(raven.middleware.express.errorHandler(process.env.SENTRY));
+  }
+
 }
 
 start();

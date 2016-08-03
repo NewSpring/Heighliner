@@ -24,7 +24,6 @@ test.before(async (t) => {
 
 test("Valid queries should return success", async (t) => {
   const response = await Heighliner("{ currentUser { id } }");
-
   t.true(response.success);
   t.is(response.status, 200);
   t.truthy(response.data);

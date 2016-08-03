@@ -1,6 +1,7 @@
-import { pick, flatten, find } from "lodash";
+import { pick, flatten, find, uniq, sampleSize } from "lodash";
 import { Cache, defaultCache } from "../../../util/cache";
 import Sequelize from "sequelize";
+import { parseGlobalId } from "../../../util/node/model";
 
 import {
   Channels,
@@ -211,6 +212,7 @@ export class Content extends EE {
 
   public async getLiveStream(): Promise<any> {
     return this.getIsLive()
+      .then(x => (!x ? { isLive: false } : x))
       .then(({ isLive }) => {
         if (!isLive) return { isLive, snippet_contents: null };
 
@@ -254,6 +256,7 @@ export class Content extends EE {
     { limit, offset },
     cache
   ): Promise<any> {
+    // XXX fix no includeChannels on query
     includeChannels || (includeChannels = []); // tslint:disable-line
     const query = { tagName, limit, offset, includeChannels };
     return this.cache.get(this.cache.encode(query, this.__type), () => ChannelData.find({
@@ -291,6 +294,85 @@ export class Content extends EE {
       .then((x: any[]) => {
         // XXX find how to do this in the query?
         return x.slice(offset, limit + offset);
+      })
+      .then(this.getFromIds.bind(this))
+      .then((x: any[]) => x.filter(y => !!y))
+      ;
+  }
+
+
+  public async findByTags({ tags, includeChannels, excludedIds }, { offset, limit }, cache): Promise<any> {
+    includeChannels || (includeChannels = []); // tslint:disable-line
+     let channels = [
+          "devotionals",
+          "articles",
+          "series_newspring",
+          "sermons",
+          "stories",
+          "newspring_albums",
+        ];
+
+      /*
+
+        Currently excluded channels come in uppercase and not the actual
+        channel name. Here we fix that
+
+        XXX make the setting dynamic and pulled from heighliner
+
+      */
+      includeChannels = includeChannels
+        .map(x => x.toLowerCase())
+        .map(x => {
+          if (x === "series") return "series_newspring";
+          if (x === "music") return "albums_newspring";
+          return x;
+        });
+
+    // only include what user hasn't excluded
+    includeChannels = uniq(channels.concat(includeChannels));
+    excludedIds = excludedIds.map(x => parseGlobalId(x).id);
+    const query = { tags, limit, offset, includeChannels, excludedIds };
+
+    // XXX would be great to add a WileySort to weight by tags
+    // XXX could / should we weight by users preference?
+    return this.cache.get(this.cache.encode(query, this.__type), () => ChannelData.find({
+        attributes: ["entry_id"],
+        where: { entry_id: { $notIn: excludedIds } },
+        order: [
+          [ChannelTitles.model, "entry_date", "DESC"],
+        ],
+        include: [
+          {
+            model: ChannelTitles.model,
+            where: {
+              status: { $or: ["open", "featured" ]},
+              entry_date: { $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+              expiration_date: {
+                $or: [
+                  { $eq: 0 },
+                  { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+                ],
+              },
+            },
+          },
+          { model: Channels.model, where: { channel_name: { $or: includeChannels }} },
+          {
+            model: TagEntries.model,
+            include: [
+              {
+                model: Tags.model,
+                where: { tag_name: { $in: tags }},
+              },
+            ],
+          },
+        ],
+      })
+    , { ttl: 3600, cache })
+      .then((x: any[]) => {
+        // XXX find how to do this in the query?
+        // return x.slice(offset, limit + offset);
+        // XXX make a WileySort for this instead of random stuff
+        return sampleSize(x, limit);
       })
       .then(this.getFromIds.bind(this))
       .then((x: any[]) => x.filter(y => !!y))
