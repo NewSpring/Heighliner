@@ -207,10 +207,12 @@ export async function createApp(monitor?) {
 
       context.models = createdModels;
 
-      const sentry = new Raven.Client(process.env.SENTRY);
-      context.sentry = sentry;
-      if (context.person) {
-        sentry.setUserContext({ email: context.person.Email, id: context.person.PersonId });
+      if (process.env.NODE_ENV === "production") {
+        const sentry = new Raven.Client(process.env.SENTRY);
+        context.sentry = sentry;
+        if (context.person) {
+          sentry.setUserContext({ email: context.person.Email, id: context.person.PersonId });
+        }
       }
       return {
         // graphiql: process.env.NODE_ENV !== "production",
@@ -221,8 +223,10 @@ export async function createApp(monitor?) {
         mocks: useMocks ? mocks : false,
         schema,
         formatError:  error => {
-          if (datadog) datadog.increment("graphql.error");
-          context.sentry.captureError(error, parsers.parseRequest(request));
+          if (process.env.NODE_ENV === "production") {
+            if (datadog) datadog.increment("graphql.error");
+            context.sentry.captureError(error, parsers.parseRequest(request));
+          }
           return {
             message: error.message,
             locations: error.locations,
