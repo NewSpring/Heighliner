@@ -124,13 +124,13 @@ export class MSSQLConnector {
     return promise
       .then(x => {
         const end = new Date() as any;
-        if (dd) dd.histogram(`${prefix}.transaction.time`, (start - end), [""]);
+        if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
         console.timeEnd(label); // tslint:disable-line
         return x;
       })
       .catch(x => {
         const end = new Date() as any;
-        if (dd) dd.histogram(`${prefix}.transaction.time`, (start - end), [""]);
+        if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
         if (dd) dd.increment(`${prefix}.transaction.error`);
         console.timeEnd(label); // tslint:disable-line
         return x;
