@@ -6,11 +6,11 @@ import raven from "raven";
 import Metrics from "datadog-metrics";
 
 let dogstatsd;
-if (process.env.DATADOG_API_KEY) {
+if (process.env.DATADOG_API_KEY && process.env.NODE_ENV === "production") {
   dogstatsd = new Metrics.BufferedMetricsLogger({
     apiKey: process.env.DATADOG_API_KEY,
     appKey: process.env.DATADOG_APP_KEY,
-    prefix: "heighliner.",
+    prefix: `heighliner.${process.env.SENTRY_ENVIRONMENT}.`,
     flushIntervalSeconds: 15,
   });
 
@@ -27,9 +27,10 @@ import { createApp } from "./schema";
 async function start() {
   const app = express();
 
-  // The request handler must be the first item
-  app.use(raven.middleware.express.requestHandler(process.env.SENTRY));
-
+  if (process.env.NODE_ENV === "production") {
+    // The request handler must be the first item
+    app.use(raven.middleware.express.requestHandler(process.env.SENTRY));
+  }
   /*
 
     Middleware
@@ -151,7 +152,9 @@ async function start() {
   });
 
   // The error handler must be before any other error middleware
-  app.use(raven.middleware.express.errorHandler(process.env.SENTRY));
+  if (process.env.NODE_ENV === "production") {
+    app.use(raven.middleware.express.errorHandler(process.env.SENTRY));
+  }
 
 }
 
