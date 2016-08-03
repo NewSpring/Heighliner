@@ -4,27 +4,21 @@ import fetch from "isomorphic-fetch";
 
 export function connect(address: string): Promise<boolean> {
   return new Promise((cb) => {
-    const hasKeys = process.env.SEARCH_URL && process.env.SEARCH_KEY && process.env.SEARCH_CX;
-    cb(hasKeys);
+    cb(true);
   });
 }
 
-export class SSFetchConnector {
-  private cx: string = process.env.SEARCH_CX;
-  private key: string = process.env.SEARCH_KEY;
-  private url: string = process.env.SEARCH_URL;
+export class GoogleConnector {
   private count: number = 0;
 
-  public get(query: string): Promise<any> {
-    const label = `SSFetchConnector${this.getCount()}`;
+  public get(endpoint: string): Promise<any> {
+    const label = `GoogleConnector${this.getCount()}`;
     const headers = {
       "user-agent": "Heighliner",
       "Content-Type": "application/json",
     } as { [index: string]: string };
 
     const options = { method: "GET", headers };
-    const endpoint = `${this.url}key=${this.key}&cx=${this.cx}&q=${query}`;
-
     console.time(label); // tslint:disable-line
     // XXX we can't cache google site search legally
     return fetch(endpoint, options)

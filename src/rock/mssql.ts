@@ -13,12 +13,16 @@ import { createTables } from "./models";
 let noop = (...args) => {}; // tslint:disable-line
 let loud = console.log.bind(console, "MSSQL:"); // tslint:disable-line
 let db;
+let dd;
+
 export function connect(
   database: string,
   username: string,
   password: string,
-  opts: Options
+  opts: Options,
+  monitor?: any
 ): Promise<boolean> {
+  dd = monitor && monitor.datadog;
   return new Promise((cb) => {
     opts = merge({}, opts, {
       dialect: "mssql",
@@ -111,12 +115,26 @@ export class MSSQLConnector {
   }
 
   private time(promise: Promise<any>): Promise<any> {
-    const label = `MSSQLConnector-${this.queryCount()}`;
+    const prefix = "MSSQLConnector";
+    const count = this.queryCount();
+    const start = new Date() as any;
+    const label = `${prefix}-${count}`;
+    if (dd) dd.increment(`${prefix}.transaction.count`);
     console.time(label); // tslint:disable-line
     return promise
-      .then(x => { console.timeEnd(label); return x}) // tslint:disable-line
-      .catch(x => { console.timeEnd(label); return x}) // tslint:disable-line
-      ;
+      .then(x => {
+        const end = new Date() as any;
+        if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
+        console.timeEnd(label); // tslint:disable-line
+        return x;
+      })
+      .catch(x => {
+        const end = new Date() as any;
+        if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
+        if (dd) dd.increment(`${prefix}.transaction.error`);
+        console.timeEnd(label); // tslint:disable-line
+        return x;
+      });
   }
 
 }

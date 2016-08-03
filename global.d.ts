@@ -15,12 +15,12 @@ declare module "dataloader" {
   export interface IOptions {
     batch?: boolean;
     cache?: boolean;
-    cacheKeyFn?(key: string): string;
     cacheMap?: any;
+    cacheKeyFn?(key: string): string;
   }
   export default class Dataloader {
-    constructor(method: (keys: string[]) => Promise<any[]>, options?: IOptions)
-    load(id: string | number): any
+    constructor(method: (keys: string[]) => Promise<any[]>, options?: IOptions);
+    public load(id: string | number): any;
   }
 }
 
@@ -97,4 +97,59 @@ declare module "striptags" {
 
 declare module "truncate" {
   export default function(string: string, length: number): string;
+}
+
+declare module "connect-datadog" {
+  export default function(opts: any): any;
+}
+
+
+declare module "raven" {
+  export interface IOptions {
+    extra?: Object;
+    tags?: { [key:string]: string };
+    fingerprint?: string[];
+    level?: string;
+  }
+  export interface userContext {
+    email: string;
+    id: string;
+  }
+
+  export interface IClient {
+    captureError(error: Error | string);
+    setUserContext(user: userContext);
+    setExtraContext(context: Object);
+    setTagsContext(tags: { [key: string]: string });
+  }
+
+  export interface IParser {
+    parseRequest(req: any, opts?: any): any;
+  }
+
+  export var Client: IClient;
+  export var parsers: IParser;
+
+  export interface IExpressMiddleware {
+    requestHandler(url: string): any;
+    errorHandler(url: string): any;
+  }
+  export interface IMiddleware {
+    express: IExpressMiddleware;
+  }
+
+  export interface Raven {
+    middleware: IMiddleware;
+    Client: { new(url: string): IClient };
+  }
+  let client: Raven;
+  export default client;
+}
+
+declare module "datadog-metrics" {
+  export interface DDog {
+    BufferedMetricsLogger: { new(opts?: any): any };
+  }
+  let client: DDog;
+  export default client;
 }

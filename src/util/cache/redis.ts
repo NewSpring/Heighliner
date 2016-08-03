@@ -8,7 +8,9 @@ import DataLoader from "dataloader";
 import { parseGlobalId } from "./../node/model";
 
 let db;
-export function connect(address: string, port: number = 6379): Promise<boolean> {
+let dd;
+export function connect(address: string, port: number = 6379, monitor: any): Promise<boolean> {
+  dd = monitor && monitor.datadog;
   let hasReturned = false;
   return new Promise((cb) => {
 
@@ -55,19 +57,40 @@ export class RedisCache implements Cache {
     return this.count;
   }
 
+  private time(promise: Promise<any>, log?: () => boolean): Promise<any> {
+    const prefix = "RedisCache";
+    const count = this.getCount();
+    const start = new Date() as any;
+    const label = `${prefix}-${count}`;
+    if (dd) dd.increment(`${prefix}.transaction.count`);
+    console.time(label); // tslint:disable-line
+    return promise
+      .then(x => {
+        if (log()) {
+          const end = new Date() as any;
+          if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
+          console.timeEnd(label); // tslint:disable-line
+        }
+        return x;
+      })
+      .catch(x => {
+        const end = new Date() as any;
+        if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
+        if (dd) dd.increment(`${prefix}.transaction.error`);
+        console.timeEnd(label); // tslint:disable-line
+        return x;
+      });
+  }
+
   public get(
     id: string,
     lookup: () => Promise<any>,
     { ttl, cache }: { ttl: number, cache: boolean } = { cache: true, ttl: 86400 }
   ): Promise<Object | void> {
     let fromCache = false;
-    const label = `RedisCache-${this.getCount()}`;
-    if (process.env.NODE_ENV !== "production") console.time(label); // tslint:disable-line
-    return new Promise((done) => {
-      if (!cache && lookup) {
-        return lookup().then(done);
-      }
-
+    const log = () => fromCache;
+    return this.time(new Promise((done) => {
+      if (!cache && lookup) return lookup().then(done);
       try {
         // try to nest information based on global id
         let { __type } = parseGlobalId(id);
@@ -78,9 +101,7 @@ export class RedisCache implements Cache {
         .then(data => {
           if (!data) return lookup().then(done);
 
-          try {
-            data = JSON.parse(data);
-          } catch (e) {
+          try { data = JSON.parse(data); } catch (e) {
             return lookup().then(done);
           }
 
@@ -89,18 +110,9 @@ export class RedisCache implements Cache {
         })
         .catch(x => lookup().then(done));
     }).then((data) => {
-
-      if (data && !fromCache) {
-        // async the save
-        process.nextTick(() => {
-          this.set(id, data, ttl);
-        });
-      }
-      if (fromCache && process.env.NODE_ENV !== "production") {
-        console.timeEnd(label); // tslint:disable-line
-      }
+      if (data && !fromCache) process.nextTick(() => { this.set(id, data, ttl); });
       return data;
-    });
+    }), log);
   }
 
   public set(id: string, data: Object, ttl: number = 86400): Promise<Boolean> {
