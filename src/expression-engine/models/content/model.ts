@@ -212,6 +212,7 @@ export class Content extends EE {
 
   public async getLiveStream(): Promise<any> {
     return this.getIsLive()
+      .then(x => (!x ? { isLive: false } : x))
       .then(({ isLive }) => {
         if (!isLive) return { isLive, snippet_contents: null };
 
