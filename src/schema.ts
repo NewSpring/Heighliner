@@ -240,7 +240,7 @@ export async function createApp(monitor?) {
       if (process.env.TRACER_APP_KEY) {
         (graphql as any).tracer = new Tracer({ TRACER_APP_KEY: process.env.TRACER_APP_KEY });
       }
-      console.log(process.env.TRACER_APP_KEY, (graphql as any).tracer); // tslint:disable-line
+
       return graphql;
     },
   };
