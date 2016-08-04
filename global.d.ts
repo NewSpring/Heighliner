@@ -105,11 +105,6 @@ declare module "truncate" {
   export default function(string: string, length: number): string;
 }
 
-declare module "connect-datadog" {
-  export default function(opts: any): any;
-}
-
-
 declare module "raven" {
   export interface IOptions {
     extra?: Object;
@@ -158,4 +153,8 @@ declare module "datadog-metrics" {
   }
   let client: DDog;
   export default client;
+}
+
+declare module "mp3-duration" {
+  export default function(filename: string, callback: any);
 }
