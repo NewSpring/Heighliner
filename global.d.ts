@@ -9,7 +9,7 @@ declare module "graphql-tools" {
   export class MockList {
     constructor(count: number, method: () => any)
   }
-
+  export function addMockFunctionsToSchema(opts: any): void
   export function makeExecutableSchema(schema: any): any
 }
 
