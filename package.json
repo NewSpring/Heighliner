@@ -7,9 +7,9 @@
     "pretest": "rm -rf ./lib && mkdir ./lib && npm run build",
     "test": "npm run testonly --",
     "commit": "git-cz",
-    "test:watch": "tsc --watch | ava ./lib/test/**/* --watch",
+    "test:watch": "tsc --watch | ava --watch",
     "copy-schemas": "norma build",
-    "testonly": "TEST=true nyc ava ./lib/test/**/*",
+    "testonly": "TEST=true nyc ava",
     "lint": "tslint 'src/**/*.ts' && tslint 'test/**/*.ts'",
     "posttest": "npm run lint",
     "start": "tsc --watch | supervisor -w lib index.js",
@@ -23,6 +23,10 @@
     "require": [
       "babel-core/register",
       "babel-polyfill"
+    ],
+    "files": [
+      "./lib/test/**/*.js",
+      "!./lib/src/**/*.js"
     ],
     "babel": "inherit",
     "concurrency": 5,

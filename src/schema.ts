@@ -1,6 +1,6 @@
 import { timeout } from "promise-timeout";
 import Raven, { parsers } from "raven";
-import { makeExecutableSchema } from "graphql-tools";
+import { makeExecutableSchema, addMockFunctionsToSchema } from "graphql-tools";
 import { GraphQLSchema } from "graphql";
 import { Tracer, addTracingToResolvers } from "graphql-tracer";
 
@@ -42,7 +42,7 @@ import GoogleSS, { queries as GoogleSSQueries } from "./google-site-search";
 import ESV, { queries as ESVQueries } from "./esv";
 
 // Merge all applications together
-let { schema, models, resolvers } = loadApplications({
+let { schema, models, resolvers, mocks } = loadApplications({
   Apollos,
   ExpressionEngine,
   Rock,
@@ -72,9 +72,19 @@ const executabledSchema = makeExecutableSchema({
 }) as GraphQLSchema;
 
 let tracer;
-if (process.env.TRACER_APP_KEY) tracer = new Tracer({ TRACER_APP_KEY: process.env.TRACER_APP_KEY });
-addTracingToResolvers(executabledSchema);
+if (process.env.TRACER_APP_KEY && !process.env.TEST) {
+  tracer = new Tracer({ TRACER_APP_KEY: process.env.TRACER_APP_KEY });
+  addTracingToResolvers(executabledSchema);
+}
 
+
+if (process.env.TEST) {
+  addMockFunctionsToSchema({
+    schema: executabledSchema,
+    preserveResolvers: true,
+    mocks,
+  });
+}
 
 export async function createApp(monitor?) {
   const datadog = monitor && monitor.datadog;
@@ -160,6 +170,7 @@ export async function createApp(monitor?) {
     if (ESVConnection) useMocks = false;
 
   }
+
 
   // create all of the models on app start up
   let createdModels = {} as any;
