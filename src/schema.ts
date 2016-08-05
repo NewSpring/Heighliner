@@ -1,6 +1,6 @@
 import { timeout } from "promise-timeout";
 import Raven, { parsers } from "raven";
-import { Tracer } from "apollo-tracer";
+import { Tracer } from "graphql-tracer";
 
 import Node from "./util/node/model";
 import {

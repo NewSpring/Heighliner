@@ -29,7 +29,7 @@ declare module "apollo-server" {
   function apolloServer(config: any): any
 }
 
-declare module "apollo-tracer" {
+declare module "graphql-tracer" {
   export class Tracer {
     constructor(opts: any);
   }
