@@ -1,6 +1,4 @@
-import { apolloExpress } from "apollo-server";
-import { graphiqlExpress } from "apollo-server";
-
+import { apolloServer } from "apollo-server";
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -139,13 +137,8 @@ async function start() {
     res.status(200).send({ message: `Cache cleared for ${type} ${id}`});
   });
 
-  app.use("/graphql", apolloExpress(graphql));
-  app.use("/view", graphiqlExpress({ endpointURL: "/graphql" }));
+  app.use("/graphql", apolloServer(graphql));
 
-  // The error handler must be before any other error middleware
-  if (process.env.NODE_ENV === "production") {
-    app.use(raven.middleware.express.errorHandler(process.env.SENTRY));
-  }
 
   let PORT = process.env.PORT || 80;
   // Listen for incoming HTTP requests
@@ -159,6 +152,11 @@ async function start() {
       "Listening at http://%s%s", host, port === 80 ? "" : ":" + port
     );
   });
+
+  // The error handler must be before any other error middleware
+  if (process.env.NODE_ENV === "production") {
+    app.use(raven.middleware.express.errorHandler(process.env.SENTRY));
+  }
 
 }
 
