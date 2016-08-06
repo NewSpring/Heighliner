@@ -1,6 +1,8 @@
 import { timeout } from "promise-timeout";
 import Raven, { parsers } from "raven";
-import { Tracer } from "apollo-tracer";
+import { makeExecutableSchema, addMockFunctionsToSchema } from "graphql-tools";
+import { GraphQLSchema } from "graphql";
+import { Tracer, addTracingToResolvers } from "graphql-tracer";
 
 import Node from "./util/node/model";
 import {
@@ -63,6 +65,26 @@ schema = createSchema({
   ],
   schema,
 });
+
+const executabledSchema = makeExecutableSchema({
+  typeDefs: schema,
+  resolvers,
+}) as GraphQLSchema;
+
+let tracer;
+if (process.env.TRACER_APP_KEY && !process.env.TEST) {
+  tracer = new Tracer({ TRACER_APP_KEY: process.env.TRACER_APP_KEY });
+  addTracingToResolvers(executabledSchema);
+}
+
+
+if (process.env.TEST) {
+  addMockFunctionsToSchema({
+    schema: executabledSchema,
+    preserveResolvers: true,
+    mocks,
+  });
+}
 
 export async function createApp(monitor?) {
   const datadog = monitor && monitor.datadog;
@@ -149,6 +171,7 @@ export async function createApp(monitor?) {
 
   }
 
+
   // create all of the models on app start up
   let createdModels = {} as any;
   Object.keys(models).forEach((name) => {
@@ -216,14 +239,28 @@ export async function createApp(monitor?) {
         }
       }
 
-      let graphql = {
-        // graphiql: process.env.NODE_ENV !== "production",
-        graphiql: true, // XXX can we dynamically do this on alpha?
-        pretty: false,
+      return {
         context: context as Context,
-        resolvers: useMocks ? false : resolvers, // required if schema is an array of type definitions
-        mocks: useMocks ? mocks : false,
-        schema,
+        schema: executabledSchema,
+        formatParams: params => {
+          if (!tracer) return params;
+          const logger = tracer.newLoggerInstance();
+          logger.log("request.info", {
+            headers: request.headers,
+            baseUrl: request.baseUrl,
+            originalUrl: request.originalUrl,
+            method: request.method,
+            httpVersion: request.httpVersion,
+            remoteAddr: request.connection.remoteAddress,
+          });
+          params.logFunction = logger.log;
+          params.context.tracer = logger;
+          return params;
+        },
+        formatResponse: (response, data) => {
+          if (data.context.tracer) data.context.tracer.submit();
+          return response;
+        },
         formatError:  error => {
           if (process.env.NODE_ENV === "production") {
             if (datadog) datadog.increment("graphql.error");
@@ -236,14 +273,6 @@ export async function createApp(monitor?) {
           };
         },
       };
-
-      console.log(process.env.TRACER_APP_KEY); // tslint:disable-line
-      if (process.env.TRACER_APP_KEY) {
-        (graphql as any).tracer = new Tracer({ TRACER_APP_KEY: process.env.TRACER_APP_KEY });
-        console.log((graphql as any).tracer); // tslint:disable-line
-      }
-
-      return graphql;
     },
   };
 
