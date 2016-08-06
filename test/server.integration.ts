@@ -24,12 +24,12 @@ test.before(async (t) => {
 });
 
 
-// test("Valid queries should return success", async (t) => {
-//   const response = await Heighliner(JSON.stringify({ query: "{ currentUser { id } }" }));
-//   t.true(response.success);
-//   t.is(response.status, 200);
-//   t.truthy(response.data);
-// });
+test("Valid queries should return success", async (t) => {
+  const response = await Heighliner(JSON.stringify({ query: "{ currentUser { id } }" }));
+  t.true(response.success);
+  t.is(response.status, 200);
+  t.truthy(response.data);
+});
 
 test("Invalid queries should fail", async (t) => {
   const response = await Heighliner(JSON.stringify({ query: "{ foobar { id } }" }));
