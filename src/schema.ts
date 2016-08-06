@@ -69,6 +69,7 @@ schema = createSchema({
 const executabledSchema = makeExecutableSchema({
   typeDefs: schema,
   resolvers,
+  allowUndefinedInResolve: true, // required for resolvers
 }) as GraphQLSchema;
 
 let tracer;
