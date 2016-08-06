@@ -9,8 +9,6 @@ declare module "graphql-tools" {
   export class MockList {
     constructor(count: number, method: () => any)
   }
-  export function addMockFunctionsToSchema(opts: any): void
-  export function makeExecutableSchema(schema: any): any
 }
 
 declare module "dataloader" {
@@ -26,11 +24,15 @@ declare module "dataloader" {
   }
 }
 
-declare module "graphql-tracer" {
+declare module "apollo-server" {
+  // XXX actually type this project
+  function apolloServer(config: any): any
+}
+
+declare module "apollo-tracer" {
   export class Tracer {
     constructor(opts: any);
   }
-  function addTracingToResolvers(schema: any): any;
 }
 
 declare module "casual" {
