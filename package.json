@@ -7,9 +7,9 @@
     "pretest": "rm -rf ./lib && mkdir ./lib && npm run build",
     "test": "npm run testonly --",
     "commit": "git-cz",
-    "test:watch": "tsc --watch | ava --watch",
+    "test:watch": "tsc --watch | ava ./lib/test/**/* --watch",
     "copy-schemas": "norma build",
-    "testonly": "TEST=true nyc ava",
+    "testonly": "TEST=true nyc ava ./lib/test/**/*",
     "lint": "tslint 'src/**/*.ts' && tslint 'test/**/*.ts'",
     "posttest": "npm run lint",
     "start": "tsc --watch | supervisor -w lib index.js",
@@ -24,17 +24,14 @@
       "babel-core/register",
       "babel-polyfill"
     ],
-    "files": [
-      "./lib/test/**/*.js",
-      "!./lib/src/**/*.js"
-    ],
     "babel": "inherit",
     "concurrency": 5,
     "failFast": true
   },
   "license": "ISC",
   "dependencies": {
-    "apollo-server": "^0.2.3",
+    "apollo-server": "^0.1.5",
+    "apollo-tracer": "^0.1.4",
     "bluebird": "^3.1.1",
     "body-parser": "^1.14.2",
     "casual": "^1.5.3",
@@ -48,7 +45,6 @@
     "google-geocoding": "^0.1.7",
     "graphql": "^0.6.2",
     "graphql-tools": "^0.6.2",
-    "graphql-tracer": "^0.2.4",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.12.0",
     "moment": "^2.13.0",

@@ -11,7 +11,7 @@ import { createGlobalId } from "../../../util";
 export default {
   Query: {
     currentUser(_: any, args: any, { user }: any): any {
-      return user || null;
+      return user;
     },
   },
 
