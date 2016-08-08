@@ -137,13 +137,13 @@ export default {
       const position = Number(exp_channel.exp_channel_fields.tracks.split("_").pop());
       return models.File.getFilesFromContent(entry_id, tracks, position);
     },
-    audio: ({ entry_id, audio, tracks, exp_channel }, _, { models }) => {
+    audio: ({ entry_id, audio, tracks, exp_channel, audio_duration }, _, { models }) => {
       if (!audio && !tracks) return Promise.all([]);
       const getAllFiles = [];
 
       if (audio) {
         const audioPosition = Number(exp_channel.exp_channel_fields.audio.split("_").pop());
-        getAllFiles.push(models.File.getFilesFromContent(entry_id, audio, audioPosition));
+        getAllFiles.push(models.File.getFilesFromContent(entry_id, audio, audioPosition, audio_duration));
       }
 
       if (tracks) {

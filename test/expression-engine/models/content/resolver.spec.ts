@@ -59,6 +59,7 @@ test("`ContentData` returns blank array if no audio or tracks", async (t) => {
     audio: null,
     tracks: null,
     exp_channel: {},
+    audio_duration: null,
   };
   const models = {};
 
@@ -76,13 +77,15 @@ test("`ContentData` fetches audio files if audio", async (t) => {
         audio: "test_field_123",
       },
     },
+    audio_duration: "1:23",
   };
   const models = {
     File: {
-      getFilesFromContent: (entry_id, audio, audioPosition) => {
+      getFilesFromContent: (entry_id, audio, audioPosition, duration) => {
         t.is(entry_id, mockData.entry_id);
         t.is(audio, mockData.audio);
         t.is(audioPosition, Number(mockData.exp_channel.exp_channel_fields.audio.split("_").pop()));
+        t.is(duration, mockData.audio_duration);
       },
     },
   };
@@ -101,6 +104,7 @@ test("`ContentData` fetches tracks files if tracks", async (t) => {
         tracks: "test_field_789",
       },
     },
+    audio_duration: null,
   };
   const models = {
     File: {
@@ -127,11 +131,12 @@ test("`ContentData` fetches audio and tracks files if both", async (t) => {
         tracks: "test_field_789",
       },
     },
+    audio_duration: "1:23",
   };
   let count = 0;
   const models = {
     File: {
-      getFilesFromContent: (entry_id, thing, thingPosition) => {
+      getFilesFromContent: (entry_id, thing, thingPosition, duration) => {
         count++;
         t.is(entry_id, mockData.entry_id);
         t.true([mockData.audio, mockData.tracks].indexOf(thing) > -1);
@@ -140,6 +145,9 @@ test("`ContentData` fetches audio and tracks files if both", async (t) => {
           Number(mockData.exp_channel.exp_channel_fields.tracks.split("_").pop())
         ;
         t.is(thingPosition, splitField);
+        if (thing === mockData.audio) {
+          t.is(duration, mockData.audio_duration);
+        }
       },
     },
   };
