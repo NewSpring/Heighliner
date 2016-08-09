@@ -220,7 +220,7 @@ export class FinancialAccount extends FinancialModel {
     // defaults
     where = merge({
       ParentAccountId: null,
-      PublicDescription: { $notIn: ["", null] },
+      PublicDescription: { $notLike: { $any: ["", null] } },
       IsTaxDeductible: true,
     }, where);
     return await this.cache.get(
