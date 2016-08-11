@@ -240,6 +240,25 @@ test("`Query` lowReorderSets should call model function with vars", t => {
   Query.lowReorderSets({}, mockData, { models });
 });
 
+test("`Query` live should exist", t => {
+  const { Query } = Resolver;
+
+  t.truthy(Query.live);
+});
+
+test("`Query` live should call model", t => {
+  const { Query } = Resolver;
+  const models = {
+    Content: {
+      getLiveStream: () => {
+        t.pass();
+      },
+    },
+  };
+
+  Query.live({}, {}, { models });
+});
+
 test("`LiveFeed` should return the live flag", t => {
   const { LiveFeed } = Resolver;
 
