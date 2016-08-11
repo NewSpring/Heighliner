@@ -18,35 +18,59 @@ const sampleData = {
   },
 };
 
-test("`LiveFeed` should return the live flag and the embedCode", t => {
+test("`LiveFeed` should return the live flag", t => {
   const { LiveFeed } = Resolver;
 
-  const embedCode = LiveFeed.embedCode(sampleData.live);
   const isLive = LiveFeed.live(sampleData.live);
 
   t.deepEqual(isLive, sampleData.live.isLive);
+});
+
+test("`LiveFeed` should reurn the embedCode", t => {
+  const { LiveFeed } = Resolver;
+
+  const embedCode = LiveFeed.embedCode(sampleData.live);
+
   t.deepEqual(embedCode, sampleData.live.snippet_contents);
 });
 
-test("`ContentColor` returns id, value, and description", t => {
+test("`ContentColor` returns the color id", t => {
   const { ContentColor } = Resolver;
 
   const id = ContentColor.id(sampleData.contentColor);
-  const value = ContentColor.value(sampleData.contentColor);
-  const description = ContentColor.description(sampleData.contentColor);
 
   t.deepEqual(id, sampleData.contentColor.id);
+});
+
+test("`ContentColor` returns the color value", t => {
+  const { ContentColor } = Resolver;
+
+  const value = ContentColor.value(sampleData.contentColor);
+
   t.deepEqual(value, sampleData.contentColor.value);
+});
+
+test("`ContentColor` returns the color description", t => {
+  const { ContentColor } = Resolver;
+
+  const description = ContentColor.description(sampleData.contentColor);
+
   t.deepEqual(description, sampleData.contentColor.description);
 });
 
-test("`ContentScripture` returns book and passage", t => {
+test("`ContentScripture` returns book", t => {
   const { ContentScripture } = Resolver;
 
   const book = ContentScripture.book(sampleData.contentScripture);
-  const passage = ContentScripture.passage(sampleData.contentScripture);
 
   t.deepEqual(book, sampleData.contentScripture.book);
+});
+
+test("`ContentScripture` returns the passage", t => {
+  const { ContentScripture } = Resolver;
+
+  const passage = ContentScripture.passage(sampleData.contentScripture);
+
   t.deepEqual(passage, sampleData.contentScripture.passage);
 });
 
