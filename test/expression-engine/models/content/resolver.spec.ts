@@ -1,5 +1,6 @@
 
 import test from "ava";
+import { difference } from "lodash";
 import Resolver from "../../../../src/expression-engine/models/content/resolver";
 
 const sampleData = {
@@ -17,6 +18,122 @@ const sampleData = {
     passage: "thePassage",
   },
 };
+
+const eeChannels = [
+  "devotionals",
+  "articles",
+  "series_newspring",
+  "sermons",
+  "stories",
+  "newspring_albums",
+];
+
+test("`Query` should have a content function", t => {
+  const { Query } = Resolver;
+
+  t.truthy(Query.content);
+});
+
+test("`Query` content should call model find with vars", t => {
+  const { Query } = Resolver;
+  const mockData = {
+    channel: "channel1",
+    skip: 1,
+    limit: 2,
+    status: "yep",
+    cache: {
+      things: "things",
+    },
+  };
+  const models = {
+    Content: {
+      find: (object, cache) => {
+        t.is(object.channel_name, mockData.channel);
+        t.is(object.offset, mockData.skip);
+        t.is(object.limit, mockData.limit);
+        t.is(object.status, mockData.status);
+        t.deepEqual(cache, mockData.cache);
+      },
+    },
+  };
+
+  Query.content({}, mockData, { models });
+});
+
+test("`Query` should have a feed function", t => {
+  const { Query } = Resolver;
+
+  t.truthy(Query.feed);
+});
+
+test("`Query` feed should call model find with vars", t => {
+  const { Query } = Resolver;
+  const mockData = {
+    excludeChannels: [],
+    limit: 1,
+    skip: 2,
+    status: "yep",
+    cache: {
+      things: "things",
+    },
+  };
+  const models = {
+    Content: {
+      find: (object, cache) => {
+        t.deepEqual(object.channel_name, { $or: eeChannels });
+        t.is(object.offset, mockData.skip);
+        t.is(object.limit, mockData.limit);
+        t.is(object.status, mockData.status);
+      },
+    },
+  };
+
+  Query.feed({}, mockData, { models });
+});
+
+test("`Query` feed should lower case and exclude channels passed in", t => {
+  const { Query } = Resolver;
+  const mockData = {
+    excludeChannels: ["Devotionals"],
+    limit: 1,
+    skip: 2,
+    status: "yep",
+    cache: {
+      things: "things",
+    },
+  };
+  const models = {
+    Content: {
+      find: (object, cache) => {
+        t.deepEqual(object.channel_name, { $or: difference(eeChannels, ["devotionals"]) });
+      },
+    },
+  };
+
+  Query.feed({}, mockData, { models });
+});
+
+test("`Query` feed should lower case, convert, and exclude Series and Music", t => {
+  const { Query } = Resolver;
+  const mockData = {
+    excludeChannels: ["Series", "Music"],
+    limit: 1,
+    skip: 2,
+    status: "yep",
+    cache: {
+      things: "things",
+    },
+  };
+  const models = {
+    Content: {
+      find: (object, cache) => {
+        t.deepEqual(object.channel_name, { $or: difference(eeChannels, ["series_newspring", "albums_newspring"]) });
+      },
+    },
+  };
+
+  Query.feed({}, mockData, { models });
+});
 
 test("`LiveFeed` should return the live flag", t => {
   const { LiveFeed } = Resolver;
