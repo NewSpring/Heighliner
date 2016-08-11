@@ -135,6 +135,89 @@ test("`Query` feed should lower case, convert, and exclude Series and Music", t 
   Query.feed({}, mockData, { models });
 });
 
+test("`Query` should have taggedContent function", t => {
+  const { Query } = Resolver;
+
+  t.truthy(Query.taggedContent);
+});
+
+test("`Query` taggedContent should return null if no tag info", t => {
+  const { Query } = Resolver;
+  const mockData = {
+    includeChannels: [],
+    tagName: null,
+    tags: null,
+    limit: 1,
+    skip: 2,
+    cache: {
+      things: "things",
+    },
+    excludedIds: [3],
+  };
+  const models = {};
+
+  const result = Query.taggedContent({}, mockData, { models });
+
+  t.falsy(result);
+});
+
+test("`Query` taggedContent should call model findByTagName if tagName", t => {
+  const { Query } = Resolver;
+  const mockData = {
+    includeChannels: ["tag1"],
+    tagName: "tagggggggggg",
+    tags: null,
+    limit: 1,
+    skip: 2,
+    cache: {
+      things: "things",
+    },
+    excludedIds: [3],
+  };
+  const models = {
+    Content: {
+      findByTagName: (params, options, cache) => {
+        t.is(params.tagName, mockData.tagName);
+        t.deepEqual(params.includeChannels, mockData.includeChannels);
+        t.is(options.offset, mockData.skip);
+        t.is(options.limit, mockData.limit);
+        t.deepEqual(cache, mockData.cache);
+      },
+    },
+  };
+
+  Query.taggedContent({}, mockData, { models });
+});
+
+test("`Query` taggedContent should call modal findByTags if tags", t => {
+  const { Query } = Resolver;
+  const mockData = {
+    includeChannels: ["tag1"],
+    tagName: null,
+    tags: ["tag2", "tag3", "tag4"],
+    limit: 1,
+    skip: 2,
+    cache: {
+      things: "things",
+    },
+    excludedIds: [3],
+  };
+  const models = {
+    Content: {
+      findByTags: (params, options, cache) => {
+        t.deepEqual(params.tags, mockData.tags);
+        t.deepEqual(params.includeChannels, mockData.includeChannels);
+        t.deepEqual(params.excludedIds, mockData.excludedIds);
+        t.is(options.offset, mockData.skip);
+        t.is(options.limit, mockData.limit);
+        t.deepEqual(cache, mockData.cache);
+      },
+    },
+  };
+
+  Query.taggedContent({}, mockData, { models });
+});
+
 test("`LiveFeed` should return the live flag", t => {
   const { LiveFeed } = Resolver;
 
