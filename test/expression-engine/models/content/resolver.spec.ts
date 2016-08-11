@@ -218,6 +218,28 @@ test("`Query` taggedContent should call modal findByTags if tags", t => {
   Query.taggedContent({}, mockData, { models });
 });
 
+test("`Query` lowReorderSets should exist", t => {
+  const { Query } = Resolver;
+
+  t.truthy(Query.lowReorderSets);
+});
+
+test("`Query` lowReorderSets should call model function with vars", t => {
+  const { Query } = Resolver;
+  const mockData = {
+    setName: "nav",
+  };
+  const models = {
+    Content: {
+      getFromLowReorderSet: (setName) => {
+        t.is(setName, mockData.setName);
+      },
+    },
+  };
+
+  Query.lowReorderSets({}, mockData, { models });
+});
+
 test("`LiveFeed` should return the live flag", t => {
   const { LiveFeed } = Resolver;
 
