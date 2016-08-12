@@ -26,7 +26,7 @@ test.before(async (t) => {
 });
 
 
-test("Valid queries should return success", async (t) => {
+test.skip("Valid queries should return success", async (t) => {
   const response = await Heighliner(JSON.stringify({
     query: `
       mutation ClearCache {
@@ -37,6 +37,7 @@ test("Valid queries should return success", async (t) => {
     `,
   }));
 
-  // t.true(response.success);
+  t.true(response.success);
   t.is(response.status, 200);
+
 });
