@@ -16,7 +16,7 @@ test("scripture will call the get method on the ESV model", t => {
     get(query) {
       t.is(query, q);
       return true;
-    }
+    },
   };
   t.truthy(scripture(null, { query: q }, { models: { ESV }}));
 });
