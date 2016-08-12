@@ -48,7 +48,7 @@
     "google-geocoding": "^0.1.7",
     "graphql": "^0.6.2",
     "graphql-tools": "^0.6.2",
-    "graphql-tracer": "^0.2.4",
+    "graphql-tracer": "^0.2.5",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.15.0",
     "moment": "^2.13.0",
