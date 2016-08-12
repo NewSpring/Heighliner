@@ -9,7 +9,7 @@
     "commit": "git-cz",
     "test:watch": "tsc --watch | ava --watch",
     "copy-schemas": "norma build",
-    "testonly": "TEST=true nyc ava",
+    "testonly": "TEST=true nyc ava ./lib/test/**/*.js",
     "lint": "tslint 'src/**/*.ts' && tslint 'test/**/*.ts'",
     "posttest": "npm run lint",
     "start": "tsc --watch | supervisor -w lib index.js",

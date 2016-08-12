@@ -9,6 +9,18 @@ test("`Query` exposes scripture function", t => {
   t.truthy(Query.scripture);
 });
 
+test("scripture will call the get method on the ESV model", t => {
+  const { scripture } = Resolver.Query;
+  const q = casual.word;
+  const ESV = {
+    get(query) {
+      t.is(query, q);
+      return true;
+    }
+  };
+  t.truthy(scripture(null, { query: q }, { models: { ESV }}));
+});
+
 test("`ESVScripture` returns html from data", t => {
   const { ESVScripture } = Resolver;
   const html = ESVScripture.html(sampleData);
