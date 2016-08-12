@@ -136,6 +136,9 @@ export class RedisCache implements Cache {
   }
 
   public del(id: string): void {
+    // try to nest information based on global id
+    let { __type } = parseGlobalId(id);
+    id = `${__type}:${id}`;
     db.del(id); // clear redis
     this.idLoader.clear(id); // clear dataloader
   }
