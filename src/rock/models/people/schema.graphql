@@ -23,6 +23,6 @@ type Person implements Node {
   birthMonth: Int
   birthYear: Int
   email: String
-  campus: Campus
+  campus(cache: Boolean = true): Campus
   home(cache: Boolean = true): Location
 }

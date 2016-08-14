@@ -87,7 +87,7 @@ export class Person extends Rock {
   // public async getGroupsFromId(...args): Promise<any> {
   //   return PersonTable.model.getGroups.apply(PersonTable.model, args);
   // }
-  public async getCampusFromId(id: string | number): Promise<any> {
+  public async getCampusFromId(id: string | number, { cache }): Promise<any> {
     return await this.cache.get(`${id}:PersonCampus`, () => Group.findOne({
         where: { GroupTypeId: 10 }, // family
         include: [
@@ -96,7 +96,7 @@ export class Person extends Rock {
         ],
       })
         .then(x => x.Campus)
-    );
+     , { cache });
   }
 
   public async getPhoneNumbersFromId(id: string | number): Promise<any> {
