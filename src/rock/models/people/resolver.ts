@@ -47,7 +47,9 @@ export default {
     birthMonth: ({ BirthMonth }) => BirthMonth,
     birthYear: ({ BirthYear }) => BirthYear,
     email: ({ Email }) => Email,
-    campus: ({ Id }, _, { models }) => models.Person.getCampusFromId(Id),
+    campus: ({ Id }, { cache = true }, { models }) => {
+      return models.Person.getCampusFromId(Id, { cache });
+    },
     home: ({ Id }, { cache = true }, { models }) => {
       return models.Person.getHomesFromId(Id, { cache }).then(x => x[0]); // only return the first home for now
     },
