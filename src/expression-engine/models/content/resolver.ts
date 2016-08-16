@@ -104,7 +104,7 @@ export default {
       const position = Number(exp_channel.exp_channel_fields.scripture.split("_").pop());
       return models.Content.getContentFromMatrix(entry_id, scripture, position);
     },
-    images: ({ image, image_blurred, exp_channel, entry_id }, _, { models }) => {
+    images: ({ image, image_blurred, exp_channel, entry_id }, { sizes }, { models }) => {
       if (!image && !image_blurred) return Promise.all([]);
 
       let position;
@@ -122,7 +122,7 @@ export default {
         models.File.getFilesFromContent(entry_id, image_blurred, blurredPosition),
       ])
         .then(data => flatten(data))
-        .then(data => addResizings(data));
+        .then(data => addResizings(data, sizes));
     },
     colors: ({ bgcolor, color }) => {
       if (!bgcolor && !color) return [];

@@ -1,6 +1,6 @@
 import { assign } from "lodash";
 
-const resizings = [
+const allResizings = [
   "xlarge",
   "large",
   "medium",
@@ -21,8 +21,9 @@ const generateFilename = (filename, size) => {
   return result;
 };
 
-const addResizings = (images) => {
+const addResizings = (images, sizes = null) => {
   const result = [];
+  const resizings = sizes || allResizings;
   images.map((image) => {
     resizings.map((resize) => {
       const resizedImage = assign({}, image) as any;
