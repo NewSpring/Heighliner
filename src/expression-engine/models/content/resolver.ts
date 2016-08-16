@@ -1,6 +1,7 @@
 import { flatten, difference } from "lodash";
 import StripTags from "striptags";
 import Truncate from "truncate";
+import { addResizings } from "./images";
 import { createGlobalId } from "../../../util";
 
 export default {
@@ -120,7 +121,8 @@ export default {
         models.File.getFilesFromContent(entry_id, image, position),
         models.File.getFilesFromContent(entry_id, image_blurred, blurredPosition),
       ])
-        .then(data => flatten(data));
+        .then(data => flatten(data))
+        .then(data => addResizings(data));
     },
     colors: ({ bgcolor, color }) => {
       if (!bgcolor && !color) return [];
