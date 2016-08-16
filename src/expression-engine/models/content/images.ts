@@ -1,4 +1,4 @@
-import { assign } from "lodash";
+import { assign, filter, includes } from "lodash";
 
 const allResizings = [
   "xlarge",
@@ -21,9 +21,16 @@ const generateFilename = (filename, size) => {
   return result;
 };
 
-const addResizings = (images, sizes = null) => {
+const addResizings = (images, options = { sizes: null, ratios: [] }) => {
   const result = [];
-  const resizings = sizes || allResizings;
+  const resizings = options.sizes || allResizings;
+
+  if (options.ratios && options.ratios.length > 0) {
+    images = filter(images, (image: any) => {
+      return includes(options.ratios, image.fileLabel);
+    });
+  }
+
   images.map((image) => {
     resizings.map((resize) => {
       const resizedImage = assign({}, image) as any;
