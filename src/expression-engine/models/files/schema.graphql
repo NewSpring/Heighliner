@@ -18,6 +18,7 @@ type File implements Node {
   id: ID!
   file: String!
   label: String
+  size: String
 
   s3: String
   cloudfront: String
