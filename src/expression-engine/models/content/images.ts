@@ -34,8 +34,7 @@ const addResizings = (images, options = { sizes: null, ratios: [] }) => {
   images.map((image) => {
     resizings.map((resize) => {
       const resizedImage = assign({}, image) as any;
-      resizedImage.s3 = generateFilename(resizedImage.s3, resize);
-      resizedImage.cloudfront = generateFilename(resizedImage.cloudfront, resize);
+      resizedImage.url = generateFilename(resizedImage.url, resize);
       resizedImage.size = resize;
       result.push(resizedImage);
     });

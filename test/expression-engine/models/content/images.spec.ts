@@ -3,8 +3,7 @@ import { addResizings } from "../../../../src/expression-engine/models/content/i
 
 const createSampleImage = () => {
   return {
-    s3: "s3.jpg",
-    cloudfront: "cloudfront.jpg",
+    url: "url.jpg",
     fileLabel: null,
   };
 };
@@ -31,9 +30,8 @@ test("`addResizings` should generate an xlarge image", t => {
   const images = [createSampleImage()];
 
   const results = addResizings(images);
-  const { s3, cloudfront, size } = results[0];
-  t.true(s3.indexOf("xlarge") > -1);
-  t.true(cloudfront.indexOf("xlarge") > -1);
+  const { url, size } = results[0];
+  t.true(url.indexOf("xlarge") > -1);
   t.is(size, "xlarge");
 });
 
@@ -41,9 +39,8 @@ test("`addResizings` should generate a large image", t => {
   const images = [createSampleImage()];
 
   const results = addResizings(images);
-  const { s3, cloudfront, size } = results[1];
-  t.true(s3.indexOf("large") > -1);
-  t.true(cloudfront.indexOf("large") > -1);
+  const { url, size } = results[1];
+  t.true(url.indexOf("large") > -1);
   t.is(size, "large");
 });
 
@@ -51,9 +48,8 @@ test("`addResizings` should generate a medium image", t => {
   const images = [createSampleImage()];
 
   const results = addResizings(images);
-  const { s3, cloudfront, size } = results[2];
-  t.true(s3.indexOf("medium") > -1);
-  t.true(cloudfront.indexOf("medium") > -1);
+  const { url, size } = results[2];
+  t.true(url.indexOf("medium") > -1);
   t.is(size, "medium");
 });
 
@@ -61,9 +57,8 @@ test("`addResizings` should generate a small image", t => {
   const images = [createSampleImage()];
 
   const results = addResizings(images);
-  const { s3, cloudfront, size } = results[3];
-  t.true(s3.indexOf("small") > -1);
-  t.true(cloudfront.indexOf("small") > -1);
+  const { url, size } = results[3];
+  t.true(url.indexOf("small") > -1);
   t.is(size, "small");
 });
 
@@ -71,9 +66,8 @@ test("`addResizings` should generate an xsmall image", t => {
   const images = [createSampleImage()];
 
   const results = addResizings(images);
-  const { s3, cloudfront, size } = results[4];
-  t.true(s3.indexOf("xsmall") > -1);
-  t.true(cloudfront.indexOf("xsmall") > -1);
+  const { url, size } = results[4];
+  t.true(url.indexOf("xsmall") > -1);
   t.is(size, "xsmall");
 });
 
@@ -86,8 +80,7 @@ test("`addResizings` should return 1 image if 1 image and 1 size", t => {
 
   const results = addResizings(images, options);
   t.is(results.length, 1);
-  t.true(results[0].s3.indexOf("medium") > -1);
-  t.true(results[0].cloudfront.indexOf("medium") > -1);
+  t.true(results[0].url.indexOf("medium") > -1);
   t.is(results[0].size, "medium");
 });
 

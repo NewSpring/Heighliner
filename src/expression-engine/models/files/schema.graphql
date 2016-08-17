@@ -20,9 +20,12 @@ type File implements Node {
   label: String
   size: String
 
+  url: String
+
+  # deprecated
   s3: String
   cloudfront: String
-  
+
   duration: String
   title: String
 
