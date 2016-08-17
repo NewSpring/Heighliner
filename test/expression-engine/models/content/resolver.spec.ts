@@ -557,8 +557,7 @@ test("`ContentData` returns 5 resized images if image", async (t) => {
       getFilesFromContent: (entry_id, thing, position) => {
         return Promise.resolve([
           {
-            s3: "s3.jpg",
-            cloudfront: "cloudfront.jpg",
+            url: "url.jpg",
           },
         ]);
       },
@@ -591,8 +590,7 @@ test("`ContentData` returns 10 resized images if image and blurred image", async
       getFilesFromContent: (entry_id, thing, position) => {
         return Promise.resolve([
           {
-            s3: "s3.jpg",
-            cloudfront: "cloudfront.jpg",
+            url: "url.jpg",
           },
         ]);
       },
@@ -624,8 +622,7 @@ test("`ContentData` returns only image size specified", async (t) => {
       getFilesFromContent: (entry_id, thing, position) => {
         return Promise.resolve([
           {
-            s3: "s3.jpg",
-            cloudfront: "cloudfront.jpg",
+            url: "url.jpg",
           },
         ]);
       },
@@ -634,8 +631,7 @@ test("`ContentData` returns only image size specified", async (t) => {
 
   const result = await ContentData.images(mockData, mockParams, { models });
   t.is(result.length, 1);
-  t.true(result[0].s3.indexOf("small") > -1);
-  t.true(result[0].cloudfront.indexOf("small") > -1);
+  t.true(result[0].url.indexOf("small") > -1);
   t.is(result[0].size, "small");
 });
 
@@ -660,13 +656,11 @@ test("`ContentData` returns only ratio specified", async (t) => {
       getFilesFromContent: (entry_id, thing, position) => {
         return Promise.resolve([
           {
-            s3: "s3.jpg",
-            cloudfront: "cloudfront.jpg",
+            url: "url.jpg",
             fileLabel: "1:2",
           },
           {
-            s3: "s3.jpg",
-            cloudfront: "cloudfront.jpg",
+            url: "url.jpg",
             fileLabel: "2:1",
           },
         ]);

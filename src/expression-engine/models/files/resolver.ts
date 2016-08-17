@@ -8,6 +8,9 @@ export default {
     file: ({ fileName }) => fileName || null,
     label: ({ fileLabel }) => fileLabel || null,
 
+    url: ({ url }) => url,
+
+    // deprecated
     s3: ({ s3 }) => s3,
     cloudfront: ({ cloudfront }) => cloudfront || null,
 

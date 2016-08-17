@@ -22,7 +22,7 @@ export class EE extends Heighliner {
 
     return images
       .filter(x => x.slice(5, -1) !== "")
-      .map(image => ({ fileLabel: "inline", s3: image.slice(5, -1) }));
+      .map(image => ({ fileLabel: "inline", s3: image.slice(5, -1), url: image.slice(5, -1) }));
   }
 
   public splitByNewLines(tags: string): string[] {
