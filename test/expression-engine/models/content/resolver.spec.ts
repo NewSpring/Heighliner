@@ -420,3 +420,257 @@ test("`ContentData` fetches audio and tracks files if both", async (t) => {
   await ContentData.audio(mockData, null, { models });
   t.is(count, 2);
 });
+
+test("`ContentData` returns blank array if no image or blurred image", async (t) => {
+  const { ContentData } = Resolver;
+  const mockData = {
+    image: null,
+    image_blurred: null,
+    exp_channel: {},
+    entry_id: 1,
+  };
+  const mockParams = {
+    sizes: null,
+    ratios: null,
+  };
+  const models = {};
+
+  const result = await ContentData.images(mockData, mockParams, { models });
+  t.deepEqual(result, []);
+});
+
+test("`ContentData` calls model with image position when image", async (t) => {
+  const { ContentData } = Resolver;
+  const mockData = {
+    image: "test.jpg",
+    image_blurred: null,
+    exp_channel: {
+      exp_channel_fields: {
+        image: "test_field_123",
+      },
+    },
+    entry_id: 1,
+  };
+  const mockParams = {
+    sizes: null,
+    ratios: null,
+  };
+  const models = {
+    File: {
+      getFilesFromContent: (entry_id, thing, position) => {
+        t.is(entry_id, mockData.entry_id);
+        t.is(thing, mockData.image);
+        const splitField = Number(mockData.exp_channel.exp_channel_fields.image.split("_").pop());
+        t.is(position, splitField);
+      },
+    },
+  };
+
+  await ContentData.images(mockData, mockParams, { models });
+});
+
+test("`ContentData` calls model with blurred image position when blurred image", async (t) => {
+  const { ContentData } = Resolver;
+  const mockData = {
+    image: null,
+    image_blurred: "blurry.jpg",
+    exp_channel: {
+      exp_channel_fields: {
+        image_blurred: "test_field_789",
+      },
+    },
+    entry_id: 2,
+  };
+  const mockParams = {
+    sizes: null,
+    ratios: null,
+  };
+  const models = {
+    File: {
+      getFilesFromContent: (entry_id, thing, position) => {
+        t.is(entry_id, mockData.entry_id);
+        t.is(thing, mockData.image_blurred);
+        const splitField = Number(mockData.exp_channel.exp_channel_fields.image_blurred.split("_").pop());
+        t.is(position, splitField);
+      },
+    },
+  };
+
+  await ContentData.images(mockData, mockParams, { models });
+});
+
+test("`ContentData` calls model twice if both image and blurred image", async (t) => {
+  const { ContentData } = Resolver;
+  const mockData = {
+    image: "image.jpg",
+    image_blurred: "blurry.jpg",
+    exp_channel: {
+      exp_channel_fields: {
+        image: "test_field_234",
+        image_blurred: "test_field_678",
+      },
+    },
+    entry_id: 3,
+  };
+  const mockParams = {
+    sizes: null,
+    ratios: null,
+  };
+  let count = 0;
+  const models = {
+    File: {
+      getFilesFromContent: (entry_id, thing, position) => {
+        count++;
+        t.is(entry_id, mockData.entry_id);
+        t.true([mockData.image, mockData.image_blurred].indexOf(thing) > -1);
+        const splitField = thing === mockData.image ?
+          Number(mockData.exp_channel.exp_channel_fields.image.split("_").pop()) :
+          Number(mockData.exp_channel.exp_channel_fields.image_blurred.split("_").pop())
+        ;
+        t.is(position, splitField);
+      },
+    },
+  };
+
+  await ContentData.images(mockData, mockParams, { models });
+  t.is(count, 2);
+});
+
+test("`ContentData` returns 5 resized images if image", async (t) => {
+  const { ContentData } = Resolver;
+  const mockData = {
+    image: "image.jpg",
+    image_blurred: null,
+    exp_channel: {
+      exp_channel_fields: {
+        image: "test_field_123",
+      },
+    },
+    entry_id: 1,
+  };
+  const mockParams = {
+    sizes: null,
+    ratios: null,
+  };
+  const models = {
+    File: {
+      getFilesFromContent: (entry_id, thing, position) => {
+        return Promise.resolve([
+          {
+            url: "url.jpg",
+          },
+        ]);
+      },
+    },
+  };
+
+  const result = await ContentData.images(mockData, mockParams, { models });
+  t.is(result.length, 5);
+});
+
+test("`ContentData` returns 10 resized images if image and blurred image", async (t) => {
+  const { ContentData } = Resolver;
+  const mockData = {
+    image: "image.jpg",
+    image_blurred: "blurry.jpg",
+    exp_channel: {
+      exp_channel_fields: {
+        image: "test_field_123",
+        image_blurred: "test_field_789",
+      },
+    },
+    entry_id: 1,
+  };
+  const mockParams = {
+    sizes: null,
+    ratios: null,
+  };
+  const models = {
+    File: {
+      getFilesFromContent: (entry_id, thing, position) => {
+        return Promise.resolve([
+          {
+            url: "url.jpg",
+          },
+        ]);
+      },
+    },
+  };
+
+  const result = await ContentData.images(mockData, mockParams, { models });
+  t.is(result.length, 10);
+});
+
+test("`ContentData` returns only image size specified", async (t) => {
+  const { ContentData } = Resolver;
+  const mockData = {
+    image: "image.jpg",
+    image_blurred: null,
+    exp_channel: {
+      exp_channel_fields: {
+        image: "test_field_123",
+      },
+    },
+    entry_id: 1,
+  };
+  const mockParams = {
+    sizes: ["small"],
+    ratios: null,
+  };
+  const models = {
+    File: {
+      getFilesFromContent: (entry_id, thing, position) => {
+        return Promise.resolve([
+          {
+            url: "url.jpg",
+          },
+        ]);
+      },
+    },
+  };
+
+  const result = await ContentData.images(mockData, mockParams, { models });
+  t.is(result.length, 1);
+  t.true(result[0].url.indexOf("small") > -1);
+  t.is(result[0].size, "small");
+});
+
+test("`ContentData` returns only ratio specified", async (t) => {
+  const { ContentData } = Resolver;
+  const mockData = {
+    image: "image.jpg",
+    image_blurred: null,
+    exp_channel: {
+      exp_channel_fields: {
+        image: "test_field_123",
+      },
+    },
+    entry_id: 1,
+  };
+  const mockParams = {
+    sizes: null,
+    ratios: ["2:1"],
+  };
+  const models = {
+    File: {
+      getFilesFromContent: (entry_id, thing, position) => {
+        return Promise.resolve([
+          {
+            url: "url.jpg",
+            fileLabel: "1:2",
+          },
+          {
+            url: "url.jpg",
+            fileLabel: "2:1",
+          },
+        ]);
+      },
+    },
+  };
+
+  const result = await ContentData.images(mockData, mockParams, { models });
+  t.is(result.length, 5);
+  result.map((image) => {
+    t.is(image.fileLabel, "2:1");
+  });
+});

@@ -1,6 +1,7 @@
 import { flatten, difference } from "lodash";
 import StripTags from "striptags";
 import Truncate from "truncate";
+import { addResizings } from "./images";
 import { createGlobalId } from "../../../util";
 
 export default {
@@ -103,24 +104,26 @@ export default {
       const position = Number(exp_channel.exp_channel_fields.scripture.split("_").pop());
       return models.Content.getContentFromMatrix(entry_id, scripture, position);
     },
-    images: ({ image, image_blurred, exp_channel, entry_id }, _, { models }) => {
+    images: ({ image, image_blurred, exp_channel, entry_id }, { sizes, ratios }, { models }) => {
       if (!image && !image_blurred) return Promise.all([]);
+
+      const imagePromises = [];
 
       let position;
       if (image) {
         position = Number(exp_channel.exp_channel_fields.image.split("_").pop());
+        imagePromises.push(models.File.getFilesFromContent(entry_id, image, position));
       }
 
       let blurredPosition;
       if (image_blurred) {
         blurredPosition = Number(exp_channel.exp_channel_fields.image_blurred.split("_").pop());
+        imagePromises.push(models.File.getFilesFromContent(entry_id, image_blurred, blurredPosition));
       }
 
-      return Promise.all([
-        models.File.getFilesFromContent(entry_id, image, position),
-        models.File.getFilesFromContent(entry_id, image_blurred, blurredPosition),
-      ])
-        .then(data => flatten(data));
+      return Promise.all(imagePromises)
+        .then(data => flatten(data))
+        .then(data => addResizings(data, { sizes, ratios }));
     },
     colors: ({ bgcolor, color }) => {
       if (!bgcolor && !color) return [];
