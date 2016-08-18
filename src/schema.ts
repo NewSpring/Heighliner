@@ -20,7 +20,7 @@ import {
 // Import Apollos
 import Apollos, {
   queries as ApollosQueries,
-  // mutations as ApollosMutations,
+  mutations as ApollosMutations,
   UserDocument,
 } from "./apollos";
 
@@ -60,7 +60,7 @@ schema = createSchema({
     ...ESVQueries,
   ],
   mutations: [
-    // ...ApollosMutations,
+    ...ApollosMutations,
     // ...RockMutations,
   ],
   schema,

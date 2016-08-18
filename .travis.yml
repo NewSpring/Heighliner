@@ -11,7 +11,7 @@ cache:
   - node_modules
   - typings
 before_install:
-  - npm i -g tslint typings
+  - npm i -g tslint typings nyc
   - typings i
   - sudo pip install awscli
   - aws --version

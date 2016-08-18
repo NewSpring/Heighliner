@@ -114,6 +114,10 @@ export class Content extends EE {
         x.exp_channel.exp_channel_fields = exp_channel_fields;
         return x;
       })
+      .then(x => {
+        x.__type = "Content";
+        return x;
+      })
     );
   }
 

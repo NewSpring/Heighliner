@@ -73,6 +73,27 @@ export class MongoConnector {
       });
   }
 
+  public find(...args): Promise<Object> {
+    const label = `MongoConnector${this.getCount()}`;
+    console.time(label); // tslint:disable-line
+    return this.model.find.apply(this.model, args)
+      .then(x => { console.timeEnd(label); return x; }); // tslint:disable-line
+  }
+
+  public remove(...args): Promise<Object> {
+    const label = `MongoConnector${this.getCount()}`;
+    console.time(label); // tslint:disable-line
+    return this.model.remove.apply(this.model, args)
+      .then(x => { console.timeEnd(label); return x; }); // tslint:disable-line
+  }
+
+  public create(...args): Promise<Object> {
+    const label = `MongoConnector${this.getCount()}`;
+    console.time(label); // tslint:disable-line
+    return this.model.create.apply(this.model, args)
+      .then(x => { console.timeEnd(label); return x; }); // tslint:disable-line
+  }
+
 
 
   private getCount(): number {
