@@ -28,7 +28,7 @@ type ContentData {
 
   tags: [String] # XXX create global tag type
   colors: [ContentColor]
-  images: [File]
+  images(sizes: [String], ratios: [String]): [File]
 
   # deprecated (use audio field)
   tracks: [File]
