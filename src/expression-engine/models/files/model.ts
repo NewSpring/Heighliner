@@ -76,13 +76,17 @@ export class File extends EE {
     }
     const s3 = settings.url_prefix + settings.subfolder + full_path + file_name;
     let cloudfront: string | boolean = false;
+    let url: string | boolean = false;
     if (settings.bucket === "ns.images" || settings.bucket === "images.newspring.cc") {
-      cloudfront = "//drhztd8q3iayu.cloudfront.net/" + settings.subfolder + full_path + file_name as string;
+      cloudfront = "//dg0ddngxdz549.cloudfront.net/" + settings.subfolder + full_path + file_name as string;
+    }
+    if (settings.bucket === "ns.images" || settings.bucket === "images.newspring.cc") {
+      url = "//drhztd8q3iayu.cloudfront.net/" + settings.subfolder + full_path + file_name as string;
     }
 
     return {
       fileName: file_name,
-      url: cloudfront ? cloudfront : s3,
+      url: url || s3,
       // deprecated
       s3,
       cloudfront,
