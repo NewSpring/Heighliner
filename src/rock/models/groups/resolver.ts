@@ -77,7 +77,7 @@ export default {
           "10.24": { latitude: 33.715901, longitude: -78.925047 },
           "10.27": { latitude: 34.111041, longitude: -80.882638 },
           "10.20": { latitude: 34.800165, longitude: -82.488371 },
-          "10.16": { latitude: 34.800165, longitude: -82.488371 },
+          "10.16": { latitude: 34.778159, longitude: -82.487048 }, // NH
           "10.30": { latitude: 34.951512, longitude: -81.087497 },
           "10.7": { latitude: 34.933124, longitude: -81.994480 },
           "10.31": { latitude: 33.934511, longitude: -80.363124 },
