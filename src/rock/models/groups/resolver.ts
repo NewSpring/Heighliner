@@ -89,6 +89,7 @@ export default {
             break;
           }
         }
+        console.log("DEBUG: CAMPUS", geo); // tslint:disable-line
       } else {
         // XXX lookup users lat and long from ip
         const geoData = allData(ip);
@@ -124,7 +125,7 @@ export default {
         geo.longitude = googleGeoData.lng;
       }
 
-
+      console.log("DEBUG: ", geo); // tslint:disable-line
       return models.Group.findByAttributesAndQuery({ query, attributes }, { limit, offset, geo });
     },
     groupAttributes: (_, $, { models }) => {
