@@ -64,7 +64,7 @@ export default {
         const campusIpMap = {
           "10.28": { latitude: 33.572048, longitude: -81.774888 },
           "10.0": { latitude: 34.595434, longitude: -82.622224 },
-          "10.1": { latitude: 34.595434, longitude: -82.622224 },
+          // "10.1": { latitude: 34.595434, longitude: -82.622224 },
           "10.4": { latitude: 35.065126, longitude: -82.007086 },
           "10.3": { latitude: 34.800165, longitude: -82.488371 },
           "10.6": { latitude: 32.915373, longitude: -80.100173 },
