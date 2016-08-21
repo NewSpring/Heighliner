@@ -57,39 +57,39 @@ export default {
       _, { offset, limit, attributes = [], query, clientIp }, { models, ip }
     ) => {
       let geo = { latitude: null, longitude: null };
-      console.log("DEBUG: ", ip, clientIp); // tslint:disable-line
       // XXX move to better location / cleanup
       if (clientIp && ip.match("204.116.47")) {
         // newspring ip match
         const campusIpMap = {
-          "10.28": { latitude: 33.572048, longitude: -81.774888 },
           "10.0": { latitude: 34.595434, longitude: -82.622224 },
-          // "10.1": { latitude: 34.595434, longitude: -82.622224 },
-          "10.4": { latitude: 35.065126, longitude: -82.007086 },
-          "10.3": { latitude: 34.800165, longitude: -82.488371 },
-          "10.6": { latitude: 32.915373, longitude: -80.100173 },
-          "10.25": { latitude: 34.685131, longitude: -82.895683 },
-          "10.5": { latitude: 34.030287, longitude: -81.098588 },
-          "10.23": { latitude: 34.212175, longitude: -79.797055 },
-          "10.22": { latitude: 34.852042, longitude: -82.354571 },
-          "10.14": { latitude: 34.194508, longitude: -82.193192 },
-          "10.29": { latitude: 32.271941, longitude: -80.943806 },
           "10.13": { latitude: 33.979398, longitude: -81.307923 },
-          "10.24": { latitude: 33.715901, longitude: -78.925047 },
-          "10.27": { latitude: 34.111041, longitude: -80.882638 },
-          "10.20": { latitude: 34.800165, longitude: -82.488371 },
+          "10.14": { latitude: 34.194508, longitude: -82.193192 },
           "10.16": { latitude: 34.778159, longitude: -82.487048 }, // NH
+          "10.20": { latitude: 34.800165, longitude: -82.488371 },
+          "10.22": { latitude: 34.852042, longitude: -82.354571 },
+          "10.23": { latitude: 34.212175, longitude: -79.797055 },
+          "10.24": { latitude: 33.715901, longitude: -78.925047 },
+          "10.25": { latitude: 34.685131, longitude: -82.895683 },
+          "10.27": { latitude: 34.111041, longitude: -80.882638 },
+          "10.28": { latitude: 33.572048, longitude: -81.774888 },
+          "10.29": { latitude: 32.271941, longitude: -80.943806 },
+          "10.3": { latitude: 34.800165, longitude: -82.488371 },
           "10.30": { latitude: 34.951512, longitude: -81.087497 },
-          "10.7": { latitude: 34.933124, longitude: -81.994480 },
           "10.31": { latitude: 33.934511, longitude: -80.363124 },
+          "10.4": { latitude: 35.065126, longitude: -82.007086 },
+          "10.5": { latitude: 34.030287, longitude: -81.098588 },
+          "10.6": { latitude: 32.915373, longitude: -80.100173 },
+          "10.7": { latitude: 34.933124, longitude: -81.994480 },
+          "10.1": { latitude: 34.595434, longitude: -82.622224 },
         };
+        // get first two values
+        const matcher = clientIp.split(".").slice(0, 2).join(".").trim();
         for (let cpId in campusIpMap) {
-          if (clientIp.match(cpId)) {
+          if (matcher === cpId) {
             geo = campusIpMap[cpId];
             break;
           }
         }
-        console.log("DEBUG: CAMPUS", geo); // tslint:disable-line
       } else {
         // XXX lookup users lat and long from ip
         const geoData = allData(ip);
