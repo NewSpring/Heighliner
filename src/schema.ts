@@ -196,6 +196,7 @@ export async function createApp(monitor?) {
 
       if (datadog) datadog.increment("graphql.request");
       let ip = getIp(request);
+      console.log("DEBUG: ", ip); // tslint:disable-line
       // tslint:disable-next-line
       // Anderson, SC
       if (ip === "::1") ip = "2602:306:b81a:c420:ed84:6327:b58e:6a2d";

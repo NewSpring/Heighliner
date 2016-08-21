@@ -57,6 +57,7 @@ export default {
       _, { offset, limit, attributes = [], query, clientIp }, { models, ip }
     ) => {
       let geo = { latitude: null, longitude: null };
+      console.log("DEBUG: ", ip, clientIp); // tslint:disable-line
       // XXX move to better location / cleanup
       if (clientIp && ip.match("204.116.47")) {
         // newspring ip match
