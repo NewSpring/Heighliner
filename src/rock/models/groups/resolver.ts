@@ -125,7 +125,6 @@ export default {
         geo.longitude = googleGeoData.lng;
       }
 
-      console.log("DEBUG: ", geo); // tslint:disable-line
       return models.Group.findByAttributesAndQuery({ query, attributes }, { limit, offset, geo });
     },
     groupAttributes: (_, $, { models }) => {
