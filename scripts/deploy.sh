@@ -55,12 +55,7 @@ yecho "### Updating ECS ###"
 # more bash-friendly output for jq
 JQ="jq --raw-output --exit-status"
 
-
-if [ "$CHANNEL" = "production" ]; then
-  ECS_SERVICE="heighliner-${CHANNEL}"
-else
-  ECS_SERVICE="${CHANNEL}-heighliner"
-fi
+ECS_SERVICE="${CHANNEL}-heighliner"
 
 yecho "ECS_SERVICE"
 yecho $ECS_SERVICE
