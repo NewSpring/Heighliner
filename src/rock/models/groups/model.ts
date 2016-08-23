@@ -365,7 +365,7 @@ public async findByAttributesAndQuery({ attributes, query }, { limit, offset, ge
         INSERT INTO #groupTags (GroupId, Tag, TagValue)
         SELECT g.Id, CONCAT(g.Name, ' ', g.[Description]), 2
         FROM [Group] g
-        WHERE g.GroupTypeId = @smallGroupTypeId;
+        WHERE g.GroupTypeId = @smallGroupTypeId AND g.IsActive = 1 AND g.IsPublic = 1;
         INSERT INTO #groupTags (GroupId, Tag, TagValue)
         SELECT g.Id, c.Name, 2
         FROM [Group] g JOIN Campus c ON c.Id = g.CampusId
