@@ -70,8 +70,13 @@ async function start() {
     res.status(200).json({ alive: true });
   });
 
+  app.get("/graphql/ping", (req, res) => {
+    res.status(200).end();
+  });
+
   const whitelist = [
     "http://localhost:3000",
+    "http://localhost:9009",
     "http://localhost:12392",
     "https://alpha-app.newspring.io",
     "https://beta-native.newspring.cc",
@@ -111,12 +116,12 @@ async function start() {
   */
   const { graphql, models, cache } = await createApp({ datadog: dogstatsd });
 
-  app.post("/cache/flush", (req, res) => {
+  app.post("/graphql/cache/flush", (req, res) => {
     cache.clearAll();
     res.end();
   });
 
-  app.post("/cache", (req, res) => {
+  app.post("/graphql/cache", (req, res) => {
     const { type, id } = req.body;
     if (!type || !id ) {
       res.status(500).send({ error: "Missing `id` or `type` for request" });
@@ -139,8 +144,12 @@ async function start() {
     res.status(200).send({ message: `Cache cleared for ${type} ${id}`});
   });
 
+  if (process.env.SENTRY_ENVIRONMENT !== "production") {
+    app.use("/view", graphiqlExpress({ endpointURL: "/graphql" }));
+    app.use("/graphql/view", graphiqlExpress({ endpointURL: "/graphql" }));
+  }
+
   app.use("/graphql", apolloExpress(graphql));
-  app.use("/view", graphiqlExpress({ endpointURL: "/graphql" }));
 
   // The error handler must be before any other error middleware
   if (process.env.NODE_ENV === "production") {
