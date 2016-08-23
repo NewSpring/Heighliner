@@ -91,7 +91,7 @@ make_task_def() {
         }
       },
       "portMappings": [
-        { "hostPort": '"$host_port"', "containerPort": 80, "protocol": "http" }
+        { "hostPort": 0, "containerPort": 80, "protocol": "http" }
       ],
       "environment": [
         { "name": "NODE_ENV", "value": "production" },
@@ -146,17 +146,6 @@ register_definition() {
 
 deploy_cluster() {
 
-  if [ "$CHANNEL" = "alpha" ]; then
-    host_port=8061
-  fi
-  if [ "$CHANNEL" = "beta" ]; then
-    host_port=8071
-  fi
-  if [ "$CHANNEL" = "production" ]; then
-    host_port=8081
-  fi
-  yecho "HOST PORT"
-  yecho $host_port
   family="heighliner"
 
   make_task_def
