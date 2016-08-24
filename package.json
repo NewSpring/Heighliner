@@ -39,7 +39,7 @@
     "body-parser": "^1.14.2",
     "casual": "^1.5.3",
     "connect-datadog": "0.0.6",
-    "cors": "^2.7.1",
+    "cors": "^2.8.0",
     "datadog-metrics": "^0.3.0",
     "dataloader": "^1.1.0",
     "deasync": "^0.1.6",
