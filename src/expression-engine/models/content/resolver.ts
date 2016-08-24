@@ -95,7 +95,7 @@ export default {
     description: ({ description }) => description,
     ooyalaId: ({ video }) => video,
     tags: ({ tags }, _, { models }) => models.Content.splitByNewLines(tags),
-    speaker: ({speaker}) => speaker,
+    speaker: ({ speaker }) => speaker,
     hashtag: ({ hashtag }) => hashtag,
     isLight: ({ lightswitch, foreground_color }) => (foreground_color || lightswitch) !== "dark",
     scripture: ({ entry_id, scripture, exp_channel }, _, { models }) => {
