@@ -316,8 +316,6 @@ test("`ContentScripture` returns the passage", t => {
   t.deepEqual(passage, sampleData.contentScripture.passage);
 });
 
-// XXX test all of this resolver
-
 test("`ContentData` should call cleanMarkup with body", t => {
   const { ContentData } = Resolver;
   const mockData = {
@@ -1110,4 +1108,244 @@ test("`ContentMeta` endDate should call getDateFromUnix", t => {
   };
 
   ContentMeta.endDate(mockData, {}, { models });
+});
+
+test("`Content` should exist", t => {
+  const { Content } = Resolver;
+  t.truthy(Content);
+});
+
+test("`Content` should return global id for id", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    entry_id: "1",
+  };
+  const parentType = {
+    name: "parent",
+  };
+
+  const id = Content.id(mockData, {}, {}, { parentType });
+  t.is(id, createGlobalId(mockData.entry_id, parentType.name));
+});
+
+test("`Content` should return global id for channel", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    channel_id: "1",
+  };
+
+  const channel = Content.channel(mockData);
+  t.is(channel, createGlobalId(mockData.channel_id, "Channel"));
+});
+
+test("`Content` channelName should return channel name", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    exp_channel: {
+      channel_name: "channel",
+    },
+  };
+
+  const channelName = Content.channelName(mockData);
+  t.is(channelName, mockData.exp_channel.channel_name);
+});
+
+test("`Content` title should return title", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    exp_channel_title: {
+      title: "title",
+    },
+  };
+
+  const title = Content.title(mockData);
+  t.is(title, mockData.exp_channel_title.title);
+});
+
+test("`Content` status should return status", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    exp_channel_title: {
+      status: "status",
+    },
+  };
+
+  const status = Content.status(mockData);
+  t.is(status, mockData.exp_channel_title.status);
+});
+
+test("`Content` parent should call findByChildId", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    entry_id: "1",
+  };
+  const models = {
+    Content: {
+      findByChildId: (entry_id) => {
+        t.is(entry_id, mockData.entry_id);
+      },
+    },
+  };
+
+  Content.parent(mockData, {}, { models });
+});
+
+test("`Content` meta should just return the data", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    thing1: "thing1",
+    thing2: "thing2",
+  };
+
+  const meta = Content.meta(mockData);
+  t.deepEqual(meta, mockData);
+});
+
+test("`Content` content should just return the data", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    thing3: "thing3",
+    thing4: "thing4",
+  };
+
+  const content = Content.content(mockData);
+  t.deepEqual(content, mockData);
+});
+
+test("`Content` authors should return null if no authors", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    editorial_authors: null,
+  };
+
+  const authors = Content.authors(mockData);
+  t.is(authors, null);
+});
+
+test("`Content` authors should return an array of authors", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    editorial_authors: "me,you,i",
+  };
+
+  const authors = Content.authors(mockData);
+  t.deepEqual(authors, ["me", "you", "i"]);
+});
+
+test("`Content` children should call findByParentId", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    entry_id: "1",
+  };
+  const mockInput = {
+    channels: ["channel1", "channel2"],
+  };
+  const models = {
+    Content: {
+      findByParentId: (entry_id, channels) => {
+        t.is(entry_id, mockData.entry_id);
+        t.deepEqual(channels, mockInput.channels);
+      },
+    },
+  };
+
+  Content.children(mockData, mockInput, { models });
+});
+
+test("`Content` related call splitByNewLines", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    tags: "meow\nwoof\ncool",
+  };
+  const mockInput = {
+    includeChannels: null,
+    limit: null,
+    skip: null,
+    cache: null,
+  };
+  const models = {
+    Content: {
+      splitByNewLines: (tags) => {
+        t.is(tags, mockData.tags);
+      },
+    },
+  };
+
+  Content.related(mockData, mockInput, { models });
+});
+
+test("`Content` related should return null if tags falsy", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    tags: null,
+  };
+  const mockInput = {
+    includeChannels: null,
+    limit: null,
+    skip: null,
+    cache: null,
+  };
+  const models = {
+    Content: {
+      splitByNewLines: () => {
+        return null;
+      },
+    },
+  };
+
+  const related = Content.related(mockData, mockInput, { models });
+  t.is(related, null);
+});
+
+test("`Content` related should return null if tags is empty array", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    tags: null,
+  };
+  const mockInput = {
+    includeChannels: null,
+    limit: null,
+    skip: null,
+    cache: null,
+  };
+  const models = {
+    Content: {
+      splitByNewLines: () => {
+        return [];
+      },
+    },
+  };
+
+  const related = Content.related(mockData, mockInput, { models });
+  t.is(related, null);
+});
+
+test("`Content` related should call findByTags if tags", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    tags: "meow\nwoof\ncool",
+  };
+  const splitTags = ["meow", "woof", "cool"];
+  const mockInput = {
+    includeChannels: ["one", "two"],
+    limit: 1,
+    skip: 2,
+    cache: true,
+  };
+  const models = {
+    Content: {
+      splitByNewLines: () => {
+        return splitTags;
+      },
+      findByTags: (inputs, options, cache) => {
+        t.deepEqual(inputs.tags, splitTags);
+        t.deepEqual(inputs.includeChannels, mockInput.includeChannels);
+        t.is(options.offset, mockInput.skip);
+        t.is(options.limit, mockInput.limit);
+        t.is(cache, mockInput.cache);
+      },
+    },
+  };
+
+  Content.related(mockData, mockInput, { models });
 });
