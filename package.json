@@ -46,7 +46,7 @@
     "express": "^4.13.3",
     "geo-from-ip": "^1.0.6",
     "google-geocoding": "^0.1.7",
-    "graphql": "^0.6.2",
+    "graphql": "^0.7.0",
     "graphql-tools": "^0.6.4",
     "graphql-tracer": "^0.2.5",
     "isomorphic-fetch": "^2.2.1",
