@@ -1349,3 +1349,16 @@ test("`Content` related should call findByTags if tags", t => {
 
   Content.related(mockData, mockInput, { models });
 });
+
+test("`Contnet` seriesId should return global id", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    series_id: "2",
+  };
+  const parentType = {
+    name: "parent",
+  };
+
+  const seriesId = Content.seriesId(mockData, {}, {}, { parentType });
+  t.is(seriesId, createGlobalId(mockData.series_id, parentType.name));
+});
