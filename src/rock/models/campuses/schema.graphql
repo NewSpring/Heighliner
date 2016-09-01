@@ -20,6 +20,8 @@ type Campus implements Node {
   name: String
   shortCode: String
   guid: String
+  services: [String]
+  url: String
   locationId: ID
   location: Location
 }

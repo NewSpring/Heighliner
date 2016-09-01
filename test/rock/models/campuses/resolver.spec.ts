@@ -9,6 +9,8 @@ const sampleData = {
     ShortCode: "AKN",
     Guid: "15DDDE79-1999-49F5-9C97-79DE3066073C",
     LocationId: "14",
+    Url: "https://google.com",
+    ServiceTimes: "Sunday^9:15am|Sunday^11:15am|",
   },
   location: {
     Id: "a133f80c70ea2a02c09c61c296ad9673",
@@ -52,6 +54,22 @@ test("`Campus` should have a name.", t => {
 
   const name = Campus.name(sampleData.campuses);
   t.deepEqual(name, sampleData.campuses.Name);
+});
+
+test("`Campus` should have a url.", t => {
+  const { Campus } = Resolver;
+
+  const url = Campus.url(sampleData.campuses);
+  t.deepEqual(url, sampleData.campuses.Url);
+});
+
+test("`Campus` should have service times formmated correctly", t => {
+  const { Campus } = Resolver;
+
+  const services = Campus.services(sampleData.campuses);
+  t.deepEqual(services, [
+    "Sunday at 9:15am & 11:15am",
+  ]);
 });
 
 test("`Campus` should have a shortCode.", t => {
