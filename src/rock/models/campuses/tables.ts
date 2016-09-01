@@ -14,9 +14,11 @@ const campusSchema: Object = {
   Name: { type: STRING },
   Guid: { type: STRING },
   ShortCode: { type: STRING },
+  Url: { type: STRING },
   LocationID: { type: INTEGER },
   PhoneNumber: { type: STRING },
   Description: { type: STRING },
+  ServiceTimes: { type: STRING },
   IsActive: { type: BOOLEAN },
 };
 

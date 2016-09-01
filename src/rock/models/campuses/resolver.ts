@@ -13,6 +13,36 @@ export default {
     name: ({ Name }) => Name,
     shortCode: ({ ShortCode }) => ShortCode,
     guid: ({ Guid }) => Guid,
+    url: ({ Url }) => Url,
+    services: ({ ServiceTimes }) => {
+      if (!ServiceTimes) return [];
+
+      let days = {};
+
+      ServiceTimes.split("|")
+        .filter(x => !!x)
+        .forEach((x) => {
+          const [day, time] = x.split("^");
+          if (!days[day]) days[day] = [];
+
+          if (days[day].indexOf(time) === -1) days[day].push(time);
+
+        });
+
+      return Object.keys(days).map(x => {
+        let str = `${x} at `;
+        if (days[x].length === 1) {
+          str += `& ${days[x]}`;
+          return str;
+        }
+
+        str += `${[...days[x]].slice(0, days[x].length - 1).join(", ")} `;
+        str += `& ${[...days[x]].pop()}`;
+
+
+        return str;
+      });
+    },
     locationId: ({ LocationId }) => LocationId,
     location: ({ LocationId }, _, { models }) => {
       if (!LocationId) return null;
