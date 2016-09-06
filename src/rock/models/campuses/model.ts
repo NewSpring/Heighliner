@@ -35,11 +35,13 @@ export class Campus extends Rock {
   public async find(query): Promise<any> {
     query = merge({ IsActive: true }, query);
     return this.cache.get(this.cache.encode(query), () => CampusTable.find({
-      where: query,
-      attributes: ["Id"],
-    })
+        where: query,
+        attributes: ["Id"],
+      })
+    )
       .then(this.getFromIds.bind(this))
-    );
+      .then((x: any[]) => x.filter(y => y.Name !== "Central"))
+      ;
 
   }
 
