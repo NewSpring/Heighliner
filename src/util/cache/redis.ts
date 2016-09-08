@@ -85,7 +85,7 @@ export class RedisCache implements Cache {
   public get(
     id: string,
     lookup: () => Promise<any>,
-    { ttl, cache }: { ttl: number, cache: boolean } = { cache: true, ttl: 86400 }
+    { ttl, cache }: { ttl: number, cache: boolean } = { cache: true, ttl: 18000 }
   ): Promise<Object | void> {
     let fromCache = false;
     const log = () => fromCache;
