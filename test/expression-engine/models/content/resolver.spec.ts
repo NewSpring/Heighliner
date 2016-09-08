@@ -469,6 +469,7 @@ test("`ContentData` should return blank array if no bgcolor and no color", t => 
   const { ContentData } = Resolver;
   const mockData = {
     bgcolor: null,
+    fgcolor: null,
     color: null,
   };
 
@@ -480,6 +481,7 @@ test("`ContentData` should return color and primary if color", t => {
   const { ContentData } = Resolver;
   const mockData = {
     bgcolor: null,
+    fgcolor: null,
     color: "green",
   };
 
@@ -493,10 +495,29 @@ test("`ContentData` should return color and primary if color", t => {
   );
 });
 
+test("`ContentData` should prioritize fgcolor over bgcolor", t => {
+  const { ContentData } = Resolver;
+  const mockData = {
+    bgcolor: "blue",
+    fgcolor: "orange",
+    color: null,
+  };
+
+  const colors = ContentData.colors(mockData);
+  t.deepEqual(
+    colors,
+    [{
+      value: mockData.fgcolor,
+      description: "primary",
+    }]
+  );
+});
+
 test("`ContentData` should return bgcolor and primary if no color", t => {
   const { ContentData } = Resolver;
   const mockData = {
     bgcolor: "red",
+    fgcolor: null,
     color: null,
   };
 

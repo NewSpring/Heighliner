@@ -125,11 +125,11 @@ export default {
         .then(data => flatten(data))
         .then(data => addResizings(data, { sizes, ratios }));
     },
-    colors: ({ bgcolor, color }) => {
-      if (!bgcolor && !color) return [];
+    colors: ({ bgcolor, fgcolor, color }) => {
+      if (!bgcolor && !color && !fgcolor) return [];
 
       return [{
-        value: color || bgcolor,
+        value: color || fgcolor || bgcolor,
         description: "primary",
       }];
     },
