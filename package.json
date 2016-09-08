@@ -5,11 +5,9 @@
   "main": "index.js",
   "scripts": {
     "pretest": "rm -rf ./lib && mkdir ./lib && npm run build",
-    "test": "npm run testonly --",
+    "test": "jest",
     "commit": "git-cz",
-    "test:watch": "tsc --watch | ava --watch",
     "copy-schemas": "norma build",
-    "testonly": "TEST=true nyc ava",
     "lint": "tslint 'src/**/*.ts' && tslint 'test/**/*.ts'",
     "posttest": "npm run lint",
     "start": "tsc --watch | supervisor -w lib index.js",
@@ -19,18 +17,14 @@
     "send:coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "author": "jbaxleyiii",
-  "ava": {
-    "require": [
-      "babel-core/register",
-      "babel-polyfill"
+  "jest": {
+    "scriptPreprocessor": "./preprocessor.js",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
     ],
-    "files": [
-      "./lib/test/**/*.js",
-      "!./lib/src/**/*.js"
-    ],
-    "babel": "inherit",
-    "concurrency": 5,
-    "failFast": true
+    "testRegex": "./__tests__/.*\\.(ts|tsx|js)$"
   },
   "license": "ISC",
   "dependencies": {
@@ -86,6 +80,7 @@
     "eslint": "^3.3.0",
     "ghooks": "^1.2.3",
     "graphql-tester": "0.0.4",
+    "jest": "^15.1.1",
     "normajs": "^1.7.10",
     "nyc": "7.1.0",
     "remap-istanbul": "^0.6.4",
