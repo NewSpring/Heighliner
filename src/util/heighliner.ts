@@ -9,7 +9,7 @@ import {
 import {
   resolvers as cacheResolver,
   mutations as cacheMutation,
-} from "./cache";
+} from "./cache/defaults";
 
 import {
   ApplicationDefinition,

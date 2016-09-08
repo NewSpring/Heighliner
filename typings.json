@@ -9,9 +9,9 @@
     "global": "file:./global.d.ts",
     "hapi": "registry:dt/hapi#13.0.0+20160709092105",
     "isomorphic-fetch": "registry:dt/isomorphic-fetch#0.0.0+20160524142046",
+    "jest": "registry:dt/jest#0.9.0+20160706021812",
     "koa": "registry:dt/koa#2.0.0+20160724024233",
     "mime": "registry:dt/mime#0.0.0+20160316155526",
-    "mocha": "registry:dt/mocha#2.2.5+20160317120654",
     "moment": "registry:dt/moment#2.8.0+20160316155526",
     "moment-node": "registry:dt/moment-node#2.11.1+20160511043338",
     "mongoose": "registry:dt/mongoose#3.8.5+20160517033907",
@@ -20,7 +20,6 @@
     "serve-static": "registry:dt/serve-static#0.0.0+20160501131543"
   },
   "dependencies": {
-    "chai": "registry:npm/chai#3.5.0+20160415060238",
     "graphql": "github:nitintutlani/typed-graphql#ffe7e46e2249cc8f3824a5d15a44938f4354afe9",
     "lodash": "registry:npm/lodash#4.0.0+20160416211519",
     "redis": "registry:npm/redis#0.12.1+20160502170935",

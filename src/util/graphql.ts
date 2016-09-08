@@ -1,6 +1,6 @@
 
-import Fs from "fs";
-import Path from "path";
+import * as Fs from "fs";
+import * as Path from "path";
 
 // XXX update node error constructor
 declare var Error;
