@@ -495,12 +495,12 @@ test("`ContentData` should return color and primary if color", t => {
   );
 });
 
-test("`ContentData` should return color and fgcolor as priority", t => {
+test("`ContentData` should prioritize fgcolor over bgcolor", t => {
   const { ContentData } = Resolver;
   const mockData = {
     bgcolor: "blue",
     fgcolor: "orange",
-    color: "green",
+    color: null,
   };
 
   const colors = ContentData.colors(mockData);
