@@ -129,7 +129,9 @@ export default {
       if (!bgcolor && !color && !fgcolor) return [];
 
       return [{
-        value: color || fgcolor || bgcolor,
+        // XXX handle multiple colors in app + light / dark switch
+        // value: color || fgcolor || bgcolor,
+        value: color || bgcolor || fgcolor,
         description: "primary",
       }];
     },
