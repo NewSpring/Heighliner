@@ -55,8 +55,9 @@ export default {
 
   Query: {
     groups: async (
-      _, { offset, limit, attributes = [], query, clientIp }, { models, ip }
+      _, { offset, limit, attributes = [], query, clientIp }, { models, ip, person }
     ) => {
+
       let geo = { latitude: null, longitude: null };
       // XXX move to better location / cleanup
       if (clientIp && ip.match("204.116.47")) {
@@ -91,8 +92,22 @@ export default {
             break;
           }
         }
+      } else if (person && person.Id) {
+        const { latitude, longitude } = await models.Person.getHomesFromId(person.Id)
+          .then(([x]) => {
+            if (!x) return {};
+            if (!x.GeoPoint) return x;
+            return models.Group.getLocationFromLocationId(x.Id);
+          });
+        if (latitude && longitude) {
+          geo.longitude = longitude;
+          geo.latitude = latitude;
+        } else {
+          const geoData = allData(ip);
+          geo.latitude = geoData.location.latitude;
+          geo.longitude = geoData.location.longitude;
+        }
       } else {
-        // XXX lookup users lat and long from ip
         const geoData = allData(ip);
         geo.latitude = geoData.location.latitude;
         geo.longitude = geoData.location.longitude;

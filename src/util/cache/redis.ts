@@ -70,6 +70,8 @@ export class RedisCache implements Cache {
           const end = new Date() as any;
           if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
           console.timeEnd(label); // tslint:disable-line
+        } else {
+          if (dd) dd.increment(`${prefix}.transaction.miss`);
         }
         return x;
       })
