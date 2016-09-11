@@ -1,6 +1,7 @@
 import { flatten } from "lodash";
 import { allData } from "geo-from-ip";
 import { geocode } from "google-geocoding";
+import Moment from "moment";
 import { createGlobalId } from "../../../util";
 
 function getPhotoFromTag(tag) {
@@ -161,7 +162,18 @@ export default {
 
   GroupSchedule: {
     day: ({ WeeklyDayOfWeek }) => WeeklyDayOfWeek,
-    description: ({ Description }) => Description,
+    description: ({ WeeklyTimeOfDay, WeeklyDayOfWeek }) => {
+      if (!WeeklyTimeOfDay || !WeeklyDayOfWeek) return null;
+
+      try {
+        const week = Moment(WeeklyDayOfWeek, "E").format("dddd");
+        const time = Moment.utc(WeeklyTimeOfDay).format("hh:mm A");
+
+        return `${week} @ ${time}`;
+      } catch (e) {
+        return null;
+      }
+    },
     end: ({ EffectiveEndDate }) => EffectiveEndDate,
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     name: ({ Name }) => Name,
