@@ -22,7 +22,9 @@ export default {
       ServiceTimes.split("|")
         .filter(x => !!x)
         .forEach((x) => {
-          const [day, time] = x.split("^");
+          let [day, time] = x.split("^");
+          day = day.trim();
+          time = time.trim();
           if (!days[day]) days[day] = [];
 
           if (days[day].indexOf(time) === -1) days[day].push(time);
