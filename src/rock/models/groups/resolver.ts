@@ -163,7 +163,7 @@ export default {
   GroupSchedule: {
     day: ({ WeeklyDayOfWeek }) => WeeklyDayOfWeek,
     description: ({ WeeklyTimeOfDay, WeeklyDayOfWeek }) => {
-      if (!WeeklyTimeOfDay && !WeeklyDayOfWeek) return null;
+      if (!WeeklyTimeOfDay || !WeeklyDayOfWeek) return null;
 
       try {
         const week = Moment(WeeklyDayOfWeek, "E").format("dddd");
