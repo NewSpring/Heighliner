@@ -208,8 +208,9 @@ export default {
     parent: ({ entry_id }, _, { models }) => models.Content.findByChildId(entry_id),
     meta: data => data,
     content: data => data,
-    authors: ({ editorial_authors }) => {
-      return editorial_authors ? editorial_authors.split(",") : null;
+    authors: ({ editorial_authors, author }) => {
+      const authors = author ? author : editorial_authors;
+      return authors ? authors.split(",") : null;
     },
     children: ({ entry_id }, { channels }, { models }) => {
       return models.Content.findByParentId(entry_id, channels);
