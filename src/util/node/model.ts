@@ -1,6 +1,6 @@
 
 declare function require(name: string);
-import * as Crypto from "crypto";
+import Crypto from "crypto";
 const secret = process.env.SECRET || "LZEVhlgzFZKClu1r";
 
 export default class Node {
