@@ -1237,6 +1237,7 @@ test("`Content` authors should return null if no authors", t => {
   const { Content } = Resolver;
   const mockData = {
     editorial_authors: null,
+    author: null,
   };
 
   const authors = Content.authors(mockData);
@@ -1251,6 +1252,17 @@ test("`Content` authors should return an array of authors", t => {
 
   const authors = Content.authors(mockData);
   t.deepEqual(authors, ["me", "you", "i"]);
+});
+
+test("`Content` authors should prioritize author", t => {
+  const { Content } = Resolver;
+  const mockData = {
+    editorial_authors: "me,you,i",
+    author: "me,you,we",
+  };
+
+  const authors = Content.authors(mockData);
+  t.deepEqual(authors, ["me", "you", "we"]);
 });
 
 test("`Content` children should call findByParentId", t => {
