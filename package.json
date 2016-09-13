@@ -23,10 +23,7 @@
       "./src"
     ],
     "testRegex": "./__tests__/.*\\.(ts|tsx|js)$",
-    "collectCoverageFrom": [
-      "**/src/**/*.ts",
-      "!**/src/**/*.d.ts"
-    ]
+    "testEnvironment": "node"
   },
   "license": "ISC",
   "dependencies": {
