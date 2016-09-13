@@ -38,6 +38,12 @@ APP=$(echo $CURRENT_TAG | cut -d'/' -f1)
 CHANNEL=$(echo $CURRENT_TAG | cut -d'/' -f2)
 VERSION=$(echo $CURRENT_TAG | cut -d'/' -f3)
 
+yecho "### Installin deployment tooling"
+sudo pip install awscli
+aws --version
+npm run build
+docker build --rm=true -t heighliner . | cat # workaround progress weirdness
+
 yecho "### Deploying $APP to $CHANNEL ###"
 
 yecho "Current Tag: $CURRENT_TAG"

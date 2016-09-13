@@ -14,19 +14,10 @@ before_install:
   - npm i -g tslint typings
   - rm -rf ./typings
   - typings i
-  - sudo pip install awscli
-  - aws --version
 
 script:
   - npm test
   - npm run lint
-  - npm run build
-  - docker build --rm=true -t heighliner . | cat # workaround progress weirdness
-  # XXX figure out why I can't test container
-  # - docker run -d --name=heighliner -e PORT=80 -p 8080:80 heighliner
-  # - sleep 5
-  # - docker logs heighline r
-  # - curl -v --retry 10 --retry-delay 5 http://localhost:8080/alive
   - "./scripts/deploy.sh"
 
 after_success:
