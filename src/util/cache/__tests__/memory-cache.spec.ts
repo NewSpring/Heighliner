@@ -49,7 +49,7 @@ it("`InMemoryCache` should have a way to set items in the cache with a ttl", () 
     .then(() => {
       return new Promise((c, r) => {
         setTimeout(() => {
-          expect(cacheData[id]).toBeFalsy;
+          expect(cacheData[id]).toBeFalsy();
           c();
         }, (.1 * 60) + 25);
       });
@@ -80,7 +80,7 @@ it("should eventually return true if successfully set", () => {
   return cache.set(id, data)
     .then((success) => {
       expect(cacheData[id]).toEqual(data);
-      expect(success).toBeTruthy;
+      expect(success).toBeTruthy();
     });
 });
 
@@ -98,7 +98,7 @@ it("should have a way to set items in the cache with a ttl", () => {
     .then(() => {
       return new Promise((c, r) => {
         setTimeout(() => {
-          expect(cacheData[id]).toBeFalsy;
+          expect(cacheData[id]).toBeFalsy();
           c();
         }, (.1 * 60) + 25);
       });
@@ -113,5 +113,5 @@ it("`InMemoryCache` should allow removing existing cache entries", () => {
   const cache = new InMemoryCache(cacheData);
 
   cache.del(id);
-  expect(cacheData[id]).toBeFalsy;
+  expect(cacheData[id]).toBeFalsy();
 });

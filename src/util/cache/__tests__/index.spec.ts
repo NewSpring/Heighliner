@@ -97,5 +97,5 @@ it("defaultCache:set should return true and do nothing", () => {
 });
 
 it("defaultCache:del exist as a function but do nothing", () => {
-  expect(() => defaultCache.del("string")).not.toThrow;
+  expect(() => defaultCache.del("string")).not.toThrow();
 });

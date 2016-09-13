@@ -34,6 +34,6 @@ xit("Valid queries should return success", async () => {
     `,
   }));
 
-  expect(response.success).toBeTruthy;
+  expect(response.success).toBeTruthy();
   expect(response.status).toEqual(200);
 });
