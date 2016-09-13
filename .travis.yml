@@ -12,6 +12,7 @@ cache:
   - typings
 before_install:
   - npm i -g tslint typings
+  - rm -rf ./typings
   - typings i
   - sudo pip install awscli
   - aws --version
