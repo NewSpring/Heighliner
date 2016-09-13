@@ -1,6 +1,3 @@
-// remove once below is working
-// it("allows a test to be passed", () => { expect(true).toBeTruthy; });
-
 import express from "express";
 import { apolloExpress } from "apollo-server";
 import { tester } from "graphql-tester";
@@ -10,21 +7,19 @@ import { createApp } from "../schema";
 
 
 let Heighliner;
-beforeEach(() => {
+beforeEach(async () => {
   const app = express();
-  return createApp()
-    .then(({ graphql }) => {
-      app.use(bodyParser.json());
+  const { graphql } = await createApp();
 
-      app.use("/graphql", apolloExpress(graphql));
+  app.use(bodyParser.json());
 
-      Heighliner = tester({
-        server: create(app),
-        url: "/graphql",
-        contentType: "application/json",
-      });
-    });
+  app.use("/graphql", apolloExpress(graphql));
 
+  Heighliner = tester({
+    server: create(app),
+    url: "/graphql",
+    contentType: "application/json",
+  });
 });
 
 
