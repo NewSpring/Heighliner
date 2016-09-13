@@ -10,3 +10,8 @@ it("allows for promises", () => {
     expect(true).toBeTruthy;
   });
 });
+
+it("allows for async", async () => {
+  const foo = await new Promise((r) => { setTimeout(r, 10); }).then(() => true);
+  expect(foo).toBeTruthy;
+});
