@@ -182,7 +182,7 @@ export default {
 
       try {
         const week = Moment(WeeklyDayOfWeek, "E").format("dddd");
-        const time = Moment.utc(WeeklyTimeOfDay).format("hh:mm A");
+        const time = Moment.utc(WeeklyTimeOfDay).format("h:mm A");
 
         return `${week} @ ${time}`;
       } catch (e) {
