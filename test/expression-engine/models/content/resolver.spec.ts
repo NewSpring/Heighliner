@@ -1248,6 +1248,7 @@ test("`Content` authors should return an array of authors", t => {
   const { Content } = Resolver;
   const mockData = {
     editorial_authors: "me,you,i",
+    author: null,
   };
 
   const authors = Content.authors(mockData);
