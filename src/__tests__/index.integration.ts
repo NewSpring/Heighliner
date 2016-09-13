@@ -1,17 +1,17 @@
 
 it("allows a test to be passed", () => {
-  expect(true).toBeTruthy;
+  expect(true).toBeTruthy();
 });
 
 it("allows for promises", () => {
   return new Promise((r) => {
     setTimeout(r, 10);
   }).then(() => {
-    expect(true).toBeTruthy;
+    expect(true).toBeTruthy();
   });
 });
 
 it("allows for async", async () => {
   const foo = await new Promise((r) => { setTimeout(r, 10); }).then(() => true);
-  expect(foo).toBeTruthy;
+  expect(foo).toBeTruthy();
 });

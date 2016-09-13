@@ -26,9 +26,9 @@ beforeEach(async () => {
 it("Valid queries should return success", () => {
   return Heighliner(JSON.stringify({ query: "{ currentUser { id } }" }))
     .then(response => {
-      expect(response.success).toBeTruthy;
+      expect(response.success).toBeTruthy();
       expect(response.status).toEqual(200);
-      expect(response.data).toBeTruthy;
+      expect(response.data).toBeTruthy();
     });
 });
 
@@ -37,6 +37,6 @@ it("Invalid queries should fail", () => {
     .then(response => {
       expect(response.success).toBeFalsy;
       expect(response.status).toEqual(400);
-      expect(response.errors).toBeTruthy;
+      expect(response.errors).toBeTruthy();
     });
 });
