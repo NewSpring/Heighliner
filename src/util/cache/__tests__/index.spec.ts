@@ -1,5 +1,5 @@
 
-import * as casual from "casual";
+import casual from "casual";
 import { defaultCache, resolvers } from "../defaults";
 import { InMemoryCache } from "../memory-cache";
 import { parseGlobalId } from "../../node/model";
@@ -51,7 +51,7 @@ it("the cache mutation should refetch and save the data in the cache", () => {
     });
 });
 
-it("the cache mutation should allow using a native id an type together", () => {
+it("the cache mutation should allow using a native id and type together", () => {
   const id = casual.word,
         type = casual.word,
         data = { test: casual.word },

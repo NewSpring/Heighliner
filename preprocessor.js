@@ -1,26 +1,37 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-const tsc = require('typescript');
+var tsc = require("typescript");
+var babel = require('babel-core');
+var jestPreset = require('babel-preset-jest');
 
-module.exports = {
-  process(src, path) {
-    if (path.endsWith('.ts') || path.endsWith('.tsx')) {
-      return tsc.transpile(
-        src, {
-          "target": "es6",
-          "moduleResolution": "node",
-          "sourceMap": true,
-          "declaration": false,
-          "noImplicitAny": false,
-          "rootDir": ".",
-          "outDir": "lib",
-          "allowSyntheticDefaultImports": true,
-          "pretty": true,
-          "removeComments": true,
-          "allowJs": false
-        }, path, []
-      );
-    }
-    return src;
-  },
+var createTransformer = (options) => {
+  options = Object.assign({}, options, {
+    auxiliaryCommentBefore: ' istanbul ignore next ',
+    presets: ((options && options.presets) || []).concat([jestPreset]),
+    retainLines: true,
+  });
+  delete options.cacheDirectory;
+
+  return {
+    canInstrument: true,
+    process(src, filename, config, preprocessorOptions) {
+      var plugins = options.plugins || [];
+
+      if (filename.endsWith(".ts") || filename.endsWith(".tsx")) {
+        src = tsc.transpile(
+          src, {
+            module: tsc.ModuleKind.ES6,
+            target: tsc.ScriptTarget.ES6
+          }, filename, []
+        );
+
+        return babel.transform(src, Object.assign({}, options, { filename, plugins })).code;
+      }
+
+      return src;
+    },
+  };
 };
+
+module.exports = createTransformer();
+module.exports.createTransformer = createTransformer;
