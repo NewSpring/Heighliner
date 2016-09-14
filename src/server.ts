@@ -74,28 +74,12 @@ async function start() {
     res.status(200).end();
   });
 
-  const whitelist = [
-    "http://localhost:3000",
-    "http://localhost:9009",
-    "http://localhost:12392",
-    "https://alpha-app.newspring.io",
-    "https://beta-native.newspring.cc",
-    "https://beta-my.newspring.cc",
-    "https://pre-my.newspring.cc",
-    "https://my.newspring.cc",
-    "https://newspring.cc",
-    "http://beta.newspring.cc",
-    "https://newspringfuse.com",
-    "http://beta.newspringfuse.com",
-    "https://newspringnetwork.com",
-    "http://newspring.dev",
-    "http://newspringfuse.dev",
-    "http://newspringnetwork.dev",
-  ];
+  const sites = /^http(s?):\/\/.*.(newspring|newspringfuse|newspringnetwork).(com|cc|io|dev)$/;
+  const local = /^http(s?):\/\/localhost:\d*$/;
 
   const corsOptions = {
     origin: (origin, callback) => {
-      const originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+      const originIsWhitelisted = sites.test(origin) || local.test(origin);
       callback(null, originIsWhitelisted);
     },
     credentials: true,
