@@ -130,8 +130,8 @@ export default {
 
       return [{
         // XXX handle multiple colors in app + light / dark switch
-        // value: color || fgcolor || bgcolor,
-        value: color || bgcolor || fgcolor,
+        value: color || fgcolor || bgcolor,
+        // value: color || bgcolor || fgcolor,
         description: "primary",
       }];
     },
