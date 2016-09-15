@@ -87,7 +87,7 @@
     "ghooks": "^1.2.3",
     "graphql-tester": "0.0.4",
     "normajs": "^1.7.10",
-    "nyc": "^7.1.0",
+    "nyc": "^8.3.0",
     "remap-istanbul": "^0.6.4",
     "supervisor": "^0.11.0",
     "tslint": "^3.10.2",
