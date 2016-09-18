@@ -376,7 +376,7 @@ public async findByAttributesAndQuery({ attributes, query }, { limit, offset, ge
         g.Name,
         l.[GeoPoint].STDistance(geography::Point(${point})) AS Distance,
         SUM(gt.TagValue) as RawValue,
-        SUM(gt.TagValue) - ISNULL(CONVERT(INT, l.[GeoPoint].STDistance(geography::Point(${point})) / @metersPerMile / 10), 1000) AS Score
+        SUM(gt.TagValue) - ISNULL(CONVERT(INT, l.[GeoPoint].STDistance(geography::Point(${point})) / @metersPerMile / 15), 1000) AS Score
     FROM #groupTags gt
         JOIN [Group] g ON g.Id = gt.GroupId
         LEFT JOIN [GroupLocation] gl ON gl.GroupId = g.Id
@@ -391,7 +391,7 @@ public async findByAttributesAndQuery({ attributes, query }, { limit, offset, ge
         g.Name,
         l.[GeoPoint].STDistance(geography::Point(${point}))
     ORDER BY
-        SUM(gt.TagValue) - ISNULL(CONVERT(INT, l.[GeoPoint].STDistance(geography::Point(${point})) / @metersPerMile / 10), 1000) DESC,
+        SUM(gt.TagValue) - ISNULL(CONVERT(INT, l.[GeoPoint].STDistance(geography::Point(${point})) / @metersPerMile / 15), 1000) DESC,
         l.[GeoPoint].STDistance(geography::Point(${point})) ASC;
     `).then(([x]) => x)
   )
