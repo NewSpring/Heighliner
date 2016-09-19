@@ -316,7 +316,9 @@ export class Group extends Rock {
     ;
 }
 
-public async findByAttributesAndQuery({ attributes, query }, { limit, offset, geo }): Promise<any> {
+public async findByAttributesAndQuery(
+  { attributes, query, campuses }, { limit, offset, geo }
+): Promise<any> {
   let count = 0;
 
   // XXX prevent sql injection
@@ -324,7 +326,7 @@ public async findByAttributesAndQuery({ attributes, query }, { limit, offset, ge
   let point = `${Number(geo.latitude)}, ${Number(geo.longitude)}, 4326`;
   if (!attributes.length && !query) query = "group"; // most inclusive thing I could think of for blank query
 
-  let q = { attributes, query, geo };
+  let q = { attributes, query, geo, campuses };
 
   // tslint:disable
   // WILEYSORT
@@ -385,6 +387,7 @@ public async findByAttributesAndQuery({ attributes, query }, { limit, offset, ge
         (LEN(@search) > 0 AND gt.Tag LIKE '%' + @search + '%')
         ${attributes.length ? "OR gt.Tag IN (" + attributes.map(x => `'${x}'`).join(", ") + ")" : ""}
         AND g.GroupTypeId = @smallGroupTypeId
+        ${campuses.length ? "AND g.CampusId IN (" + campuses.join(", ") + ")" : ""}
         AND g.IsActive = 1 AND g.IsPublic = 1
     GROUP BY
         gt.GroupId,
