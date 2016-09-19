@@ -55,8 +55,14 @@ export default {
 
   Query: {
     groups: async (
-      _, { offset, limit, attributes = [], query, clientIp }, { models, ip, person }
+      _, { campuses = [], offset, limit, attributes = [], query, clientIp }, { models, ip, person }
     ) => {
+
+      if (campuses.length) {
+        campuses = campuses.map(x => ({ Name: { $like: x }}));
+        campuses = await models.Campus.find({ $or: campuses });
+        campuses = campuses.map(x => x.Id);
+      }
 
       let geo = { latitude: null, longitude: null };
       // XXX move to better location / cleanup
@@ -141,7 +147,9 @@ export default {
         geo.longitude = googleGeoData.lng;
       }
 
-      return models.Group.findByAttributesAndQuery({ query, attributes }, { limit, offset, geo });
+      return models.Group.findByAttributesAndQuery(
+        { query, attributes, campuses }, { limit, offset, geo }
+      );
     },
     groupAttributes: (_, $, { models }) => {
       const ids = [

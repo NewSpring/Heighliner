@@ -6,6 +6,7 @@ export default [
     offset: Int = 0,
     query: String,
     campus: String,
+    campuses: [String],
     clientIp: String,
   ): GroupSearch`,
 
