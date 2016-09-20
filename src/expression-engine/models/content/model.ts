@@ -193,7 +193,7 @@ export class Content extends EE {
       .then(this.getFromIds.bind(this))
       // XXX remove when channel is part of query
       .then((x: any[]) => x.filter(
-        y => !channels.length || channels.indexOf(y.exp_channel.channel_name) > -1
+        y => !channels.length || channels.indexOf(y && y.exp_channel.channel_name) > -1
       ))
       ;
   }
