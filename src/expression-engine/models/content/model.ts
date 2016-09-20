@@ -190,9 +190,7 @@ export class Content extends EE {
         attributes: [["parent_entry_id", "entry_id"]],
       })
     )
-      .then(this.debug)
       .then(this.getFromIds.bind(this))
-      .then(this.debug)
       // XXX remove when channel is part of query
       .then((x: any[]) => x.filter(
         y => !channels.length || channels.indexOf(y && y.exp_channel.channel_name) > -1
