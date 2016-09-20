@@ -23,7 +23,7 @@ export class Heighliner {
     return Promise.reject(new Error(`Caching not implement on ${body.type}`));
   }
 
-  public async getFromIds(data: any[]): Promise<any[]> {
+  public async getFromIds(data: any[] = []): Promise<any[]> {
     return Promise.all(data.map(x => this.getFromId(x[this.id], createGlobalId(x[this.id], this.__type))))
       .then(x => flatten(x as any[]));
   }
