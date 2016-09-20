@@ -24,6 +24,7 @@ export class Heighliner {
   }
 
   public async getFromIds(data: any[] = []): Promise<any[]> {
+    if (!data || !data.length) return Promise.resolve([]);
     return Promise.all(data.map(x => this.getFromId(x[this.id], createGlobalId(x[this.id], this.__type))))
       .then(x => flatten(x as any[]));
   }
