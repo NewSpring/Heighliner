@@ -29,7 +29,7 @@
       "./src/.*\\.d.ts",
       "/node_modules/"
     ],
-    "collectCoverage": false
+    "collectCoverage": true
   },
   "license": "ISC",
   "dependencies": {

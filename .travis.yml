@@ -16,8 +16,8 @@ before_install:
   - typings i
 
 script:
-  - npm test
   - npm run lint
+  - npm test -- --verbose
   - "./scripts/deploy.sh"
 
 after_success:
