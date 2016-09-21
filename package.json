@@ -9,7 +9,7 @@
     "lint": "tslint 'src/**/*.ts' && tslint 'test/**/*.ts'",
     "start": "tsc --watch | supervisor -w lib index.js",
     "build": "tsc && norma build",
-    "coverage": "TEST=true jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "author": "jbaxleyiii",
   "jest": {
