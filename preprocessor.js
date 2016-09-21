@@ -28,7 +28,7 @@ var createTransformer = (options) => {
         return babel.transform(src, Object.assign({}, options, { filename, plugins })).code;
       }
 
-      return src;
+      return babel.transform(src, Object.assign({}, options, { filename, plugins })).code;;
     },
   };
 };
