@@ -22,7 +22,7 @@
     "testPathDirs": [
       "./src"
     ],
-    "testRegex": "./__tests__/.*\\.integration.(ts|tsx|js)$",
+    "testRegex": "./__tests__/.*\\.(ts|tsx|js)$",
     "testEnvironment": "node",
     "collectCoverageFrom" : ["src/**/*.ts"],
     "coveragePathIgnorePatterns": [

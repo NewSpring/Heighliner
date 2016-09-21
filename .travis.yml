@@ -17,7 +17,7 @@ before_install:
 
 script:
   - npm run lint
-  - npm test -- --verbose
+  - npm test -- --verbose --no-cache
   - "./scripts/deploy.sh"
 
 after_success:
