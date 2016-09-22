@@ -21,11 +21,11 @@ var createTransformer = (options) => {
         src = tsc.transpile(
           src, {
             module: tsc.ModuleKind.ES6,
-            target: tsc.ScriptTarget.ES6
+            target: tsc.ScriptTarget.ES6,
+            // noEmitHelpers: true,
+            inlineSourceMap: true,
           }, filename, []
         );
-
-        return babel.transform(src, Object.assign({}, options, { filename, plugins })).code;
       }
 
       return babel.transform(src, Object.assign({}, options, { filename, plugins })).code;;

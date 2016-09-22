@@ -20,8 +20,8 @@ script:
   - npm test -- --verbose --no-cache
   - "./scripts/deploy.sh"
 
-after_success:
-  - coveralls < ./coverage/lcov.info || true # ignore coveralls error
+# after_success:
+  # - coveralls < ./coverage/lcov.info || true # ignore coveralls error
 
 notifications:
   slack:
