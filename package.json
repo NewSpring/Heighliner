@@ -8,8 +8,7 @@
     "commit": "git-cz",
     "lint": "tslint 'src/**/*.ts' && tslint 'test/**/*.ts'",
     "start": "tsc --watch | supervisor -w lib index.js",
-    "build": "tsc && norma build",
-    "coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "build": "tsc && norma build"
   },
   "author": "jbaxleyiii",
   "jest": {

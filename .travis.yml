@@ -11,7 +11,7 @@ cache:
   - node_modules
   - typings
 before_install:
-  - npm i -g tslint typings
+  - npm i -g tslint typings coveralls
   - rm -rf ./typings
   - typings i
 
@@ -21,7 +21,7 @@ script:
   - "./scripts/deploy.sh"
 
 after_success:
-  - npm run coverage
+  - coveralls < ./coverage/lcov.info || true # ignore coveralls error
 
 notifications:
   slack:
