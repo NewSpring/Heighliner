@@ -189,7 +189,7 @@ export class Content extends EE {
         where: { child_entry_id: entry_id },
         attributes: [["parent_entry_id", "entry_id"]],
       })
-    )
+    , { cache: false }) // this intermentally breaks when cached
       .then(this.getFromIds.bind(this))
       // XXX remove when channel is part of query
       .then((x: any[]) => x.filter(
