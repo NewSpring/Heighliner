@@ -16,19 +16,22 @@
     "moduleFileExtensions": [
       "ts",
       "tsx",
-      "js"
+      "js",
+      "jsx",
+      "json"
     ],
     "testPathDirs": [
       "./src"
     ],
+    "setupFiles": ["./setup.js"],
     "testRegex": "./__tests__/.*\\.(ts|tsx|js)$",
     "testEnvironment": "node",
-    "collectCoverageFrom" : ["src/**/*.ts"],
     "coveragePathIgnorePatterns": [
       "./src/.*\\.d.ts",
+      "./__tests__/.*\\.(ts|tsx|js)$",
       "/node_modules/"
     ],
-    "collectCoverage": true
+    "collectCoverage": false
   },
   "license": "ISC",
   "dependencies": {
@@ -90,6 +93,7 @@
     "nyc": "7.1.0",
     "remap-istanbul": "^0.6.4",
     "supervisor": "^0.11.0",
+    "ts-jest": "^0.1.4",
     "tslint": "^3.10.2",
     "typescript": "^1.8.10",
     "typings": "^1.0.4",
