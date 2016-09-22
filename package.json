@@ -4,33 +4,33 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "pretest": "rm -rf ./lib && mkdir ./lib && npm run build",
-    "test": "npm run testonly --",
+    "test": "TEST=true jest",
     "commit": "git-cz",
-    "test:watch": "tsc --watch | ava --watch",
-    "copy-schemas": "norma build",
-    "testonly": "TEST=true nyc ava",
     "lint": "tslint 'src/**/*.ts' && tslint 'test/**/*.ts'",
-    "posttest": "npm run lint",
     "start": "tsc --watch | supervisor -w lib index.js",
-    "build": "tsc && norma build",
-    "coverage": "./node_modules/.bin/nyc report --reporter=json",
-    "postcoverage": "remap-istanbul --input coverage/coverage-final.json --type lcovonly --output coverage/lcov.info && npm run send:coverage",
-    "send:coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "build": "tsc && norma build"
   },
   "author": "jbaxleyiii",
-  "ava": {
-    "require": [
-      "babel-core/register",
-      "babel-polyfill"
+  "jest": {
+    "scriptPreprocessor": "./preprocessor.js",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
     ],
-    "files": [
-      "./lib/test/**/*.js",
-      "!./lib/src/**/*.js"
+    "testPathDirs": [
+      "./src"
     ],
-    "babel": "inherit",
-    "concurrency": 5,
-    "failFast": true
+    "testRegex": "./__tests__/.*\\.(ts|tsx|js)$",
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "./src/.*\\.d.ts",
+      "./__tests__/.*\\.(ts|tsx|js)$",
+      "/node_modules/"
+    ],
+    "collectCoverage": false
   },
   "license": "ISC",
   "dependencies": {
@@ -63,6 +63,7 @@
     "promise-timeout": "^1.0.0",
     "raven": "^0.12.1",
     "redis": "^2.4.2",
+    "redis-commands": "github:newspring/redis-commands",
     "sequelize": "^3.24.0",
     "strip-tags": "^0.1.1",
     "striptags": "^2.1.1",
@@ -86,10 +87,12 @@
     "eslint": "^3.3.0",
     "ghooks": "^1.2.3",
     "graphql-tester": "0.0.4",
+    "jest": "^15.1.1",
     "normajs": "^1.7.10",
     "nyc": "7.1.0",
     "remap-istanbul": "^0.6.4",
     "supervisor": "^0.11.0",
+    "ts-jest": "^0.1.4",
     "tslint": "^3.10.2",
     "typescript": "^1.8.10",
     "typings": "^1.0.4",
