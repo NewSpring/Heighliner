@@ -23,7 +23,6 @@
     "testPathDirs": [
       "./src"
     ],
-    "setupFiles": ["./setup.js"],
     "testRegex": "./__tests__/.*\\.(ts|tsx|js)$",
     "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
