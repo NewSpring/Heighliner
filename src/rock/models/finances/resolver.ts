@@ -61,6 +61,10 @@ export default {
     },
   },
 
+  Mutation: {
+    syncTransactions: (_, args, { models }) => models.Transaction.syncTransactions(args),
+  },
+
   TransactionDetail: {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     amount: ({ Amount }) => Amount,

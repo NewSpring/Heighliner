@@ -5,7 +5,6 @@ import Sequelize, {
   DefineOptions,
 } from "sequelize";
 
-
 import { merge, isArray } from "lodash";
 // import DataLoader from "dataloader";
 
@@ -57,14 +56,17 @@ export class MSSQLConnector {
   public prefix: string = "";
   public db: Connection;
   public model: Model<any, any>;
-
+  public route: string;
   private count: number = 0;
 
-  constructor(tableName: string, schema: Object = {}, options: DefineOptions<any> = {}) {
+  constructor(tableName: string, schema: Object = {}, options: DefineOptions<any> = {}, api?: string) {
     this.db = db;
     options = merge(options, { tableName, underscored: true });
     this.model = db.define(tableName, schema, options);
 
+    if (api) this.route = api;
+    // rock's api uses a plural of the table name
+    if (!api) this.route = `${tableName}s`;
     // XXX integrate data loader
   }
 
@@ -79,6 +81,41 @@ export class MSSQLConnector {
     return this.time(this.model.findOne.apply(this.model, args)
       .then((x) => x && x.dataValues)
       .then(this.mergeData));
+  }
+
+  public patch(body: Object): Promise<number | boolean | Object> {
+    return this.fetch("PATCH", body);
+  }
+
+  public put(body: Object): Promise<number | boolean | Object> {
+    return this.fetch("PUT", body);
+  }
+
+  public post(body: Object): Promise<number | boolean | Object> {
+    return this.fetch("POST", body);
+  }
+
+  private fetch(method: string, body: Object): Promise<number | boolean | Object> {
+    const { ROCK_URL, ROCK_TOKEN } = process.env;
+    const headers = {
+      "Authorization-Token": ROCK_TOKEN,
+      "Content-Type": "application/json",
+    } as { [index: string]: string; };
+
+    return fetch(`${ROCK_URL}api/${this.route}`, {
+      headers, method, body: JSON.stringify(body),
+    })
+      .then(response => {
+        const { status, statusText, error } = response;
+
+        if (status === 204) return { json() { return true; } };
+        if (status >= 200 && status < 300) return response;
+
+        return {
+          json: () => ({ status, statusText, error: error() }),
+        };
+      })
+      .then(x => x.json());
   }
 
   private mergeData = (data: any): any => {
