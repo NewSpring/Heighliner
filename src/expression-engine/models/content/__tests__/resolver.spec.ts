@@ -26,6 +26,7 @@ const eeChannels = [
   "sermons",
   "stories",
   "newspring_albums",
+  "news",
 ];
 
 it("`Query` should have a content function", () => {
