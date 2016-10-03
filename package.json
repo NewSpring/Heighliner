@@ -87,7 +87,7 @@
     "eslint": "^3.3.0",
     "ghooks": "^1.2.3",
     "graphql-tester": "0.0.4",
-    "jest": "^15.1.1",
+    "jest": "^16.0.0",
     "normajs": "^1.7.10",
     "nyc": "7.1.0",
     "remap-istanbul": "^0.6.4",
