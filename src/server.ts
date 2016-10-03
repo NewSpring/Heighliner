@@ -74,7 +74,7 @@ async function start() {
     res.status(200).end();
   });
 
-  const sites = /^http(s?):\/\/.*.(newspring|newspringfuse|newspringnetwork).(com|cc|io|dev)$/;
+  const sites = /^http(s?):\/\/.*.?(newspring|newspringfuse|newspringnetwork).(com|cc|io|dev)$/;
   const local = /^http(s?):\/\/localhost:\d*$/;
 
   const corsOptions = {
