@@ -84,7 +84,7 @@
     "babel-runtime": "^6.9.2",
     "commitizen": "^2.8.5",
     "coveralls": "^2.11.9",
-    "eslint": "^3.3.0",
+    "eslint": "^3.4.0",
     "ghooks": "^1.2.3",
     "graphql-tester": "0.0.4",
     "jest": "^16.0.0",
