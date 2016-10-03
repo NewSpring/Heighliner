@@ -37,7 +37,7 @@
     "apollo-server": "^0.2.4",
     "bluebird": "^3.1.1",
     "body-parser": "^1.14.2",
-    "casual": "1.5.3",
+    "casual": "1.5.4",
     "connect-datadog": "0.0.6",
     "cors": "^2.7.1",
     "datadog-metrics": "^0.3.0",
