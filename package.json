@@ -47,7 +47,7 @@
     "geo-from-ip": "^1.0.6",
     "google-geocoding": "^0.1.7",
     "graphql": "^0.6.2",
-    "graphql-tools": "^0.6.4",
+    "graphql-tools": "^0.6.5",
     "graphql-tracer": "^0.2.5",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.15.0",
