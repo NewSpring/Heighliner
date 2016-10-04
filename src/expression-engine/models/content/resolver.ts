@@ -25,7 +25,7 @@ export default {
         "sermons",
         "stories",
         "newspring_albums",
-        "news",
+        // "news",
       ];
 
       /*
