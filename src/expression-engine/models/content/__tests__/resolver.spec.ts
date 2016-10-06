@@ -128,7 +128,7 @@ it("`Query` feed should lower case, convert, and exclude Series and Music", () =
   const models = {
     Content: {
       find: (object, cache) => {
-        expect(object.channel_name).toEqual({ $or: difference(eeChannels, ["series_newspring", "albums_newspring"]) });
+        expect(object.channel_name).toEqual({ $or: difference(eeChannels, ["series_newspring", "newspring_albums"]) });
       },
     },
   };
