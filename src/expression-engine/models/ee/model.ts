@@ -49,7 +49,7 @@ export class EE extends Heighliner {
     if (!parsed) return markup;
 
     // remove {assets_IDSTRING:} and make protocal relative
-    markup = markup.replace(/{assets_\d*.*}/gmi, (link: string): string => {
+    markup = markup.replace(/{assets_\d*.*?}/gmi, (link: string): string => {
       link = link.trim().substring(0, link.length - 1);
       link = link.replace(/{assets_\d*:/gmi, "");
       return link;
