@@ -18,7 +18,7 @@ export default {
     },
 
     feed(_, { excludeChannels, limit, skip, status, cache }, { models }) {
-      let channels = [
+      const allChannels = [
         "devotionals",
         "articles",
         "series_newspring",
@@ -40,12 +40,16 @@ export default {
         .map(x => x.toLowerCase())
         .map(x => {
           if (x === "series") return "series_newspring";
-          if (x === "music") return "albums_newspring";
+          if (x === "music") return "newspring_albums";
           return x;
         });
 
       // only include what user hasn't excluded
-      channels = difference(channels, excludeChannels);
+      let channels = difference(allChannels, excludeChannels);
+      // ensure channels aren't empty
+      if (channels.length === 0) {
+        channels = allChannels;
+      }
       return models.Content.find({
         channel_name: { $or: channels }, offset: skip, limit, status,
       }, cache);
