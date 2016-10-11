@@ -90,7 +90,7 @@
     "jest": "^16.0.0",
     "normajs": "^1.7.10",
     "nyc": "7.1.0",
-    "remap-istanbul": "^0.6.4",
+    "remap-istanbul": "^0.7.0",
     "supervisor": "^0.11.0",
     "ts-jest": "^0.1.4",
     "tslint": "^3.10.2",
