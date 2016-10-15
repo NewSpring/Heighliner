@@ -86,7 +86,7 @@
     "coveralls": "^2.11.9",
     "eslint": "^3.3.0",
     "ghooks": "^1.2.3",
-    "graphql-tester": "0.0.4",
+    "graphql-tester": "0.0.5",
     "jest": "^16.0.0",
     "normajs": "^1.7.10",
     "nyc": "7.1.0",
