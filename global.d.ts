@@ -26,11 +26,16 @@ declare module "dataloader" {
   }
 }
 
-declare module "graphql-tracer" {
-  export class Tracer {
-    constructor(opts: any);
+declare module "optics-agent" {
+  export class Optics {
+    constructor();
+    public instrumentSchema(schema: any): void;
+    public middleware(): any;
+    public context(request: any): any;
   }
-  function addTracingToResolvers(schema: any): any;
+
+  let optics: Optics;
+  export default optics;
 }
 
 declare module "casual" {

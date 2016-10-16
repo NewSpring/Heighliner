@@ -1,5 +1,6 @@
 import { apolloExpress } from "apollo-server";
 import { graphiqlExpress } from "apollo-server";
+import OpticsAgent from "optics-agent";
 
 import express from "express";
 import bodyParser from "body-parser";
@@ -65,7 +66,6 @@ async function start() {
     });
   }
 
-
   app.get("/alive", (req, res) => {
     res.status(200).json({ alive: true });
   });
@@ -98,7 +98,10 @@ async function start() {
     Apollo Server
 
   */
-  const { graphql, models, cache } = await createApp({ datadog: dogstatsd });
+  const { graphql, models, cache } = await createApp({
+    datadog: dogstatsd,
+    OpticsAgent: process.env.OPTICS_API_KEY ? OpticsAgent : false,
+  });
 
   app.post("/graphql/cache/flush", (req, res) => {
     cache.clearAll();
@@ -133,6 +136,8 @@ async function start() {
     app.use("/graphql/view", graphiqlExpress({ endpointURL: "/graphql" }));
   }
 
+
+  if (process.env.OPTICS_API_KEY) app.use("/graphql", OpticsAgent.middleware());
   app.use("/graphql", apolloExpress(graphql));
 
   // The error handler must be before any other error middleware

@@ -2,7 +2,6 @@ import { timeout } from "promise-timeout";
 import Raven, { parsers } from "raven";
 import { makeExecutableSchema, addMockFunctionsToSchema } from "graphql-tools";
 import { GraphQLSchema } from "graphql";
-import { Tracer, addTracingToResolvers } from "graphql-tracer";
 
 import Node from "./util/node/model";
 import {
@@ -72,13 +71,6 @@ const executabledSchema = makeExecutableSchema({
   allowUndefinedInResolve: true, // required for resolvers
 }) as GraphQLSchema;
 
-let tracer;
-if (process.env.TRACER_APP_KEY && !process.env.TEST) {
-  tracer = new Tracer({ TRACER_APP_KEY: process.env.TRACER_APP_KEY });
-  addTracingToResolvers(executabledSchema);
-}
-
-
 if (process.env.TEST) {
   addMockFunctionsToSchema({
     schema: executabledSchema,
@@ -89,6 +81,10 @@ if (process.env.TEST) {
 
 export async function createApp(monitor?) {
   const datadog = monitor && monitor.datadog;
+  const OpticsAgent = monitor && monitor.OpticsAgent;
+
+  if (OpticsAgent) OpticsAgent.instrumentSchema(executabledSchema);
+
   let useMocks = true;
   /*
 
@@ -206,6 +202,7 @@ export async function createApp(monitor?) {
         ip,
       };
 
+      if (OpticsAgent) context.opticsContext = OpticsAgent.context(request);
       if (context.hashedToken) {
         if (datadog) datadog.increment("graphql.authenticated.request");
         // we instansiate the
@@ -243,25 +240,6 @@ export async function createApp(monitor?) {
       return {
         context: context as Context,
         schema: executabledSchema,
-        formatParams: params => {
-          if (!tracer) return params;
-          const logger = tracer.newLoggerInstance();
-          logger.log("request.info", {
-            headers: request.headers,
-            baseUrl: request.baseUrl,
-            originalUrl: request.originalUrl,
-            method: request.method,
-            httpVersion: request.httpVersion,
-            remoteAddr: request.connection.remoteAddress,
-          });
-          params.logFunction = logger.log;
-          params.context.tracer = logger;
-          return params;
-        },
-        formatResponse: (response, data) => {
-          if (data.context.tracer) data.context.tracer.submit();
-          return response;
-        },
         formatError:  error => {
           if (process.env.NODE_ENV === "production") {
             if (datadog) datadog.increment("graphql.error");
