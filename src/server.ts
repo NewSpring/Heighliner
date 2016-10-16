@@ -98,7 +98,10 @@ async function start() {
     Apollo Server
 
   */
-  const { graphql, models, cache } = await createApp({ datadog: dogstatsd });
+  const { graphql, models, cache } = await createApp({
+    datadog: dogstatsd,
+    OpticsAgent: process.env.OPTICS_API_KEY ? OpticsAgent : false,
+  });
 
   app.post("/graphql/cache/flush", (req, res) => {
     cache.clearAll();
