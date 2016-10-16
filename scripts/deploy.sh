@@ -129,7 +129,8 @@ make_task_def() {
         { "name": "VERSION", "value": "'"$VERSION"'" },
         { "name": "SENTRY_ENVIRONMENT", "value": "'"$CHANNEL"'" },
         { "name": "DATADOG_API_KEY", "value": "'"$DATADOG_API_KEY"'" },
-        { "name": "DEBUG", "value": "metrics" }
+        { "name": "DEBUG", "value": "metrics" },
+        { "name": "OPTICS_API_KEY", "value": "'"$OPTICS_API_KEY"'" }
       ]
     }
   ]'
