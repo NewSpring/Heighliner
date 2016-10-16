@@ -1,13 +1,13 @@
-mySQL:
-  image: mysql:5.5
-  volumes:
-    - ./scripts/mysql/:/etc/mysql/conf.d
-  ports:
-    - "3306:3306"
-  environment:
-    MYSQL_ROOT_PASSWORD: password
-    MYSQL_DATABASE: ee_local
-    MYSQL_USER: root
+# mySQL:
+#   image: mysql:5.5
+#   volumes:
+#     - ./scripts/mysql/:/etc/mysql/conf.d
+#   ports:
+#     - "3306:3306"
+#   environment:
+#     MYSQL_ROOT_PASSWORD: password
+#     MYSQL_DATABASE: ee_local
+#     MYSQL_USER: root
 
 # mongoDB:
 #   image: mongo:latest
@@ -19,4 +19,4 @@ redis:
   ports:
     - "6379:6379"
   volumes:
-    - /data/redis:/data
+    - ./data/redis:/data
