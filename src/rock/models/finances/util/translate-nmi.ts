@@ -106,7 +106,10 @@ import { Gateway } from "../model";
 export default (transaction: any, gateway: Gateway, person: number): Tables => {
   // reverse this when multiple accounts are stored in NMI correctly
   if (isArray(transaction.action)) transaction.action = transaction.action[0];
-  if (transaction.action.action_type === "validate") return null;
+  if (transaction.condition !== "complete") return null;
+  if (transaction.action.action_type !== "sale" && transaction.action.action_type !== "settle") {
+    return null;
+  }
 
   const Transaction: FinancialTransaction = {
     TransactionCode: transaction.transaction_id,

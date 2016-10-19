@@ -198,7 +198,6 @@ export class Transaction extends FinancialModel {
           if (!err) a(result);
         });
       }))
-      .then(this.debug)
       .then(x => x && (x as any).nm_response && (x as any).nm_response.transaction)
       .then(x => isArray(x) ? x : [x])
       .then(x => x && x.map(y => translateFromNMI(y, gateway, PersonId)))
