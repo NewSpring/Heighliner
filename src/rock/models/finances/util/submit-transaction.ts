@@ -73,8 +73,12 @@ export default async (transaction: Tables): Promise<any> => {
       ],
     });
 
-    if (!FoundLocations.length) return Promise.resolve();
-    ids = flatten(FoundLocations.map(x => x.Group.GroupMembers)).map(x => (x as any).PersonId);
+    if (FoundLocations.length) {
+      ids = flatten(FoundLocations.map(x => x.Group.GroupMembers)).map(x => (x as any).PersonId);
+    } else {
+      ids = [People[0].Id];
+      console.warn(`no locations found for ${People.map(x => x.FirstName)}`);
+    }
   } else {
     ids = [Person.Id];
   }

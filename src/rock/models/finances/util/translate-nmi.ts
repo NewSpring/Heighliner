@@ -162,9 +162,14 @@ export default (transaction: any, gateway: Gateway, person: number): Tables => {
     if (!isArray(transaction.merchant_defined_field)) {
       transaction.merchant_defined_field = [transaction.merchant_defined_field];
     }
-    CampusId = Number(
-      (find(transaction.merchant_defined_field, { id: "2"}) as any)._
-    );
+    try {
+      CampusId = Number(
+        (find(transaction.merchant_defined_field, { id: "2"}) as any)._
+      );
+    } catch (e) {
+      console.warn(`Cannot find campus in NMI for ${transaction.transaction_id}`);
+    }
+
   }
 
   let Person: Person = {
