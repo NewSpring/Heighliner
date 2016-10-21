@@ -64,7 +64,7 @@
     "raven": "^0.12.1",
     "redis": "^2.4.2",
     "redis-commands": "github:newspring/redis-commands",
-    "sequelize": "^3.24.0",
+    "sequelize": "^3.24.5",
     "strip-tags": "^0.1.1",
     "striptags": "^2.1.1",
     "tedious": "^1.14.0",
