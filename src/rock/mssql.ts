@@ -83,19 +83,19 @@ export class MSSQLConnector {
       .then(this.mergeData));
   }
 
-  public patch(body: Object): Promise<number | boolean | Object> {
-    return this.fetch("PATCH", body);
+  public patch(entityId: number | string = "", body: Object): Promise<Object> {
+    return this.fetch("PATCH", `${entityId}`, body);
   }
 
-  public put(body: Object): Promise<number | boolean | Object> {
-    return this.fetch("PUT", body);
+  public post(body: Object): Promise<Object> {
+    return this.fetch("POST", "", body);
   }
 
-  public post(body: Object): Promise<number | boolean | Object> {
-    return this.fetch("POST", body);
+  public delete(entityId: number | string): Promise<Object> {
+    return this.fetch("DELETE", `${entityId}`);
   }
 
-  private fetch(method: string, body: Object): Promise<number | boolean | Object> {
+  private fetch(method: string, route: string = "", body: Object = {}): Promise<Object> {
     const { ROCK_URL, ROCK_TOKEN } = process.env;
     const headers = {
       "Authorization-Token": ROCK_TOKEN,
@@ -108,7 +108,7 @@ export class MSSQLConnector {
       .then(response => {
         const { status, statusText, error } = response;
 
-        if (status === 204) return { json() { return true; } };
+        if (status === 204) return { json: () => ({ status: 204, statusText: "success" })};
         if (status >= 200 && status < 300) return response;
 
         return {

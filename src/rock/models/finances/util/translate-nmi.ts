@@ -101,7 +101,7 @@ export interface Tables {
   ScheduledTransaction?: FinancialScheduledTransaction;
 }
 
-import { Gateway } from "../model";
+import { Gateway } from "../models/Transaction";
 
 export default (transaction: any, gateway: Gateway, person: number): Tables => {
   // reverse this when multiple accounts are stored in NMI correctly

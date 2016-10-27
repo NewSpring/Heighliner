@@ -15,4 +15,10 @@ export default [
     gateway: String = "NMI Gateway",
   ): [Transaction]`,
 
+  // used to cancel a saved payment
+  // id is the node id which will be parsed into the entity id
+  `cancelSavedPayment(
+    id: ID!
+  ): [MutationStatus]`,
+
 ];

@@ -63,6 +63,7 @@ export default {
 
   Mutation: {
     syncTransactions: (_, args, { models }) => models.Transaction.syncTransactions(args),
+    cancelSavedPayment: (_, { id }, { models }) => models.SavedPayment.removeFromNodeId(id),
   },
 
   TransactionDetail: {
