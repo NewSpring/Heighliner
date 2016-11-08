@@ -1,0 +1,159 @@
+import { defaultsDeep } from "lodash";
+
+import translate, { getCardType } from "../translate-nmi";
+
+import {
+  standard,
+  recurring,
+  check,
+  NMIExample,
+} from "../__mocks__/sample-response";
+
+describe("getCardType", () => {
+  it("correctly identifies a visa", () => {
+    expect(getCardType("4111111111111111")).toBe(7);
+  });
+
+  it("correctly identifies a mastercard", () => {
+    expect(getCardType("5431111111111111")).toBe(8);
+  });
+
+  it("correctly identifies an American Express", () => {
+    expect(getCardType("341111111111111")).toBe(159);
+  });
+
+  it("correctly identifieds a discover card", () => {
+    expect(getCardType("6011601160116611")).toBe(160);
+  });
+
+  it("returns a falsy if no valid card is found", () => {
+    expect(getCardType("xxxxx")).toBeFalsy();
+  });
+});
+
+jest.mock("node-uuid", () => ({
+  v4: () => "a31044f3-d721-47b2-a91d-e58ac41832ad",
+}));
+
+describe("translate", () => {
+  it("correctly formats a standard transaction", () => {
+    expect(translate(standard, { Id: 3 } )).toMatchSnapshot();
+  });
+
+  it("correctly formats the NMI example transaction", () => {
+    expect(translate(NMIExample, { Id: 3 } )).toMatchSnapshot();
+  });
+
+  it("returns null for a pending transaction", () => {
+    const example = defaultsDeep({ condition: "pending" }, standard);
+    expect(translate(example, { Id: 3 } )).toBeFalsy();
+  });
+
+  it("returns null for a pendingsettlement transaction", () => {
+    const example = defaultsDeep({ condition: "pendingsettlement" }, standard);
+    expect(translate(example, { Id: 3 } )).toBeFalsy();
+  });
+
+  it("returns null for an in_progress transaction", () => {
+    const example = defaultsDeep({ condition: "in_progress" }, standard);
+    expect(translate(example, { Id: 3 } )).toBeFalsy();
+  });
+
+  it("returns null for an abandoned transaction", () => {
+    const example = defaultsDeep({ condition: "abandoned" }, standard);
+    expect(translate(example, { Id: 3 } )).toBeFalsy();
+  });
+
+  it("returns null for a failed transaction", () => {
+    const example = defaultsDeep({ condition: "failed" }, standard);
+    expect(translate(example, { Id: 3 } )).toBeFalsy();
+  });
+
+  xit("returns correctly for a failed transaction", () => {
+    const example = defaultsDeep({ condition: "failed" }, standard);
+    expect(translate(example, { Id: 3 } )).toMatchSnapshot();
+  });
+
+  it("returns null for a canceled transaction", () => {
+    const example = defaultsDeep({ condition: "canceled" }, standard);
+    expect(translate(example, { Id: 3 } )).toBeFalsy();
+  });
+
+  it("returns null for an unknown transaction", () => {
+    const example = defaultsDeep({ condition: "unknown" }, standard);
+    expect(translate(example, { Id: 3 } )).toBeFalsy();
+  });
+
+  it("returns null for a refund transaction", () => {
+    const example = defaultsDeep({ action: { action_type: "refund"} }, standard) as any;
+    expect(translate(example, { Id: 3 } )).toBeFalsy();
+  });
+
+  xit("correctly formats refunds", () => {
+    const example = defaultsDeep({ action: { action_type: "refund"} }, standard) as any;
+    expect(translate(example, { Id: 3 } )).toMatchSnapshot();
+  });
+
+  it("returns null for a credit transaction", () => {
+    const example = defaultsDeep({ action: { action_type: "credit"} }, standard) as any;
+    expect(translate(example, { Id: 3 } )).toBeFalsy();
+  });
+
+  it("returns null for a auth transaction", () => {
+    const example = defaultsDeep({ action: { action_type: "auth"} }, standard) as any;
+    expect(translate(example, { Id: 3 } )).toBeFalsy();
+  });
+
+  it("returns null for a capture transaction", () => {
+    const example = defaultsDeep({ action: { action_type: "capture"} }, standard) as any;
+    expect(translate(example, { Id: 3 } )).toBeFalsy();
+  });
+
+  it("returns null for a void transaction", () => {
+    const example = defaultsDeep({ action: { action_type: "void"} }, standard) as any;
+    expect(translate(example, { Id: 3 } )).toBeFalsy();
+  });
+
+  it("returns null for a return transaction", () => {
+    const example = defaultsDeep({ action: { action_type: "return"} }, standard) as any;
+    expect(translate(example, { Id: 3 } )).toBeFalsy();
+  });
+
+  xit("correctly formats a return action", () => {
+    const example = defaultsDeep({ action: { action_type: "return"} }, standard) as any;
+    expect(translate(example, { Id: 3 } )).toMatchSnapshot();
+  });
+
+  it("allows sale to not be the first action", () => {
+    const example = defaultsDeep({}, NMIExample) as any;
+    const sale = example.action[0];
+    const other = example.action[1];
+    const settle = example.action[2];
+    example.action = [other, settle, sale];
+    expect(translate(example, { Id: 3 } )).toMatchSnapshot();
+  });
+
+  it("supports multiple funds", () => {
+    const example = defaultsDeep({ product: [
+      standard.product,
+      {
+        "sku": "128",
+        "quantity": "10.0000",
+        "description": "Step Up",
+      },
+    ] }, standard) as any;
+    expect(translate(example, { Id: 3 } )).toMatchSnapshot();
+  });
+
+  it("supports a recurring transaction", () => {
+    expect(translate(recurring, { Id: 3 } )).toMatchSnapshot();
+  });
+
+  it("supports manually setting a person", () => {
+    expect(translate(recurring, { Id: 3 }, 10)).toMatchSnapshot();
+  });
+
+  it("supports a check", () => {
+    expect(translate(check, { Id: 3 })).toMatchSnapshot();
+  });
+});

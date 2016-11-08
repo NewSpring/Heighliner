@@ -17,8 +17,8 @@ export default [
 
   // used to cancel a saved payment
   // id is the node id which will be parsed into the entity id
-  `cancelSavedPayment(
-    id: ID!
-  ): [MutationStatus]`,
+  // `cancelSavedPayment(
+  //   id: ID!
+  // ): [MutationStatus]`,
 
 ];

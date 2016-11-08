@@ -1,8 +1,8 @@
 import uuid from "node-uuid";
-import { isArray, find } from "lodash";
+import { isArray, find, assign } from "lodash";
 import Moment from "moment";
 
-const getCardType = (card) => {
+export const getCardType = (card) => {
   const d = /^6$|^6[05]$|^601[1]?$|^65[0-9][0-9]?$|^6(?:011|5[0-9]{2})[0-9\*]{0,12}$/gmi;
 
   const defaultRegex = {
@@ -103,9 +103,16 @@ export interface Tables {
 
 import { Gateway } from "../models/Transaction";
 
-export default (transaction: any, gateway: Gateway, person: number): Tables => {
+export default (response: any, gateway: Gateway, person?: number): Tables => {
+  const transaction = assign({}, response) as any;
   // reverse this when multiple accounts are stored in NMI correctly
-  if (isArray(transaction.action)) transaction.action = transaction.action[0];
+  if (isArray(transaction.action)) {
+    let sale = find(transaction.action, { action_type: "sale" });
+    if (!sale) sale = find(transaction.action, { action_type: "settle" });
+    if (!sale) sale = transaction.action = transaction.action[0];
+    transaction.action = sale;
+  }
+
   if (transaction.condition !== "complete") return null;
   if (transaction.action.action_type !== "sale" && transaction.action.action_type !== "settle") {
     return null;

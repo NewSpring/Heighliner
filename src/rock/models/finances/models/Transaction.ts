@@ -32,11 +32,11 @@ import {
 import { Rock } from "../../system";
 
 export interface Gateway {
-  AdminUsername: string;
-  AdminPassword: string;
-  APIUrl: string;
-  QueryUrl: string;
-  SecurityKey: string;
+  AdminUsername?: string;
+  AdminPassword?: string;
+  APIUrl?: string;
+  QueryUrl?: string;
+  SecurityKey?: string;
   Id: number;
 }
 
