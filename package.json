@@ -94,7 +94,7 @@
     "supervisor": "^0.11.0",
     "ts-jest": "^0.1.4",
     "tslint": "^3.10.2",
-    "typescript": "^1.8.10",
+    "typescript": "^2.0.3",
     "typings": "^1.0.4",
     "word-wrap": "^1.1.0"
   },
