@@ -71,16 +71,16 @@ export interface Location {
 export interface FinancialTransaction {
   AuthorizedPersonAliasId?: number;
   BatchId?: number;
-  FinancialGatewayId: number;
+  FinancialGatewayId?: number;
   FinancialPaymentDetailId?: number;
-  SourceTypeValueId: number;
+  SourceTypeValueId?: number;
   Summary?: string;
   StatusMessage?: string;
   TransactionCode: string;
-  TransactionDateTime: string;
-  TransactionTypeValueId: number;
+  TransactionDateTime?: string;
+  TransactionTypeValueId?: number;
   CreatedByPersonAliasId?: number;
-  Guid: string;
+  Guid?: string;
   Id?: string;
   ForeignId?: number;
   ScheduledTransactionId?: number;
@@ -92,12 +92,12 @@ export interface FinancialScheduledTransaction {
 }
 
 export interface Tables {
-  Transaction: FinancialTransaction;
-  Location: Location;
-  Person: Person;
-  TransactionDetails: FinancialTransactionDetails[];
-  PaymentDetail: FinancialPaymentDetail;
-  CampusId: number;
+  Transaction?: FinancialTransaction;
+  Location?: Location;
+  Person?: Person;
+  TransactionDetails?: FinancialTransactionDetails[];
+  PaymentDetail?: FinancialPaymentDetail;
+  CampusId?: number;
   ScheduledTransaction?: FinancialScheduledTransaction;
 }
 

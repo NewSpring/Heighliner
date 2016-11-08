@@ -33,7 +33,7 @@ import {
   Location as LocationModel,
 } from "../../campuses/tables";
 
-export default async (transaction: Tables): Promise<any> => {
+export default async (transaction?: Tables): Promise<any> => {
   if (!transaction) return Promise.resolve();
   const {
     CampusId,

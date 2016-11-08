@@ -129,7 +129,7 @@ export default class Transaction extends Rock {
       ;
   }
 
-  private async loadGatewayDetails(gateway): Promise<Gateway> {
+  private async loadGatewayDetails(gateway?): Promise<Gateway> {
     if (this.gateway) return this.gateway;
     if (!gateway) throw new Error("No gateway specified");
 
