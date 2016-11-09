@@ -27,7 +27,7 @@ Object {
     "SourceTypeValueId": 798,
     "Summary": "Reference Number: 2612675976",
     "TransactionCode": "2612675976",
-    "TransactionDateTime": "2015-03-13T01:52:05.000Z",
+    "TransactionDateTime": "Mocked ISODate: 20150312215205",
     "TransactionTypeValueId": 53,
   },
   "TransactionDetails": Array [
@@ -69,7 +69,7 @@ Object {
     "SourceTypeValueId": 798,
     "Summary": "Reference Number: 1",
     "TransactionCode": "1",
-    "TransactionDateTime": "2016-11-02T13:08:45.000Z",
+    "TransactionDateTime": "Mocked ISODate: 20161102090845",
     "TransactionTypeValueId": 53,
   },
   "TransactionDetails": Array [
@@ -111,7 +111,7 @@ Object {
     "SourceTypeValueId": 798,
     "Summary": "Reference Number: 2612675976",
     "TransactionCode": "2612675976",
-    "TransactionDateTime": "2015-03-13T01:52:05.000Z",
+    "TransactionDateTime": "Mocked ISODate: 20150312215205",
     "TransactionTypeValueId": 53,
   },
   "TransactionDetails": Array [
@@ -152,7 +152,7 @@ Object {
     "SourceTypeValueId": 798,
     "Summary": "Reference Number: 1",
     "TransactionCode": "1",
-    "TransactionDateTime": "2016-11-02T13:08:45.000Z",
+    "TransactionDateTime": "Mocked ISODate: 20161102090845",
     "TransactionTypeValueId": 53,
   },
   "TransactionDetails": Array [
@@ -196,7 +196,7 @@ Object {
     "SourceTypeValueId": 798,
     "Summary": "Reference Number: 1",
     "TransactionCode": "1",
-    "TransactionDateTime": "2016-11-02T13:08:45.000Z",
+    "TransactionDateTime": "Mocked ISODate: 20161102090845",
     "TransactionTypeValueId": 53,
   },
   "TransactionDetails": Array [
@@ -239,7 +239,7 @@ Object {
     "SourceTypeValueId": 798,
     "Summary": "Reference Number: 1",
     "TransactionCode": "1",
-    "TransactionDateTime": "2016-11-02T13:08:45.000Z",
+    "TransactionDateTime": "Mocked ISODate: 20161102090845",
     "TransactionTypeValueId": 53,
   },
   "TransactionDetails": Array [
@@ -281,7 +281,7 @@ Object {
     "SourceTypeValueId": 798,
     "Summary": "Reference Number: 1",
     "TransactionCode": "1",
-    "TransactionDateTime": "2016-11-02T13:08:45.000Z",
+    "TransactionDateTime": "Mocked ISODate: 20161102090845",
     "TransactionTypeValueId": 53,
   },
   "TransactionDetails": Array [
