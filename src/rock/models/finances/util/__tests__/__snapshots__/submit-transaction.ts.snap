@@ -1,0 +1,8 @@
+exports[`test logs an error if missing a schedule in Rock 1`] = `
+Array [
+  "
+        Scheduled Transaction is missing for person 1 with
+        GatewayScheduleId of 19
+      ",
+]
+`;

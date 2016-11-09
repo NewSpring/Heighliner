@@ -61,6 +61,11 @@ export default {
     },
   },
 
+  Mutation: {
+    syncTransactions: (_, args, { models }) => models.Transaction.syncTransactions(args),
+    // cancelSavedPayment: (_, { id }, { models }) => models.SavedPayment.removeFromNodeId(id),
+  },
+
   TransactionDetail: {
     id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     amount: ({ Amount }) => Amount,

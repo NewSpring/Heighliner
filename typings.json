@@ -17,11 +17,13 @@
     "mongoose": "registry:dt/mongoose#3.8.5+20160517033907",
     "morgan": "registry:dt/morgan#1.2.2+20160317120654",
     "node": "registry:env/node#4.0.0+20160507210304",
-    "serve-static": "registry:dt/serve-static#0.0.0+20160501131543"
+    "serve-static": "registry:dt/serve-static#0.0.0+20160501131543",
+    "xml2js": "registry:dt/xml2js#0.0.0+20160317120654"
   },
   "dependencies": {
     "graphql": "github:nitintutlani/typed-graphql#ffe7e46e2249cc8f3824a5d15a44938f4354afe9",
     "lodash": "registry:npm/lodash#4.0.0+20160416211519",
+    "node-uuid": "registry:npm/node-uuid#1.4.7+20160723033700",
     "redis": "registry:npm/redis#0.12.1+20160502170935",
     "request": "registry:npm/request#2.69.0+20160428223725",
     "sequelize": "registry:npm/sequelize#3.0.0+20160602143835"

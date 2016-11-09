@@ -1,0 +1,300 @@
+exports[`translate allows sale to not be the first action 1`] = `
+Object {
+  "CampusId": undefined,
+  "Location": Object {
+    "City": "New York City",
+    "Country": "US",
+    "PostalCode": "10001",
+    "State": "NY",
+    "Street1": "123 Main St",
+    "Street2": "Apt B",
+  },
+  "PaymentDetail": Object {
+    "AccountNumberMasked": "4***********1111",
+    "CreditCardTypeValueId": 7,
+    "CurrencyTypeValueId": 156,
+    "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+  },
+  "Person": Object {
+    "Email": "johnsmith@example.com",
+    "LastName": "Smith",
+  },
+  "ScheduledTransaction": Object {},
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "ForeignKey": "1234567890",
+    "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+    "SourceTypeValueId": 798,
+    "Summary": "Reference Number: 2612675976",
+    "TransactionCode": "2612675976",
+    "TransactionDateTime": "Mocked ISODate: 20150312215205",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": NaN,
+      "Amount": 11,
+      "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+    },
+  ],
+}
+`;
+
+exports[`translate correctly formats a standard transaction 1`] = `
+Object {
+  "CampusId": 16,
+  "Location": Object {
+    "City": "City",
+    "Country": undefined,
+    "PostalCode": "29621",
+    "State": "SC",
+    "Street1": "Address",
+    "Street2": undefined,
+  },
+  "PaymentDetail": Object {
+    "AccountNumberMasked": "4***********1111",
+    "CreditCardTypeValueId": 7,
+    "CurrencyTypeValueId": 156,
+    "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+  },
+  "Person": Object {
+    "Email": "test@email.com",
+    "LastName": "Last",
+  },
+  "ScheduledTransaction": Object {},
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "ForeignKey": "apollos_1",
+    "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+    "SourceTypeValueId": 798,
+    "Summary": "Reference Number: 1",
+    "TransactionCode": "1",
+    "TransactionDateTime": "Mocked ISODate: 20161102090845",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": 125,
+      "Amount": 1,
+      "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+    },
+  ],
+}
+`;
+
+exports[`translate correctly formats the NMI example transaction 1`] = `
+Object {
+  "CampusId": undefined,
+  "Location": Object {
+    "City": "New York City",
+    "Country": "US",
+    "PostalCode": "10001",
+    "State": "NY",
+    "Street1": "123 Main St",
+    "Street2": "Apt B",
+  },
+  "PaymentDetail": Object {
+    "AccountNumberMasked": "4***********1111",
+    "CreditCardTypeValueId": 7,
+    "CurrencyTypeValueId": 156,
+    "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+  },
+  "Person": Object {
+    "Email": "johnsmith@example.com",
+    "LastName": "Smith",
+  },
+  "ScheduledTransaction": Object {},
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "ForeignKey": "1234567890",
+    "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+    "SourceTypeValueId": 798,
+    "Summary": "Reference Number: 2612675976",
+    "TransactionCode": "2612675976",
+    "TransactionDateTime": "Mocked ISODate: 20150312215205",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": NaN,
+      "Amount": 11,
+      "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+    },
+  ],
+}
+`;
+
+exports[`translate supports a check 1`] = `
+Object {
+  "CampusId": 16,
+  "Location": Object {
+    "City": "City",
+    "Country": undefined,
+    "PostalCode": "29621",
+    "State": "SC",
+    "Street1": "Address",
+    "Street2": undefined,
+  },
+  "PaymentDetail": Object {
+    "AccountNumberMasked": "1****1111",
+    "CurrencyTypeValueId": 157,
+    "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+  },
+  "Person": Object {
+    "Email": "test@email.com",
+    "LastName": "Last",
+  },
+  "ScheduledTransaction": Object {},
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "ForeignKey": "apollos_1",
+    "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+    "SourceTypeValueId": 798,
+    "Summary": "Reference Number: 1",
+    "TransactionCode": "1",
+    "TransactionDateTime": "Mocked ISODate: 20161102090845",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": 125,
+      "Amount": 1,
+      "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+    },
+  ],
+}
+`;
+
+exports[`translate supports a recurring transaction 1`] = `
+Object {
+  "CampusId": 16,
+  "Location": Object {
+    "City": "City",
+    "Country": undefined,
+    "PostalCode": "29621",
+    "State": "SC",
+    "Street1": "Address",
+    "Street2": undefined,
+  },
+  "PaymentDetail": Object {
+    "AccountNumberMasked": "4***********1111",
+    "CreditCardTypeValueId": 7,
+    "CurrencyTypeValueId": 156,
+    "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+  },
+  "Person": Object {
+    "Email": "test@email.com",
+    "LastName": "Last",
+  },
+  "ScheduledTransaction": Object {
+    "GatewayScheduleId": "10",
+  },
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "ForeignKey": "apollos_1",
+    "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+    "SourceTypeValueId": 798,
+    "Summary": "Reference Number: 1",
+    "TransactionCode": "1",
+    "TransactionDateTime": "Mocked ISODate: 20161102090845",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": 125,
+      "Amount": 1,
+      "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+    },
+  ],
+}
+`;
+
+exports[`translate supports manually setting a person 1`] = `
+Object {
+  "CampusId": 16,
+  "Location": Object {
+    "City": "City",
+    "Country": undefined,
+    "PostalCode": "29621",
+    "State": "SC",
+    "Street1": "Address",
+    "Street2": undefined,
+  },
+  "PaymentDetail": Object {
+    "AccountNumberMasked": "4***********1111",
+    "CreditCardTypeValueId": 7,
+    "CurrencyTypeValueId": 156,
+    "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+  },
+  "Person": Object {
+    "Id": 10,
+  },
+  "ScheduledTransaction": Object {
+    "GatewayScheduleId": "10",
+  },
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "ForeignKey": "apollos_1",
+    "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+    "SourceTypeValueId": 798,
+    "Summary": "Reference Number: 1",
+    "TransactionCode": "1",
+    "TransactionDateTime": "Mocked ISODate: 20161102090845",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": 125,
+      "Amount": 1,
+      "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+    },
+  ],
+}
+`;
+
+exports[`translate supports multiple funds 1`] = `
+Object {
+  "CampusId": 16,
+  "Location": Object {
+    "City": "City",
+    "Country": undefined,
+    "PostalCode": "29621",
+    "State": "SC",
+    "Street1": "Address",
+    "Street2": undefined,
+  },
+  "PaymentDetail": Object {
+    "AccountNumberMasked": "4***********1111",
+    "CreditCardTypeValueId": 7,
+    "CurrencyTypeValueId": 156,
+    "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+  },
+  "Person": Object {
+    "Email": "test@email.com",
+    "LastName": "Last",
+  },
+  "ScheduledTransaction": Object {},
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "ForeignKey": "apollos_1",
+    "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+    "SourceTypeValueId": 798,
+    "Summary": "Reference Number: 1",
+    "TransactionCode": "1",
+    "TransactionDateTime": "Mocked ISODate: 20161102090845",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": 125,
+      "Amount": 1,
+      "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+    },
+    Object {
+      "AccountId": 128,
+      "Amount": 1,
+      "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
+    },
+  ],
+}
+`;

@@ -26,6 +26,7 @@ export interface Models {
 
 export interface Mocks {
   Query?: any;
+  Mutation?: any;
   [key: string]: any;
 }
 
@@ -36,6 +37,7 @@ export interface ApplicationDefinition {
   resolvers: Resolvers;
   mocks?: Mocks;
   connect?: Function;
+  mutations?: string[];
   queries?: string[];
 }
 

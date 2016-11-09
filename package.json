@@ -57,6 +57,7 @@
     "mysql": "^2.10.2",
     "node-env-file": "^0.1.8",
     "node-mssql": "0.0.1",
+    "node-uuid": "^1.4.7",
     "norma-copy": "^0.4.6",
     "optics-agent": "0.0.30",
     "php-unserialize": "0.0.1",
@@ -69,7 +70,8 @@
     "striptags": "^2.1.1",
     "tedious": "^1.14.0",
     "truncate": "^2.0.0",
-    "typescript": "^1.8.10"
+    "typescript": "^1.8.10",
+    "xml2js": "^0.4.17"
   },
   "devDependencies": {
     "ava": "^0.15.1",
