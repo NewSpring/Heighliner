@@ -1,0 +1,25 @@
+exports[`loadGatewayDetails find the attributes for the found gatweway 1`] = `
+Array [
+  Object {
+    "include": Array [
+      Object {
+        "model": "Attribue",
+        "where": Object {
+          "key": Object {
+            "$in": Array [
+              "AdminUsername",
+              "AdminPassword",
+              "APIUrl",
+              "QueryUrl",
+              "SecurityKey",
+            ],
+          },
+        },
+      },
+    ],
+    "where": Object {
+      "EntityId": 1,
+    },
+  },
+]
+`;

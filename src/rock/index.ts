@@ -11,7 +11,7 @@ import System from "./models/system";
 import Groups from "./models/groups";
 import BinaryFiles from "./models/binary-files";
 
-export const { queries, models, resolvers, mocks, schema } = createApplication([
+export const { mutations, queries, models, resolvers, mocks, schema } = createApplication([
   People,
   Finances,
   Campuses,
@@ -22,6 +22,7 @@ export const { queries, models, resolvers, mocks, schema } = createApplication([
 
 export default {
   models,
+  mutations,
   resolvers,
   mocks,
   schema,

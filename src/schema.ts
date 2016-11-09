@@ -26,7 +26,7 @@ import Apollos, {
 // Import Rock
 import Rock, {
   queries as RockQueries,
-  // mutations as RockMutations,
+  mutations as RockMutations,
 } from "./rock";
 
 // Import Expression Engine
@@ -60,7 +60,7 @@ schema = createSchema({
   ],
   mutations: [
     // ...ApollosMutations,
-    // ...RockMutations,
+    ...RockMutations,
   ],
   schema,
 });
