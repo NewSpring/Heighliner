@@ -1,13 +1,12 @@
 const nodeExternals = require("webpack-node-externals");
 const DotenvPlugin = require("webpack-dotenv-plugin");
+const NpmInstallPlugin = require("npm-install-webpack-plugin");
 const webpack = require("webpack");
 const path = require("path");
 const fs = require("fs");
 
 module.exports = {
 	entry: [
-		// "webpack/hot/signal.js",
-		// "webpack-hot-middleware/client?reload=true",
 		"./src/server.js"
 	],
 	target: "node",
@@ -17,6 +16,7 @@ module.exports = {
 	},
 	recordsPath: path.resolve(__dirname, "dist/_records"),
 	plugins: [
+		new NpmInstallPlugin(),
 		new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin({

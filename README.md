@@ -14,8 +14,12 @@ An Apollo GraphQL server for NewSpring Church
 ### Setup
 
 ```
-npm i
-npm install -g typings
-typings i
+npm i && npm run build
+```
+
+### Running the project
+
+```
+// XXX docker commands
 npm start
 ```
