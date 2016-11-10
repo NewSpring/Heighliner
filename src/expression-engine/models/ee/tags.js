@@ -5,16 +5,16 @@ import {
   STRING,
 } from "sequelize";
 
-import { MySQLConnector, Tables } from "../../mysql";
+import { MySQLConnector } from "../../mysql";
 
-const tagSchema: Object = {
+const tagSchema = {
   tag_id: { type: INTEGER, primaryKey: true },
   tag_name: { type: STRING },
   entry_date: { type: INTEGER },
   clicks: { type: INTEGER },
 };
 
-const tagEntriesSchema: Object = {
+const tagEntriesSchema = {
   tag_id: { type: INTEGER, primaryKey: true },
   entry_id: { type: INTEGER },
 };
@@ -27,10 +27,10 @@ export {
   tagSchema,
 
   TagEntries,
-  tagEntriesSchema
+  tagEntriesSchema,
 };
 
-export function connect(): Tables {
+export function connect() {
   Tags = new MySQLConnector("exp_tag_tags", tagSchema);
   TagEntries = new MySQLConnector("exp_tag_entries", tagEntriesSchema);
 
@@ -38,21 +38,15 @@ export function connect(): Tables {
     Tags,
     TagEntries,
   };
-};
+}
 
-export function bind({
-  ChannelData,
-  Tags,
-  TagEntries,
-}: Tables): void {
-
+export function bind({ ChannelData, Tags, TagEntries }) {
   ChannelData.model.hasMany(TagEntries.model, { foreignKey: "entry_id" });
   TagEntries.model.belongsTo(ChannelData.model, { foreignKey: "entry_id" });
 
   Tags.model.hasMany(TagEntries.model, { foreignKey: "tag_id" });
   TagEntries.model.belongsTo(Tags.model, { foreignKey: "tag_id" });
-
-};
+}
 
 export default {
   connect,

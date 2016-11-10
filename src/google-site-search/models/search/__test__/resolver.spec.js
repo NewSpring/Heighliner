@@ -1,42 +1,42 @@
 import casual from "casual";
 import Resolver from "../resolver";
 
-const generateSearchItem = () => {
-  return {
-    cacheId: casual.word,
-    title: `${casual.word}|${casual.word}`,
-    htmlTitle: `${casual.word}|${casual.word}`,
-    link: casual.url,
-    displayLink: casual.url,
-    snippet: casual.description,
-    htmlSnippet: casual.description,
-    pagemap: {
-      metatags: [
-        {
-          "og:type": casual.word,
-          "article:section": casual.word,
-        },
-      ],
-      cse_image: [
-        {
-          src: casual.url,
-        },
-      ],
-    },
-    type: casual.word,
-    section: casual.word,
-    image: casual.url,
-  };
-};
+const generateSearchItem = () =>
+   ({
+     cacheId: casual.word,
+     title: `${casual.word}|${casual.word}`,
+     htmlTitle: `${casual.word}|${casual.word}`,
+     link: casual.url,
+     displayLink: casual.url,
+     snippet: casual.description,
+     htmlSnippet: casual.description,
+     pagemap: {
+       metatags: [
+         {
+           "og:type": casual.word,
+           "article:section": casual.word,
+         },
+       ],
+       cse_image: [
+         {
+           src: casual.url,
+         },
+       ],
+     },
+     type: casual.word,
+     section: casual.word,
+     image: casual.url,
+   })
+;
 
-const generateSearch = (items = []) => {
-  return {
-    total: 2,
-    next: 3,
-    previous: 0,
-    items,
-  };
-};
+const generateSearch = (items = []) =>
+   ({
+     total: 2,
+     next: 3,
+     previous: 0,
+     items,
+   })
+;
 
 it("`Query` should expose search method", () => {
   const { Query } = Resolver;

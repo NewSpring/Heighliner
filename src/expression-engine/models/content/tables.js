@@ -78,7 +78,7 @@ export {
 export function connect() {
   Channels = new MySQLConnector("exp_channels", channelSchema);
   ChannelFields = new MySQLConnector("exp_channel_fields", channelFieldSchema);
-  ChannelTitles =  new MySQLConnector("exp_channel_titles", channelTitleSchema);
+  ChannelTitles = new MySQLConnector("exp_channel_titles", channelTitleSchema);
   ChannelData = new MySQLConnector("exp_channel_data", channelDataSchema);
   LowReorder = new MySQLConnector("exp_low_reorder_sets", lowReorderSetSchema);
   LowReorderOrder = new MySQLConnector("exp_low_reorder_orders", lowReorderOrderSchema);
@@ -91,7 +91,7 @@ export function connect() {
     LowReorder,
     LowReorderOrder,
   };
-};
+}
 
 export function bind({
   Channels,
@@ -100,7 +100,7 @@ export function bind({
   ChannelFields,
   LowReorder,
   LowReorderOrder,
-}): void {
+}) {
   Channels.model.hasMany(ChannelTitles.model, { foreignKey: "channel_id" });
   Channels.model.hasMany(ChannelData.model, { foreignKey: "channel_id" });
 
@@ -114,7 +114,7 @@ export function bind({
   ChannelData.model.belongsTo(ChannelTitles.model, { foreignKey: "entry_id" });
 
   LowReorderOrder.model.belongsTo(LowReorder.model, { foreignKey: "set_id", targetKey: "set_id" });
-};
+}
 
 export default {
   connect,

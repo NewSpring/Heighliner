@@ -14,13 +14,7 @@ let loud = console.log.bind(console, "MSSQL:"); // tslint:disable-line
 let db;
 let dd;
 
-export function connect(
-  database: string,
-  username: string,
-  password: string,
-  opts: Options,
-  monitor?: any
-): Promise<boolean> {
+export function connect(database, username, password, opts, monitor) {
   dd = monitor && monitor.datadog;
   return new Promise((cb) => {
     opts = merge({}, opts, {
@@ -48,18 +42,11 @@ export function connect(
   });
 }
 
-export interface Tables {
-  [key: string]: MSSQLConnector;
-}
-
 export class MSSQLConnector {
-  public prefix: string = "";
-  public db: Connection;
-  public model: Model<any, any>;
-  public route: string;
-  private count: number = 0;
+  prefix = "";
+  count = 0;
 
-  constructor(tableName: string, schema: Object = {}, options: DefineOptions<any> = {}, api?: string) {
+  constructor(tableName, schema = {}, options = {}, api) {
     this.db = db;
     options = merge(options, { tableName, underscored: true });
     this.model = db.define(tableName, schema, options);
@@ -70,37 +57,37 @@ export class MSSQLConnector {
     // XXX integrate data loader
   }
 
-  public find(...args): Promise<Object[]> {
+  find(...args) {
     // console.log("finding", args)
     return this.time(this.model.findAll.apply(this.model, args)
       .then(this.getValues)
       .then(data => data.map(this.mergeData)));
   }
 
-  public findOne(...args): Promise<Object> {
+  findOne(...args) {
     return this.time(this.model.findOne.apply(this.model, args)
       .then((x) => x && x.dataValues)
       .then(this.mergeData));
   }
 
-  public patch(entityId: number | string = "", body: Object): Promise<Object> {
+  patch(entityId = "", body) {
     return this.fetch("PATCH", `${entityId}`, body);
   }
 
-  public post(body: Object): Promise<Object> {
+  post(body) {
     return this.fetch("POST", "", body);
   }
 
-  public delete(entityId: number | string): Promise<Object> {
+  delete(entityId) {
     return this.fetch("DELETE", `${entityId}`);
   }
 
-  private fetch(method: string, route: string = "", body: Object = {}): Promise<Object> {
+  fetch(method, route = "", body) {
     const { ROCK_URL, ROCK_TOKEN } = process.env;
     const headers = {
       "Authorization-Token": ROCK_TOKEN,
       "Content-Type": "application/json",
-    } as { [index: string]: string; };
+    };
 
     return fetch(`${ROCK_URL}api/${this.route}`, {
       headers, method, body: JSON.stringify(body),
@@ -118,14 +105,12 @@ export class MSSQLConnector {
       .then(x => x.json());
   }
 
-  private mergeData = (data: any): any => {
+  mergeData = (data) => {
     if (!data) return data;
 
-    const keys: string[] = [];
+    const keys = [];
     for (let key in data) {
-      if (key.indexOf(this.prefix) > -1) {
-        keys.push(key);
-      }
+      if (key.indexOf(this.prefix) > -1) keys.push(key);
     }
 
     for (let key of keys) {
@@ -142,31 +127,31 @@ export class MSSQLConnector {
     return data;
   }
 
-  private getValues(data: any[]): any[] {
+  getValues(data) {
     return data.map(x => x.dataValues || x);
   }
 
-  private queryCount(): number {
+  queryCount() {
     this.count++;
     return this.count;
   }
 
-  private time(promise: Promise<any>): Promise<any> {
+  time(promise) {
     const prefix = "MSSQLConnector";
     const count = this.queryCount();
-    const start = new Date() as any;
+    const start = new Date();
     const label = `${prefix}-${count}`;
     if (dd) dd.increment(`${prefix}.transaction.count`);
     console.time(label); // tslint:disable-line
     return promise
       .then(x => {
-        const end = new Date() as any;
+        const end = new Date();
         if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
         console.timeEnd(label); // tslint:disable-line
         return x;
       })
       .catch(x => {
-        const end = new Date() as any;
+        const end = new Date();
         if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
         if (dd) dd.increment(`${prefix}.transaction.error`);
         console.timeEnd(label); // tslint:disable-line

@@ -12,7 +12,7 @@ export const getCardType = (card) => {
     discover: d,
   };
 
-  let definedTypeMapping = {
+  const definedTypeMapping = {
     visa: 7,
     masterCard: 8,
     // check: 9,
@@ -20,91 +20,15 @@ export const getCardType = (card) => {
     amEx: 159,
   };
 
-  for (let regex in defaultRegex) {
+  for (const regex in defaultRegex) {
     if (defaultRegex[regex].test(card)) return definedTypeMapping[regex];
   }
 
   return null;
-
 };
 
-export interface FinancialPaymentDetail {
-  AccountNumberMasked?: string;
-  BillingLocationId?: number;
-  CreditCardTypeValueId?: number;
-  CurrencyTypeValueId?: number;
-  Guid?: string;
-  Id?: number;
-  ForeignId?: number;
-  ForeignKey?: string;
-  CreatedByPersonAliasId?: number;
-  ReferenceNumber?: string;
-}
-
-export interface FinancialTransactionDetails {
-  TransactionId?: number;
-  AccountId?: number;
-  Amount?: number;
-  CreatedByPersonAliasId?: number;
-  Guid?: string;
-  Id?: string;
-  ForeignId?: number;
-  ForeignKey?: string;
-}
-
-export interface Person {
-  FirstName?: string;
-  LastName?: string;
-  Email?: string;
-  Id?: number;
-}
-
-export interface Location {
-  Street1: string;
-  Street2: string;
-  City: string;
-  State: string;
-  PostalCode: string;
-  Country: string;
-}
-
-export interface FinancialTransaction {
-  AuthorizedPersonAliasId?: number;
-  BatchId?: number;
-  FinancialGatewayId?: number;
-  FinancialPaymentDetailId?: number;
-  SourceTypeValueId?: number;
-  Summary?: string;
-  StatusMessage?: string;
-  TransactionCode: string;
-  TransactionDateTime?: string;
-  TransactionTypeValueId?: number;
-  CreatedByPersonAliasId?: number;
-  Guid?: string;
-  Id?: string;
-  ForeignId?: number;
-  ScheduledTransactionId?: number;
-  ForeignKey?: string;
-}
-
-export interface FinancialScheduledTransaction {
-  GatewayScheduleId?: string;
-}
-
-export interface Tables {
-  Transaction?: FinancialTransaction;
-  Location?: Location;
-  Person?: Person;
-  TransactionDetails?: FinancialTransactionDetails[];
-  PaymentDetail?: FinancialPaymentDetail;
-  CampusId?: number;
-  ScheduledTransaction?: FinancialScheduledTransaction;
-}
-
-import { Gateway } from "../models/Transaction";
-
-export default (response: any, gateway: Gateway, person?: number): Tables => {
-  const transaction = assign({}, response) as any;
+export default (response, gateway, person) => {
+  const transaction = assign({}, response);
   // reverse this when multiple accounts are stored in NMI correctly
   if (isArray(transaction.action)) {
     let sale = find(transaction.action, { action_type: "sale" });
@@ -118,7 +42,7 @@ export default (response: any, gateway: Gateway, person?: number): Tables => {
     return null;
   }
 
-  const Transaction: FinancialTransaction = {
+  const Transaction = {
     TransactionCode: transaction.transaction_id,
     ForeignKey: transaction.order_id,
     TransactionTypeValueId: 53,
@@ -129,10 +53,10 @@ export default (response: any, gateway: Gateway, person?: number): Tables => {
     TransactionDateTime: Moment(transaction.action.date, "YYYYMMDDHHmmss").toISOString(),
   };
 
-  const TransactionDetails: FinancialTransactionDetails[] = [];
+  const TransactionDetails = [];
   if (transaction.product) {
     if (!isArray(transaction.product)) transaction.product = [transaction.product];
-    for (let product of transaction.product) {
+    for (const product of transaction.product) {
       TransactionDetails.push({
          // XXX support multiple transactions
         // XXX this needs a change on the app side before possible
@@ -146,18 +70,18 @@ export default (response: any, gateway: Gateway, person?: number): Tables => {
       // XXX support multiple transactions
       // XXX this needs a change on the app side before possible
       Amount: Number(transaction.action.amount),
-      AccountId: Number((find(transaction.merchant_defined_field, { id: "1"}) as any)._),
+      AccountId: Number((find(transaction.merchant_defined_field, { id: "1" }))._),
       Guid: uuid.v4(),
     });
   }
 
-  const PaymentDetail: FinancialPaymentDetail = {
+  const PaymentDetail = {
     AccountNumberMasked: transaction.cc_number || transaction.check_account,
     CurrencyTypeValueId: transaction.cc_number ? 156 : 157,
     Guid: uuid.v4(),
   };
   PaymentDetail.AccountNumberMasked = PaymentDetail.AccountNumberMasked.replace(
-    new RegExp("x", "gmi"), "*"
+    new RegExp("x", "gmi"), "*",
   );
 
   if (transaction.cc_number) {
@@ -171,15 +95,14 @@ export default (response: any, gateway: Gateway, person?: number): Tables => {
     }
     try {
       CampusId = Number(
-        (find(transaction.merchant_defined_field, { id: "2"}) as any)._
+        (find(transaction.merchant_defined_field, { id: "2" }))._,
       );
     } catch (e) {
       console.warn(`Cannot find campus in NMI for ${transaction.transaction_id}`);
     }
-
   }
 
-  let Person: Person = {
+  let Person = {
     // Firstname conflicts with Nickname
     // FirstName: transaction.first_name,
     LastName: transaction.last_name,
@@ -188,7 +111,7 @@ export default (response: any, gateway: Gateway, person?: number): Tables => {
 
   if (person) Person = { Id: person };
 
-  const Location: Location = {
+  const Location = {
     Street1: transaction.address_1,
     Street2: transaction.address_2,
     City: transaction.city,
@@ -197,7 +120,7 @@ export default (response: any, gateway: Gateway, person?: number): Tables => {
     Country: transaction.country,
   };
 
-  const ScheduledTransaction: FinancialScheduledTransaction = {};
+  const ScheduledTransaction = {};
   if (transaction.original_transaction_id) {
     ScheduledTransaction.GatewayScheduleId = transaction.original_transaction_id;
   }

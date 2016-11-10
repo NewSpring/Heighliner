@@ -1,5 +1,5 @@
 
-import { Cache } from "./cache";
+
 import { InMemoryCache } from "./memory-cache";
 import {
   RedisCache,
@@ -13,11 +13,10 @@ import {
 } from "./defaults";
 
 export {
-  Cache,
   InMemoryCache,
   RedisCache,
   RedisConnect,
   defaultCache,
   resolvers,
   mutations,
-}
+};

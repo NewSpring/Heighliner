@@ -33,7 +33,7 @@ import {
   Location as LocationModel,
 } from "../../campuses/tables";
 
-export default async (transaction?: Tables): Promise<any> => {
+export default async (transaction) => {
   if (!transaction) return Promise.resolve();
   const {
     CampusId,
@@ -47,7 +47,7 @@ export default async (transaction?: Tables): Promise<any> => {
 
   const Existing = await TransactionTable.find({ where: {
     TransactionCode: Transaction.TransactionCode,
-  }});
+  } });
 
   const exists = Existing.length > 0;
   if (exists) return Promise.resolve();
@@ -66,7 +66,7 @@ export default async (transaction?: Tables): Promise<any> => {
           include: [
             {
               model: GroupMember.model,
-              where: { PersonId: { $in: [ People.map(x => x.Id) ] } },
+              where: { PersonId: { $in: [People.map(x => x.Id)] } },
             },
           ],
         },
@@ -74,7 +74,7 @@ export default async (transaction?: Tables): Promise<any> => {
     });
 
     if (FoundLocations.length) {
-      ids = flatten(FoundLocations.map(x => x.Group.GroupMembers)).map(x => (x as any).PersonId);
+      ids = flatten(FoundLocations.map(x => x.Group.GroupMembers)).map(x => x.PersonId);
     } else {
       ids = [People[0].Id];
       console.warn(`no locations found for ${People.map(x => x.FirstName)}`);
@@ -84,14 +84,14 @@ export default async (transaction?: Tables): Promise<any> => {
   }
 
   const FoundPerson = find(People, { Id: ids[0] });
-  const PrimaryAliasId = (FoundPerson as any).PersonAlias.Id;
+  const PrimaryAliasId = FoundPerson.PersonAlias.Id;
 
   // translate to child account based on campus
   if (CampusId) {
-    for (let detail of TransactionDetails) {
+    for (const detail of TransactionDetails) {
       detail.AccountId = await FinancialAccountTable.findOne({ where: {
         CampusId, ParentAccountId: detail.AccountId,
-      }})
+      } })
         .then(x => x.Id);
 
       detail.CreatedByPersonAliasId = PrimaryAliasId;
@@ -115,14 +115,14 @@ export default async (transaction?: Tables): Promise<any> => {
     if (ScheduledTransactionId) Transaction.ScheduledTransactionId = ScheduledTransactionId;
     if (!ScheduledTransactionId) {
       console.error(`
-        Scheduled Transaction is missing for person ${(FoundPerson as any).Id} with
+        Scheduled Transaction is missing for person ${FoundPerson.Id} with
         GatewayScheduleId of ${ScheduledTransaction.GatewayScheduleId}
       `);
     }
   }
   const FinancialTransactionId = await TransactionTable.post(Transaction);
 
-  for (let detail of TransactionDetails) {
+  for (const detail of TransactionDetails) {
     detail.TransactionId = FinancialTransactionId;
     TransactionDetail.post(detail);
   }

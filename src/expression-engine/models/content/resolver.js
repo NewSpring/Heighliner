@@ -10,11 +10,11 @@ export default {
 
     content(_, { channel, limit, skip, status, cache }, { models }) {
       return models.Content.find({
-          channel_name: channel,
-          offset: skip,
-          limit,
-          status,
-        }, cache );
+        channel_name: channel,
+        offset: skip,
+        limit,
+        status,
+      }, cache);
     },
 
     feed(_, { excludeChannels, limit, skip, status, cache }, { models }) {
@@ -38,7 +38,7 @@ export default {
       */
       excludeChannels = excludeChannels
         .map(x => x.toLowerCase())
-        .map(x => {
+        .map((x) => {
           if (x === "series") return "series_newspring";
           if (x === "music") return "newspring_albums";
           return x;
@@ -56,9 +56,8 @@ export default {
     },
 
     taggedContent(
-      _, { includeChannels, tagName, tags, limit, skip, cache, excludedIds }, { models }
+      _, { includeChannels, tagName, tags, limit, skip, cache, excludedIds }, { models },
     ) {
-
       if (tagName) {
         return models.Content.findByTagName({ tagName, includeChannels }, { offset: skip, limit }, cache);
       }
@@ -186,18 +185,14 @@ export default {
       return models.Content.getDate(day, month, year);
     },
     // XXX date fields per model
-    actualDate: ({ actualdate }, _, { models }) => {
-      return models.Content.getDateFromUnix(actualdate);
-    },
-    entryDate: ({ entrydate }, _, { models }) => {
-      return models.Content.getDateFromUnix(entrydate);
-    },
-    startDate: ({ startdate }, _, { models }) => {
-      return models.Content.getDateFromUnix(startdate);
-    },
-    endDate: ({ enddate }, _, { models }) => {
-      return models.Content.getDateFromUnix(enddate);
-    },
+    actualDate: ({ actualdate }, _, { models }) =>
+       models.Content.getDateFromUnix(actualdate),
+    entryDate: ({ entrydate }, _, { models }) =>
+       models.Content.getDateFromUnix(entrydate),
+    startDate: ({ startdate }, _, { models }) =>
+       models.Content.getDateFromUnix(startdate),
+    endDate: ({ enddate }, _, { models }) =>
+       models.Content.getDateFromUnix(enddate),
 
     // deprecated
     siteId: ({ site_id }) => createGlobalId(site_id, "Sites"),
@@ -217,12 +212,11 @@ export default {
       const authors = author ? author : editorial_authors;
       return authors ? authors.split(",") : null;
     },
-    children: ({ entry_id }, { channels }, { models }) => {
-      return models.Content.findByParentId(entry_id, channels);
-    },
+    children: ({ entry_id }, { channels }, { models }) =>
+       models.Content.findByParentId(entry_id, channels),
     related: ({ tags }, { includeChannels, limit, skip, cache }, { models }) => {
       tags = models.Content.splitByNewLines(tags);
-      if (!tags || !tags.length)  return null;
+      if (!tags || !tags.length) return null;
 
       return models.Content.findByTags({ tags, includeChannels }, { offset: skip, limit }, cache);
     },

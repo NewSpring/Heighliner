@@ -1,7 +1,6 @@
 
 import { connect } from "./mysql";
 
-import { ApplicationDefinition } from "../util/application";
 import { createApplication } from "../util/heighliner";
 
 import Content from "./models/content";
@@ -20,4 +19,4 @@ export default {
   mocks,
   schema,
   connect,
-} as ApplicationDefinition;
+};

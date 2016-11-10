@@ -26,14 +26,14 @@ const addResizings = (images, options = { sizes: null, ratios: [] }) => {
   const resizings = options.sizes || allResizings;
 
   if (options.ratios && options.ratios.length > 0) {
-    images = filter(images, (image) => {
-      return includes(options.ratios, image.fileLabel);
-    });
+    images = filter(images, image =>
+       includes(options.ratios, image.fileLabel),
+    );
   }
 
   images.map((image) => {
     resizings.map((resize) => {
-      const resizedImage = assign({}, image) as any;
+      const resizedImage = assign({}, image);
       resizedImage.url = generateFilename(resizedImage.url, resize);
       resizedImage.size = resize;
       result.push(resizedImage);

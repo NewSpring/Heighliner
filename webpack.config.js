@@ -14,7 +14,7 @@ module.exports = validate({
 		path: path.resolve(__dirname, "./lib"),
 		filename: "server.js"
 	},
-	recordsPath: path.resolve(__dirname, "dist/_records"),
+	recordsPath: path.resolve(__dirname, "lib/_records"),
 	plugins: [
 		new NpmInstallPlugin(),
 		new webpack.HotModuleReplacementPlugin(),

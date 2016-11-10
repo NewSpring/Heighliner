@@ -1,7 +1,5 @@
 import { merge } from "lodash";
 
-import { Tables } from "../mysql";
-
 import channels from "./../models/content/tables";
 import assets from "./../models/files/tables";
 import matrix from "./ee/matrix";
@@ -11,7 +9,7 @@ import sites from "./ee/sites";
 import snippets from "./ee/snippets";
 import navee from "./../models/navigation/tables";
 
-let tables = {
+const tables = {
   assets,
   channels,
   matrix,
@@ -20,23 +18,18 @@ let tables = {
   tags,
   navee,
   snippets,
-} as {
-  [key: string]: {
-    connect: () => Tables;
-    bind?: (Tables) => void;
-  }
 };
 
 export function createTables() {
-   let createdTables = {};
+  let createdTables = {};
 
-  for (let table in tables) {
+  for (const table in tables) {
     createdTables = merge(createdTables, tables[table].connect());
   }
 
-  for (let table in tables) {
+  for (const table in tables) {
     if (tables[table].bind) tables[table].bind(createdTables);
   }
 
-  return createdTables as Tables;
+  return createdTables;
 }

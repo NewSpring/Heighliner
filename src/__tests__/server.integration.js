@@ -23,20 +23,20 @@ beforeEach(async () => {
 });
 
 
-it("Valid queries should return success", () => {
-  return Heighliner(JSON.stringify({ query: "{ currentUser { id } }" }))
-    .then(response => {
+it("Valid queries should return success", () =>
+   Heighliner(JSON.stringify({ query: "{ currentUser { id } }" }))
+    .then((response) => {
       expect(response.success).toBeTruthy();
       expect(response.status).toEqual(200);
       expect(response.data).toBeTruthy();
-    });
-});
+    }),
+);
 
-it("Invalid queries should fail", () => {
-  return Heighliner(JSON.stringify({ query: "{ foobar { id } }" }))
-    .then(response => {
+it("Invalid queries should fail", () =>
+   Heighliner(JSON.stringify({ query: "{ foobar { id } }" }))
+    .then((response) => {
       expect(response.success).toBeFalsy;
       expect(response.status).toEqual(400);
       expect(response.errors).toBeTruthy();
-    });
-});
+    }),
+);

@@ -1,4 +1,4 @@
-import { Cache } from "./cache";
+
 import Crypto from "crypto";
 
 // XXX replace with https://github.com/h0x91b/redis-fast-driver
@@ -9,7 +9,7 @@ import { parseGlobalId } from "./../node/model";
 
 let db;
 let dd;
-export function connect(address: string, port: number = 6379, monitor: any): Promise<boolean> {
+export function connect(address, port = 6379, monitor) {
   dd = monitor && monitor.datadog;
   let hasReturned = false;
   return new Promise((cb) => {
@@ -32,12 +32,10 @@ export function connect(address: string, port: number = 6379, monitor: any): Pro
   });
 }
 
-export class RedisCache implements Cache {
-  private count: number = 0;
-  private secret: string;
-  private idLoader: any;
+export class RedisCache {
+  count = 0;
 
-  constructor(secret: string = "RedisCache") {
+  constructor(secret = "RedisCache") {
     this.secret = secret;
 
     // XXX we should move data loader to being a per request batching system
@@ -52,22 +50,22 @@ export class RedisCache implements Cache {
     }), { cache: false });
   }
 
-  private getCount() {
+  getCount() {
     this.count++;
     return this.count;
   }
 
-  private time(promise: Promise<any>, log?: () => boolean): Promise<any> {
+  time(promise, log) {
     const prefix = "RedisCache";
     const count = this.getCount();
-    const start = new Date() as any;
+    const start = new Date();
     const label = `${prefix}-${count}`;
     if (dd) dd.increment(`${prefix}.transaction.count`);
     console.time(label); // tslint:disable-line
     return promise
       .then(x => {
         if (log()) {
-          const end = new Date() as any;
+          const end = new Date();
           if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
           console.timeEnd(label); // tslint:disable-line
         } else {
@@ -76,7 +74,7 @@ export class RedisCache implements Cache {
         return x;
       })
       .catch(x => {
-        const end = new Date() as any;
+        const end = new Date();
         if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
         if (dd) dd.increment(`${prefix}.transaction.error`);
         console.timeEnd(label); // tslint:disable-line
@@ -84,11 +82,7 @@ export class RedisCache implements Cache {
       });
   }
 
-  public get(
-    id: string,
-    lookup: () => Promise<any>,
-    { ttl, cache }: { ttl: number, cache: boolean } = { cache: true, ttl: 18000 }
-  ): Promise<Object | void> {
+  get(id, lookup, { ttl, cache } = { cache: true, ttl: 18000 }) {
     let fromCache = false;
     const log = () => fromCache;
     return this.time(new Promise((done) => {
@@ -117,7 +111,7 @@ export class RedisCache implements Cache {
     }), log);
   }
 
-  public set(id: string, data: Object, ttl: number = 86400): Promise<Boolean> {
+  set(id, data, ttl = 86400) {
     return new Promise((done) => {
       // XXX this should technically never fail
       try {
@@ -137,7 +131,7 @@ export class RedisCache implements Cache {
     });
   }
 
-  public del(id: string): void {
+  del(id) {
     // try to nest information based on global id
     let { __type } = parseGlobalId(id);
     id = `${__type}:${id}`;
@@ -145,7 +139,7 @@ export class RedisCache implements Cache {
     this.idLoader.clear(id); // clear dataloader
   }
 
-  public encode(obj: Object, type?: string, user?: string): string {
+  encode(obj, type, user) {
     const cipher = Crypto.createHmac("sha256", this.secret);
     type = type ? type + ":" : "";
     user = user ? user + ":" : "";
@@ -154,7 +148,7 @@ export class RedisCache implements Cache {
     return `query:${type}${user}${str}`;
   }
 
-  public clearAll() {
+  clearAll() {
     db.flushdb();
   }
 

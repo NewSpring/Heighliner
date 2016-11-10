@@ -4,14 +4,14 @@ import { createGlobalId } from "../../../util";
 export default {
 
   Query: {
-    savedPayments: (_, { limit, cache, skip } , { models, person }) => {
+    savedPayments: (_, { limit, cache, skip }, { models, person }) => {
       if (!person) return null;
       return models.SavedPayment.findByPersonAlias(person.aliases, {
-          limit, offset: skip,
-        }, { cache }
+        limit, offset: skip,
+      }, { cache },
       );
     },
-    transactions: (_, { people, start, end, limit, cache, skip } , { models, person }) => {
+    transactions: (_, { people, start, end, limit, cache, skip }, { models, person }) => {
       if (!person) return null;
       if (person.GivingGroupId) {
         return models.Transaction.findByGivingGroup(
@@ -20,35 +20,34 @@ export default {
             include: people,
             start,
             end,
-          }, { limit, offset: skip }, { cache }
+          }, { limit, offset: skip }, { cache },
         );
       }
       return models.Transaction.findByPersonAlias(
-        person.aliases, { limit, offset: skip}, { cache }
+        person.aliases, { limit, offset: skip }, { cache },
       );
     },
-    scheduledTransactions: (_, { limit, cache, skip, isActive } , { models, person }) => {
+    scheduledTransactions: (_, { limit, cache, skip, isActive }, { models, person }) => {
       if (!person) return null;
       return models.ScheduledTransaction.findByPersonAlias(person.aliases, {
         limit, offset: skip, isActive,
       }, { cache });
     },
-    accounts: (_, { name, isActive, isPublic }, { models }) => {
-      return models.FinancialAccount.find({
-        Name: name,
-        IsActive: isActive,
-        IsPublic: isPublic,
-      });
-    },
-    accountFromCashTag: (_, { cashTag }, { models }) => {
-      return models.FinancialAccount.find({
-        IsActive: true,
-        IsPublic: true,
-      })
-        .then(x => {
+    accounts: (_, { name, isActive, isPublic }, { models }) =>
+       models.FinancialAccount.find({
+         Name: name,
+         IsActive: isActive,
+         IsPublic: isPublic,
+       }),
+    accountFromCashTag: (_, { cashTag }, { models }) =>
+       models.FinancialAccount.find({
+         IsActive: true,
+         IsPublic: true,
+       })
+        .then((x) => {
           let correctAccount = null;
-          for (let account of x) {
-            let cashTagName = account.PublicName
+          for (const account of x) {
+            const cashTagName = account.PublicName
               .replace(/\s+/g, "")
               .toLowerCase();
             if (cashTagName === cashTag.replace("$", "")) {
@@ -57,8 +56,8 @@ export default {
             }
           }
           return correctAccount;
-        });
-    },
+        })
+    ,
   },
 
   Mutation: {
@@ -67,7 +66,7 @@ export default {
   },
 
   TransactionDetail: {
-    id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     amount: ({ Amount }) => Amount,
     account: ({ AccountId, Account }, _, { models }) => {
       if (Account) return Account;
@@ -77,7 +76,7 @@ export default {
   },
 
   ScheduledTransaction: {
-    id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     entityId: ({ Id }) => Id,
     reminderDate: ({ ReminderDate }) => ReminderDate,
     start: ({ StartDate }) => StartDate,
@@ -101,13 +100,13 @@ export default {
 
       return models.Transaction.getPaymentDetailsById(FinancialPaymentDetailId);
     },
-    transactions: ({ Id }, _, { models }) => {
-      return models.ScheduledTransaction.getTransactionsById(Id);
-    },
+    transactions: ({ Id }, _, { models }) =>
+       models.ScheduledTransaction.getTransactionsById(Id)
+    ,
   },
 
   Transaction: {
-    id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     entityId: ({ Id }) => Id,
     summary: ({ Summary }) => Summary,
     date: ({ TransactionDateTime, CreatedDate, ModifiedDate }) => (TransactionDateTime || ModifiedDate || CreatedDate),
@@ -121,13 +120,13 @@ export default {
 
       return models.Transaction.getPaymentDetailsById(FinancialPaymentDetailId);
     },
-    person: ({ AuthorizedPersonAliasId }, _, { models }) => {
-      return models.Person.getFromAliasId(AuthorizedPersonAliasId);
-    },
+    person: ({ AuthorizedPersonAliasId }, _, { models }) =>
+       models.Person.getFromAliasId(AuthorizedPersonAliasId)
+    ,
   },
 
   FinancialAccount: {
-    id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     entityId: ({ Id }) => Id,
     name: ({ PublicName }) => PublicName,
     order: ({ Order }) => Order,
@@ -136,15 +135,15 @@ export default {
     image: ({ Url, ImageBinaryFieldId }, _, { models }) => { // tslint:disable-line
       if (Url) return Url;
 
-      return;
+
       // XXX
       // return models.BinaryFiles.getFromFieldId(ImageBinaryFieldId);
     },
     end: ({ EndDate }) => EndDate,
     start: ({ StartDate }) => StartDate,
     images: ({ Id }, _, { models }) => { // tslint:disable-line
-      let field_id = "field_id_1513"; // rock account id
-      let channel_id = "69"; // give items
+      const field_id = "field_id_1513"; // rock account id
+      const channel_id = "69"; // give items
       return models.Content.getEntryFromFieldValue(Id, field_id, channel_id)
         .then(({ image, exp_channel, entry_id }) => {
           if (!image) return Promise.resolve([]);
@@ -154,13 +153,13 @@ export default {
             position = Number(exp_channel.exp_channel_fields.image.split("_").pop());
           }
 
-        return models.File.getFilesFromContent(entry_id, image, position);
-      });
+          return models.File.getFilesFromContent(entry_id, image, position);
+        });
     },
   },
 
   PaymentDetail: {
-    id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     accountNumber: ({ AccountNumberMasked }) => AccountNumberMasked,
     paymentType: ({
       CurrencyTypeValueId,
@@ -168,7 +167,6 @@ export default {
       CreditCardTypeValueId,
       CreditCardTypeValue,
     }, _, { models }) => {
-
       if (CreditCardTypeValueId && CreditCardTypeValue) return CreditCardTypeValue.Value;
       if (CreditCardTypeValueId) {
         return models.Transaction.getDefinedValueId(CreditCardTypeValueId)
@@ -182,7 +180,7 @@ export default {
   },
 
   SavedPayment: {
-    id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     entityId: ({ Id }) => Id,
     name: ({ Name }) => Name,
     guid: ({ Guid }) => Guid,

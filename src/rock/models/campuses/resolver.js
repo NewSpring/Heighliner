@@ -8,7 +8,7 @@ export default {
   },
 
   Campus: {
-    id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     entityId: ({ Id }) => Id,
     name: ({ Name }) => Name,
     shortCode: ({ ShortCode }) => ShortCode,
@@ -17,7 +17,7 @@ export default {
     services: ({ ServiceTimes }) => {
       if (!ServiceTimes) return [];
 
-      let days = {};
+      const days = {};
 
       ServiceTimes.split("|")
         .filter(x => !!x)
@@ -28,10 +28,9 @@ export default {
           if (!days[day]) days[day] = [];
 
           if (days[day].indexOf(time) === -1) days[day].push(time);
-
         });
 
-      return Object.keys(days).map(x => {
+      return Object.keys(days).map((x) => {
         let str = `${x} at `;
         if (days[x].length === 1) {
           str += `& ${days[x]}`;
@@ -54,7 +53,7 @@ export default {
   },
 
   Location: {
-    id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     name: ({ Name }) => Name,
     street1: ({ Street1 }) => Street1,
     street2: ({ Street2 }) => Street2,
@@ -69,7 +68,6 @@ export default {
         const { points } = geography(GeoPoint);
         return points[0].x;
       } catch (e) { return null; }
-
     },
     longitude: ({ GeoPoint, longitude }) => {
       if (longitude) return longitude;

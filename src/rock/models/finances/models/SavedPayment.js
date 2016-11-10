@@ -10,14 +10,14 @@ import {
 import { Rock } from "../../system";
 
 export default class SavedPayment extends Rock {
-  public __type: string = "SavedPayment";
+  __type = "SavedPayment";
 
-  public async getFromId(id: string, globalId?: string): Promise<any> { // XXX correctly type
+  async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(id, this.__type);
     return this.cache.get(globalId, () => SavedPaymentTable.find({ where: { Id: id }}));
   }
 
-  public async removeFromNodeId(id: string): Promise<any> {
+  async removeFromNodeId(id) {
     const existing = await this.getFromId(id);
     if (!existing || !existing.Id) return Promise.resolve({ error: "No saved account found" });
 
@@ -31,10 +31,7 @@ export default class SavedPayment extends Rock {
       });
   }
 
-  public async findByPersonAlias(
-    aliases: string | number,
-    { limit, offset }, { cache }
-  ): Promise<any> {
+  async findByPersonAlias(aliases, { limit, offset }, { cache }) {
     const query = { aliases, limit, offset };
     return await this.cache.get(this.cache.encode(query), () => SavedPaymentTable.find({
         where: { PersonAliasId: { $in: aliases }},

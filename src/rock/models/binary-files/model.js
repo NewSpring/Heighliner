@@ -1,5 +1,5 @@
 // import { merge } from "lodash";
-import { Cache, defaultCache } from "../../../util/cache";
+import { defaultCache } from "../../../util/cache";
 import { createGlobalId } from "../../../util";
 
 import {
@@ -10,15 +10,14 @@ import {
 import { Rock } from "../system/model";
 
 export class BinaryFile extends Rock {
-  public cache: Cache;
-  public __type: string = "BinaryFile";
+   __type = "BinaryFile";
 
   constructor({ cache } = { cache: defaultCache }) {
-    super();
+    super({ cache });
     this.cache = cache;
   }
 
-  private processFile(file: any): any {
+  processFile(file) {
     // is relative path to Rock
     if (file.Path[0] === "~") {
       file.Path = file.Path.substr(2);
@@ -33,14 +32,14 @@ export class BinaryFile extends Rock {
     return file;
   }
 
-  public async getFromId(id: string | number, globalId: string): Promise<any> { // XXX type
+  async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
     return this.cache.get(globalId, () => BinaryFileTable.findOne({ where: { Id: id }})
       .then(this.processFile)
     );
   }
 
-  public async getFromGuid(Guid: string): Promise<any> {
+  async getFromGuid(Guid) {
     return this.cache.get(`${Guid}:BinaryFileGuid`, () => BinaryFileTable.findOne({
       where: { Guid },
     })
@@ -48,8 +47,8 @@ export class BinaryFile extends Rock {
     );
   }
 
-  // public async getFromPerson
-  public async find(query): Promise<any> {
+  // async getFromPerson
+  async find(query) {
     return this.cache.get(this.cache.encode(query), () => BinaryFileTable.find({
       where: query,
       attributes: ["Id"],

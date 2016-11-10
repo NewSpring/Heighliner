@@ -1,36 +1,22 @@
-import { Cache } from "./cache";
 import Crypto from "crypto";
 
-export class InMemoryCache extends Cache {
-  private cache;
-  private secret: string;
+export class InMemoryCache {
 
   constructor(cache = {}, secret = "InMemoryCache") {
-    super(cache, secret);
-
     // XXX this is really only used for testing purposes
     this.cache = cache;
     this.secret = secret;
   }
 
-  public get(
-    id: string,
-    lookup: () => Promise<Object | void>,
-    { ttl, cache }: { ttl?: number, cache?: boolean } = { ttl: 86400, cache: true }
-  ): Promise<Object | void> {
+  get(id, lookup, { ttl, cache } = { ttl: 86400, cache: true }) {
     let fromCache = false;
     return new Promise((done) => {
-      let data = this.cache[id];
-
-      if ((!data || !cache) && lookup) {
-        return lookup().then(done);
-      }
+      const data = this.cache[id];
+      if ((!data || !cache) && lookup) return lookup().then(done);
 
       fromCache = true;
       return done(data);
-
     }).then((data) => {
-
       if (data && !fromCache) {
         // async the save
         process.nextTick(() => {
@@ -42,7 +28,7 @@ export class InMemoryCache extends Cache {
     });
   }
 
-  public set(id, data, ttl = 86400): Promise<boolean> {
+  set(id, data, ttl = 86400) {
     return new Promise((done) => {
       // XXX this should technically never fail
       try {
@@ -61,11 +47,11 @@ export class InMemoryCache extends Cache {
     });
   }
 
-  public del(id: string): void {
+  del(id) {
     delete this.cache[id];
   }
 
-  public encode(obj: Object, prefix: string = ""): string {
+  encode(obj, prefix = "") {
     const cipher = Crypto.createHmac("sha256", this.secret);
     const str = `${prefix}${JSON.stringify(obj)}`;
     return cipher.update(str).digest("hex");

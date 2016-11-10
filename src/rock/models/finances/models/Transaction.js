@@ -1,3 +1,4 @@
+
 import Moment from "moment";
 import { assign, isArray } from "lodash";
 import QueryString from "querystring";
@@ -31,32 +32,21 @@ import {
 
 import { Rock } from "../../system";
 
-export interface Gateway {
-  AdminUsername?: string;
-  AdminPassword?: string;
-  APIUrl?: string;
-  QueryUrl?: string;
-  SecurityKey?: string;
-  Id: number;
-}
-
 export default class Transaction extends Rock {
-  public __type: string = "Transaction";
+  __type = "Transaction";
 
-  private gateway: any;
-
-  public async getFromId(id: string, globalId: string): Promise<any> { // XXX correctly type
+  async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(id, this.__type);
     return this.cache.get(globalId, () => TransactionTable.findOne({ where: { Id: id }}));
   }
 
-  public async getDetailsById(id: string | number): Promise<any> {
+  async getDetailsById(id) {
     // XXX this isn't an accurate global cache
     const globalId = createGlobalId(`${id}`, "FinancialTransactionDetail");
     return this.cache.get(globalId, () => TransactionDetail.find({ where: { TransactionId: id } }));
   }
 
-  public async getPaymentDetailsById(id: string | number): Promise<any> {
+  async getPaymentDetailsById(id) {
     if (!id) return Promise.resolve(null);
 
     const globalId = createGlobalId(`${id}`, "PaymentDetail");
@@ -66,10 +56,7 @@ export default class Transaction extends Rock {
     );
   }
 
-  public async findByPersonAlias(
-    aliases: string | number,
-    { limit, offset }, { cache }
-  ): Promise<any> {
+  async findByPersonAlias(aliases, { limit, offset }, { cache }) {
     const query = { aliases, limit, offset };
     return this.cache.get(this.cache.encode(query), () => TransactionTable.find({
         where: { AuthorizedPersonAliasId: { $in: aliases }},
@@ -85,9 +72,7 @@ export default class Transaction extends Rock {
 
   }
 
-  public async findByGivingGroup(
-    {id, include, start, end } , { limit, offset }, { cache }
-  ): Promise<any> {
+  async findByGivingGroup({ id, include, start, end } , { limit, offset }, { cache }) {
     let query = { id, include, start, end };
 
     let TransactionDateTime;
@@ -124,12 +109,12 @@ export default class Transaction extends Rock {
         ],
       })
     , { cache })
-      .then((x: any[]) => x.slice(offset, limit + offset))
+      .then((x) => x.slice(offset, limit + offset))
       .then(this.getFromIds.bind(this))
       ;
   }
 
-  private async loadGatewayDetails(gateway?): Promise<Gateway> {
+  async loadGatewayDetails(gateway) {
     if (this.gateway) return this.gateway;
     if (!gateway) throw new Error("No gateway specified");
 
@@ -168,9 +153,9 @@ export default class Transaction extends Rock {
     return this.gateway;
   }
 
-  public async syncTransactions(args): Promise<any> {
+  async syncTransactions(args) {
 
-    const gateway = await this.loadGatewayDetails(args.gateway) as any;
+    const gateway = await this.loadGatewayDetails(args.gateway);
     delete args.gateway;
     const PersonId = args.personId;
     if (args.personId) delete args.personId;
@@ -189,7 +174,7 @@ export default class Transaction extends Rock {
           if (!err) a(result);
         });
       }))
-      .then(x => x && (x as any).nm_response && (x as any).nm_response.transaction)
+      .then(x => x && (x).nm_response && (x).nm_response.transaction)
       .then(x => isArray(x) ? x : [x])
       .then(x => x && x.map(y => translateFromNMI(y, gateway, PersonId)))
       ;

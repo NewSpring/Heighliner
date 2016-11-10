@@ -1,30 +1,24 @@
 
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 // import DataLoader from "dataloader";
-
-// Use native promises
-mongoose.Promise = global.Promise;
 
 let db;
 let dd;
 export function connect(address, monitor) {
   dd = monitor && monitor.datadog;
   return new Promise((cb) => {
-
     db = mongoose.connect(address, {
       server: { reconnectTries: Number.MAX_VALUE },
     }, (err) => {
       if (err) { cb(false); return; }
 
       cb(true);
-      return;
     });
-
   });
 }
 
 mongoose.connection.on("error",
-  console.error.bind(console, "MONGO connection error:")
+  console.error.bind(console, "MONGO connection error:"),
 );
 
 export class MongoConnector {
@@ -39,7 +33,7 @@ export class MongoConnector {
     return this.time(this.model.findOne.apply(this.model, args));
   }
 
-  time(promise){
+  time(promise) {
     const prefix = "MongoConnector";
     const count = this.getCount();
     const start = new Date();
@@ -47,13 +41,13 @@ export class MongoConnector {
     if (dd) dd.increment(`${prefix}.transaction.count`);
     console.time(label);
     return promise
-      .then(x => {
+      .then((x) => {
         const end = new Date();
         if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
         console.timeEnd(label);
         return x;
       })
-      .catch(x => {
+      .catch((x) => {
         const end = new Date();
         if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
         if (dd) dd.increment(`${prefix}.transaction.error`);
@@ -62,7 +56,7 @@ export class MongoConnector {
       });
   }
 
-  getCount(): number {
+  getCount() {
     this.count++;
     return this.count;
   }

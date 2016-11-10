@@ -10,14 +10,14 @@ import {
 import { Rock } from "../../system";
 
 export default class ScheduledTransaction extends Rock {
-  public __type: string = "ScheduledTransaction";
+  __type = "ScheduledTransaction";
 
-  public async getFromId(id: string, globalId: string): Promise<any> { // XXX correctly type
+  async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
     return this.cache.get(globalId, () => ScheduledTransactionTable.findOne({ where: { Id: id }}));
   }
 
-  public async getTransactionsById(id: string | number): Promise<any> {
+  async getTransactionsById(id) {
     if (!id) return Promise.resolve(null);
     const globalId = createGlobalId(`${id}`, "ScheduledTransactionTransactions");
     return this.cache.get(globalId, () => TransactionTable.find({
@@ -27,7 +27,7 @@ export default class ScheduledTransaction extends Rock {
     );
   }
 
-  public async getDetailsByScheduleId(id: string | number): Promise<any> {
+  async getDetailsByScheduleId(id) {
     if (!id) return Promise.resolve(null);
     const globalId = createGlobalId(`${id}`, "ScheduledTransactionDetails");
     // XXX why isn't this caching?
@@ -37,10 +37,7 @@ export default class ScheduledTransaction extends Rock {
     );
   }
 
-  public async findByPersonAlias(
-    aliases: string | number,
-    { limit, offset, isActive }, { cache }
-  ): Promise<any> {
+  async findByPersonAlias(aliases, { limit, offset, isActive }, { cache }) {
     const query = { aliases, limit, offset, isActive };
     return await this.cache.get(this.cache.encode(query), () => ScheduledTransactionTable.find({
         where: { AuthorizedPersonAliasId: { $in: aliases }, IsActive: isActive },

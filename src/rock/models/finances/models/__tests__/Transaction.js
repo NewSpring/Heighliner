@@ -38,18 +38,18 @@ jest.mock("isomorphic-fetch", () => jest.fn(() => Promise.resolve()));
 
 describe("loadGatewayDetails", () => {
   it("is a callable method", () => {
-    const Local = new Transaction() as any;
+    const Local = new Transaction();
     expect(Local.loadGatewayDetails).toBeTruthy();
   });
 
   it("returns early there is a cached gateway", async () => {
-    const Local = new Transaction() as any;
+    const Local = new Transaction();
     Local.gateway = true;
     expect(await Local.loadGatewayDetails()).toBe(true);
   });
 
   it("throws if no gateway is specified in the call", async () => {
-    const Local = new Transaction() as any;
+    const Local = new Transaction();
     try {
       await Local.loadGatewayDetails();
       throw new Error();
@@ -59,7 +59,7 @@ describe("loadGatewayDetails", () => {
   });
 
   it("it finds all known gateways", () => {
-    const Local = new Transaction() as any;
+    const Local = new Transaction();
     FinancialGateway.find.mockReturnValueOnce([{ Name: "NMI" }]);
     return Local.loadGatewayDetails("NMI Gateway")
       .then(() => {
@@ -72,7 +72,7 @@ describe("loadGatewayDetails", () => {
   });
 
   it("find the attributes for the found gatweway", () => {
-    const Local = new Transaction() as any;
+    const Local = new Transaction();
     FinancialGateway.find.mockReturnValueOnce([{
       Name: "NMI Gateway",
       Id: 1,
@@ -102,10 +102,9 @@ describe("loadGatewayDetails", () => {
 });
 
 describe("syncTransactions", () => {
-
   it("correctly makes a call to NMI", () => {
     const Local = new Transaction();
-    (Local as any).gateway = {
+    (Local).gateway = {
       AdminUsername: "1",
       AdminPassword: "2",
       APIUrl: "3",
@@ -126,9 +125,9 @@ describe("syncTransactions", () => {
       .then((response) => {
         expect(response).toEqual([]);
         expect(fetch).toBeCalledWith(
-          "3?username=1&password=2&transaction_code=4", { method: "POST" }
+          "3?username=1&password=2&transaction_code=4", { method: "POST" },
         );
-        expect((parseString as any).mock.calls[0][0]).toEqual("<xml>");
+        expect((parseString).mock.calls[0][0]).toEqual("<xml>");
       });
   });
 });

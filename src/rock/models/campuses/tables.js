@@ -7,9 +7,9 @@ import {
   GEOGRAPHY,
 } from "sequelize";
 
-import { MSSQLConnector, Tables } from "../../mssql";
+import { MSSQLConnector } from "../../mssql";
 
-const campusSchema: Object = {
+const campusSchema = {
   Id: { type: INTEGER, primaryKey: true },
   Name: { type: STRING },
   Guid: { type: STRING },
@@ -22,7 +22,7 @@ const campusSchema: Object = {
   IsActive: { type: BOOLEAN },
 };
 
-const locationSchema: Object = {
+const locationSchema = {
   Id: { type: INTEGER, primaryKey: true },
   Name: { type: STRING },
   IsActive: { type: BOOLEAN },
@@ -47,7 +47,7 @@ export {
   locationSchema,
 };
 
-export function connect(): Tables {
+export function connect() {
   Campus = new MSSQLConnector("Campus", campusSchema);
   Location = new MSSQLConnector("Location", locationSchema);
 
@@ -55,16 +55,14 @@ export function connect(): Tables {
     Campus,
     Location,
   };
-};
+}
 
 export function bind({
   Campus,
   Location,
-}: Tables): void {
-
+}) {
   Campus.model.belongsTo(Location.model, { foreignKey: "LocationId", targetKey: "Id" });
-
-};
+}
 
 export default {
   connect,

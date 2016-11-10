@@ -6,14 +6,14 @@ import {
 
 import { MySQLConnector, Tables } from "../../mysql";
 
-const matrixSchema: Object = {
+const matrixSchema = {
   row_id: { type: INTEGER, primaryKey: true },
   site_id: { type: INTEGER },
   entry_id: { type: INTEGER },
   field_id: { type: INTEGER },
 };
 
-const matrixColSchema: Object = {
+const matrixColSchema = {
   col_id: { type: INTEGER, primaryKey: true },
   site_id: { type: INTEGER },
   field_id: { type: INTEGER },
@@ -29,7 +29,7 @@ export {
   matrixColSchema,
 };
 
-export function connect(): Tables {
+export function connect() {
   Matrix = new MySQLConnector("exp_matrix_data", matrixSchema);
   MatrixCol = new MySQLConnector("exp_matrix_cols", matrixColSchema);
 
@@ -37,15 +37,14 @@ export function connect(): Tables {
     Matrix,
     MatrixCol,
   };
-};
+}
 
 export function bind({
   ChannelData,
   Matrix,
   MatrixCol,
   AssetsSelections,
-}: Tables): void {
-
+}) {
   // Matrix.model.belongsTo(ChannelData.model, { foreignKey: "entry_id" });
   // Matrix.model.belongsTo(AssetsSelections.model, { foreignKey: "row_id" });
 
@@ -62,8 +61,7 @@ export function bind({
 
   AssetsSelections.model.belongsTo(Matrix.model, { foreignKey: "row_id" });
   AssetsSelections.model.belongsTo(MatrixCol.model, { foreignKey: "col_id" });
-
-};
+}
 
 export default {
   connect,

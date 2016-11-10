@@ -11,5 +11,5 @@ export default [
   ): GroupSearch`,
 
   // XXX should this take a group type id?
-  `groupAttributes: [DefinedValue]`,
+  "groupAttributes: [DefinedValue]",
 ];

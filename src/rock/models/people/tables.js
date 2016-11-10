@@ -8,7 +8,7 @@ import {
 
 import { MSSQLConnector, Tables } from "../../mssql";
 
-const personSchema: Object = {
+const personSchema = {
   Id: { type: INTEGER, primaryKey: true },
   BirthDate: { type: INTEGER },
   BirthDay: { type: INTEGER },
@@ -29,13 +29,13 @@ const personSchema: Object = {
   PhotoId: { type: INTEGER },
 };
 
-const aliasSchema: Object = {
+const aliasSchema = {
   Id: { type: INTEGER, primaryKey: true },
   PersonId: { type: INTEGER },
 };
 
 // XXX move to its own model if/when needed
-const phoneNumberSchema: Object = {
+const phoneNumberSchema = {
   Id: { type: INTEGER, primaryKey: true },
   CountryCode: { type: STRING },
   Description: { type: STRING },
@@ -62,7 +62,7 @@ export {
   phoneNumberSchema,
 };
 
-export function connect(): Tables {
+export function connect() {
   Person = new MSSQLConnector("Person", personSchema);
   PersonAlias = new MSSQLConnector("PersonAlias", aliasSchema);
   PhoneNumber = new MSSQLConnector("PhoneNumber", phoneNumberSchema);
@@ -72,15 +72,14 @@ export function connect(): Tables {
     PersonAlias,
     PhoneNumber,
   };
-};
+}
 
 export function bind({
   Person,
   PersonAlias,
   PhoneNumber,
   Group,
-}: Tables): void {
-
+}) {
   PersonAlias.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
   Person.model.hasOne(PersonAlias.model, { foreignKey: "PersonId" });
 
@@ -92,8 +91,7 @@ export function bind({
     foreignKey: "PersonId",
     otherKey: "GroupId",
   });
-
-};
+}
 
 export default {
   connect,

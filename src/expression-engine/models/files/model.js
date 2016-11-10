@@ -1,6 +1,6 @@
 import { merge } from "lodash";
 
-import { Cache, defaultCache } from "../../../util/cache";
+import { defaultCache } from "../../../util/cache";
 
 import {
   ChannelData,
@@ -26,15 +26,14 @@ import {
 import { EE } from "../ee";
 
 export class File extends EE {
-  public cache: Cache;
-  public __type: string = "File";
+  __type = "File";
 
   constructor({ cache } = { cache: defaultCache }) {
     super();
     this.cache = cache;
   }
 
-  public async getFromId(file_id: string, guid: string): Promise<any> { // replace with FileType
+  async getFromId(file_id, guid) {
 
     return await this.cache.get(guid, () => AssetsSelections.findOne({
       where: { file_id: Number(file_id) },
@@ -64,7 +63,7 @@ export class File extends EE {
   }
 
   // XXX type this
-  private generateFileName(fileAssets: any): any {
+  generateFileName(fileAssets) {
 
     const { file_name, exp_assets_source, exp_assets_folder } = fileAssets;
     const { full_path } = exp_assets_folder;
@@ -75,13 +74,13 @@ export class File extends EE {
       settings.subfolder = settings.subfolder + "/";
     }
     const s3 = settings.url_prefix + settings.subfolder + full_path + file_name;
-    let cloudfront: string | boolean = false;
-    let url: string | boolean = false;
+    let cloudfront = false;
+    let url = false;
     if (settings.bucket === "ns.images" || settings.bucket === "images.newspring.cc") {
-      cloudfront = "//dg0ddngxdz549.cloudfront.net/" + settings.subfolder + full_path + file_name as string;
+      cloudfront = "//dg0ddngxdz549.cloudfront.net/" + settings.subfolder + full_path + file_name;
     }
     if (settings.bucket === "ns.images" || settings.bucket === "images.newspring.cc") {
-      url = "//drhztd8q3iayu.cloudfront.net/" + settings.subfolder + full_path + file_name as string;
+      url = "//drhztd8q3iayu.cloudfront.net/" + settings.subfolder + full_path + file_name;
     }
 
     return {
@@ -93,21 +92,17 @@ export class File extends EE {
     };
   }
 
-  private fuzzyMatchKey(obj: { [key: string]: any }, key: string): any {
+  fuzzyMatchKey(obj, key) {
     for (let k in obj) {
-      if (k.indexOf(key) > -1) {
-        return obj[k];
-      }
+      if (k.indexOf(key) > -1) return obj[k];
     }
   }
 
-  private getDuration(file: any): string {
+  getDuration(file) {
     return file.exp_matrix_datum && this.fuzzyMatchKey(file.exp_matrix_datum, "duration");
   }
 
-  public async getFilesFromContent(
-    entry_id: number, name: string = "Hero Image", field_id: number, duration: string = null
-  ): Promise<any> { // replace with FileType
+  async getFilesFromContent(entry_id, name = "Hero Image", field_id, duration = null) {
     if (!entry_id || !field_id) return [];
 
     // XXX make this more dynamic
@@ -120,13 +115,13 @@ export class File extends EE {
           { model: AssetsFolders.model, attributes: ["full_path"] },
         ],
       },
-    ] as any[]; // XXX typescript weirdness
+    ];
 
     if (name.indexOf(".") === -1) {
       const columns = await this.cache.get(`matrix:${field_id}`, () => MatrixCol.find({
         where: { field_id },
         attributes: ["col_id", "col_name", "col_label"],
-      })) as any;
+      }));
 
       let columnIds = columns.map(x => [`col_id_${x.col_id}`, x.col_name]);
       // uses matrix

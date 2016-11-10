@@ -7,9 +7,9 @@ import {
   UUID,
 } from "sequelize";
 
-import { MSSQLConnector, Tables } from "../../mssql";
+import { MSSQLConnector } from "../../mssql";
 
-const definedTypeSchema: Object = {
+const definedTypeSchema = {
   Id: { type: INTEGER, primaryKey: true },
   IsSystem: { type: BOOLEAN },
   FieldTypeId: { type: INTEGER },
@@ -20,7 +20,7 @@ const definedTypeSchema: Object = {
   CategoryId: { type: INTEGER },
 };
 
-const definedValueSchema: Object = {
+const definedValueSchema = {
   Id: { type: INTEGER, primaryKey: true },
   Guid: { type: UUID },
   IsSystem: { type: BOOLEAN },
@@ -30,7 +30,7 @@ const definedValueSchema: Object = {
   Description: { type: INTEGER },
 };
 
-const fieldTypeSchema: Object = {
+const fieldTypeSchema = {
   Id: { type: INTEGER, primaryKey: true },
   IsSystem: { type: BOOLEAN },
   Name: { type: INTEGER },
@@ -39,7 +39,7 @@ const fieldTypeSchema: Object = {
   Class: { type: STRING },
 };
 
-const attributeSchema: Object = {
+const attributeSchema = {
   Id: { type: INTEGER, primaryKey: true },
   DefaultValue: { type: STRING },
   Description: { type: STRING },
@@ -51,21 +51,21 @@ const attributeSchema: Object = {
   Name: { type: STRING },
 };
 
-const attributeValueSchema: Object = {
+const attributeValueSchema = {
   Id: { type: INTEGER, primaryKey: true },
   AttributeId: { type: INTEGER },
   EntityId: { type: INTEGER },
   Value: { type: STRING },
 };
 
-const attributeQualifierSchema: Object = {
+const attributeQualifierSchema = {
   Id: { type: INTEGER, primaryKey: true },
   AttributeId: { type: INTEGER },
   Value: { type: STRING },
   Key: { type: STRING },
 };
 
-const entityTypeSchema: Object = {
+const entityTypeSchema = {
   Id: { type: INTEGER, primaryKey: true },
   AssemblyName: { type: STRING },
   FriendlyName: { type: STRING },
@@ -106,13 +106,13 @@ export {
 
 };
 
-export function connect(): Tables {
+export function connect() {
   DefinedType = new MSSQLConnector("DefinedType", definedTypeSchema);
   DefinedValue = new MSSQLConnector("DefinedValue", definedValueSchema);
   FieldType = new MSSQLConnector("FieldType", fieldTypeSchema);
   Attribute = new MSSQLConnector("Attribute", attributeSchema);
   AttributeQualifier = new MSSQLConnector(
-    "AttributeQualifier", attributeQualifierSchema
+    "AttributeQualifier", attributeQualifierSchema,
   );
   AttributeValue = new MSSQLConnector("AttributeValue", attributeValueSchema);
   EntityType = new MSSQLConnector("EntityType", entityTypeSchema);
@@ -126,7 +126,7 @@ export function connect(): Tables {
     AttributeQualifier,
     EntityType,
   };
-};
+}
 
 export function bind({
   DefinedType,
@@ -136,8 +136,7 @@ export function bind({
   AttributeQualifier,
   AttributeValue,
   EntityType,
-}: Tables): void {
-
+}) {
   DefinedType.model.belongsTo(FieldType.model, { foreignKey: "FieldTypeId", targetKey: "Id" });
   FieldType.model.hasMany(DefinedType.model, { foreignKey: "Id" });
 
@@ -158,8 +157,7 @@ export function bind({
 
   AttributeValue.model.belongsTo(DefinedValue.model, { foreignKey: "Value", targetKey: "Guid" });
   DefinedValue.model.hasMany(AttributeValue.model, { foreignKey: "Guid" });
-
-};
+}
 
 export default {
   connect,

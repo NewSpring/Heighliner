@@ -1,17 +1,15 @@
 
-declare function require(name: string);
 import Crypto from "crypto";
 const secret = process.env.SECRET || "LZEVhlgzFZKClu1r";
 
 export default class Node {
-  private models: Object[];
 
   constructor(context) {
     this.models = context.models;
   }
 
   // XXX what do we want to do about errors here?
-  public async get(encodedId): Promise<Object | void> {
+  async get(encodedId) {
     const { __type, id } = parseGlobalId(encodedId);
 
     if (!this.models || !this.models[__type] || !this.models[__type].getFromId) {
@@ -19,18 +17,17 @@ export default class Node {
     }
 
     try {
-      const data = await(this.models[__type].getFromId(id, encodedId));
+      const data = await (this.models[__type].getFromId(id, encodedId));
       data.__type = __type;
       return data;
     } catch (e) {
       return Promise.reject(e.message);
     }
-
   }
 
 }
 
-export function createGlobalId(id: string, type: string): string {
+export function createGlobalId(id, type) {
   const cipher = Crypto.createCipher("aes192", secret);
 
   let encrypted = cipher.update(`${type}:${id}`, "utf8", "hex");
@@ -39,13 +36,12 @@ export function createGlobalId(id: string, type: string): string {
   return encodeURI(encrypted);
 }
 
-export function parseGlobalId(encodedId: string): { id: string, __type?: string } {
-
+export function parseGlobalId(encodedId) {
   const decipher = Crypto.createDecipher("aes192", secret);
 
   let decrypted = decipher.update(decodeURI(encodedId), "hex", "utf8");
   decrypted += decipher.final("utf8");
 
-  const [ __type, id ] = decrypted.toString().split(":");
+  const [__type, id] = decrypted.toString().split(":");
   return { __type, id };
 }

@@ -2,21 +2,17 @@
 import fetch from "isomorphic-fetch";
 // import DataLoader from "dataloader";
 
-export function connect(address: string): Promise<boolean> {
-  return new Promise((cb) => {
-    cb(true);
-  });
-}
+export const connect = (address) => new Promise((cb) => { cb(true) });
 
 export class GoogleConnector {
-  private count: number = 0;
+  count = 0;
 
-  public get(endpoint: string): Promise<any> {
+  get(endpoint) {
     const label = `GoogleConnector${this.getCount()}`;
     const headers = {
       "user-agent": "Heighliner",
       "Content-Type": "application/json",
-    } as { [index: string]: string };
+    };
 
     const options = { method: "GET", headers };
     console.time(label); // tslint:disable-line
@@ -28,7 +24,7 @@ export class GoogleConnector {
 
 
 
-  private getCount(): number {
+  getCount() {
     this.count++;
     return this.count;
   }

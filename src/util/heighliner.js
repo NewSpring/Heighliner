@@ -1,3 +1,4 @@
+
 import { merge } from "lodash";
 
 import {
@@ -11,12 +12,7 @@ import {
   mutations as cacheMutation,
 } from "./cache/defaults";
 
-import {
-  ApplicationDefinition,
-  SchemaShorthand,
-} from "./application";
-
-export function createQueries(queries: string[]): string[] {
+export function createQueries(queries) {
   return [`
     type Query {
       ${queries.join("\n")}
@@ -25,7 +21,7 @@ export function createQueries(queries: string[]): string[] {
   `];
 }
 
-export function createMutations(mutations: string[] = []): string[] {
+export function createMutations(mutations = []) {
   return [`
     type Mutation {
       ${mutations.join("\n")}
@@ -34,44 +30,40 @@ export function createMutations(mutations: string[] = []): string[] {
   `];
 }
 
-export function createApplication(models: ApplicationDefinition[]): ApplicationDefinition {
+export function createApplication(models) {
   const joined = {
     schema: [],
     models: {},
     resolvers: {},
-    mocks: {},
     queries: [],
     mutations: [],
-  } as ApplicationDefinition;
+  };
 
-  for (let model of models) {
-    joined.schema = [...joined.schema, ...model.schema];
+  for (const model of models) {
+    joined.schema = [...joined.schema, ...[model.schema]];
     joined.models = merge(joined.models, model.models);
     joined.resolvers = merge(joined.resolvers, model.resolvers);
 
     if (model.queries) joined.queries = [...joined.queries, ...model.queries];
     if (model.mutations) joined.mutations = [...joined.mutations, ...model.mutations];
-    if (model.mocks) joined.mocks = merge(joined.mocks, model.mocks);
   }
 
   return joined;
 }
 
-export function loadApplications(applications: { [key: string]: ApplicationDefinition }): ApplicationDefinition {
-
+export function loadApplications(applications) {
   const joined = {
-    schema: [...nodeSchema],
+    schema: [...[nodeSchema]],
     models: {},
     resolvers: merge({}, nodeResolver, cacheResolver),
     mocks: merge({}, nodeMocks),
-  } as ApplicationDefinition;
+  };
 
-  Object.keys(applications).forEach((name: string) => {
-    let app: ApplicationDefinition = applications[name];
+  Object.keys(applications).forEach((name) => {
+    const app = applications[name];
     joined.schema = [...joined.schema, ...app.schema];
     joined.models = merge(joined.models, app.models);
     joined.resolvers = merge(joined.resolvers, app.resolvers);
-    if (app.mocks) joined.mocks = merge(joined.mocks, app.mocks);
   });
 
   // dynmically create the root query mock
@@ -85,8 +77,7 @@ export function loadApplications(applications: { [key: string]: ApplicationDefin
   return joined;
 }
 
-export function createSchema({ queries, schema, mutations }: SchemaShorthand): string[] {
-
+export function createSchema({ queries, schema, mutations }) {
   // build base level schema
   const root = [`
     schema {
@@ -105,5 +96,4 @@ export function createSchema({ queries, schema, mutations }: SchemaShorthand): s
     ...mutation,
     ...schema,
   ];
-
 }

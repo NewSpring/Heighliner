@@ -5,9 +5,9 @@ import {
   STRING,
 } from "sequelize";
 
-import { MySQLConnector, Tables } from "../../mysql";
+import { MySQLConnector } from "../../mysql";
 
-const naveeSchema: Object = {
+const naveeSchema = {
   navee_id: { type: INTEGER, primaryKey: true },
   navigation_id: { type: INTEGER },
   site_id: { type: INTEGER },
@@ -21,7 +21,7 @@ const naveeSchema: Object = {
   type: { type: STRING },
 };
 
-const naveeNavSchema: Object = {
+const naveeNavSchema = {
   navigation_id: { type: INTEGER, primaryKey: true },
   site_id: { type: INTEGER },
   nav_title: { type: INTEGER },
@@ -38,7 +38,7 @@ export {
   naveeNavSchema,
 };
 
-export function connect(): Tables {
+export function connect() {
   Navee = new MySQLConnector("exp_navee", naveeSchema);
   NaveeNav = new MySQLConnector("exp_navee_navs", naveeNavSchema);
 
@@ -46,14 +46,13 @@ export function connect(): Tables {
     Navee,
     NaveeNav,
   };
-};
+}
 
 export function bind({
   Sites,
   Navee,
   NaveeNav,
-}: Tables): void {
-
+}) {
   NaveeNav.model.hasOne(Navee.model, { foreignKey: "navigation_id" });
   Navee.model.belongsTo(NaveeNav.model, { foreignKey: "navigation_id" });
 
@@ -62,7 +61,7 @@ export function bind({
 
   Navee.model.belongsTo(Sites.model, { foreignKey: "site_id", targetKey: "site_id" });
   Sites.model.hasOne(Navee.model, { foreignKey: "site_id" });
-};
+}
 
 export default {
   connect,

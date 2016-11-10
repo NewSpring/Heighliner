@@ -4,8 +4,8 @@ import { createGlobalId } from "../../../util";
 export default {
 
   Query: {
-    definedValues: (_, { limit, id, skip, all } , { models }) => {
-      let query = { offset: skip } as any;
+    definedValues: (_, { limit, id, skip, all }, { models }) => {
+      const query = { offset: skip };
       if (!all) query.limit = limit;
 
       return models.Rock.getDefinedValuesByTypeId(id, query);
@@ -13,7 +13,7 @@ export default {
   },
 
   DefinedValue: {
-    id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     _id: ({ Id }) => Id,
     value: ({ Value }) => Value,
     description: ({ Description }) => Description,

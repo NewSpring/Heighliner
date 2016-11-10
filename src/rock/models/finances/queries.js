@@ -1,6 +1,6 @@
 
 export default [
-  `savedPayments(limit: Int = 20, skip: Int = 0, cache: Boolean = true): [SavedPayment]`,
+  "savedPayments(limit: Int = 20, skip: Int = 0, cache: Boolean = true): [SavedPayment]",
 
   `transactions(
     limit: Int = 20,
@@ -19,5 +19,5 @@ export default [
     name: String, isActive: Boolean = true, isPublic: Boolean = true
   ): [FinancialAccount]`,
 
-  `accountFromCashTag(cashTag: String!): FinancialAccount`,
+  "accountFromCashTag(cashTag: String!): FinancialAccount",
 ];

@@ -6,14 +6,14 @@ import { parseGlobalId } from "../../node/model";
 
 it("the cache mutation should delete the id from the cache", () => {
   const id = casual.word,
-        data = { test: casual.word },
-        cacheData = { [id]: data },
-        cache = new InMemoryCache(cacheData);
+    data = { test: casual.word },
+    cacheData = { [id]: data },
+    cache = new InMemoryCache(cacheData);
 
   const { Mutation } = resolvers;
 
   function get(_id) {
-    return Promise.resolve({ [_id]: { test: casual.word }});
+    return Promise.resolve({ [_id]: { test: casual.word } });
   }
   const context = { cache, models: { Node: { get } } };
 
@@ -25,10 +25,10 @@ it("the cache mutation should delete the id from the cache", () => {
 
 it("the cache mutation should refetch and save the data in the cache", () => {
   const id = casual.word,
-        data = { test: casual.word },
-        data2 = { test: casual.word },
-        cacheData = { [id]: data },
-        cache = new InMemoryCache(cacheData);
+    data = { test: casual.word },
+    data2 = { test: casual.word },
+    cacheData = { [id]: data },
+    cache = new InMemoryCache(cacheData);
 
   const { Mutation } = resolvers;
 
@@ -53,11 +53,11 @@ it("the cache mutation should refetch and save the data in the cache", () => {
 
 it("the cache mutation should allow using a native id and type together", () => {
   const id = casual.word,
-        type = casual.word,
-        data = { test: casual.word },
-        data2 = { test: casual.word },
-        cacheData = { [id]: data },
-        cache = new InMemoryCache(cacheData);
+    type = casual.word,
+    data = { test: casual.word },
+    data2 = { test: casual.word },
+    cacheData = { [id]: data },
+    cache = new InMemoryCache(cacheData);
 
   const { Mutation } = resolvers;
 
@@ -84,17 +84,17 @@ it("the cache mutation should allow using a native id and type together", () => 
 });
 
 // XXX how to test this
-it("defaultCache:get should simply run the lookup method", () => {
-  return defaultCache.get(null, () => Promise.resolve());
-});
+it("defaultCache:get should simply run the lookup method", () =>
+   defaultCache.get(null, () => Promise.resolve()),
+);
 
-it("defaultCache:set should return true and do nothing", () => {
-  return defaultCache.set("test", {})
+it("defaultCache:set should return true and do nothing", () =>
+   defaultCache.set("test", {})
     .then((success) => {
       if (!success) throw new Error();
       expect(true).toBe(true);
-    });
-});
+    }),
+);
 
 it("defaultCache:del exist as a function but do nothing", () => {
   expect(() => defaultCache.del("string")).not.toThrow();

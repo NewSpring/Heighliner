@@ -5,9 +5,9 @@ import {
   STRING,
 } from "sequelize";
 
-import { MySQLConnector, Tables } from "../../mysql";
+import { MySQLConnector } from "../../mysql";
 
-const snippetsSchema: Object = {
+const snippetsSchema = {
   snippet_id: { type: INTEGER, primaryKey: true },
   site_id: { type: STRING },
   snippet_name: { type: STRING },
@@ -20,18 +20,18 @@ export {
   snippetsSchema,
 };
 
-export function connect(): Tables {
+export function connect() {
   Snippets = new MySQLConnector("exp_snippets", snippetsSchema);
 
   return {
     Snippets,
   };
-};
+}
 
 // export function bind({
 //   ChannelData,
 //   Sites,
-// }: Tables): void {
+// }): void {
 
 
 // };

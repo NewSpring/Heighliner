@@ -6,9 +6,9 @@ import {
   BOOLEAN,
 } from "sequelize";
 
-import { MSSQLConnector, Tables } from "../../mssql";
+import { MSSQLConnector } from "../../mssql";
 
-const binaryFileSchema: Object = {
+const binaryFileSchema = {
   Id: { type: INTEGER, primaryKey: true },
   BinaryFileTypeId: { type: INTEGER },
   Description: { type: STRING },
@@ -21,7 +21,7 @@ const binaryFileSchema: Object = {
   StorageEntityTypeId: { type: INTEGER },
 };
 
-const binaryFileTypeSchema: Object = {
+const binaryFileTypeSchema = {
   Id: { type: INTEGER, primaryKey: true },
   AllowCaching: { type: BOOLEAN },
   Description: { type: STRING },
@@ -41,7 +41,7 @@ export {
   binaryFileTypeSchema,
 };
 
-export function connect(): Tables {
+export function connect() {
   BinaryFile = new MSSQLConnector("BinaryFile", binaryFileSchema);
   BinaryFileType = new MSSQLConnector("BinaryFileType", binaryFileTypeSchema);
 
@@ -49,17 +49,15 @@ export function connect(): Tables {
     BinaryFile,
     BinaryFileType,
   };
-};
+}
 
 export function bind({
   BinaryFile,
-}: Tables): void {
-
+}) {
   BinaryFile.model.belongsTo(BinaryFileType.model, {
     foreignKey: "BinaryFileTypeId", targetKey: "Id",
   });
-
-};
+}
 
 export default {
   connect,

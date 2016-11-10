@@ -36,18 +36,19 @@ function getPhotoFromType(type) {
   return photos[type.toLowerCase()] || null;
 }
 
-function resolveAttribute(id: number, resolver?): (d: any, a: any, c: any) => Promise<any> {
+function resolveAttribute(id, resolver) {
   if (!resolver) resolver = x => x;
   // XXX type this better
   return (data, args, context) => {
     const { AttributeValues } = data;
     const { models } = context;
     const chunk = AttributeValues.filter(x => x.Attribute && x.Attribute.Id === id)[0];
-    if (!chunk) return Promise.resolve(null)
-      .then((x) => resolver(x, data, args, context));
+    if (!chunk) {
+      return Promise.resolve(null)
+      .then(x => resolver(x, data, args, context)); }
 
     return models.Rock.getAttributeValuesFromId(chunk.Id, { models })
-      .then((x) => resolver(x, data, args, context));
+      .then(x => resolver(x, data, args, context));
   };
 }
 
@@ -55,11 +56,10 @@ export default {
 
   Query: {
     groups: async (
-      _, { campuses = [], offset, limit, attributes = [], query, clientIp }, { models, ip, person }
+      _, { campuses = [], offset, limit, attributes = [], query, clientIp }, { models, ip, person },
     ) => {
-
       if (campuses.length) {
-        campuses = campuses.map(x => ({ Name: { $like: x }}));
+        campuses = campuses.map(x => ({ Name: { $like: x } }));
         campuses = await models.Campus.find({ $or: campuses });
         campuses = campuses.map(x => x.Id);
       }
@@ -69,30 +69,30 @@ export default {
       if (clientIp && ip.match("204.116.47")) {
         // newspring ip match
         const campusIpMap = {
-          "10.7": { latitude: 34.933124, longitude: -81.994480 },
-          "10.6": { latitude: 32.915373, longitude: -80.100173 },
-          "10.5": { latitude: 34.030287, longitude: -81.098588 },
-          "10.4": { latitude: 35.065126, longitude: -82.007086 },
-          "10.31": { latitude: 33.934511, longitude: -80.363124 },
+          10.7: { latitude: 34.933124, longitude: -81.994480 },
+          10.6: { latitude: 32.915373, longitude: -80.100173 },
+          10.5: { latitude: 34.030287, longitude: -81.098588 },
+          10.4: { latitude: 35.065126, longitude: -82.007086 },
+          10.31: { latitude: 33.934511, longitude: -80.363124 },
           "10.30": { latitude: 34.951512, longitude: -81.087497 },
-          "10.3": { latitude: 34.800165, longitude: -82.488371 },
-          "10.29": { latitude: 32.271941, longitude: -80.943806 },
-          "10.28": { latitude: 33.572048, longitude: -81.774888 },
-          "10.27": { latitude: 34.111041, longitude: -80.882638 },
-          "10.25": { latitude: 34.685131, longitude: -82.895683 },
-          "10.24": { latitude: 33.715901, longitude: -78.925047 },
-          "10.23": { latitude: 34.212175, longitude: -79.797055 },
-          "10.22": { latitude: 34.852042, longitude: -82.354571 },
+          10.3: { latitude: 34.800165, longitude: -82.488371 },
+          10.29: { latitude: 32.271941, longitude: -80.943806 },
+          10.28: { latitude: 33.572048, longitude: -81.774888 },
+          10.27: { latitude: 34.111041, longitude: -80.882638 },
+          10.25: { latitude: 34.685131, longitude: -82.895683 },
+          10.24: { latitude: 33.715901, longitude: -78.925047 },
+          10.23: { latitude: 34.212175, longitude: -79.797055 },
+          10.22: { latitude: 34.852042, longitude: -82.354571 },
           "10.20": { latitude: 34.800165, longitude: -82.488371 },
-          "10.16": { latitude: 34.778159, longitude: -82.487048 }, // NH
-          "10.14": { latitude: 34.194508, longitude: -82.193192 },
-          "10.13": { latitude: 33.979398, longitude: -81.307923 },
-          "10.1": { latitude: 34.595434, longitude: -82.622224 },
+          10.16: { latitude: 34.778159, longitude: -82.487048 }, // NH
+          10.14: { latitude: 34.194508, longitude: -82.193192 },
+          10.13: { latitude: 33.979398, longitude: -81.307923 },
+          10.1: { latitude: 34.595434, longitude: -82.622224 },
           "10.0": { latitude: 34.595434, longitude: -82.622224 },
         };
         // get first two values
         const matcher = clientIp.split(".").slice(0, 2).join(".").trim();
-        for (let cpId in campusIpMap) {
+        for (const cpId in campusIpMap) {
           if (matcher === cpId) {
             geo = campusIpMap[cpId];
             break;
@@ -128,7 +128,7 @@ export default {
 
       // parse query for zipcodes
       if (query && query.match(zipRegex)) {
-        let zip = query.match(zipRegex)[0];
+        const zip = query.match(zipRegex)[0];
 
         // remove zipcode data
         query = query.replace(zipRegex, "").trim();
@@ -141,14 +141,14 @@ export default {
             if (err) return resolve({});
             resolve(result);
           });
-        }) as any;
+        });
 
         geo.latitude = googleGeoData.lat;
         geo.longitude = googleGeoData.lng;
       }
 
       return models.Group.findByAttributesAndQuery(
-        { query, attributes, campuses }, { limit, offset, geo }
+        { query, attributes, campuses }, { limit, offset, geo },
       );
     },
     groupAttributes: (_, $, { models }) => {
@@ -161,7 +161,7 @@ export default {
       const queries = ids.map(id => models.Rock.getAttributesFromId(id, { models }));
       return Promise.all(queries).then(flatten)
         .then(x => x.filter(y => y.Value !== "Interests"))
-        .then(x => x.map(y => {
+        .then(x => x.map((y) => {
           y.Value = y.Value === "Childcare" ? "kid friendly" : y.Value;
           return y;
         }));
@@ -169,18 +169,18 @@ export default {
   },
 
   GroupMember: {
-    id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     role: ({ GroupTypeRole }) => GroupTypeRole && GroupTypeRole.Name, // XXX should we expand this?
     person: ({ PersonId }, _, { models }) => models.Person.getFromId(PersonId),
   },
 
   GroupLocation: {
-    id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
-    location: ({ LocationId }, _, { models }) => {
+    id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    location: ({ LocationId }, _, { models }) =>
       // XXX abstract to location model
       // models.Location.getFromId(LocationId);
-      return models.Group.getLocationFromLocationId(LocationId);
-    },
+       models.Group.getLocationFromLocationId(LocationId)
+    ,
   },
 
   GroupSchedule: {
@@ -198,7 +198,7 @@ export default {
       }
     },
     end: ({ EffectiveEndDate }) => EffectiveEndDate,
-    id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     name: ({ Name }) => Name,
     start: ({ EffectiveStartDate }) => EffectiveStartDate,
     time: ({ WeeklyTimeOfDay }) => WeeklyTimeOfDay,
@@ -206,7 +206,7 @@ export default {
 
   Group: {
     active: ({ IsActive }) => IsActive,
-    ageRange: resolveAttribute(691, (x: number[] = []) => {
+    ageRange: resolveAttribute(691, (x = []) => {
       // don't consider [0,0] an age range
       const hasAgeRange = x.length && x.reduce((start, finish) => (start && finish));
       if (!hasAgeRange) return null;
@@ -226,10 +226,9 @@ export default {
 
       return models.Group.getDistanceFromLatLng(Id, geo)
         .then(x => x && x * 0.000621371);
-
     }, // convert to miles
     entityId: ({ Id }) => Id,
-    id: ({ Id }: any, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     kidFriendly: resolveAttribute(5406),
     locations: ({ Id }, _, { models }) => models.Group.getLocationsById(Id),
     members: ({ Id }, _, { models }) => models.Group.getMembersById(Id),
@@ -239,21 +238,21 @@ export default {
 
       // check for tags first
       const firstTag = await resolveAttribute(16815, x => x && x.length && x[0].Value)(
-        { AttributeValues }, _, { models }
+        { AttributeValues }, _, { models },
       );
 
       if (firstTag) return getPhotoFromTag(firstTag);
 
       // photo from demographic
       const demographic = await resolveAttribute(1409, x => x && x.length && x[0].Value)(
-        { AttributeValues }, _, { models }
+        { AttributeValues }, _, { models },
       );
 
       if (demographic) return getPhotoFromDemo(demographic);
 
       // type goes last since its required
       const type = await resolveAttribute(16814, x => x && x.length && x[0].Value)(
-        { AttributeValues }, _, { models }
+        { AttributeValues }, _, { models },
       );
 
       if (type) return getPhotoFromType(type);
@@ -261,7 +260,7 @@ export default {
       return null;
     }),
     schedule: ({ ScheduleId }, _, { models }) => models.Group.getScheduleFromScheduleId(ScheduleId),
-    tags: resolveAttribute(16815, x => {
+    tags: resolveAttribute(16815, (x) => {
       if (x && x.length) return x;
       return [];
     }),

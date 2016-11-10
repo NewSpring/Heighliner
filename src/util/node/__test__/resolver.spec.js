@@ -13,7 +13,6 @@ it("Node should only have a __resolveType on the resolver", () => {
   expect(Node.__resolveType).toBeTruthy();
   expect(Object.keys(Node).length).toEqual(1);
   expect(Object.keys(Node)[0]).toEqual("__resolveType");
-
 });
 
 it("Node should return the type from the data passed to it", () => {
@@ -45,5 +44,4 @@ it("Query node should return the data via the `Node` class", () => {
 
   const data = Query.node(null, { id: fakeId }, { models });
   expect(data).toEqual(sampleData);
-
 });

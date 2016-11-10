@@ -5,9 +5,9 @@ import {
   STRING,
 } from "sequelize";
 
-import { MySQLConnector, Tables } from "../../mysql";
+import { MySQLConnector } from "../../mysql";
 
-const assetsFilesSchema: Object = {
+const assetsFilesSchema = {
   file_id: { type: INTEGER, primaryKey: true },
   folder_id: { type: INTEGER },
   source_type: { type: STRING },
@@ -15,7 +15,7 @@ const assetsFilesSchema: Object = {
   file_name: { type: STRING },
 };
 
-const assetsSelectionSchema: Object = {
+const assetsSelectionSchema = {
   file_id: { type: INTEGER },
   entry_id: { type: INTEGER },
   field_id: { type: INTEGER },
@@ -24,14 +24,14 @@ const assetsSelectionSchema: Object = {
   var_id: { type: INTEGER },
 };
 
-const assetsFoldersSchema: Object = {
+const assetsFoldersSchema = {
   folder_id: { type: INTEGER, primaryKey: true },
   source_id: { type: INTEGER },
   parent_id: { type: INTEGER },
   full_path: { type: STRING },
 };
 
-const assetsSourcesSchema: Object = {
+const assetsSourcesSchema = {
   source_id: { type: INTEGER, primaryKey: true },
   settings: { type: STRING },
 };
@@ -54,10 +54,10 @@ export {
   assetsSourcesSchema,
 };
 
-export function connect(): Tables {
+export function connect() {
   Assets = new MySQLConnector("exp_assets_files", assetsFilesSchema);
-  AssetsSelections =  new MySQLConnector("exp_assets_selections", assetsSelectionSchema);
-  AssetsFolders =  new MySQLConnector("exp_assets_folders", assetsFoldersSchema);
+  AssetsSelections = new MySQLConnector("exp_assets_selections", assetsSelectionSchema);
+  AssetsFolders = new MySQLConnector("exp_assets_folders", assetsFoldersSchema);
   AssetsSources = new MySQLConnector("exp_assets_sources", assetsSourcesSchema);
 
   // no primary key
@@ -69,7 +69,7 @@ export function connect(): Tables {
     AssetsFolders,
     AssetsSources,
   };
-};
+}
 
 export function bind({
   ChannelData,
@@ -77,8 +77,7 @@ export function bind({
   AssetsSelections,
   AssetsFolders,
   AssetsSources,
-}: Tables): void {
-
+}) {
   Assets.model.hasMany(AssetsSelections.model, { foreignKey: "file_id" });
   AssetsSelections.model.belongsTo(Assets.model, { foreignKey: "file_id" });
 
@@ -90,8 +89,7 @@ export function bind({
 
   // get access to assets from channel data
   ChannelData.model.hasOne(AssetsSelections.model, { foreignKey: "entry_id" });
-
-};
+}
 
 export default {
   connect,

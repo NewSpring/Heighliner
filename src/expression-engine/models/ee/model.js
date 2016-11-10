@@ -2,19 +2,19 @@
 import { Heighliner } from "../../../util";
 
 export class EE extends Heighliner {
-  public __type: string = "RockSystem";
-  public id: string = "entry_id";
+  __type = "RockSystem";
+  id = "entry_id";
 
-  public getDate(day: string, month: string, year: string): string {
+  getDate(day, month, year) {
     if (!day || !month || !year) throw new Error("Missing information from `getDate`");
     return `${new Date(Number(year), Number(month) - 1 , Number(day))}`;
   }
 
-  public getDateFromUnix(timestamp: number): string | void {
+  getDateFromUnix(timestamp) {
     return timestamp ? `${new Date(timestamp * 1000)}` : null;
   }
 
-  public contentImages(markup: string): any[] {
+  contentImages(markup) {
     if (!markup) return [];
 
     let images = markup.match(/src=".*\.(jpg|jpeg|png)"/gmi);
@@ -25,13 +25,13 @@ export class EE extends Heighliner {
       .map(image => ({ fileLabel: "inline", s3: image.slice(5, -1), url: image.slice(5, -1) }));
   }
 
-  public splitByNewLines(tags: string): string[] {
+  splitByNewLines(tags) {
     if (!tags) return [];
 
     return tags.replace("\\n", ",").split("\n");
   }
 
-  public getSeries(series: string): RegExpExecArray | boolean {
+  getSeries(series) {
     if (!series) return false;
 
     // format: [dddd] [some-thing] Series Title
@@ -42,14 +42,14 @@ export class EE extends Heighliner {
     return seriesRegex.exec(series);
   }
 
-  public cleanMarkup(markup: string): string | boolean {
+  cleanMarkup(markup) {
     if (!markup) return false;
 
     let parsed = markup.match(/src="{assets_\d*.*}"/gmi);
     if (!parsed) return markup;
 
     // remove {assets_IDSTRING:} and make protocal relative
-    markup = markup.replace(/{assets_\d*.*?}/gmi, (link: string): string => {
+    markup = markup.replace(/{assets_\d*.*?}/gmi, (link) => {
       link = link.trim().substring(0, link.length - 1);
       link = link.replace(/{assets_\d*:/gmi, "");
       return link;

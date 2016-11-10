@@ -31,14 +31,14 @@ it("`Campus` queries data from either Id or Name.", () => {
   const sampleName = "Greenville";
   const models = {
     Campus: {
-      find({ Id , Name }) {
+      find({ Id, Name }) {
         expect(Id).toEqual(sampleId);
         expect(Name).toEqual(sampleName);
       },
     },
   };
 
-  Query.campuses(null, { id: sampleId,  name: sampleName}, { models });
+  Query.campuses(null, { id: sampleId, name: sampleName }, { models });
 });
 
 it("`Campus` should have an Id.", () => {
@@ -106,7 +106,7 @@ it("`Campus` should return valid location data.", () => {
 
   Campus.location({ LocationId: sampleId }, null, { models });
 
-  const noLocationId = Campus.location({LocationId: null}, null, { models });
+  const noLocationId = Campus.location({ LocationId: null }, null, { models });
   expect(null).toEqual(noLocationId);
 });
 
@@ -148,7 +148,7 @@ it("`Location` should return address zip code.", () => {
 it("`Location` should return latitude.", () => {
   const { Location } = Resolver;
 
-  const noGeoPoint = Location.latitude({ GeoPoint: null, latitude: null});
+  const noGeoPoint = Location.latitude({ GeoPoint: null, latitude: null });
   expect(null).toEqual(noGeoPoint);
 
   const Latitude = Location.latitude({ GeoPoint: null, latitude: sampleData.location.Latitude });
@@ -158,7 +158,7 @@ it("`Location` should return latitude.", () => {
 it("`Location` should return longitude.", () => {
   const { Location } = Resolver;
 
-  const noGeoPoint = Location.longitude({ GeoPoint: null, longitude: null});
+  const noGeoPoint = Location.longitude({ GeoPoint: null, longitude: null });
   expect(null).toEqual(noGeoPoint);
 
   const Longitude = Location.longitude({

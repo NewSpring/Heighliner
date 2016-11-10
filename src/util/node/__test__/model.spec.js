@@ -44,7 +44,6 @@ it("Node class should parse an encoded id to get the type to resolve", async () 
 
   const node = new Node(context);
   node.get(globalId);
-
 });
 
 it("Node class should return data from the models `getFromId` method", async () => {
@@ -64,10 +63,9 @@ it("Node class should return data from the models `getFromId` method", async () 
   };
 
   const node = new Node(context);
-  const result = await node.get(globalId) as any;
+  const result = await node.get(globalId);
 
   expect(result.test).toEqual(data.test);
-
 });
 
 it("Node class should attach the __type to the resulting data", async () => {
@@ -87,8 +85,7 @@ it("Node class should attach the __type to the resulting data", async () => {
   };
 
   const node = new Node(context);
-  const result = await node.get(globalId) as any;
+  const result = await node.get(globalId);
 
   expect(result.__type).toEqual(__type);
-
 });

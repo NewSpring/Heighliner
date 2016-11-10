@@ -8,7 +8,7 @@ export default {
   },
 
   Navigation: {
-    id: ({ id }: any, _, $, { parentType }) => createGlobalId(id, parentType.name),
+    id: ({ id }, _, $, { parentType }) => createGlobalId(id, parentType.name),
     text: ({ text }) => text,
     link: ({ link }) => link,
     absoluteLink: ({ link, url }) => `${url}${link.substring(1, link.length)}`,

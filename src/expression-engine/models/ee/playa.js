@@ -7,7 +7,7 @@ import {
 
 import { MySQLConnector, Tables } from "../../mysql";
 
-const playaSchema: Object = {
+const playaSchema = {
   rel_id: { type: INTEGER, primaryKey: true },
   parent_entry_id: { type: INTEGER },
   parent_field_id: { type: INTEGER },
@@ -24,24 +24,19 @@ export {
   playaSchema,
 };
 
-export function connect(): Tables {
+export function connect() {
   Playa = new MySQLConnector("exp_playa_relationships", playaSchema);
 
   return {
     Playa,
   };
-};
+}
 
-export function bind({
-  ChannelData,
-  Playa,
-}: Tables): void {
-
+export function bind({ ChannelData, Playa }) {
   // get access to matrix from channel data
   ChannelData.model.hasMany(Playa.model, { foreignKey: "entry_id" });
   Playa.model.belongsTo(ChannelData.model, { foreignKey: "entry_id" });
-
-};
+}
 
 export default {
   connect,

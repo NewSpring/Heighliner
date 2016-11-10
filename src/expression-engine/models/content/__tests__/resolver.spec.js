@@ -490,7 +490,7 @@ it("`ContentData` should return color and primary if color", () => {
     [{
       value: mockData.color,
       description: "primary",
-    }]
+    }],
   );
 });
 
@@ -507,7 +507,7 @@ it("`ContentData` should prioritize fgcolor over bgcolor", () => {
     [{
       value: mockData.fgcolor,
       description: "primary",
-    }]
+    }],
   );
 });
 
@@ -524,7 +524,7 @@ it("`ContentData` should return bgcolor and primary if no color", () => {
     [{
       value: mockData.bgcolor,
       description: "primary",
-    }]
+    }],
   );
 });
 
@@ -561,7 +561,7 @@ it("`ContentData` fetches audio files if audio", async () => {
         expect(entry_id).toEqual(mockData.entry_id);
         expect(audio).toEqual(mockData.audio);
         expect(audioPosition).toEqual(
-          Number(mockData.exp_channel.exp_channel_fields.audio.split("_").pop())
+          Number(mockData.exp_channel.exp_channel_fields.audio.split("_").pop()),
         );
         expect(duration).toEqual(mockData.audio_duration);
       },
@@ -590,7 +590,7 @@ it("`ContentData` fetches tracks files if tracks", async () => {
         expect(entry_id).toEqual(mockData.entry_id);
         expect(tracks).toEqual(mockData.tracks);
         expect(trackPosition).toEqual(
-          Number(mockData.exp_channel.exp_channel_fields.tracks.split("_").pop())
+          Number(mockData.exp_channel.exp_channel_fields.tracks.split("_").pop()),
         );
       },
     },
@@ -769,13 +769,13 @@ it("`ContentData` returns 5 resized images if image", async () => {
   };
   const models = {
     File: {
-      getFilesFromContent: (entry_id, thing, position) => {
-        return Promise.resolve([
-          {
-            url: "url.jpg",
-          },
-        ]);
-      },
+      getFilesFromContent: (entry_id, thing, position) =>
+         Promise.resolve([
+           {
+             url: "url.jpg",
+           },
+         ])
+      ,
     },
   };
 
@@ -802,13 +802,13 @@ it("`ContentData` returns 10 resized images if image and blurred image", async (
   };
   const models = {
     File: {
-      getFilesFromContent: (entry_id, thing, position) => {
-        return Promise.resolve([
-          {
-            url: "url.jpg",
-          },
-        ]);
-      },
+      getFilesFromContent: (entry_id, thing, position) =>
+         Promise.resolve([
+           {
+             url: "url.jpg",
+           },
+         ])
+      ,
     },
   };
 
@@ -834,13 +834,13 @@ it("`ContentData` returns only image size specified", async () => {
   };
   const models = {
     File: {
-      getFilesFromContent: (entry_id, thing, position) => {
-        return Promise.resolve([
-          {
-            url: "url.jpg",
-          },
-        ]);
-      },
+      getFilesFromContent: (entry_id, thing, position) =>
+         Promise.resolve([
+           {
+             url: "url.jpg",
+           },
+         ])
+      ,
     },
   };
 
@@ -868,18 +868,18 @@ it("`ContentData` returns only ratio specified", async () => {
   };
   const models = {
     File: {
-      getFilesFromContent: (entry_id, thing, position) => {
-        return Promise.resolve([
-          {
-            url: "url.jpg",
-            fileLabel: "1:2",
-          },
-          {
-            url: "url.jpg",
-            fileLabel: "2:1",
-          },
-        ]);
-      },
+      getFilesFromContent: (entry_id, thing, position) =>
+         Promise.resolve([
+           {
+             url: "url.jpg",
+             fileLabel: "1:2",
+           },
+           {
+             url: "url.jpg",
+             fileLabel: "2:1",
+           },
+         ])
+      ,
     },
   };
 
@@ -1036,9 +1036,9 @@ it("`ContentMeta` should null if no body, legacy_body, or summary", async () => 
   };
   const models = {
     Content: {
-      cleanMarkup: (markup) => {
-        return null;
-      },
+      cleanMarkup: markup =>
+         null
+      ,
     },
   };
 
@@ -1322,9 +1322,9 @@ it("`Content` related should return null if tags falsy", () => {
   };
   const models = {
     Content: {
-      splitByNewLines: () => {
-        return null;
-      },
+      splitByNewLines: () =>
+         null
+      ,
     },
   };
 
@@ -1345,9 +1345,9 @@ it("`Content` related should return null if tags is empty array", () => {
   };
   const models = {
     Content: {
-      splitByNewLines: () => {
-        return [];
-      },
+      splitByNewLines: () =>
+         []
+      ,
     },
   };
 
@@ -1369,9 +1369,8 @@ it("`Content` related should call findByTags if tags", () => {
   };
   const models = {
     Content: {
-      splitByNewLines: () => {
-        return splitTags;
-      },
+      splitByNewLines: () =>
+         splitTags,
       findByTags: (inputs, options, cache) => {
         expect(inputs.tags).toEqual(splitTags);
         expect(inputs.includeChannels).toEqual(mockInput.includeChannels);

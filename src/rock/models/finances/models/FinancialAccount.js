@@ -8,9 +8,9 @@ import {
 import { Rock } from "../../system";
 
 export default class FinancialAccount extends Rock {
-  public __type: string = "FinancialAccount";
+  __type = "FinancialAccount";
 
-  public async getFromId(id: string, globalId: string): Promise<any> { // XXX correctly type
+  async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(id, this.__type);
     return this.cache.get(
       globalId,
@@ -24,7 +24,7 @@ export default class FinancialAccount extends Rock {
     );
   }
 
-  public async find(where: any): Promise<any> {
+  async find(where) {
 
     for (let key in where) {
       if (isUndefined(where[key])) delete where[key];

@@ -1,5 +1,5 @@
 import { merge } from "lodash";
-import { Cache, defaultCache } from "../../../util/cache";
+import { defaultCache } from "../../../util/cache";
 import { createGlobalId } from "../../../util";
 
 import {
@@ -10,29 +10,28 @@ import {
 import { Rock } from "../system";
 
 export class Campus extends Rock {
-  public cache: Cache;
-  public __type: string = "Campus";
+  __type = "Campus";
 
   constructor({ cache } = { cache: defaultCache }) {
     super();
     this.cache = cache;
   }
 
-  public async getFromId(id: string | number, globalId: string): Promise<any> { // XXX type
+  async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
     return this.cache.get(globalId, () => CampusTable.findOne({ where: { Id: id }}));
   }
 
-  public async findByLocationId(id: string | number, globalId: string): Promise<any> {
+  async findByLocationId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(`${id}`, "Location");
     return this.cache.get(globalId, () => LocationTable.findOne({ where: { Id: id }}));
   }
 
-  // public async findByPersonId(id: string | number): Promise<any> {
+  // async findByPersonId(id) {
   //   return
   // }
 
-  public async find(query): Promise<any> {
+  async find(query) {
     query = merge({ IsActive: true }, query);
     return this.cache.get(this.cache.encode(query), () => CampusTable.find({
         where: query,
@@ -40,7 +39,7 @@ export class Campus extends Rock {
       })
     )
       .then(this.getFromIds.bind(this))
-      .then((x: any[]) => x.filter(y => y.Name !== "Central"))
+      .then((x) => x.filter(y => y.Name !== "Central"))
       ;
 
   }

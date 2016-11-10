@@ -1,6 +1,5 @@
 
 import { pick, sortBy, flatten } from "lodash";
-import { Cache } from "../../../util/cache";
 import { createGlobalId, Heighliner } from "../../../util";
 
 import {
@@ -15,66 +14,6 @@ import {
 
 import FieldTypeResolvers from "./fieldTypeResolvers";
 
-export interface FieldType {
-  Id: number;
-  IsSystem: boolean;
-  Name: string;
-  Description: string;
-  Assembly: string;
-  Class: string;
-}
-
-export interface DefinedType {
-  Id: number;
-  IsSystem: boolean;
-  FieldTypeId: number;
-  Order: number;
-  Name: string;
-  Description: string;
-  HelpText: string;
-  CategoryId: number;
-  FieldType: FieldType;
-}
-
-export interface DefinedValue {
-  Id: number;
-  IsSystem?: boolean;
-  DefinedTypeId?: number;
-  Order?: number;
-  Value: string;
-  Description: string;
-}
-
-export interface DefinedValueSearch extends DefinedValue {
-  DefinedType: DefinedType;
-}
-
-export interface Attribute {
-  Id: number;
-  DefaultValue: string;
-  Description?: string;
-  EntityTypeId?: number;
-  FieldTypeId: number;
-  Key?: string;
-  Name?: string;
-}
-
-export interface AttributeSearch extends Attribute {
-  FieldType: FieldType;
-}
-
-export interface AttributeValue {
-  Id: number;
-  AttributeId?: number;
-  EntityId?: number;
-  Value: string;
-  Guid?: string;
-}
-
-export interface AttributeValueSearch extends AttributeValue {
-  Attribute: AttributeSearch;
-}
-
 export const definedValueKeys = [
   "Id",
   "IsSystem",
@@ -85,40 +24,39 @@ export const definedValueKeys = [
 ];
 
 export class Rock extends Heighliner {
-  public cache: Cache;
-  public __type: string = "RockSystem";
-  public id: string = "Id";
-  public baseUrl: string = "https://rock.newspring.cc"; // XXX make dynamic
+  __type = "RockSystem";
+  id = "Id";
+  baseUrl = process.env.ROCK_URL;
 
 
-  private processDefinedValues(values: DefinedValueSearch[]): Promise<DefinedValue[]> {
+  processDefinedValues(values) {
     const promises = values.map(x => {
       if (FieldTypeResolvers.hasOwnProperty(x.DefinedType.FieldType.Class)) {
         return Promise.resolve()
           .then(() => {
             x.Value = FieldTypeResolvers[x.DefinedType.FieldType.Class](x.Value, null, this.cache);
-            return pick(x, definedValueKeys) as DefinedValue;
-          }) as Promise<DefinedValue>;
+            return pick(x, definedValueKeys);
+          });
       }
 
       console.error(`No field type resolver found for ${x.DefinedType.FieldType.Class}`);
       // XXX how should we alert on missing defined value types?
       return Promise.resolve()
-        .then(() => pick(x, definedValueKeys)) as Promise<DefinedValue>;
+        .then(() => pick(x, definedValueKeys));
     });
 
     return Promise.all([].concat(promises))
       .then(x => sortBy(x, "Order"));
   }
 
-  private processAttributeValue(value: AttributeValueSearch): Promise<any> {
+  processAttributeValue(value) {
     if (!value) return;
 
     const { FieldType, DefaultValue } = value.Attribute;
     if (FieldTypeResolvers.hasOwnProperty(FieldType.Class)) {
       return Promise.resolve()
       .then(() => {
-        const method = FieldTypeResolvers[FieldType.Class] as () => any;
+        const method = FieldTypeResolvers[FieldType.Class];
         return method.apply(this, [value.Value, DefaultValue]);
       });
     }
@@ -127,10 +65,7 @@ export class Rock extends Heighliner {
     return Promise.resolve(null);
   }
 
-  public async getDefinedValuesByTypeId(
-    id: string | number,
-    { limit, offset }: { limit?: number, offset?: number } = {}
-  ): Promise<any> {
+  async getDefinedValuesByTypeId(id, { limit, offset } = {}) {
     const query = { limit, offset, id };
     return this.cache.get(this.cache.encode(query), () => DefinedValueModel.find({
         include: [
@@ -148,7 +83,7 @@ export class Rock extends Heighliner {
     );
   }
 
-  public async getDefinedValueId(id: string | number): Promise<any> {
+  async getDefinedValueId(id) {
     const globalId = createGlobalId(`${id}`, "RockDefinedValue");
     return this.cache.get(globalId, () => DefinedValueModel.findOne({
         where: { Id: id },
@@ -161,7 +96,7 @@ export class Rock extends Heighliner {
     );
   }
 
-  public async getDefinedValueByGuid(Guid: string | number): Promise<any> {
+  async getDefinedValueByGuid(Guid) {
     const Guids = `${Guid}`.split(",");
     const globalId = createGlobalId(`${Guid}`, "RockDefinedValueGuid");
     return this.cache.get(globalId, () => DefinedValueModel.find({
@@ -174,7 +109,7 @@ export class Rock extends Heighliner {
     );
   }
 
-  public async getAttributeValuesFromId(id, context): Promise<any> {
+  async getAttributeValuesFromId(id, context) {
 
     return this.cache.get(`${id}:getAttributeValuesFromId`, () => AttributeValueModel.findOne({
       where: { Id: id },
@@ -184,7 +119,7 @@ export class Rock extends Heighliner {
     );
   }
 
-  public async getAttributesFromId(id, context): Promise<any> {
+  async getAttributesFromId(id, context) {
 
     return this.cache.get(`${id}:getAttributeValues`, () => AttributeModel.findOne({
       where: { Id: id },
@@ -193,7 +128,7 @@ export class Rock extends Heighliner {
         { model: AttributeQualifierModel.model },
       ],
     })
-      .then((x: any): any => {
+      .then(x => {
         if (!x) return null;
         const { FieldType } = x;
         // 70
@@ -202,7 +137,7 @@ export class Rock extends Heighliner {
             Id: x.Id,
             Value: x.Name,
             Description: x.Description,
-          }] as any;
+          }];
         }
         const definedTypeId = x.AttributeQualifiers
           .filter(y => y.Key === "definedtype");

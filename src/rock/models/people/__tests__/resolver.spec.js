@@ -59,7 +59,7 @@ it("`Person` has a photo.", () => {
     },
   };
 
-  Person.photo({PhotoId: samplePhotoId}, null, { models });
+  Person.photo({ PhotoId: samplePhotoId }, null, { models });
 
   // If no photoId then return placeholder image.
   const noPhotoAvailable = Person.photo({ PhotoId: null }, null, { models });

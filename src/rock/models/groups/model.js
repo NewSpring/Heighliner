@@ -1,7 +1,7 @@
 import { merge, filter, sortBy } from "lodash";
 import { geography } from "mssql-geoparser";
 
-import { Cache, defaultCache } from "../../../util/cache";
+import { defaultCache } from "../../../util/cache";
 import { createGlobalId } from "../../../util";
 import Sequelize from "sequelize";
 import DataLoader from "dataloader";
@@ -33,12 +33,10 @@ import {
 import { Rock } from "../system";
 
 export class Group extends Rock {
-  private loader;
-  public cache: Cache;
-  public __type: string = "Group";
+  __type = "Group";
 
   constructor({ cache } = { cache: defaultCache }) {
-    super();
+    super({ cache });
     this.cache = cache;
 
     // NOTE:
@@ -57,7 +55,7 @@ export class Group extends Rock {
     }, { cache: false }); // XXX make this per request somehow
   }
 
-  public async getFromId(id: string | number, globalId: string): Promise<any> { // XXX type
+  async getFromId(id, globalId) { // XXX type
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
     return this.cache.get(globalId, () => GroupTable.findOne({
       where: { Id: id },
@@ -68,7 +66,7 @@ export class Group extends Rock {
     }));
   }
 
-  public async getMembersById(id: string | number): Promise<any> {
+  async getMembersById(id) {
     return this.cache.get(`${id}:GroupMemberFromGroupId}`, () => GroupMemberTable.find({
         where: { GroupId: id },
         include: [{ model: GroupTypeRole.model }],
@@ -77,7 +75,7 @@ export class Group extends Rock {
   }
 
   // XXX remove for Location Model
-  public async getLocationFromLocationId(Id: string | number): Promise<any> {
+  async getLocationFromLocationId(Id) {
     const globalId = createGlobalId(`${Id}`, "Location");
     return this.cache.get(globalId, () => LocationTable.findOne({
         where: { Id },
@@ -95,7 +93,7 @@ export class Group extends Rock {
   }
 
   // XXX remove for Schedule Model
-  public async getScheduleFromScheduleId(Id: string | number): Promise<any> {
+  async getScheduleFromScheduleId(Id) {
     const globalId = createGlobalId(`${Id}`, "Schedule");
     return this.cache.get(globalId, () => ScheduleTable.findOne({
         where: { Id },
@@ -103,7 +101,7 @@ export class Group extends Rock {
     );
   }
 
-  public async getLocationsById(id: string | number): Promise<any> {
+  async getLocationsById(id) {
     const globalId = createGlobalId(`${id}`, "GroupLocationsFromGroupId");
     return this.cache.get(globalId, () => GroupLocationTable.find({
         where: { GroupId: id },
@@ -111,12 +109,9 @@ export class Group extends Rock {
     );
   }
 
-  public async findByAttributes(
-    attributes: string[],
-    { limit, offset, geo }: { limit: number, offset: number, geo: { latitude: number | boolean, longitude: number | boolean }}
-  ): Promise<any> {
+  async findByAttributes(attributes, { limit, offset, geo }) {
     if (!attributes || !attributes.length) return Promise.resolve([]);
-    let order: any = [];
+    let order = [];
     const { latitude, longitude } = geo;
     let distance;
     if (latitude && longitude) {
@@ -137,7 +132,7 @@ export class Group extends Rock {
       Value: { $like: x },
     }));
 
-    let count: number;
+    let count;
     const query = { attributes, latitude, longitude };
 
     return await this.cache.get(this.cache.encode(query), () => GroupTable.find({
@@ -177,11 +172,11 @@ export class Group extends Rock {
     })
   )
     .then(this.sortByLocations)
-    .then((x: any[]) => {
+    .then(x => {
       count = x.length;
       return x;
     })
-    .then((x: any[]) => {
+    .then(x => {
       return x.slice(offset, limit + offset);
     })
     .then(this.getFromIdsWithDistance)
@@ -189,16 +184,16 @@ export class Group extends Rock {
     ;
   }
 
-  private sortByLocations(results: any[]): any[] {
+  sortByLocations(results) {
 
-    let withLocations = filter(results, (x) => {
+    let withLocations = filter(results, x => {
       // XXX handle multiple locations
       return x.GroupLocations[0] &&
         x.GroupLocations[0].Location &&
         x.GroupLocations[0].Location.GeoPoint;
     });
 
-    let withoutLocations = filter(results, (x) => {
+    let withoutLocations = filter(results, x => {
       // XXX handle multiple locations
       return !x.GroupLocations[0] ||
         !x.GroupLocations[0].Location ||
@@ -208,7 +203,7 @@ export class Group extends Rock {
     return [...withLocations, ...withoutLocations];
   }
 
-  private getFromIdsWithDistance = (x: any[]): Promise<any> => {
+  getFromIdsWithDistance = x => {
     let promises = [];
     const createPromise = (y) => {
       return this.getFromId(y.Id, null)
@@ -222,10 +217,7 @@ export class Group extends Rock {
     return Promise.all(promises);
   }
 
-  public async getDistanceFromLatLng(
-    id: string | number,
-    geo: { latitude: number | boolean, longitude: number | boolean }
-  ): Promise<any> {
+  async getDistanceFromLatLng(id, geo) {
     if (!geo || !id || !geo.latitude || !geo.longitude) return Promise.resolve([]);
     const { latitude, longitude } = geo;
     const distance =  [
@@ -247,19 +239,12 @@ export class Group extends Rock {
         ],
       })
     )
-      .then((x: any) => x.Distance)
+      .then(x => x.Distance)
       ;
   }
 
-  public async findByQuery(
-    { query },
-    { limit, offset, geo }: {
-      limit: number;
-      offset: number;
-      geo: { latitude: number | boolean, longitude: number | boolean };
-    }
-  ): Promise<any> {
-    let order: any = [];
+  async findByQuery({ query }, { limit, offset, geo }) {
+    let order = [];
     const { latitude, longitude } = geo;
     let distance;
     if (latitude && longitude) {
@@ -276,7 +261,7 @@ export class Group extends Rock {
       ];
     }
 
-    let count: number;
+    let count;
     const queryKey = { query, latitude, longitude };
 
     return await this.cache.get(this.cache.encode(queryKey), () => GroupTable.find({
@@ -304,11 +289,11 @@ export class Group extends Rock {
     })
   )
     .then(this.sortByLocations)
-    .then((x: any[]) => {
+    .then(x => {
       count = x.length;
       return x;
     })
-    .then((x: any[]) => {
+    .then(x => {
       return x.slice(offset, limit + offset);
     })
     .then(this.getFromIdsWithDistance)
@@ -316,9 +301,7 @@ export class Group extends Rock {
     ;
 }
 
-public async findByAttributesAndQuery(
-  { attributes, query, campuses }, { limit, offset, geo }
-): Promise<any> {
+async findByAttributesAndQuery({ attributes, query, campuses }, { limit, offset, geo }) {
   let count = 0;
 
   // XXX prevent sql injection
@@ -399,11 +382,11 @@ public async findByAttributesAndQuery(
     `).then(([x]) => x)
   )
     // tslint:enable
-    .then((x: any[]) => {
+    .then(x => {
       count = x.length;
       return x;
     })
-    .then((x: any[]) => {
+    .then(x => {
       return x.slice(offset, limit + offset);
     })
     .then(this.getFromIdsWithDistance)
@@ -411,8 +394,8 @@ public async findByAttributesAndQuery(
     ;
   }
 
-  // public async getFromPerson
-  public async find(query): Promise<any> {
+  // async getFromPerson
+  async find(query) {
     query = merge({ IsActive: true }, query);
     return this.cache.get(this.cache.encode(query), () => GroupTable.find({
       where: query,

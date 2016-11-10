@@ -13,7 +13,7 @@ describe("Mutation", () => {
         syncTransactions: jest.fn(),
       },
     };
-    resolver.Mutation.syncTransactions(null, { "foo": "bar" }, { models });
-    expect(models.Transaction.syncTransactions).toBeCalledWith({ "foo": "bar" });
+    resolver.Mutation.syncTransactions(null, { foo: "bar" }, { models });
+    expect(models.Transaction.syncTransactions).toBeCalledWith({ foo: "bar" });
   });
 });

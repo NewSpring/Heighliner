@@ -1,7 +1,6 @@
 
 import { connect } from "./mssql";
 
-import { ApplicationDefinition } from "../util/application";
 import { createApplication } from "../util/heighliner";
 
 import People from "./models/people";
@@ -27,4 +26,4 @@ export default {
   mocks,
   schema,
   connect,
-} as ApplicationDefinition;
+};

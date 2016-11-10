@@ -15,4 +15,4 @@ export default {
   mocks,
   schema,
   connect,
-}
+};

@@ -54,5 +54,4 @@ it("Query should expose currentUser as part of the query", () => {
 
   expect(currentUser).toBeTruthy();
   expect(typeof currentUser).toEqual("function");
-
 });

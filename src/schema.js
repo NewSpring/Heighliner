@@ -8,7 +8,6 @@ import {
   InMemoryCache,
   RedisCache,
   RedisConnect,
-  Cache,
 } from "./util/cache";
 
 import {
@@ -69,15 +68,7 @@ const executabledSchema = makeExecutableSchema({
   typeDefs: schema,
   resolvers,
   allowUndefinedInResolve: true, // required for resolvers
-}) as GraphQLSchema;
-
-if (process.env.TEST) {
-  addMockFunctionsToSchema({
-    schema: executabledSchema,
-    preserveResolvers: true,
-    mocks,
-  });
-}
+});
 
 export async function createApp(monitor) {
   const datadog = monitor && monitor.datadog;
@@ -85,7 +76,6 @@ export async function createApp(monitor) {
 
   if (OpticsAgent) OpticsAgent.instrumentSchema(executabledSchema);
 
-  let useMocks = true;
   /*
 
     Database support
@@ -99,78 +89,61 @@ export async function createApp(monitor) {
 
   */
   let cache;
-  if (!process.env.CI && !process.env.TEST) {
 
-    // XXX add in dynamic docker host development
-    let dockerhost = "192.168.99.100";
+  // XXX add in dynamic docker host development
+  const dockerhost = "192.168.99.100";
 
-    // MONGO
-    const APOLLOS = await Apollos.connect(process.env.MONGO_URL, { datadog });
-    // XXX find a way to just use mocks for Apollos
-    if (APOLLOS) {
-      console.log("CONNECTION: Apollos ✓"); // tslint:disable-line
-      useMocks = false;
-    }
+  // MONGO
+  const APOLLOS = await Apollos.connect(process.env.MONGO_URL, { datadog });
+  if (APOLLOS) console.log("CONNECTION: Apollos ✓"); // tslint:disable-line
 
-    // MySQL connections
-    const EESettings = {
-      host        : process.env.MYSQL_HOST || dockerhost,
-      user        : process.env.MYSQL_USER || "root",
-      password    : process.env.MYSQL_PASSWORD || "password",
-      database    : process.env.MYSQL_DB || "ee_local",
-      ssl: process.env.MYSQL_SSL || false,
-    };
-    {
-      const { database, user, password } = EESettings;
-      const EE = await ExpressionEngine.connect(database, user, password, {
-        host: EESettings.host,
-        ssl: EESettings.ssl,
-      }, { datadog });
-      if (EE) {
-        console.log("CONNECTION: EE ✓"); // tslint:disable-line
-        useMocks = false;
-      }
-    }
-
-    // MSSQL connection
-    const RockSettings = {
-      host        : process.env.MSSQL_HOST,
-      user        : process.env.MSSQL_USER,
-      password    : process.env.MSSQL_PASSWORD,
-      database    : process.env.MSSQL_DB,
-      dialectOptions: {
-        // instanceName: process.env.MSSQL_INSTANCE,
-        // connectTimeout: 90000,
-      },
-    };
-    {
-      const { database, user, password } = RockSettings;
-      const ROCK = await Rock.connect(database, user, password, {
-        host: RockSettings.host,
-        dialectOptions: RockSettings.dialectOptions,
-      }, { datadog });
-
-      if (ROCK) {
-        console.log("CONNECTION: Rock ✓"); // tslint:disable-line
-        useMocks = false;
-      }
-    }
-
-    const REDIS = await RedisConnect(process.env.REDIS_HOST || dockerhost, 6379, { datadog });
-    cache = REDIS ? new RedisCache() : new InMemoryCache();
-    if (REDIS) console.log("CONNECTION: Redis ✓"); // tslint:disable-line
-
-    const SS = await GoogleSS.connect();
-    if (SS) useMocks = false;
-
-    const ESVConnection = await ESV.connect();
-    if (ESVConnection) useMocks = false;
-
+  // // MySQL connections
+  const EESettings = {
+    host: process.env.MYSQL_HOST || dockerhost,
+    user: process.env.MYSQL_USER || "root",
+    password: process.env.MYSQL_PASSWORD || "password",
+    database: process.env.MYSQL_DB || "ee_local",
+    ssl: process.env.MYSQL_SSL || false,
+  };
+  {
+    const { database, user, password } = EESettings;
+    const EE = await ExpressionEngine.connect(database, user, password, {
+      host: EESettings.host,
+      ssl: EESettings.ssl,
+    }, { datadog });
+    if (EE) console.log("CONNECTION: EE ✓"); // tslint:disable-line
   }
 
+  // MSSQL connection
+  const RockSettings = {
+    host: process.env.MSSQL_HOST,
+    user: process.env.MSSQL_USER,
+    password: process.env.MSSQL_PASSWORD,
+    database: process.env.MSSQL_DB,
+    dialectOptions: {
+      // instanceName: process.env.MSSQL_INSTANCE,
+      // connectTimeout: 90000,
+    },
+  };
+  {
+    const { database, user, password } = RockSettings;
+    const ROCK = await Rock.connect(database, user, password, {
+      host: RockSettings.host,
+      dialectOptions: RockSettings.dialectOptions,
+    }, { datadog });
+
+    if (ROCK) console.log("CONNECTION: Rock ✓"); // tslint:disable-line
+  }
+
+  const REDIS = await RedisConnect(process.env.REDIS_HOST || dockerhost, 6379, { datadog });
+  cache = REDIS ? new RedisCache() : new InMemoryCache();
+  if (REDIS) console.log("CONNECTION: Redis ✓"); // tslint:disable-line
+
+  const SS = await GoogleSS.connect();
+  const ESVConnection = await ESV.connect();
 
   // create all of the models on app start up
-  let createdModels = {};
+  const createdModels = {};
   Object.keys(models).forEach((name) => {
     createdModels[name] = new models[name]({ cache });
   });
@@ -184,7 +157,7 @@ export async function createApp(monitor) {
   return {
     cache,
     models: createdModels,
-    graphql: async function(request){
+    graphqlnction (request) {
       if (request && request.body && request.body.operationName) {
         const { operationName } = request.body;
         if (datadog) datadog.increment(`graphql.operation.${operationName}`);
@@ -196,7 +169,7 @@ export async function createApp(monitor) {
       // Anderson, SC
       if (ip === "::1") ip = "2602:306:b81a:c420:ed84:6327:b58e:6a2d";
 
-      let context = {
+      const context = {
         hashedToken: request.headers.authorization,
         cache,
         ip,
@@ -213,7 +186,7 @@ export async function createApp(monitor) {
             createdModels.User.getByHashedToken(context.hashedToken)
           , 500);
           context.user = user;
-        } catch (e) {/* tslint:disable-line */}
+        } catch (e) { /* tslint:disable-line */ }
 
         let person;
         if (user && user.services && user.services.rock) {
@@ -222,7 +195,7 @@ export async function createApp(monitor) {
               createdModels.Person.getFromAliasId(user.services.rock.PrimaryAliasId)
             , 500);
             person.PrimaryAliasId = user.services.rock.PrimaryAliasId;
-          } catch (e) {/* tslint:disable-line */}
+          } catch (e) { /* tslint:disable-line */ }
         }
         context.person = person;
       }
@@ -238,9 +211,9 @@ export async function createApp(monitor) {
       }
 
       return {
-        context: context,
+        context,
         schema: executabledSchema,
-        formatError: error => {
+        formatError: (error) => {
           if (process.env.NODE_ENV === "production") {
             if (datadog) datadog.increment("graphql.error");
             context.sentry.captureError(error, parsers.parseRequest(request));
@@ -254,5 +227,4 @@ export async function createApp(monitor) {
       };
     },
   };
-
-};
+}

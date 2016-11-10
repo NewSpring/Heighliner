@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { MongoConnector } from "../../mongo";
 import { defaultCache } from "../../../util/cache";
 
-const schema: Object = {
+const schema = {
   _id: String,
   createdAt: { type: Date, default: Date.now },
   services: {
@@ -26,13 +26,13 @@ export class User {
     this.model = Model;
   }
 
-  public async getFromId(_id, globalId){
+  async getFromId(_id, globalId) {
     // try a cache lookup
     return await this.cache.get(globalId, () => this.model.findOne({ _id }));
   }
 
-  public async getByHashedToken(token){
-    let rawToken = token;
+  async getByHashedToken(token) {
+    const rawToken = token;
 
     // allow for client or server side auth calls
     token = crypto.createHash("sha256")

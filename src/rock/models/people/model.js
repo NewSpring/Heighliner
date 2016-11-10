@@ -1,5 +1,5 @@
 import { reverse } from "lodash";
-import { Cache, defaultCache } from "../../../util/cache";
+import { defaultCache } from "../../../util/cache";
 import { createGlobalId } from "../../../util";
 
 import {
@@ -22,27 +22,26 @@ import {
 import { Rock } from "../system";
 
 export class Person extends Rock {
-  public cache: Cache;
-  public __type: string = "Person";
-  public cacheTypes: string[] = [
+  __type = "Person";
+  cacheTypes = [
     "Rock.Model.Person",
     "Rock.Model.PersonAlias",
   ];
 
   constructor({ cache } = { cache: defaultCache }) {
-    super();
+    super({ cache });
     this.cache = cache;
   }
 
-  private createGlobalAliasId(id: string | number) {
+  createGlobalAliasId(id) {
     return createGlobalId(`${id}`, "PersonAlias");
   }
 
-  private createGlobalGuidId(id: string | number) {
+  createGlobalGuidId(id) {
     return createGlobalId(`${id}`, "PersonGuid");
   }
 
-  public async clearCacheFromRequest({ body }): Promise<any> {
+  async clearCacheFromRequest({ body }) {
     const { id, type, action } = body;
     return Promise.resolve()
       .then(x => {
@@ -55,7 +54,7 @@ export class Person extends Rock {
       });
   }
 
-  public async clearCacheFromId(id: string, globalId: string, action: string): Promise<any> {
+  async clearCacheFromId(id, globalId, action) {
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
     // delete the cache entry
     return Promise.resolve()
@@ -66,9 +65,7 @@ export class Person extends Rock {
       });
   }
 
-  public async clearCacheFromPersoAliasId(
-    id: string, globalId: string, action: string
-  ): Promise<any> {
+  async clearCacheFromPersoAliasId(id, globalId, action) {
     globalId = globalId ? globalId : this.createGlobalAliasId(id);
     // delete the cache entry
     return Promise.resolve()
@@ -79,15 +76,15 @@ export class Person extends Rock {
       });
   }
 
-  public async getFromId(id: string, globalId?: string): Promise<any> { // XXX correctly type
+  async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
     return this.cache.get(globalId, () => PersonTable.findOne({ where: { Id: id }}));
   }
 
-  // public async getGroupsFromId(...args): Promise<any> {
+  // async getGroupsFromId(...args) {
   //   return PersonTable.model.getGroups.apply(PersonTable.model, args);
   // }
-  public async getCampusFromId(id: string | number, { cache }): Promise<any> {
+  async getCampusFromId(id, { cache }) {
     return await this.cache.get(`${id}:PersonCampus`, () => Group.findOne({
         where: { GroupTypeId: 10 }, // family
         include: [
@@ -99,14 +96,14 @@ export class Person extends Rock {
      , { cache });
   }
 
-  public async getPhoneNumbersFromId(id: string | number): Promise<any> {
+  async getPhoneNumbersFromId(id) {
     return await this.cache.get(`${id}:PersonPhoneNumbers`, () => PhoneNumberTable.find({
         where: { PersonId: `${id}` },
       })
     );
   }
 
-  public async getHomesFromId(id: string | number, { cache } = { cache: true }): Promise<any> {
+  async getHomesFromId(id, { cache } = { cache: true }) {
     return await this.cache.get(`${id}:PersonHomes`, () => GroupLocation.find({
         where: { GroupLocationTypeValueId: 19 }, // Home
         attributes: [],
@@ -126,7 +123,7 @@ export class Person extends Rock {
     , { cache });
   }
 
-  public async getFamilyFromId(id: string | number): Promise<any> {
+  async getFamilyFromId(id) {
     // XXX model this in sequelize
     return this.cache.get(`${id}:FamilyMembers`, () => GroupMember.db.query(`
         SELECT GroupMember.*
@@ -141,8 +138,8 @@ export class Person extends Rock {
   }
 
   // XXX correctly type
-  public async getFromAliasId(id: string | number, { cache } = { cache: true }): Promise<any> {
-    id = Number(id) as number;
+  async getFromAliasId(id, { cache } = { cache: true }) {
+    id = Number(id);
     let globalId = this.createGlobalAliasId(id);
 
     return await this.cache.get(globalId, () => PersonAlias.findOne({
@@ -163,7 +160,7 @@ export class Person extends Rock {
 
   }
 
-  public async findOne({ guid }: { guid?: string }): Promise<any> {
+  async findOne({ guid }) {
     return this.cache.get(this.createGlobalGuidId(guid), () => PersonTable.findOne({
       where: { Guid: guid },
     }));

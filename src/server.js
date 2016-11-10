@@ -8,7 +8,8 @@ import cors from "cors";
 import raven from "raven";
 import Metrics from "datadog-metrics";
 
-// import { createApp } from "./schema";
+import { createApp } from "./schema";
+
 let dogstatsd;
 if (process.env.DATADOG_API_KEY && process.env.NODE_ENV === "production") {
   dogstatsd = new Metrics.BufferedMetricsLogger({
@@ -31,31 +32,6 @@ const app = express();
 if (process.env.NODE_ENV === "production") {
   // The request handler must be the first item
   app.use(raven.middleware.express.requestHandler(process.env.SENTRY));
-} else {
-  const webpack = require('webpack');
-  const webpackMiddleware = require('webpack-dev-middleware');
-  const webpackHotMiddleware = require('webpack-hot-middleware');
-  const DashboardPlugin = require("webpack-dashboard/plugin");
-
-  const config = require('../webpack.config.js');
-  const compiler = webpack(config);
-  compiler.apply(new DashboardPlugin());
-
-  const middleware = webpackMiddleware(compiler, {
-    publicPath: config.output.publicPath,
-    contentBase: "src",
-    stats: {
-      colors: true,
-      hash: false,
-      timings: true,
-      chunks: false,
-      chunkModules: false,
-      modules: false
-    }
-  });
-
-  app.use(middleware);
-  app.use(webpackHotMiddleware(compiler));
 }
 /*
 
@@ -71,17 +47,17 @@ if (dogstatsd) {
       res.end = end;
       res.end(chunk, encoding);
       const baseUrl = req.baseUrl;
-      const statTags = [ "route:" + baseUrl + req.path ];
+      const statTags = [`route:${baseUrl}${req.path}`];
 
-      statTags.push("method:" + req.method.toLowerCase());
-      statTags.push("protocol:" + req.protocol);
-      statTags.push("path:" + baseUrl + req.path);
-      statTags.push("response_code:" + res.statusCode);
+      statTags.push(`method:${req.method.toLowerCase()}`);
+      statTags.push(`protocol:${req.protocol}`);
+      statTags.push(`path:${baseUrl}${req.path}`);
+      statTags.push(`response_code:${res.statusCode}`);
 
-      dogstatsd.increment("response_code." + res.statusCode , 1, statTags);
-      dogstatsd.increment("response_code.all" , 1, statTags);
+      dogstatsd.increment(`response_code.${res.statusCode}`, 1, statTags);
+      dogstatsd.increment("response_code.all", 1, statTags);
 
-      let now = (new Date()) - req._startTime;
+      const now = (new Date()) - req._startTime;
       dogstatsd.histogram("response_time", now, statTags);
     };
 
@@ -117,44 +93,43 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 async function start() {
-
   /*
 
     Apollo Server
 
   */
-  // const { graphql, models, cache } = await createApp({
-  //   datadog: dogstatsd,
-  //   OpticsAgent: process.env.OPTICS_API_KEY ? OpticsAgent : false,
-  // });
+  const { graphql, models, cache } = await createApp({
+    datadog: dogstatsd,
+    OpticsAgent: process.env.OPTICS_API_KEY ? OpticsAgent : false,
+  });
 
-  // app.post("/graphql/cache/flush", (req, res) => {
-  //   cache.clearAll();
-  //   res.end();
-  // });
+  app.post("/graphql/cache/flush", (req, res) => {
+    cache.clearAll();
+    res.end();
+  });
 
-  // app.post("/graphql/cache", (req, res) => {
-  //   const { type, id } = req.body;
-  //   if (!type || !id ) {
-  //     res.status(500).send({ error: "Missing `id` or `type` for request" });
-  //     return;
-  //   }
-  //   let clearingCache;
-  //   for (let model in models) {
-  //     const Model = models[model];
-  //     if (!Model.cacheTypes) continue;
-  //     if (Model.cacheTypes.indexOf(type) === -1) continue;
-  //     clearingCache = true;
-  //     // XXX should we hold off the res until this responds?
-  //     Model.clearCacheFromRequest(req);
-  //   }
-  //   if (!clearingCache) {
-  //     res.status(404).send({ error: `No model found for ${type}` });
-  //     return;
-  //   }
+  app.post("/graphql/cache", (req, res) => {
+    const { type, id } = req.body;
+    if (!type || !id) {
+      res.status(500).send({ error: "Missing `id` or `type` for request" });
+      return;
+    }
+    let clearingCache;
+    for (const model in models) {
+      const Model = models[model];
+      if (!Model.cacheTypes) continue;
+      if (Model.cacheTypes.indexOf(type) === -1) continue;
+      clearingCache = true;
+      // XXX should we hold off the res until this responds?
+      Model.clearCacheFromRequest(req);
+    }
+    if (!clearingCache) {
+      res.status(404).send({ error: `No model found for ${type}` });
+      return;
+    }
 
-  //   res.status(200).send({ message: `Cache cleared for ${type} ${id}`});
-  // });
+    res.status(200).send({ message: `Cache cleared for ${type} ${id}` });
+  });
 
   if (process.env.SENTRY_ENVIRONMENT !== "production") {
     app.use("/view", graphiqlExpress({ endpointURL: "/graphql" }));
@@ -163,14 +138,15 @@ async function start() {
 
 
   if (process.env.OPTICS_API_KEY) app.use("/graphql", OpticsAgent.middleware());
-  // app.use("/graphql", apolloExpress(graphql));
+
+  app.use("/graphql", apolloExpress(graphql));
 
   // The error handler must be before any other error middleware
   if (process.env.NODE_ENV === "production") {
     app.use(raven.middleware.express.errorHandler(process.env.SENTRY));
   }
 
-  let PORT = process.env.PORT || 80;
+  const PORT = process.env.PORT || 80;
   // Listen for incoming HTTP requests
   const listener = app.listen(PORT, () => {
     let host = listener.address().address;
@@ -179,10 +155,9 @@ async function start() {
     }
     const port = listener.address().port;
     console.log( // tslint:disable-line
-      "Listening at http://%s%s", host, port === 80 ? "" : ":" + port
+      "Listening at http://%s%s", host, port === 80 ? "" : `:${port}`,
     );
   });
-
 }
 
 start();

@@ -1,7 +1,7 @@
 
 export default {
   Query: {
-    geolocate(_: any, { origin, destinations }, { models }: any): any {
+    geolocate(_, { origin, destinations }, { models }) {
       const query = `origins=${encodeURI(origin)}&destinations=${encodeURI(destinations)}`;
       return models.GGeolocate.query(query);
     },

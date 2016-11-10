@@ -12,7 +12,6 @@ describe("connect", () => {
 
 
 describe("MongoConnector", () => {
-
   let testModel;
   beforeEach(async () => {
     if (testModel) return;
@@ -47,15 +46,12 @@ describe("MongoConnector", () => {
 
     testModel.model.findOne = function mockedFindOne(...args) {
       expect(args[0]).toEqual("test");
-      return new Promise((r) => r([1]));
+      return new Promise(r => r([1]));
     };
 
     const tests = await testModel.findOne("test");
     expect(tests[0]).toEqual(1);
 
     testModel.model.findOne = oldFindOne;
-
   });
-
-
 });

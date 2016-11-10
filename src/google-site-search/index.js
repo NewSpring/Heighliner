@@ -1,7 +1,6 @@
 
 import { connect } from "./fetch";
 
-import {  ApplicationDefinition } from "../util/application";
 import { createApplication } from "../util/heighliner";
 
 import Search from "./models/search";
@@ -18,4 +17,4 @@ export default {
   mocks,
   schema,
   connect,
-} as ApplicationDefinition;
+};

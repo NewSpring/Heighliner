@@ -13,7 +13,7 @@ export class ESVFetchConnector {
   key = process.env.ESV_KEY;
   count = 0;
 
-  public getFromAPI(query) {
+  getFromAPI(query) {
     const label = `ESVFetchConnector${this.getCount()}`;
 
     const request = this.getRequest(query);
@@ -21,7 +21,7 @@ export class ESVFetchConnector {
     const headers = {
       "user-agent": "Heighliner",
       "Content-Type": "application/text",
-    } as { [index] };
+    };
 
     const options = { method: "GET", headers };
 
@@ -32,7 +32,7 @@ export class ESVFetchConnector {
       .then(x => { console.timeEnd(label); return x; });
   }
 
-  private getRequest(query) {
+  getRequest(query) {
     let request = `${this.baseUrl}?key=${this.key}`;
     request += `&passage=${query}`;
     request += "&include-headings=false";
@@ -43,7 +43,7 @@ export class ESVFetchConnector {
     return request;
   }
 
-  private getCount() {
+  getCount() {
     this.count++;
     return this.count;
   }

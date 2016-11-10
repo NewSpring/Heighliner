@@ -8,9 +8,9 @@ import {
   FLOAT,
 } from "sequelize";
 
-import { MSSQLConnector, Tables } from "../../mssql";
+import { MSSQLConnector } from "../../mssql";
 
-const transactionSchema: Object = {
+const transactionSchema = {
   Id: { type: INTEGER, primaryKey: true },
   TransactionDateTime: { type: DATE },
   TransactionCode: { type: STRING },
@@ -28,7 +28,7 @@ const transactionSchema: Object = {
   StatusMessage: { type: STRING },
 };
 
-const transactionRefundSchema: Object = {
+const transactionRefundSchema = {
   Id: { type: INTEGER, primaryKey: true },
   RefundReasonValueId: { type: INTEGER },
   RefundReasonSummary: { type: STRING },
@@ -37,7 +37,7 @@ const transactionRefundSchema: Object = {
   OriginalTransactionId: { type: INTEGER },
 };
 
-const transactionDetailSchema: Object = {
+const transactionDetailSchema = {
   Id: { type: INTEGER, primaryKey: true },
   TransactionId: { type: INTEGER },
   AccountId: { type: INTEGER },
@@ -47,7 +47,7 @@ const transactionDetailSchema: Object = {
   ModifiedDateTime: { type: DATE },
 };
 
-const scheduledTransactionSchema: Object = {
+const scheduledTransactionSchema = {
   Id: { type: INTEGER, primaryKey: true },
   TransactionFrequencyValueId: { type: INTEGER },
   StartDate: { type: DATE },
@@ -68,7 +68,7 @@ const scheduledTransactionSchema: Object = {
   // SourceTypeValueId: { type: INTEGER },
 };
 
-const scheduledTransactionDetailSchema: Object = {
+const scheduledTransactionDetailSchema = {
   Id: { type: INTEGER, primaryKey: true },
   ScheduledTransactionId: { type: INTEGER },
   AccountId: { type: INTEGER },
@@ -78,7 +78,7 @@ const scheduledTransactionDetailSchema: Object = {
   ModifiedDateTime: { type: DATE },
 };
 
-const savedPaymentSchema: Object = {
+const savedPaymentSchema = {
   Id: { type: INTEGER, primaryKey: true },
   ReferenceNumber: { type: STRING },
   Name: { type: STRING },
@@ -90,7 +90,7 @@ const savedPaymentSchema: Object = {
   FinancialPaymentDetailId: { type: INTEGER },
 };
 
-const financialAccountSchema: Object = {
+const financialAccountSchema = {
   Id: { type: INTEGER, primaryKey: true },
   ParentAccountId: { type: INTEGER },
   CampusId: { type: INTEGER },
@@ -111,7 +111,7 @@ const financialAccountSchema: Object = {
   IsPublic: { type: BOOLEAN },
 };
 
-const financialPaymentDetailSchema: Object = {
+const financialPaymentDetailSchema = {
   Id: { type: INTEGER, primaryKey: true },
   AccountNumberMasked: { type: STRING },
   CurrencyTypeValueId: { type: INTEGER },
@@ -120,7 +120,7 @@ const financialPaymentDetailSchema: Object = {
   ModifiedDateTime: { type: DATE },
 };
 
-const financialGatewaySchema: Object = {
+const financialGatewaySchema = {
   Id: { type: INTEGER, primaryKey: true },
   Name: { type: STRING },
   Description: { type: STRING },
@@ -169,20 +169,20 @@ export {
   financialGatewaySchema,
 };
 
-export function connect(): Tables {
+export function connect() {
   Transaction = new MSSQLConnector("FinancialTransaction", transactionSchema);
   TransactionRefund = new MSSQLConnector("FinancialTransactionRefund", transactionRefundSchema);
   TransactionDetail = new MSSQLConnector("FinancialTransactionDetail", transactionDetailSchema);
   ScheduledTransaction = new MSSQLConnector(
-    "FinancialScheduledTransaction", scheduledTransactionSchema
+    "FinancialScheduledTransaction", scheduledTransactionSchema,
   );
   ScheduledTransactionDetail = new MSSQLConnector(
-    "FinancialScheduledTransactionDetail", scheduledTransactionDetailSchema
+    "FinancialScheduledTransactionDetail", scheduledTransactionDetailSchema,
   );
   SavedPayment = new MSSQLConnector("FinancialPersonSavedAccount", savedPaymentSchema);
   FinancialAccount = new MSSQLConnector("FinancialAccount", financialAccountSchema);
   FinancialPaymentDetail = new MSSQLConnector(
-    "FinancialPaymentDetail", financialPaymentDetailSchema
+    "FinancialPaymentDetail", financialPaymentDetailSchema,
   );
   FinancialGateway = new MSSQLConnector("FinancialGateway", financialGatewaySchema);
 
@@ -197,7 +197,7 @@ export function connect(): Tables {
     FinancialGateway,
     FinancialPaymentDetail,
   };
-};
+}
 
 export function bind({
   PersonAlias,
@@ -209,8 +209,7 @@ export function bind({
   SavedPayment,
   // FinancialAccount,
   // FinancialGateway,
-}: Tables): void {
-
+}) {
   Transaction.model.belongsTo(PersonAlias.model, {
     foreignKey: "AuthorizedPersonAliasId", targetKey: "Id",
   });
@@ -223,7 +222,7 @@ export function bind({
     foreignKey: "OriginalTransactionId", targetKey: "Id",
   });
 
-  Transaction.model.hasMany(TransactionDetail.model, { foreignKey: "Id"} );
+  Transaction.model.hasMany(TransactionDetail.model, { foreignKey: "Id" });
   TransactionDetail.model.belongsTo(Transaction.model, {
     foreignKey: "TransactionId", targetKey: "Id",
   });
@@ -233,7 +232,7 @@ export function bind({
     foreignKey: "ScheduledTransactionId", targetKey: "Id",
   });
 
-  ScheduledTransaction.model.hasMany(ScheduledTransactionDetail.model, { foreignKey: "Id"} );
+  ScheduledTransaction.model.hasMany(ScheduledTransactionDetail.model, { foreignKey: "Id" });
   ScheduledTransactionDetail.model.belongsTo(ScheduledTransaction.model, {
     foreignKey: "ScheduledTransactionId", targetKey: "Id",
   });
@@ -243,8 +242,7 @@ export function bind({
   });
 
   // FinancialGateway.model.
-
-};
+}
 
 export default {
   connect,

@@ -1,5 +1,5 @@
 
-import * as casual from "casual";
+import casual from "casual";
 import { InMemoryCache } from "../memory-cache";
 
 it("`InMemoryCache` should have a way to get items from the cache", () => {
@@ -10,7 +10,7 @@ it("`InMemoryCache` should have a way to get items from the cache", () => {
   const cache = new InMemoryCache(cacheData);
 
   return cache.get(id, () => Promise.resolve())
-    .then(result => {
+    .then((result) => {
       expect(result).toEqual(data);
     });
 });
@@ -22,11 +22,11 @@ it("`InMemoryCache` should use a lookup method if no cache entry exists", () => 
   const cacheData = {};
   const cache = new InMemoryCache(cacheData);
 
-  const spyLookup = () => {
-    return Promise.resolve(data);
-  };
+  const spyLookup = () =>
+     Promise.resolve(data)
+  ;
 
-  return cache.get(id, spyLookup).then(result => {
+  return cache.get(id, spyLookup).then((result) => {
     expect(result).toEqual(data);
   });
 });
@@ -38,22 +38,22 @@ it("`InMemoryCache` should have a way to set items in the cache with a ttl", () 
   const cacheData = {};
   const cache = new InMemoryCache(cacheData);
 
-  const spyLookup = () => {
-    return Promise.resolve(data);
-  };
+  const spyLookup = () =>
+     Promise.resolve(data)
+  ;
 
-  return cache.get(id, spyLookup, { ttl: .1 })
+  return cache.get(id, spyLookup, { ttl: 0.1 })
     .then((result) => {
       expect(result).toEqual(data);
     })
-    .then(() => {
-      return new Promise((c, r) => {
-        setTimeout(() => {
-          expect(cacheData[id]).toBeFalsy();
-          c();
-        }, (.1 * 60) + 25);
-      });
-    });
+    .then(() =>
+       new Promise((c, r) => {
+         setTimeout(() => {
+           expect(cacheData[id]).toBeFalsy();
+           c();
+         }, (0.1 * 60) + 25);
+       }),
+    );
 });
 
 
@@ -91,18 +91,18 @@ it("should have a way to set items in the cache with a ttl", () => {
   const cacheData = {};
   const cache = new InMemoryCache(cacheData);
 
-  return cache.set(id, data, .1)
+  return cache.set(id, data, 0.1)
     .then((result) => {
       expect(cacheData[id]).toEqual(data);
     })
-    .then(() => {
-      return new Promise((c, r) => {
-        setTimeout(() => {
-          expect(cacheData[id]).toBeFalsy();
-          c();
-        }, (.1 * 60) + 25);
-      });
-    });
+    .then(() =>
+       new Promise((c, r) => {
+         setTimeout(() => {
+           expect(cacheData[id]).toBeFalsy();
+           c();
+         }, (0.1 * 60) + 25);
+       }),
+    );
 });
 
 it("`InMemoryCache` should allow removing existing cache entries", () => {

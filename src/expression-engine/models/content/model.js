@@ -182,7 +182,7 @@ export class Content extends EE {
     , { cache: false }) // this intermentally breaks when cached
       .then(this.getFromIds.bind(this))
       // XXX remove when channel is part of query
-      .then((x[]) => x.filter(
+      .then((x) => x.filter(
         y => !channels.length || channels.indexOf(y && y.exp_channel.channel_name) > -1
       ))
       ;
@@ -236,7 +236,7 @@ export class Content extends EE {
         AND m.col_id_366 IS NOT NULL;
     `, { type: Sequelize.QueryTypes.SELECT})
     , { ttl: 60 })
-      .then((x[]) => find(x, { isLive: 1 }))
+      .then(x => find(x, { isLive: 1 }))
       // tslint:enable
   }
 
@@ -276,12 +276,12 @@ export class Content extends EE {
         ],
       })
     , { ttl: 3600, cache })
-      .then((x[]) => {
+      .then(x => {
         // XXX find how to do this in the query?
         return x.slice(offset, limit + offset);
       })
       .then(this.getFromIds.bind(this))
-      .then((x[]) => x.filter(y => !!y))
+      .then(x => x.filter(y => !!y))
       ;
   }
 
@@ -353,14 +353,14 @@ export class Content extends EE {
         ],
       })
     , { ttl: 3600, cache })
-      .then((x[]) => {
+      .then(x => {
         // XXX find how to do this in the query?
         // return x.slice(offset, limit + offset);
         // XXX make a WileySort for this instead of random stuff
         return sampleSize(x, limit);
       })
       .then(this.getFromIds.bind(this))
-      .then((x[]) => x.filter(y => !!y))
+      .then(x => x.filter(y => !!y))
       ;
   }
 
@@ -399,7 +399,7 @@ export class Content extends EE {
     })
     , { ttl: 3600, cache: false })
       .then(this.getFromIds.bind(this))
-      .then((x[]) => x.filter(y => !!y))
+      .then((x) => x.filter(y => !!y))
       ;
   }
 

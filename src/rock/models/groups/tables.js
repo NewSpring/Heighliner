@@ -7,9 +7,9 @@ import {
   DATE,
 } from "sequelize";
 
-import { MSSQLConnector, Tables } from "../../mssql";
+import { MSSQLConnector } from "../../mssql";
 
-const groupSchema: Object = {
+const groupSchema = {
   Id: { type: INTEGER, primaryKey: true },
   CampusId: { type: INTEGER },
   Description: { type: STRING },
@@ -24,12 +24,12 @@ const groupSchema: Object = {
   ScheduleId: { type: INTEGER },
 };
 
-const groupTypeSchema: Object = {
+const groupTypeSchema = {
   Id: { type: INTEGER, primaryKey: true },
   Name: { type: STRING },
 };
 
-const groupMemberSchema: Object = {
+const groupMemberSchema = {
   Id: { type: INTEGER, primaryKey: true },
   DateTimeAdded: { type: DATE },
   GroupId: { type: INTEGER },
@@ -42,12 +42,12 @@ const groupMemberSchema: Object = {
   PersonId: { type: INTEGER },
 };
 
-const groupTypeRoleSchema: Object = {
+const groupTypeRoleSchema = {
   Id: { type: INTEGER, primaryKey: true },
   Name: { type: STRING },
 };
 
-const groupLocationSchema: Object = {
+const groupLocationSchema = {
   Id: { type: INTEGER, primaryKey: true },
   GroupId: { type: INTEGER },
   GroupLocationTypeValueId: { type: INTEGER },
@@ -56,7 +56,7 @@ const groupLocationSchema: Object = {
 };
 
 // XXX abstract
-const scheduleSchema: Object = {
+const scheduleSchema = {
   Id: { type: INTEGER, primaryKey: true },
   Description: { type: STRING },
   Name: { type: STRING },
@@ -95,7 +95,7 @@ export {
   scheduleSchema,
 };
 
-export function connect(): Tables {
+export function connect() {
   Group = new MSSQLConnector("Group", groupSchema);
   GroupMember = new MSSQLConnector("GroupMember", groupMemberSchema);
   GroupLocation = new MSSQLConnector("GroupLocation", groupLocationSchema);
@@ -112,7 +112,7 @@ export function connect(): Tables {
     GroupType,
     GroupTypeRole,
   };
-};
+}
 
 export function bind({
   Group,
@@ -124,8 +124,7 @@ export function bind({
   GroupLocation,
   Location,
   Person,
-}: Tables): void {
-
+}) {
   Group.model.hasMany(GroupMember.model, { foreignKey: "GroupId" });
   Group.model.belongsTo(Campus.model, { foreignKey: "CampusId", targetKey: "Id" });
   Group.model.hasMany(GroupLocation.model, { foreignKey: "GroupId" });
@@ -144,7 +143,7 @@ export function bind({
   Group.model.hasMany(AttributeValue.model, { foreignKey: "EntityId" });
 
   GroupMember.model.belongsTo(GroupTypeRole.model, { foreignKey: "GroupRoleId", targetKey: "Id" });
-};
+}
 
 export default {
   connect,
