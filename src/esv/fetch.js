@@ -1,7 +1,7 @@
 
 import fetch from "isomorphic-fetch";
 
-export function connect(): Promise<boolean> {
+export function connect() {
   return new Promise((cb) => {
     const hasKey = process.env.ESV_KEY;
     cb(hasKey);
@@ -9,11 +9,11 @@ export function connect(): Promise<boolean> {
 }
 
 export class ESVFetchConnector {
-  private baseUrl: string = "http://www.esvapi.org/v2/rest/passageQuery";
-  private key: string = process.env.ESV_KEY;
-  private count: number = 0;
+  baseUrl = "http://www.esvapi.org/v2/rest/passageQuery";
+  key = process.env.ESV_KEY;
+  count = 0;
 
-  public getFromAPI(query: string): Promise<string> {
+  public getFromAPI(query) {
     const label = `ESVFetchConnector${this.getCount()}`;
 
     const request = this.getRequest(query);
@@ -21,18 +21,18 @@ export class ESVFetchConnector {
     const headers = {
       "user-agent": "Heighliner",
       "Content-Type": "application/text",
-    } as { [index: string]: string };
+    } as { [index] };
 
     const options = { method: "GET", headers };
 
-    console.time(label); // tslint:disable-line
+    console.time(label);
 
     return fetch(request, options)
       .then(x => x.text())
-      .then(x => { console.timeEnd(label); return x; }); // tslint:disable-line
+      .then(x => { console.timeEnd(label); return x; });
   }
 
-  private getRequest(query: string): string {
+  private getRequest(query) {
     let request = `${this.baseUrl}?key=${this.key}`;
     request += `&passage=${query}`;
     request += "&include-headings=false";
@@ -43,7 +43,7 @@ export class ESVFetchConnector {
     return request;
   }
 
-  private getCount(): number {
+  private getCount() {
     this.count++;
     return this.count;
   }

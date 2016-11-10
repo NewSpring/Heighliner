@@ -26,7 +26,7 @@ const addResizings = (images, options = { sizes: null, ratios: [] }) => {
   const resizings = options.sizes || allResizings;
 
   if (options.ratios && options.ratios.length > 0) {
-    images = filter(images, (image: any) => {
+    images = filter(images, (image) => {
       return includes(options.ratios, image.fileLabel);
     });
   }

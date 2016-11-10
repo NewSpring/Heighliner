@@ -1,13 +1,11 @@
 
-import { connect } from "./fetch";
+import { connect } from "./mongo";
+import Users from "./models/users";
 
-import { ApplicationDefinition } from "../util/application";
 import { createApplication } from "../util/heighliner";
 
-import Scripture from "./models/scripture";
-
 export const { schema, resolvers, models, queries, mocks } = createApplication([
-  Scripture,
+  Users,
 ]);
 
 export default {
@@ -16,4 +14,4 @@ export default {
   mocks,
   schema,
   connect,
-} as ApplicationDefinition;
+};

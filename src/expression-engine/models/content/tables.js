@@ -1,4 +1,3 @@
-/* tslint:disable:no-shadowed-variable */
 
 import {
   INTEGER,
@@ -6,22 +5,22 @@ import {
   CHAR,
 } from "sequelize";
 
-import { MySQLConnector, Tables } from "../../mysql";
+import { MySQLConnector } from "../../mysql";
 
-const channelSchema: Object = {
+const channelSchema = {
   channel_id: { type: INTEGER, primaryKey: true },
   channel_name: { type: STRING },
   field_group: { type: INTEGER },
 };
 
-const channelFieldSchema: Object = {
+const channelFieldSchema = {
   field_id: { type: INTEGER, primaryKey: true },
   group_id: { type: INTEGER },
   field_name: { type: STRING },
   field_label: { type: STRING },
 };
 
-const channelTitleSchema: Object = {
+const channelTitleSchema = {
   entry_id: { type: INTEGER, primaryKey: true },
   title: { type: STRING },
   status: { type: STRING },
@@ -34,18 +33,18 @@ const channelTitleSchema: Object = {
   expiration_date: { type: INTEGER },
 };
 
-const channelDataSchema: Object = {
+const channelDataSchema = {
   entry_id: { type: INTEGER, primaryKey: true },
   channel_id: { type: INTEGER },
   site_id: { type: INTEGER },
 };
 
-const lowReorderSetSchema: Object = {
+const lowReorderSetSchema = {
   set_id: { type: INTEGER, primaryKey: true },
   set_name: { type: STRING },
 };
 
-const lowReorderOrderSchema: Object = {
+const lowReorderOrderSchema = {
   set_id: { type: INTEGER, primaryKey: true },
   sort_order: { type: STRING },
 };
@@ -76,7 +75,7 @@ export {
   lowReorderOrderSchema,
 };
 
-export function connect(): Tables {
+export function connect() {
   Channels = new MySQLConnector("exp_channels", channelSchema);
   ChannelFields = new MySQLConnector("exp_channel_fields", channelFieldSchema);
   ChannelTitles =  new MySQLConnector("exp_channel_titles", channelTitleSchema);
@@ -101,7 +100,7 @@ export function bind({
   ChannelFields,
   LowReorder,
   LowReorderOrder,
-}: Tables): void {
+}): void {
   Channels.model.hasMany(ChannelTitles.model, { foreignKey: "channel_id" });
   Channels.model.hasMany(ChannelData.model, { foreignKey: "channel_id" });
 
@@ -115,7 +114,6 @@ export function bind({
   ChannelData.model.belongsTo(ChannelTitles.model, { foreignKey: "entry_id" });
 
   LowReorderOrder.model.belongsTo(LowReorder.model, { foreignKey: "set_id", targetKey: "set_id" });
-
 };
 
 export default {

@@ -9,7 +9,7 @@ import {
   RedisCache,
   RedisConnect,
   Cache,
-  } from "./util/cache";
+} from "./util/cache";
 
 import {
   createSchema,
@@ -79,7 +79,7 @@ if (process.env.TEST) {
   });
 }
 
-export async function createApp(monitor?) {
+export async function createApp(monitor) {
   const datadog = monitor && monitor.datadog;
   const OpticsAgent = monitor && monitor.OpticsAgent;
 
@@ -170,7 +170,7 @@ export async function createApp(monitor?) {
 
 
   // create all of the models on app start up
-  let createdModels = {} as any;
+  let createdModels = {};
   Object.keys(models).forEach((name) => {
     createdModels[name] = new models[name]({ cache });
   });
@@ -196,7 +196,7 @@ export async function createApp(monitor?) {
       // Anderson, SC
       if (ip === "::1") ip = "2602:306:b81a:c420:ed84:6327:b58e:6a2d";
 
-      let context: any = {
+      let context = {
         hashedToken: request.headers.authorization,
         cache,
         ip,
@@ -211,7 +211,7 @@ export async function createApp(monitor?) {
         try {
           user = await timeout(
             createdModels.User.getByHashedToken(context.hashedToken)
-          , 500) as UserDocument;
+          , 500);
           context.user = user;
         } catch (e) {/* tslint:disable-line */}
 
@@ -238,9 +238,9 @@ export async function createApp(monitor?) {
       }
 
       return {
-        context: context as Context,
+        context: context,
         schema: executabledSchema,
-        formatError:  error => {
+        formatError: error => {
           if (process.env.NODE_ENV === "production") {
             if (datadog) datadog.increment("graphql.error");
             context.sentry.captureError(error, parsers.parseRequest(request));
@@ -256,10 +256,3 @@ export async function createApp(monitor?) {
   };
 
 };
-
-export interface Context {
-  hashedToken: string;
-  cache: Cache;
-  user: UserDocument;
-  models: any;
-}

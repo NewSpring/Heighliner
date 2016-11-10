@@ -1,19 +1,13 @@
 
-import mongoose, {
-  Schema,
-  Connection,
-  Model,
-  Document,
-} from "mongoose";
+import mongoose from "mongoose";
 // import DataLoader from "dataloader";
 
 // Use native promises
-// XXX typscript throws an error here
-// mongoose.Promise = global.Promise;
+mongoose.Promise = global.Promise;
 
 let db;
 let dd;
-export function connect(address: string, monitor?: any): Promise<boolean> {
+export function connect(address, monitor) {
   dd = monitor && monitor.datadog;
   return new Promise((cb) => {
 
@@ -34,50 +28,42 @@ mongoose.connection.on("error",
 );
 
 export class MongoConnector {
-  public db: Connection;
-  public model: Model<Document>;
-
-  private count: number = 0;
-
-  constructor(collection: string, schema: Object = {}) {
+  constructor(collection, schema) {
     this.db = db;
     this.model = mongoose.model(collection, new Schema(schema));
 
     // XXX integrate data loader
   }
 
-  public findOne(...args): Promise<Object> {
+  findOne(...args) {
     return this.time(this.model.findOne.apply(this.model, args));
   }
 
-  private time(promise: Promise<any>): Promise<any> {
+  time(promise){
     const prefix = "MongoConnector";
     const count = this.getCount();
-    const start = new Date() as any;
+    const start = new Date();
     const label = `${prefix}-${count}`;
     if (dd) dd.increment(`${prefix}.transaction.count`);
-    console.time(label); // tslint:disable-line
+    console.time(label);
     return promise
       .then(x => {
-        const end = new Date() as any;
+        const end = new Date();
         if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
-        console.timeEnd(label); // tslint:disable-line
+        console.timeEnd(label);
         return x;
       })
       .catch(x => {
-        const end = new Date() as any;
+        const end = new Date();
         if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
         if (dd) dd.increment(`${prefix}.transaction.error`);
-        console.timeEnd(label); // tslint:disable-line
+        console.timeEnd(label);
         return x;
       });
   }
 
-
-
-  private getCount(): number {
+  getCount(): number {
     this.count++;
     return this.count;
   }
-
 }

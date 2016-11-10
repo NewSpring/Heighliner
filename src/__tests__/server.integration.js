@@ -9,11 +9,11 @@ import { createApp } from "../schema";
 let Heighliner;
 beforeEach(async () => {
   const app = express();
- const { graphql } = await createApp();
+  const { graphql } = await createApp();
 
   app.use(bodyParser.json());
 
- app.use("/graphql", apolloExpress(graphql));
+  app.use("/graphql", apolloExpress(graphql));
 
   Heighliner = tester({
     server: create(app),

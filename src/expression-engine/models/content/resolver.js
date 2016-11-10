@@ -168,7 +168,7 @@ export default {
 
   ContentMeta: {
     site: ({ site_id }) => createGlobalId(site_id, "Sites"),
-    channel: ({ channel_id }: any) => createGlobalId(channel_id, "Channel"),
+    channel: ({ channel_id }) => createGlobalId(channel_id, "Channel"),
     series: ({ series_id }, _, $, { parentType }) => createGlobalId(series_id, parentType.name),
     urlTitle: ({ url, exp_channel_title }) => (
       url || exp_channel_title && exp_channel_title.url_title
@@ -201,12 +201,12 @@ export default {
 
     // deprecated
     siteId: ({ site_id }) => createGlobalId(site_id, "Sites"),
-    channelId: ({ channel_id }: any) => createGlobalId(channel_id, "Channel"),
+    channelId: ({ channel_id }) => createGlobalId(channel_id, "Channel"),
   },
 
   Content: {
-    id: ({ entry_id }: any, _, $, { parentType }) => createGlobalId(entry_id, parentType.name),
-    channel: ({ channel_id }: any) => createGlobalId(channel_id, "Channel"),
+    id: ({ entry_id }, _, $, { parentType }) => createGlobalId(entry_id, parentType.name),
+    channel: ({ channel_id }) => createGlobalId(channel_id, "Channel"),
     channelName: ({ exp_channel }) => exp_channel.channel_name,
     title: ({ exp_channel_title }) => exp_channel_title.title,
     status: ({ exp_channel_title }) => exp_channel_title.status,
