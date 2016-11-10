@@ -9,7 +9,7 @@
     "global": "file:./global.d.ts",
     "hapi": "registry:dt/hapi#13.0.0+20160709092105",
     "isomorphic-fetch": "registry:dt/isomorphic-fetch#0.0.0+20160524142046",
-    "jest": "registry:dt/jest#0.9.0+20160706021812",
+    "jest": "registry:dt/jest#16.0.0+20161025131017",
     "koa": "registry:dt/koa#2.0.0+20160724024233",
     "mime": "registry:dt/mime#0.0.0+20160316155526",
     "moment": "registry:dt/moment#2.8.0+20160316155526",

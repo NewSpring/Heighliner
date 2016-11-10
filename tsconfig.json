@@ -17,6 +17,7 @@
     "typings/modules",
     "node_modules",
     "**/.git",
+    "**/__tests__",
     "dist",
     "lib",
     "global.d.ts"
