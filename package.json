@@ -82,6 +82,7 @@
     "webpack-dotenv-plugin": "^1.4.0",
     "webpack-hot-middleware": "^2.13.2",
     "webpack-node-externals": "^1.5.4",
+    "webpack-validator": "^2.2.9",
     "word-wrap": "^1.1.0"
   },
   "config": {

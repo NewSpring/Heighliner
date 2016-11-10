@@ -1,3 +1,5 @@
+
+const validate = require("webpack-validator");
 const nodeExternals = require("webpack-node-externals");
 const DotenvPlugin = require("webpack-dotenv-plugin");
 const NpmInstallPlugin = require("npm-install-webpack-plugin");
@@ -5,10 +7,8 @@ const webpack = require("webpack");
 const path = require("path");
 const fs = require("fs");
 
-module.exports = {
-	entry: [
-		"./src/server.js"
-	],
+module.exports = validate({
+	entry: "./src/server.js",
 	target: "node",
 	output: {
 		path: path.resolve(__dirname, "./lib"),
@@ -19,12 +19,7 @@ module.exports = {
 		new NpmInstallPlugin(),
 		new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('development')
-    }),
-		// new DashboardPlugin(),
 		new DotenvPlugin({ sample: "./.env.example" }),
-    // new webpack.HotModuleReplacementPlugin(),
 	],
 	module: {
 		loaders: [
@@ -36,4 +31,4 @@ module.exports = {
 		]
 	},
 	externals: [nodeExternals()]
-}
+});
