@@ -20,7 +20,6 @@
     "testPathDirs": [
       "./src"
     ],
-    "coverageDirectory": "./.coverage",
     "collectCoverageFrom": [
       "src/**/*.js"
     ],
