@@ -14,10 +14,10 @@ cache:
 
 before_install:
   - time npm install -g coveralls --cache-min 999999999
-  - time npm i -g yarn --cache-min 999999999
+  # - time npm i -g yarn --cache-min 999999999
 
 install:
-  - yarn
+  - npm i
 
 script:
   - npm test -- --verbose --coverage
