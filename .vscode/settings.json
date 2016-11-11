@@ -15,9 +15,12 @@
     "coverage": true,
     ".babelrc": true,
     ".gitignore": true,
+    ".eslintrc": true,
     ".env*": true,
-    "**/*.yml": false,
+    "**/*.yml": true,
     "scripts": true,
-    "npm-debug.log": true
+    "npm-debug.log": true,
+    "webpack.config.js": true,
+    "yarn.lock": true
   }
 }

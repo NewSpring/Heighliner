@@ -16,4 +16,4 @@ RUN npm install
 #   rm -rf /tmp/* /var/cache/apk/* /root/.npm /root/.node-gyp
 
 EXPOSE 80
-CMD ["node", "index.js"]
+CMD ["node", "./lib/server.js"]
