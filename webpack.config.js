@@ -7,7 +7,7 @@ const { getIfUtils, removeEmpty } = require("webpack-config-utils");
 const webpack = require("webpack");
 const path = require("path");
 
-const { ifNotProduction } = getIfUtils(process.env.NODE_ENV);
+const { ifProduction, ifNotProduction } = getIfUtils(process.env.NODE_ENV);
 
 module.exports = validate({
   entry: "./src/server.js",
@@ -18,10 +18,17 @@ module.exports = validate({
   },
   recordsPath: path.resolve(__dirname, "lib/_records"),
   plugins: removeEmpty([
+    ifProduction(new webpack.optimize.DedupePlugin()),
+    ifProduction(new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        screw_ie8: true,
+        warnings: false,
+      },
+    })),
     ifNotProduction(new NpmInstallPlugin()),
     ifNotProduction(new webpack.HotModuleReplacementPlugin()),
     new webpack.NoErrorsPlugin(),
-    ifNotProduction(new DotenvPlugin({ sample: "./.env.example" })),
+    ifNotProduction(ifNotProduction() && new DotenvPlugin({ sample: "./.env.example" })),
   ]),
   module: {
     loaders: [
