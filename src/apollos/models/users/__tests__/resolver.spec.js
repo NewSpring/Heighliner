@@ -38,6 +38,11 @@ const sampleData = {
   ],
 };
 
+it("has a currentUser root level query which pulls from the context", () => {
+  const { currentUser } = Resolver.Query;
+  expect(currentUser(null, null, { user: "TEST" })).toBe("TEST");
+  expect(currentUser(null, null, {})).toBe(null);
+});
 
 it("`UserTokens` should return the login token from the data", () => {
   const { UserTokens } = Resolver;

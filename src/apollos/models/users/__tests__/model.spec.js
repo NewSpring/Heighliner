@@ -8,12 +8,12 @@ it("should expose the model", () => {
 });
 
 it("`getByHashedToken` should allow searching for a raw token", async () => {
-  let token = "testToken";
+  const token = "testToken";
   const users = new User();
   users.model.findOne = function mockedFindOne(mongoQuery) {
-    const matches = mongoQuery["$or"];
+    const matches = mongoQuery.$or;
 
-    for (let match of matches) {
+    for (const match of matches) {
       const tok = match["services.resume.loginTokens.hashedToken"];
       if (tok !== token) continue;
 
