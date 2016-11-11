@@ -2,6 +2,6 @@
 import ESV from "../model";
 
 it("should expose the get method", () => {
-  const esv = new ESV.ESV() as any;
+  const esv = new ESV.ESV();
   expect(esv.get).toBeDefined();
 });

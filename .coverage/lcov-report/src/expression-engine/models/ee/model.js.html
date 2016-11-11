@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/expression-engine/models/ee/model.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../../index.html">All files</a> / <a href="index.html">src/expression-engine/models/ee</a> model.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">34.48% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>10/29</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">21.05% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>4/19</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">22.22% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>2/9</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">36.36% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>8/22</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&nbsp;
+import { Heighliner } from "../../../util";
+&nbsp;
+export class EE extends Heighliner {
+  __type = "RockSystem";
+  id = "entry_id";
+&nbsp;
+<span class="fstat-no" title="function not covered" >  ge</span>tDate(day, month, year) {
+<span class="cstat-no" title="statement not covered" >    if (!day || !month || !year) <span class="cstat-no" title="statement not covered" >throw new Error("Missing information from `getDate`");</span></span>
+<span class="cstat-no" title="statement not covered" >    return `${new Date(Number(year), Number(month) - 1 , Number(day))}`;</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  ge</span>tDateFromUnix(timestamp) {
+<span class="cstat-no" title="statement not covered" >    return timestamp ? `${new Date(timestamp * 1000)}` : null;</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  co</span>ntentImages(markup) {
+<span class="cstat-no" title="statement not covered" >    if (!markup) <span class="cstat-no" title="statement not covered" >return [];</span></span>
+&nbsp;
+    let images = <span class="cstat-no" title="statement not covered" >markup.match(/src=".*\.(jpg|jpeg|png)"/gmi);</span>
+<span class="cstat-no" title="statement not covered" >    if (!images) <span class="cstat-no" title="statement not covered" >return [];</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return images</span>
+      .filter(<span class="fstat-no" title="function not covered" >x </span>=&gt; <span class="cstat-no" title="statement not covered" >x.slice(5, -1) !== "")</span>
+      .map(<span class="fstat-no" title="function not covered" >im</span>age =&gt; (<span class="cstat-no" title="statement not covered" >{ fileLabel: "inline", s3: image.slice(5, -1), url: image.slice(5, -1) })</span>);
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  sp</span>litByNewLines(tags) {
+<span class="cstat-no" title="statement not covered" >    if (!tags) <span class="cstat-no" title="statement not covered" >return [];</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return tags.replace("\\n", ",").split("\n");</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  ge</span>tSeries(series) {
+<span class="cstat-no" title="statement not covered" >    if (!series) <span class="cstat-no" title="statement not covered" >return false;</span></span>
+&nbsp;
+    // format: [dddd] [some-thing] Series Title
+    // match[1]: series id
+    // match[2]: series slug
+    // match[3]: series name
+    const seriesRegex = <span class="cstat-no" title="statement not covered" >/\[(\d*)\] \[(.*)\] (.*)/g;</span>
+<span class="cstat-no" title="statement not covered" >    return seriesRegex.exec(series);</span>
+  }
+&nbsp;
+  cleanMarkup(markup) {
+    if (!markup) return false;
+&nbsp;
+    let parsed = markup.match(/src="{assets_\d*.*}"/gmi);
+    if (!parsed) return markup;
+&nbsp;
+    // remove {assets_IDSTRING:} and make protocal relative
+    markup = markup.replace(/{assets_\d*.*?}/gmi, (link) =&gt; {
+      link = link.trim().substring(0, link.length - 1);
+      link = link.replace(/{assets_\d*:/gmi, "");
+      return link;
+    });
+&nbsp;
+    // make all links protocal relative
+    return markup.replace(/https*:\/\//g, "\/\/");
+  }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Nov 10 2016 19:26:34 GMT-0500 (EST)
+</div>
+</div>
+<script src="../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../sorter.js"></script>
+</body>
+</html>

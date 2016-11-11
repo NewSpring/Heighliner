@@ -1,4 +1,0 @@
-
-type BinaryFile implements Node {
-  id: ID!
-}

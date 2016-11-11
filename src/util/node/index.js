@@ -1,5 +1,5 @@
 
-import schema from "!!raw!./schema.graphql";
+import schema from "./schema";
 import resolver from "./resolver";
 import model, { createGlobalId, parseGlobalId } from "./model";
 

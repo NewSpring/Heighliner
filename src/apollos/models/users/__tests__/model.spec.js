@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { User } from "../model";
 
 it("should expose the model", () => {
-  const users = new User() as any;
+  const users = new User();
   expect(users.model).toBeTruthy();
 });
 

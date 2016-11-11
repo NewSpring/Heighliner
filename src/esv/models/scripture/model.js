@@ -5,7 +5,7 @@ import { defaultCache } from "../../../util/cache";
 class ESV extends ESVFetchConnector {
   __type = "ESV";
 
-  constructor({ cache }) {
+  constructor({ cache } = { cache: defaultCache }) {
     super();
     this.cache = cache;
   }

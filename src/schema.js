@@ -157,7 +157,7 @@ export async function createApp(monitor) {
   return {
     cache,
     models: createdModels,
-    graphqlnction (request) {
+    graphql: async (request) => {
       if (request && request.body && request.body.operationName) {
         const { operationName } = request.body;
         if (datadog) datadog.increment(`graphql.operation.${operationName}`);

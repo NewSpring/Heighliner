@@ -542,7 +542,7 @@ it("logs an error if missing a schedule in Rock", () => {
     expect(ScheduledTransaction.findOne).toBeCalledWith({
       where: sample.ScheduledTransaction,
     });
-    expect((console.error as any).mock.calls[0]).toMatchSnapshot();
+    expect((console.error).mock.calls[0]).toMatchSnapshot();
     console.error = originalError;
     expect(Transaction.post).toBeCalledWith(assign(
       sample.Transaction,

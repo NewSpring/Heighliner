@@ -87,47 +87,47 @@ describe("translate", () => {
   });
 
   it("returns null for a refund transaction", () => {
-    const example = defaultsDeep({ action: { action_type: "refund"} }, standard) as any;
+    const example = defaultsDeep({ action: { action_type: "refund"} }, standard);
     expect(translate(example, { Id: 3 } )).toBeFalsy();
   });
 
   xit("correctly formats refunds", () => {
-    const example = defaultsDeep({ action: { action_type: "refund"} }, standard) as any;
+    const example = defaultsDeep({ action: { action_type: "refund"} }, standard);
     expect(translate(example, { Id: 3 } )).toMatchSnapshot();
   });
 
   it("returns null for a credit transaction", () => {
-    const example = defaultsDeep({ action: { action_type: "credit"} }, standard) as any;
+    const example = defaultsDeep({ action: { action_type: "credit"} }, standard);
     expect(translate(example, { Id: 3 } )).toBeFalsy();
   });
 
   it("returns null for a auth transaction", () => {
-    const example = defaultsDeep({ action: { action_type: "auth"} }, standard) as any;
+    const example = defaultsDeep({ action: { action_type: "auth"} }, standard);
     expect(translate(example, { Id: 3 } )).toBeFalsy();
   });
 
   it("returns null for a capture transaction", () => {
-    const example = defaultsDeep({ action: { action_type: "capture"} }, standard) as any;
+    const example = defaultsDeep({ action: { action_type: "capture"} }, standard);
     expect(translate(example, { Id: 3 } )).toBeFalsy();
   });
 
   it("returns null for a void transaction", () => {
-    const example = defaultsDeep({ action: { action_type: "void"} }, standard) as any;
+    const example = defaultsDeep({ action: { action_type: "void"} }, standard);
     expect(translate(example, { Id: 3 } )).toBeFalsy();
   });
 
   it("returns null for a return transaction", () => {
-    const example = defaultsDeep({ action: { action_type: "return"} }, standard) as any;
+    const example = defaultsDeep({ action: { action_type: "return"} }, standard);
     expect(translate(example, { Id: 3 } )).toBeFalsy();
   });
 
   xit("correctly formats a return action", () => {
-    const example = defaultsDeep({ action: { action_type: "return"} }, standard) as any;
+    const example = defaultsDeep({ action: { action_type: "return"} }, standard);
     expect(translate(example, { Id: 3 } )).toMatchSnapshot();
   });
 
   it("allows sale to not be the first action", () => {
-    const example = defaultsDeep({}, NMIExample) as any;
+    const example = defaultsDeep({}, NMIExample);
     const sale = example.action[0];
     const other = example.action[1];
     const settle = example.action[2];
@@ -143,7 +143,7 @@ describe("translate", () => {
         "quantity": "10.0000",
         "description": "Step Up",
       },
-    ] }, standard) as any;
+    ] }, standard);
     expect(translate(example, { Id: 3 } )).toMatchSnapshot();
   });
 

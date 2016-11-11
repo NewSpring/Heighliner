@@ -1,29 +1,29 @@
 import { EE } from "../model";
 
 it("`cleanMarkup` should exist", () => {
-  const ee = new EE() as any;
+  const ee = new EE();
   expect(ee.cleanMarkup).toBeTruthy();
 });
 
 it("`cleanMarkup` should be a function", () => {
-  const ee = new EE() as any;
+  const ee = new EE();
   expect(typeof ee.cleanMarkup).toBe("function");
 });
 
 it("`cleanMarkup` should return false if no markup", () => {
-  const ee = new EE() as any;
+  const ee = new EE();
   const result = ee.cleanMarkup(null);
   expect(result).toBe(false);
 });
 
 it("`cleanMarkup` should return input if nothing to parse", () => {
-  const ee = new EE() as any;
+  const ee = new EE();
   const result = ee.cleanMarkup("test");
   expect(result).toBe("test");
 });
 
 it("`cleanMarkup` should remove simple asset tag", () => {
-  const ee = new EE() as any;
+  const ee = new EE();
   const testImage = "//test.com/test.jpg";
   const testAsset = `{assets_40016:${testImage}}`;
   const testMarkup = `<img src="${testAsset}" />`;
@@ -32,7 +32,7 @@ it("`cleanMarkup` should remove simple asset tag", () => {
 });
 
 it("`cleanMarkup` should remove https", () => {
-  const ee = new EE() as any;
+  const ee = new EE();
   const testImage = "//test.com/test.jpg";
   const testAsset = `{assets_40016:https:${testImage}}`;
   const testMarkup = `<img src="${testAsset}" />`;
@@ -41,7 +41,7 @@ it("`cleanMarkup` should remove https", () => {
 });
 
 it("`cleanMarkup` should remove multiple asset tags", () => {
-  const ee = new EE() as any;
+  const ee = new EE();
   const testImage1 = "//test.com/test.jpg";
   const testImage2 = "//test.com/test2.jpg";
   const testAsset1 = `{assets_40016:https:${testImage1}}`;
@@ -62,7 +62,7 @@ it("`cleanMarkup` should remove multiple asset tags", () => {
 });
 
 it("`cleanMarkup` should remove multiple asset tags on the same line", () => {
-  const ee = new EE() as any;
+  const ee = new EE();
   const testImage1 = "//test.com/test.jpg";
   const testImage2 = "//test.com/test2.jpg";
   const testAsset1 = `{assets_40016:https:${testImage1}}`;

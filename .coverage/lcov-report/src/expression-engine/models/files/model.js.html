@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/expression-engine/models/files/model.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../../index.html">All files</a> / <a href="index.html">src/expression-engine/models/files</a> model.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/75</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/42</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/17</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/32</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162</td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { merge } from "lodash";<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+&nbsp;
+import { defaultCache } from "../../../util/cache";
+&nbsp;
+import {
+  ChannelData,
+  // channelDataSchema,
+} from "../content/tables";
+&nbsp;
+import {
+  Matrix,
+  MatrixCol,
+} from "../ee/matrix";
+&nbsp;
+import {
+  Assets,
+  // assetsFilesSchema,
+  AssetsSelections,
+  // assetsSelectionSchema,
+  AssetsFolders,
+  // assetsFoldersSchema,
+  AssetsSources,
+  // assetsSourcesSchema,
+} from "../files/tables";
+&nbsp;
+import { EE } from "../ee";
+&nbsp;
+export <span class="cstat-no" title="statement not covered" >class File exte<span class="fstat-no" title="function not covered" >nd</span>s EE {<span class="cstat-no" title="statement not covered" ></span></span>
+  __type = "File";
+&nbsp;
+  constructor({ cache } = { cache: de<span class="fstat-no" title="function not covered" >fault</span>Cache }) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
+    super();
+    this.cache = cache;
+  }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
+&nbsp;
+  async getFromId(file_id, guid) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span>
+&nbsp;
+    return await this.cache.get(guid, (<span class="fstat-no" title="function not covered" >) </span>=&gt; AssetsSelections.findOne({
+      where: { file_id: Number(file_id) },
+      attributes: ["col_id", "file_id"],
+      include: [
+        { model: Matrix.model },
+        { model: MatrixCol.model, attributes: ["col_name", "col_label"] },
+        {
+          model: Assets.model,
+          attributes: ["file_name"],
+          include: [
+            { model: AssetsSources.model, attributes: ["settings"] },
+            { model: AssetsFolders.model, attributes: ["full_path"] },
+          ],
+        },
+      ],
+    })
+      .then(x =&gt; (merge(
+        {
+          file_id: x.file_id,
+          fileLabel: x.exp_matrix_col &amp;&amp; x.exp_matrix_col.col_label,
+        },
+        this.generateFileName(x.exp_assets_file)<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span>
+      )))
+    );
+&nbsp;
+  }
+&nbsp;
+  // XXX type this
+  generateFileName(fileAssets) {<span class="fstat-no" title="function not covered" ></span>
+&nbsp;
+    const { file_name, exp_assets_source, exp_assets_folder } = fileAssets;
+    const { full_path } = exp_assets_folder;
+&nbsp;
+&nbsp;
+    const settings = <span class="cstat-no" title="statement not covered" >JSON.parse(exp_assets_source.settings);</span>
+    if<span class="cstat-no" title="statement not covered" > (settings.subfolder[settings.subfolder.length - 1 ] !== "/") {</span>
+      se<span class="cstat-no" title="statement not covered" >ttings.subfolder = settings.subfolder + "/";</span>
+    }
+    const s3 = <span class="cstat-no" title="statement not covered" >settings.url_prefix + settings.subfolder + full_path + file_name;</span>
+    let cloudfront = fa<span class="cstat-no" title="statement not covered" >lse;</span>
+    let url = fa<span class="cstat-no" title="statement not covered" >lse;</span>
+    if<span class="cstat-no" title="statement not covered" > (settings.bucket === "ns.images" || settings.bucket === "images.newspring.cc") {</span>
+      cl<span class="cstat-no" title="statement not covered" >oudfront = "//dg0ddngxdz549.cloudfront.net/" + settings.subfolder + full_path + file_name;</span>
+    }
+    if<span class="cstat-no" title="statement not covered" > (settings.bucket === "ns.images" || settings.bucket === "images.newspring.cc") {</span>
+      ur<span class="cstat-no" title="statement not covered" >l = "//drhztd8q3iayu.cloudfront.net/" + settings.subfolder + full_path + file_name;</span>
+    }
+&nbsp;
+    re<span class="cstat-no" title="statement not covered" >turn {</span>
+      fileName: file_name,
+      url: url || s3,
+      // deprecated
+      s3,
+      cloudfront,
+    };
+  }<span class="fstat-no" title="function not covered" ></span>
+&nbsp;
+  fuzzyMatchKey(obj, key) {
+    fo<span class="cstat-no" title="statement not covered" >r (let k in obj) {</span>
+      if<span class="cstat-no" title="statement not covered" > (k.indexOf(key) &gt; -1) re<span class="cstat-no" title="statement not covered" >turn obj[k];</span></span>
+    }
+  }<span class="fstat-no" title="function not covered" ></span>
+&nbsp;
+  getDuration(file) {
+    re<span class="cstat-no" title="statement not covered" >turn file.exp_matrix_datum &amp;&amp; this.fuzzyMatchKey(file.exp_matrix_datum, "duration");</span>
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+&nbsp;
+  async getFilesFromContent(<span class="cstat-no" title="statement not covered" >entry_id, name = "Hero Image", field_id, duration = null) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span></span></span>
+    if (!entry_id || !field_id) return [];<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+&nbsp;
+    // XXX make this more dynamic
+    let dynamicI<span class="cstat-no" title="statement not covered" >ncludes = [</span>
+      {
+        model: Assets.model,
+        attributes: ["file_name"],
+        include: [
+          { model: AssetsSources.model, attributes: ["settings"] },
+          { model: AssetsFolders.model, attributes: ["full_path"] },<span class="cstat-no" title="statement not covered" ></span>
+        ],
+      },
+    ];
+&nbsp;
+    if (name.indexOf(".") === -1) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span></span>
+      const columns = await this.cache.get(`matrix:${field_id}`, () =&gt; MatrixCol.f<span class="fstat-no" title="function not covered" >in</span>d({
+        where: { field_id },
+        attributes: ["col_id", "col_name", "col_label"],<span class="cstat-no" title="statement not covered" ></span>
+      }));
+&nbsp;
+      let column<span class="cstat-no" title="statement not covered" >Ids = columns.map(x =&gt; [<span class="fstat-no" title="function not covered" >`c</span>ol_id_${x.col_id}`, x.col_name]);</span>
+      // uses matrix
+      dynamicInc<span class="cstat-no" title="statement not covered" >ludes.unshift({ model: Matrix.model, where: { field_id }, attributes: columnIds });</span>
+      dynamicInc<span class="cstat-no" title="statement not covered" >ludes.unshift({ model: MatrixCol.model, attributes: ["col_name", "col_label"] });</span>
+    }
+&nbsp;
+    const query <span class="cstat-no" title="statement not covered" >= { entry_id, field_id, name };<span class="cstat-no" title="statement not covered" ></span></span>
+    return this.cache.get(this.cache.encode(query, "matrix"), () =&gt;<span class="fstat-no" title="function not covered" > C</span>hannelData.find({
+      where: { entry_id },
+      attributes: ["entry_id"],
+      include: [
+        {
+          model: AssetsSelections.model,
+          attributes: ["col_id", "file_id"],
+          where: { field_id },
+          include: dynamicIncludes,
+        },
+      ],
+    })
+      .then(data =&gt; data.map(x =&gt; x.exp_assets_selection))
+      .then(data =&gt; data.map(x =&gt; (merge(
+        {
+          file_id: x.file_id,
+          fileLabel: x.exp_matrix_col &amp;&amp; x.exp_matrix_col.col_label,
+          title: x.exp_matrix_datum &amp;&amp; this.fuzzyMatchKey(x.exp_matrix_datum, "title"),
+          duration: this.getDuration(x) || duration,
+        },
+        this.generateFileName(x.exp_assets_file)<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span>
+      ))))
+    );
+  }
+}
+&nbsp;
+export default {
+  File,
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Nov 10 2016 19:26:34 GMT-0500 (EST)
+</div>
+</div>
+<script src="../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../sorter.js"></script>
+</body>
+</html>

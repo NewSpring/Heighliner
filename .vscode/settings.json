@@ -13,7 +13,7 @@
     "Dockerfile": true,
     "data": true,
     "coverage": true,
-    ".babelrc": true,
+    ".babelrc": false,
     ".gitignore": true,
     ".env*": true,
     "**/*.yml": true,

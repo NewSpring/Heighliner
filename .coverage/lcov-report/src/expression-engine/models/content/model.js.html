@@ -1,0 +1,1295 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/expression-engine/models/content/model.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../../index.html">All files</a> / <a href="index.html">src/expression-engine/models/content</a> model.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/214</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/74</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/85</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/78</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411</td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+import { pick, flatten, find, uniq, sampleSize } from "lodash";
+import { defaultCache } from "../../../util/cache";
+import Sequelize from "sequelize";
+import { parseGlobalId } from "../../../util/node/model";
+&nbsp;
+import {
+  Channels,
+  channelSchema,
+  ChannelFields,
+  // channelFieldSchema,
+  ChannelTitles,
+  channelTitleSchema,
+  ChannelData,
+  channelDataSchema,
+&nbsp;
+  LowReorder,
+  LowReorderOrder,
+} from "./tables";
+&nbsp;
+import {
+  Matrix,
+  MatrixCol,
+} from "../ee/matrix";
+&nbsp;
+import {
+  Playa,
+} from "../ee/playa";
+&nbsp;
+import {
+  Tags,
+  TagEntries,
+} from "../ee/tags";
+&nbsp;
+import {
+  Snippets,
+} from "../ee/snippets";
+&nbsp;
+import { EE } from "../ee";
+&nbsp;
+export cla<span class="cstat-no" title="statement not covered" >ss Content extends<span class="fstat-no" title="function not covered" > E</span>E {<span class="cstat-no" title="statement not covered" ></span></span>
+  __type =  "Content";
+&nbsp;
+  constructor({ cache } = { cache: de<span class="fstat-no" title="function not covered" >faultCac</span>he }) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
+    super();
+    this.cache = cache;
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+&nbsp;
+  pickField(name, fields) {
+    let fieldName = na<span class="cstat-no" title="statement not covered" >me;</span>
+    fi<span class="cstat-no" title="statement not covered" >elds.forEach(x <span class="fstat-no" title="function not covered" >=&gt;</span> {</span>
+      if<span class="cstat-no" title="statement not covered" > (x.field_name !== name) re<span class="cstat-no" title="statement not covered" >turn;</span></span>
+&nbsp;
+      fi<span class="cstat-no" title="statement not covered" >eldName = `field_id_${x.field_id}`;</span>
+    });
+&nbsp;
+    re<span class="cstat-no" title="statement not covered" >turn fieldName;</span>
+  }<span class="fstat-no" title="function not covered" ></span>
+&nbsp;
+  createFieldNames(fields, remove) {
+    re<span class="cstat-no" title="statement not covered" >turn fields.map(fi<span class="fstat-no" title="function not covered" >el</span>d =&gt; {</span>
+      let name = fi<span class="cstat-no" title="statement not covered" >eld.field_name;</span>
+&nbsp;
+      if<span class="cstat-no" title="statement not covered" > (remove) {</span>
+        let splitName = na<span class="cstat-no" title="statement not covered" >me.split("_");</span>
+        sp<span class="cstat-no" title="statement not covered" >litName.shift();</span>
+        na<span class="cstat-no" title="statement not covered" >me = splitName.join("_");</span>
+      } else {
+        na<span class="cstat-no" title="statement not covered" >me = `${name}@dynamic`;</span>
+      }
+&nbsp;
+      re<span class="cstat-no" title="statement not covered" >turn [`field_id_${field.field_id}`, name];</span>
+    });
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+&nbsp;
+  async getFromId(id, guid) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span>
+    if (!id) return P<span class="cstat-no" title="statement not covered" >romise.resolve(nul<span class="cstat-no" title="statement not covered" >l</span>);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span></span>
+    const fields = await this.cache.get(`fields:${id}`, () =&gt; ChannelData.fi<span class="fstat-no" title="function not covered" >nd</span>({
+      where: { entry_id: Number(id) },
+      include: [ { model: Channels.model,  include: [ { model: ChannelFields.model } ] } ],
+    })
+      .then(x =&gt; flatten(x.map(y =&gt; y.exp_channel.exp_channel_field)))
+      .then(x =&gt; this.createFieldNames(x, true))<span class="cstat-no" title="statement not covered" ></span>
+    );
+&nbsp;
+    const exp_ch<span class="cstat-no" title="statement not covered" >annel_fields = this.createFieldObject(fields);<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+    return await this.cache.get(guid, (<span class="fstat-no" title="function not covered" >) </span>=&gt; ChannelData.findOne({
+      where: { entry_id: Number(id) },
+      attributes:  ["entry_id", "channel_id", "site_id"].concat(fields),
+      include: [
+        { model: Channels.model},
+        {
+          model: ChannelTitles.model,
+          where: {
+            entry_date: { $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+            expiration_date: {
+              $or: [
+                { $eq: 0 },
+                { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+              ],
+            },
+          },
+        },
+      ],
+    })
+      .then(x =&gt; {
+        if (!x.exp_channel) return null;
+        x.exp_channel.exp_channel_fields = exp_channel_fields;
+        return x;
+      })<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span>
+    );
+  }
+&nbsp;
+  createFieldObject(fields) {
+    let fieldObject = {}<span class="cstat-no" title="statement not covered" >;</span>
+    fi<span class="cstat-no" title="statement not covered" >elds.forEach(x <span class="fstat-no" title="function not covered" >=&gt;</span> {</span>
+      const [fieldId, fieldName] = x;
+      fi<span class="cstat-no" title="statement not covered" >eldObject[fieldName] = fieldId;</span>
+    });
+    re<span class="cstat-no" title="statement not covered" >turn fieldObject;</span>
+  }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+&nbsp;
+  async getContentFromMatrix(entry_id, name, field_id) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span>
+    if (!entry_id || !field_id) return [];<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span></span></span>
+&nbsp;
+    const columns = await this.cache.get(`matrix:${field_id}`, () =&gt; MatrixCol.fin<span class="fstat-no" title="function not covered" >d(</span>{
+        where: { field_id },
+        attributes: ["col_id", "col_name", "col_label"],<span class="cstat-no" title="statement not covered" ></span>
+      }));
+&nbsp;
+    let columnId<span class="cstat-no" title="statement not covered" >s = columns.map(x =&gt; [`c<span class="fstat-no" title="function not covered" >ol</span>_id_${x.col_id}`, x.col_name]);</span>
+&nbsp;
+    const query <span class="cstat-no" title="statement not covered" >= { entry_id, name, field_id };<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+    return await this.cache.get(this.cache.encode(query), (<span class="fstat-no" title="function not covered" >) </span>=&gt; ChannelData.find({
+      where: { entry_id },
+      attributes: ["entry_id"],
+      include: [
+        { model: Matrix.model, where: { field_id }, attributes: columnIds },
+      ],
+    })
+      .then(x =&gt; flatten(x.map(y =&gt; y.exp_matrix_data))));<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span></span>
+  };
+&nbsp;
+  async getFromLowReorderSet(<span class="cstat-no" title="statement not covered" >setNa<span class="cstat-no" title="statement not covered" ></span>me) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span>
+    // XXX cache breaking on this set
+    return await this.cache.get(`${setName}:LowReorderSetName`, () =&gt; LowReorderOrder.findOn<span class="fstat-no" title="function not covered" >e(</span>{
+      attributes: ["sort_order"],
+      include: [{ model: LowReorder.model, where: { set_name: setName } }],
+    })
+      .then(x =&gt; x.sort_order.split("|"))
+      .then(x =&gt; x.filter(y =&gt; !!y).map(z =&gt; ({ entry_id: z }))) // used so the next line can work
+      .then(this.getFromIds.bind(this))
+      .then(x =&gt; x.filter(y =&gt; !!y))
+    , { ttl: 3600 }); // expire this look<span class="cstat-no" title="statement not covered" >up every hour<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span></span>
+  }
+&nbsp;
+  async getEntryFromFieldValue(value, field_id, c<span class="cstat-no" title="statement not covered" >hanne</span>l_id) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span>
+&nbsp;
+    let include <span class="cstat-no" title="statement not covered" >= [];</span>
+    if (channel_<span class="cstat-no" title="statement not covered" >id) {</span>
+      include = [{<span class="cstat-no" title="statement not covered" > model: Channels.model, where: { channel_id } }];</span>
+    }
+&nbsp;
+    let vars = {<span class="cstat-no" title="statement not covered" > value, field_id, channel_id };<span class="cstat-no" title="statement not covered" ></span></span>
+    return this.cache.get(this.cache.encode(vars), () =&gt;<span class="fstat-no" title="function not covered" > C</span>hannelData.findOne({
+      attributes: ["entry_id"],
+      where: { [field_id]: value },
+      include,
+    })
+      .then(x =&gt; ([x]))// used so the next line can work
+      .then(this.getFromIds.bind(this))
+      .then(x =&gt; (x[0]))<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span>
+    );
+  }
+&nbsp;
+  async findByParentId(entr<span class="cstat-no" title="statement not covered" >y_id, channels) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span>
+    // XXX make this single request by relating entries via ChannelData
+    return this.cache.get(`${entry_id}:Playa`, () =&gt; Playa.find({<span class="fstat-no" title="function not covered" ></span>
+        where: { child_entry_id: entry_id },
+        attributes: [["parent_entry_id", "entry_id"]],
+      })
+    , { cache: false }) // this intermentally breaks when cached
+      .then(this.getFromIds.bind(this))
+      // XXX remove when channel is part of query
+      .then((x) =&gt; x.f<span class="fstat-no" title="function not covered" >il</span>ter(
+        y =&gt; !channels.length || channels.indexOf(y &amp;&amp; y.exp_channel.channel_name) &gt; -1<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span>
+      ))
+      ;
+  }
+&nbsp;
+  async findByChi<span class="cstat-no" title="statement not covered" >ldId(entry_id) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span>
+    return this.cache.get(`${entry_id}:Playa`, () =&gt; Playa.findOne({<span class="fstat-no" title="function not covered" ></span>
+        where: { parent_entry_id: entry_id },
+        attributes: [["child_entry_id", "entry_id"]],
+      })
+    )
+      .then(x =&gt; [x])<span class="fstat-no" title="function not covered" ></span>
+      .then(this.getFromIds.bind(this))
+      .then(x =&gt; x[0]<span class="fstat-no" title="function not covered" >)<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+      ;
+  }
+&nbsp;
+  async getLiveStream() {
+    return this.getIsLive()
+      .then(x =&gt; (!x <span class="fstat-no" title="function not covered" >? </span>{ isLive: false } : x))
+      .then(({ isLive<span class="fstat-no" title="function not covered" > }</span>) =&gt; {
+        if (!isLiv<span class="cstat-no" title="statement not covered" >e) return { i<span class="cstat-no" title="statement not covered" >sLive, snippet_contents: null };</span></span>
+&nbsp;
+        return thi<span class="cstat-no" title="statement not covered" >s.getStreamUrl()</span>
+            .then(({ snip<span class="fstat-no" title="function not covered" >pe</span>t_contents }) =&gt; ({isLive, snippet_contents}));
+      });<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span></span></span></span></span></span>
+  }
+&nbsp;
+  async getStreamUrl() {
+    return this.cache.get("snippets:PUBLIC_EMBED_CODE", () =&gt;<span class="fstat-no" title="function not covered" > S</span>nippets.findOne({
+      where: { snippet_name: "PUBLIC_EMBED_CODE" },<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span></span></span></span></span></span>
+    }));
+  }
+&nbsp;
+  async getIsLive() {
+    return this.cache.get("newspring:live", () =&gt;<span class="fstat-no" title="function not covered" > C</span>hannelData.db.query(`
+      SELECT
+        ((WEEKDAY(CONVERT_TZ(NOW(),'+00:00','America/Detroit')) + 1) % 7) = m.col_id_366
+            AND (SELECT DATE_FORMAT(CONVERT_TZ(NOW(),'+00:00','America/Detroit'),'%H%i') TIMEONLY) BETWEEN m.col_id_367 AND m.col_id_368 AS isLive,
+            d.entry_id,
+            t.status
+      FROM
+        exp_channel_data d
+        JOIN exp_channel_titles t ON t.entry_id = d.entry_id
+        JOIN exp_matrix_data m ON m.entry_id = d.entry_id
+      WHERE
+        d.channel_id = 175
+        AND t.status = 'Live Stream Schedule'
+        AND t.entry_date &lt;= UNIX_TIMESTAMP()
+        AND (t.expiration_date = 0 OR t.expiration_date &gt;= UNIX_TIMESTAMP())
+        AND m.col_id_366 IS NOT NULL;
+    `, { type: Sequelize.QueryTypes.SELECT})
+    , { ttl: 60 })
+      .then(x =&gt; find<span class="fstat-no" title="function not covered" >(x</span>, { isLive: 1 }))<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span>
+      // tslint:enable
+  }
+&nbsp;
+  async findByTagName({ tagN<span class="cstat-no" title="statement not covered" >ame, includeCha</span>nnels }, { limit, <span class="cstat-no" title="statement not covered" >offset }, cache) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span>
+    // XXX fix no includeChannels on query
+    includeChann<span class="cstat-no" title="statement not covered" >els || (includeChannels = []); // tslint:di</span>sable-line
+    const query <span class="cstat-no" title="statement not covered" >= { tagName, limit, offset, includeChannels };<span class="cstat-no" title="statement not covered" ></span></span>
+    return this.cache.get(this.cache.encode(query, this.__type), () =&gt;<span class="fstat-no" title="function not covered" > C</span>hannelData.find({
+        attributes: ["entry_id"],
+        order: [
+          [ChannelTitles.model, "entry_date", "DESC"],
+        ],
+        include: [
+          {
+            model: ChannelTitles.model,
+            where: {
+              status: { $or: ["open", "featured" ]},
+              entry_date: { $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+              expiration_date: {
+                $or: [
+                  { $eq: 0 },
+                  { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+                ],
+              },
+            },
+          },
+          { model: Channels.model, where: { channel_name: { $or: includeChannels }} },
+          {
+            model: TagEntries.model,
+            include: [
+              {
+                model: Tags.model,
+                where: { tag_name: { $like: tagName }},
+              },
+            ],
+          },
+        ],
+      })
+    , { ttl: 3600, cache })
+      .then(x =&gt; {<span class="fstat-no" title="function not covered" ></span>
+        // XXX find how to do this in the query?
+        return x.s<span class="cstat-no" title="statement not covered" >lice(offset, limit + offset);</span>
+      })
+      .then(this.getFromIds.bind(this))
+      .then(x =&gt; x.fi<span class="fstat-no" title="function not covered" >lt</span>er(y =&gt; !!y))<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span>
+      ;
+  }
+&nbsp;
+&nbsp;
+  async findByTags({ tags<span class="cstat-no" title="statement not covered" >, includeCha</span>nnels, excludedIds<span class="cstat-no" title="statement not covered" > }, { offset, limit }, </span>cache) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span>
+    includeChann<span class="cstat-no" title="statement not covered" >els || (includeChannels = []); // tslint:di</span>sable-line
+     let channel<span class="cstat-no" title="statement not covered" >s = [</span>
+          "devotionals",
+          "articles",
+          "series_newspring",
+          "sermons",
+          "stories",
+          "newspring_albums",
+        ];
+&nbsp;
+      /*
+&nbsp;
+        Currently excluded channels come in uppercase and not the actual
+        channel name. Here we fix that
+&nbsp;
+        XXX make the setting dynamic and pulled from heighliner
+&nbsp;
+      */
+      includeCha<span class="cstat-no" title="statement not covered" >nnels = includeChannels</span>
+        .map(x =&gt; x.<span class="fstat-no" title="function not covered" >to</span>LowerCase())
+        .map(x =&gt; {<span class="fstat-no" title="function not covered" ></span>
+          if (x ==<span class="cstat-no" title="statement not covered" >= "series") return "<span class="cstat-no" title="statement not covered" >series_newspring";</span></span>
+          if (x ==<span class="cstat-no" title="statement not covered" >= "music") return "<span class="cstat-no" title="statement not covered" >albums_newspring";</span></span>
+          return x<span class="cstat-no" title="statement not covered" >;</span>
+        });
+&nbsp;
+    // only include what user hasn't excluded
+    includeChann<span class="cstat-no" title="statement not covered" >els = uniq(channels.concat(includeChannels));</span>
+    excludedIds <span class="cstat-no" title="statement not covered" >= excludedIds.map(x =&gt; parseGl<span class="fstat-no" title="function not covered" >ob</span>alId(x).id);</span>
+    const query <span class="cstat-no" title="statement not covered" >= { tags, limit, offset, includeChannels, excludedIds };</span>
+&nbsp;
+    // XXX would be great to add a WileySort to weight by tags
+    // XXX could / should we weight by users preference?
+    return this.<span class="cstat-no" title="statement not covered" >cache.get(this.cache.encode(query, this.__type), () =&gt; ChannelData.find({<span class="fstat-no" title="function not covered" ></span></span>
+        attributes: ["entry_id"],
+        where: { entry_id: { $notIn: excludedIds } },
+        order: [
+          [ChannelTitles.model, "entry_date", "DESC"],
+        ],
+        include: [
+          {
+            model: ChannelTitles.model,
+            where: {
+              status: { $or: ["open", "featured" ]},
+              entry_date: { $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+              expiration_date: {
+                $or: [
+                  { $eq: 0 },
+                  { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+                ],
+              },
+            },
+          },
+          { model: Channels.model, where: { channel_name: { $or: includeChannels }} },
+          {
+            model: TagEntries.model,
+            include: [
+              {
+                model: Tags.model,
+                where: { tag_name: { $in: tags }},
+              },
+            ],
+          },
+        ],
+      })
+    , { ttl: 3600, cache })
+      .then(x =&gt; {<span class="fstat-no" title="function not covered" ></span>
+        // XXX find how to do this in the query?
+        // return x.slice(offset, limit + offset);
+        // XXX make a WileySort for this instead of random stuff
+        return sam<span class="cstat-no" title="statement not covered" >pleSize(x, limit);</span>
+      })
+      .then(this.getFromIds.bind(this))
+      .then(x =&gt; x.fi<span class="fstat-no" title="function not covered" >lt</span>er(y =&gt; !!y))<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span>
+      ;
+  }
+&nbsp;
+  async find(que<span class="cstat-no" title="statement not covered" >ry = {}, cache) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span>
+    const { limi<span class="cstat-no" title="statement not covered" >t, offset } = query; // true options</span>
+&nbsp;
+    // channel data fields
+    const channe<span class="cstat-no" title="statement not covered" >lData = pick(query,  Object.keys(channelDataSchema));</span>
+    const channe<span class="cstat-no" title="statement not covered" >l = pick(query, Object.keys(channelSchema));</span>
+    // const channelFields = pick(query, Object.keys(channelFieldSchema));
+    const channe<span class="cstat-no" title="statement not covered" >lTitle = pick(query, Object.keys(channelTitleSchema));</span>
+    // This gets reset every hour currently
+    channelTitle<span class="cstat-no" title="statement not covered" >.entry_date = {</span>
+      $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())"),
+    };
+    channelTitle<span class="cstat-no" title="statement not covered" >.expiration_date = {</span>
+      $or: [
+        { $eq: 0 },
+        { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+      ],
+    };
+&nbsp;
+    if (channelT<span class="cstat-no" title="statement not covered" >itle.status === "open") channelTitle<span class="cstat-no" title="statement not covered" >.status = { $or: ["open", "featured"] };<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span></span>
+    return await this.cache.get(this.cache.encode(query, this.__type), (<span class="fstat-no" title="function not covered" >) </span>=&gt; ChannelData.find({
+      where: channelData,
+      attributes: ["entry_id"],
+      order: [
+        [ChannelTitles.model, "entry_date", "DESC"],
+      ],
+      include: [
+        { model: Channels.model, where: channel },
+        { model: ChannelTitles.model, where: channelTitle },
+      ],
+      limit,
+      offset,
+    })
+    , { ttl: 3600, cache: false })
+      .then(this.getFromIds.bind(this))
+      .then((x) =&gt; x.fi<span class="fstat-no" title="function not covered" >lt</span>er(y =&gt; !!y))<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span>
+      ;
+  }
+&nbsp;
+}
+&nbsp;
+export default {
+  Content,
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Nov 10 2016 19:26:34 GMT-0500 (EST)
+</div>
+</div>
+<script src="../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../sorter.js"></script>
+</body>
+</html>

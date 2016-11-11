@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/rock/mssql.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">All files</a> / <a href="index.html">src/rock</a> mssql.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">2.63% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>2/76</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/42</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/26</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">3.17% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>2/63</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import Sequelize, {
+  Options,
+  Connection,
+  Model,
+  DefineOptions,
+} from "sequelize";
+&nbsp;
+import { merge, isArray } from "lodash";
+// import DataLoader from "dataloader";
+&nbsp;
+import { createTables } from "./models";
+let noop = <span class="fstat-no" title="function not covered" >(.</span>..args) =&gt; {}; // tslint:disable-line
+let loud = console.log.bind(console, "MSSQL:"); // tslint:disable-line
+let db;
+let dd;
+&nbsp;
+export function <span class="fstat-no" title="function not covered" >connect(</span>database, username, password, opts, monitor) {
+<span class="cstat-no" title="statement not covered" >  dd = monitor &amp;&amp; monitor.datadog;</span>
+<span class="cstat-no" title="statement not covered" >  return new Promise(<span class="fstat-no" title="function not covered" >(c</span>b) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    opts = merge({}, opts, {</span>
+      dialect: "mssql",
+      logging: process.env.NODE_ENV !== "production" ? loud : noop, // tslint:disable-line
+      benchmark: process.env.NODE_ENV !== "production",
+      dialectOptions: {
+        readOnlyIntent: true,
+      },
+      define: {
+        timestamps: false,
+        freezeTableName: true,
+      },
+    });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    db = new Sequelize(database, username, password, opts);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    db.authenticate()</span>
+      .then(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >cb(true))</span>
+      .then(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >createTables())</span>
+      .catch(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; {
+<span class="cstat-no" title="statement not covered" >        console.error(e); </span>// tslint:disable-line
+<span class="cstat-no" title="statement not covered" >        cb(false);</span>
+      });
+  });
+}
+&nbsp;
+export class MSSQLConnector {
+  prefix = "";
+  count = 0;
+&nbsp;
+<span class="fstat-no" title="function not covered" >  co</span>nstructor(tableName, schema = <span class="branch-0 cbranch-no" title="branch not covered" >{},</span> options = <span class="branch-0 cbranch-no" title="branch not covered" >{},</span> api) {
+<span class="cstat-no" title="statement not covered" >    this.db = db;</span>
+<span class="cstat-no" title="statement not covered" >    options = merge(options, { tableName, underscored: true });</span>
+<span class="cstat-no" title="statement not covered" >    this.model = db.define(tableName, schema, options);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (api) <span class="cstat-no" title="statement not covered" >this.route = api;</span></span>
+    // rock's api uses a plural of the table name
+<span class="cstat-no" title="statement not covered" >    if (!api) <span class="cstat-no" title="statement not covered" >this.route = `${tableName}s`;</span></span>
+    // XXX integrate data loader
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  fi</span>nd(...args) {
+    // console.log("finding", args)
+<span class="cstat-no" title="statement not covered" >    return this.time(this.model.findAll.apply(this.model, args)</span>
+      .then(this.getValues)
+      .then(<span class="fstat-no" title="function not covered" >da</span>ta =&gt; <span class="cstat-no" title="statement not covered" >data.map(this.mergeData))</span>);
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  fi</span>ndOne(...args) {
+<span class="cstat-no" title="statement not covered" >    return this.time(this.model.findOne.apply(this.model, args)</span>
+      .then(<span class="fstat-no" title="function not covered" >(x</span>) =&gt; <span class="cstat-no" title="statement not covered" >x &amp;&amp; x.dataValues)</span>
+      .then(this.mergeData));
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  pa</span>tch(entityId = <span class="branch-0 cbranch-no" title="branch not covered" >"",</span> body) {
+<span class="cstat-no" title="statement not covered" >    return this.fetch("PATCH", `${entityId}`, body);</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  po</span>st(body) {
+<span class="cstat-no" title="statement not covered" >    return this.fetch("POST", "", body);</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  de</span>lete(entityId) {
+<span class="cstat-no" title="statement not covered" >    return this.fetch("DELETE", `${entityId}`);</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  fe</span>tch(method, route = <span class="branch-0 cbranch-no" title="branch not covered" >"",</span> body) {
+    const { ROCK_URL, ROCK_TOKEN } = <span class="cstat-no" title="statement not covered" >process.env;</span>
+    const headers = <span class="cstat-no" title="statement not covered" >{</span>
+      "Authorization-Token": ROCK_TOKEN,
+      "Content-Type": "application/json",
+    };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return fetch(`${ROCK_URL}api/${this.route}`, {</span>
+      headers, method, body: JSON.stringify(body),
+    })
+      .then(<span class="fstat-no" title="function not covered" >re</span>sponse =&gt; {
+        const { status, statusText, error } = <span class="cstat-no" title="statement not covered" >response;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (status === 204) <span class="cstat-no" title="statement not covered" >return { json: <span class="fstat-no" title="function not covered" >()</span> =&gt; (<span class="cstat-no" title="statement not covered" >{ status: 204, statusText: "success" })</span>};</span></span>
+<span class="cstat-no" title="statement not covered" >        if (status &gt;= 200 &amp;&amp; status &lt; 300) <span class="cstat-no" title="statement not covered" >return response;</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return {</span>
+          json: <span class="fstat-no" title="function not covered" >()</span> =&gt; (<span class="cstat-no" title="statement not covered" >{ status, statusText, error: error() })</span>,
+        };
+      })
+      .then(<span class="fstat-no" title="function not covered" >x </span>=&gt; <span class="cstat-no" title="statement not covered" >x.json())</span>;
+  }
+&nbsp;
+  mergeData = <span class="fstat-no" title="function not covered" >(d</span>ata) =&gt; {
+<span class="cstat-no" title="statement not covered" >    if (!data) <span class="cstat-no" title="statement not covered" >return data;</span></span>
+&nbsp;
+    const keys = <span class="cstat-no" title="statement not covered" >[];</span>
+<span class="cstat-no" title="statement not covered" >    for (let key in data) {</span>
+<span class="cstat-no" title="statement not covered" >      if (key.indexOf(this.prefix) &gt; -1) <span class="cstat-no" title="statement not covered" >keys.push(key);</span></span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    for (let key of keys) {</span>
+      const table = <span class="cstat-no" title="statement not covered" >data[key];</span>
+<span class="cstat-no" title="statement not covered" >      if (!data[key]) <span class="cstat-no" title="statement not covered" >continue;</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      if (isArray(table)) {</span>
+<span class="cstat-no" title="statement not covered" >        data[key] = this.getValues(table).map(this.mergeData);</span>
+      } else <span class="cstat-no" title="statement not covered" >if (data[key] &amp;&amp; data[key].dataValues) {</span>
+<span class="cstat-no" title="statement not covered" >        data[key] = this.mergeData(data[key].dataValues);</span>
+      }
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return data;</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  ge</span>tValues(data) {
+<span class="cstat-no" title="statement not covered" >    return data.map(<span class="fstat-no" title="function not covered" >x </span>=&gt; <span class="cstat-no" title="statement not covered" >x.dataValues || x)</span>;</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  qu</span>eryCount() {
+<span class="cstat-no" title="statement not covered" >    this.count++;</span>
+<span class="cstat-no" title="statement not covered" >    return this.count;</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  ti</span>me(promise) {
+    const prefix = <span class="cstat-no" title="statement not covered" >"MSSQLConnector";</span>
+    const count = <span class="cstat-no" title="statement not covered" >this.queryCount();</span>
+    const start = <span class="cstat-no" title="statement not covered" >new Date();</span>
+    const label = <span class="cstat-no" title="statement not covered" >`${prefix}-${count}`;</span>
+<span class="cstat-no" title="statement not covered" >    if (dd) <span class="cstat-no" title="statement not covered" >dd.increment(`${prefix}.transaction.count`);</span></span>
+<span class="cstat-no" title="statement not covered" >    console.time(label); </span>// tslint:disable-line
+<span class="cstat-no" title="statement not covered" >    return promise</span>
+      .then(<span class="fstat-no" title="function not covered" >x </span>=&gt; {
+        const end = <span class="cstat-no" title="statement not covered" >new Date();</span>
+<span class="cstat-no" title="statement not covered" >        if (dd) <span class="cstat-no" title="statement not covered" >dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);</span></span>
+<span class="cstat-no" title="statement not covered" >        console.timeEnd(label); </span>// tslint:disable-line
+<span class="cstat-no" title="statement not covered" >        return x;</span>
+      })
+      .catch(<span class="fstat-no" title="function not covered" >x </span>=&gt; {
+        const end = <span class="cstat-no" title="statement not covered" >new Date();</span>
+<span class="cstat-no" title="statement not covered" >        if (dd) <span class="cstat-no" title="statement not covered" >dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);</span></span>
+<span class="cstat-no" title="statement not covered" >        if (dd) <span class="cstat-no" title="statement not covered" >dd.increment(`${prefix}.transaction.error`);</span></span>
+<span class="cstat-no" title="statement not covered" >        console.timeEnd(label); </span>// tslint:disable-line
+<span class="cstat-no" title="statement not covered" >        return x;</span>
+      });
+  }
+&nbsp;
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Nov 10 2016 19:26:34 GMT-0500 (EST)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

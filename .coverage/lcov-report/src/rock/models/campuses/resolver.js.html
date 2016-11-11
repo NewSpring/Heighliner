@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/rock/models/campuses/resolver.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../../index.html">All files</a> / <a href="index.html">src/rock/models/campuses</a> resolver.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/46</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/20</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/24</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/31</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90</td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { geography } from "mssql-geopar<span class="cstat-no" title="statement not covered" >ser";<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span></span></span></span></span>
+import { createGlobalId } from "../../../util";<span class="cstat-no" title="statement not covered" ></span>
+&nbsp;
+export default {
+&nbsp;
+  Query: {
+    campuses: (_, { name, id }, { models }) =&gt; mo<span class="fstat-no" title="function not covered" >dels.Camp</span>us.find({ Id: id, Name: name }),
+  },
+&nbsp;
+  Campus: {
+    id: ({ Id }, _, $, { parentType }) =&gt; c<span class="fstat-no" title="function not covered" >rea</span>teGlobalId(Id, parentType.name),
+    entityId: ({ Id }) =&gt; Id,<span class="fstat-no" title="function not covered" ></span>
+    name: ({ Name }) =&gt; Name,<span class="fstat-no" title="function not covered" ></span>
+    shortCode: ({ ShortCode }) =&gt; ShortCode,<span class="fstat-no" title="function not covered" ></span>
+    guid: ({ Guid }) =&gt; Guid,<span class="fstat-no" title="function not covered" ></span>
+    url: ({ Url }) =&gt; Url,<span class="fstat-no" title="function not covered" ></span>
+    services: ({ ServiceTimes }) =&gt; {<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      if (!ServiceTimes) <span class="cstat-no" title="statement not covered" >return [];</span></span>
+&nbsp;
+      const days <span class="cstat-no" title="statement not covered" >= {</span>};
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      ServiceTimes.split("|")</span>
+        .filt<span class="fstat-no" title="function not covered" >er</span>(x =&gt; !!x)
+        .forEa<span class="fstat-no" title="function not covered" >ch</span>((x) =&gt; {
+          let [day, time] = x.split("^");
+<span class="cstat-no" title="statement not covered" >          day = day.trim()</span>;
+<span class="cstat-no" title="statement not covered" >          time = time.trim()</span>;
+<span class="cstat-no" title="statement not covered" >          if (!days[day]<span class="cstat-no" title="statement not covered" >) days[day] = []</span></span>;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >          if (days[day].indexOf(time) === -1<span class="cstat-no" title="statement not covered" >) days[day].push(time)</span></span>;
+        });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      return Object.keys(days).map((x) =&gt; {<span class="fstat-no" title="function not covered" ></span></span>
+        let str = `${x} at `;<span class="cstat-no" title="statement not covered" ></span>
+        if<span class="cstat-no" title="statement not covered" > (days[x].length === 1) {</span>
+          st<span class="cstat-no" title="statement not covered" >r += `&amp; ${days[x]}`;</span>
+          re<span class="cstat-no" title="statement not covered" >turn str;</span>
+        }
+&nbsp;
+        st<span class="cstat-no" title="statement not covered" >r += `${[...days[x]].slice(0, days[x].length - 1).join(", ")} `;</span>
+        st<span class="cstat-no" title="statement not covered" >r += `&amp; ${[...days[x]].pop()}`;</span>
+&nbsp;
+&nbsp;
+        re<span class="cstat-no" title="statement not covered" >turn str;</span>
+      });
+    },
+    locationId: ({ LocationId }) =&gt; LocationId,<span class="fstat-no" title="function not covered" ></span>
+    location: ({ LocationId }, _, { models }) =&gt; <span class="fstat-no" title="function not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      if (!LocationId) <span class="cstat-no" title="statement not covered" >return null;</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      return models.Campus.findByLocationId(LocationId);</span>
+    },
+  },
+&nbsp;
+  Location: {
+    id: ({ Id }, _, $, { parentType }) =&gt; c<span class="fstat-no" title="function not covered" >rea</span>teGlobalId(Id, parentType.name),
+    name: ({ Name }) =&gt; Name,<span class="fstat-no" title="function not covered" ></span>
+    street1: ({ Street1 }) =&gt; Street1,<span class="fstat-no" title="function not covered" ></span>
+    street2: ({ Street2 }) =&gt; Street2,<span class="fstat-no" title="function not covered" ></span>
+    city: ({ City }) =&gt; City,<span class="fstat-no" title="function not covered" ></span>
+    state: ({ State }) =&gt; State,<span class="fstat-no" title="function not covered" ></span>
+    country: ({ Country }) =&gt; Country,<span class="fstat-no" title="function not covered" ></span>
+    zip: ({ PostalCode }) =&gt; PostalCode,<span class="fstat-no" title="function not covered" ></span>
+    latitude: ({ GeoPoint, latitude }) =&gt; {<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      if (latitude) r<span class="cstat-no" title="statement not covered" >eturn latitude;</span></span>
+<span class="cstat-no" title="statement not covered" >      if (!GeoPoint) <span class="cstat-no" title="statement not covered" >return null;</span></span>
+<span class="cstat-no" title="statement not covered" >      try {</span>
+        const { points } = geography(GeoPoint);
+<span class="cstat-no" title="statement not covered" >        return points[0].x;</span>
+      } catch (e) {<span class="cstat-no" title="statement not covered" > return null;</span> }
+    },
+    longitude: ({ GeoPoint, longitude }) =&gt; {<span class="fstat-no" title="function not covered" ></span>
+<span class="cstat-no" title="statement not covered" >      if (longitude) r<span class="cstat-no" title="statement not covered" >eturn longitude;</span></span>
+<span class="cstat-no" title="statement not covered" >      if (!GeoPoint) <span class="cstat-no" title="statement not covered" >return null;</span></span>
+<span class="cstat-no" title="statement not covered" >      try {</span>
+        const { points } = geography(GeoPoint);
+<span class="cstat-no" title="statement not covered" >        return points[0].y;</span>
+      } catch (e) {<span class="cstat-no" title="statement not covered" > return null;</span> }
+    },
+    distance: ({ Id, Distance }) =&gt; { // tslint:d<span class="fstat-no" title="function not covered" >isable-li</span>ne
+<span class="cstat-no" title="statement not covered" >      if (Distance) <span class="cstat-no" title="statement not covered" >return Distance;</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      return null;</span>
+      // XXX get distance from the person
+      // this is typically used from a geo based lookup
+    },
+  },
+&nbsp;
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Nov 10 2016 19:26:34 GMT-0500 (EST)
+</div>
+</div>
+<script src="../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../sorter.js"></script>
+</body>
+</html>

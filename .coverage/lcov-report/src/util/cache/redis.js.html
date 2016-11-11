@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/util/cache/redis.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../index.html">All files</a> / <a href="index.html">src/util/cache</a> redis.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/84</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/38</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/25</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/71</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&nbsp;
+import Crypto from "crypto";
+&nbsp;
+// XXX replace with https://github.com/h0x91b/redis-fast-driver
+import Redis from "redis";
+import DataLoader from "dataloader";
+&nbsp;
+import { parseGlobalId } from "./../node/model";
+&nbsp;
+let db;
+let dd;
+export function <span class="fstat-no" title="function not covered" >connect(</span>address, port = <span class="branch-0 cbranch-no" title="branch not covered" >6379,</span> monitor) {
+<span class="cstat-no" title="statement not covered" >  dd = monitor &amp;&amp; monitor.datadog;</span>
+  let hasReturned = <span class="cstat-no" title="statement not covered" >false;</span>
+<span class="cstat-no" title="statement not covered" >  return new Promise(<span class="fstat-no" title="function not covered" >(c</span>b) =&gt; {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    db = Redis.createClient(port, address);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    db.on("connect", <span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      hasReturned = true;</span>
+<span class="cstat-no" title="statement not covered" >      cb(true);</span>
+    });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    db.on("error", <span class="fstat-no" title="function not covered" >(e</span>rror) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      if (!hasReturned) {</span>
+<span class="cstat-no" title="statement not covered" >        hasReturned = true;</span>
+<span class="cstat-no" title="statement not covered" >        cb(false);</span>
+      }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      console.error("REDIS error:", error); </span>// tslint:disable-line
+    });
+  });
+}
+&nbsp;
+export class RedisCache {
+  count = 0;
+&nbsp;
+<span class="fstat-no" title="function not covered" >  co</span>nstructor(secret = <span class="branch-0 cbranch-no" title="branch not covered" >"RedisCache")</span> {
+<span class="cstat-no" title="statement not covered" >    this.secret = secret;</span>
+&nbsp;
+    // XXX we should move data loader to being a per request batching system
+    // until then, we disabled the cache
+<span class="cstat-no" title="statement not covered" >    this.idLoader = new DataLoader(<span class="fstat-no" title="function not covered" >ke</span>ys =&gt; <span class="cstat-no" title="statement not covered" >new Promise(<span class="fstat-no" title="function not covered" >(r</span>esolve, reject) =&gt; {</span></span>
+<span class="cstat-no" title="statement not covered" >      db.mget(keys, <span class="fstat-no" title="function not covered" >(e</span>rror, results) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        if (error) <span class="cstat-no" title="statement not covered" >return reject(error);</span></span>
+<span class="cstat-no" title="statement not covered" >        resolve(results.map(<span class="fstat-no" title="function not covered" >(r</span>esult, index) =&gt;</span>
+<span class="cstat-no" title="statement not covered" >          result !== null ? result : new Error(`No key: ${keys[index]}`)</span>
+        ));
+      });
+    }), { cache: false });
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  ge</span>tCount() {
+<span class="cstat-no" title="statement not covered" >    this.count++;</span>
+<span class="cstat-no" title="statement not covered" >    return this.count;</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  ti</span>me(promise, log) {
+    const prefix = <span class="cstat-no" title="statement not covered" >"RedisCache";</span>
+    const count = <span class="cstat-no" title="statement not covered" >this.getCount();</span>
+    const start = <span class="cstat-no" title="statement not covered" >new Date();</span>
+    const label = <span class="cstat-no" title="statement not covered" >`${prefix}-${count}`;</span>
+<span class="cstat-no" title="statement not covered" >    if (dd) <span class="cstat-no" title="statement not covered" >dd.increment(`${prefix}.transaction.count`);</span></span>
+<span class="cstat-no" title="statement not covered" >    console.time(label); </span>// tslint:disable-line
+<span class="cstat-no" title="statement not covered" >    return promise</span>
+      .then(<span class="fstat-no" title="function not covered" >x </span>=&gt; {
+<span class="cstat-no" title="statement not covered" >        if (log()) {</span>
+          const end = <span class="cstat-no" title="statement not covered" >new Date();</span>
+<span class="cstat-no" title="statement not covered" >          if (dd) <span class="cstat-no" title="statement not covered" >dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);</span></span>
+<span class="cstat-no" title="statement not covered" >          console.timeEnd(label); </span>// tslint:disable-line
+        } else {
+<span class="cstat-no" title="statement not covered" >          if (dd) <span class="cstat-no" title="statement not covered" >dd.increment(`${prefix}.transaction.miss`);</span></span>
+        }
+<span class="cstat-no" title="statement not covered" >        return x;</span>
+      })
+      .catch(<span class="fstat-no" title="function not covered" >x </span>=&gt; {
+        const end = <span class="cstat-no" title="statement not covered" >new Date();</span>
+<span class="cstat-no" title="statement not covered" >        if (dd) <span class="cstat-no" title="statement not covered" >dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);</span></span>
+<span class="cstat-no" title="statement not covered" >        if (dd) <span class="cstat-no" title="statement not covered" >dd.increment(`${prefix}.transaction.error`);</span></span>
+<span class="cstat-no" title="statement not covered" >        console.timeEnd(label); </span>// tslint:disable-line
+<span class="cstat-no" title="statement not covered" >        return x;</span>
+      });
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  ge</span>t(id, lookup, { ttl, cache } = <span class="branch-0 cbranch-no" title="branch not covered" >{ cache: true, ttl: 18000 })</span> {
+    let fromCache = <span class="cstat-no" title="statement not covered" >false;</span>
+    const log = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >fromCache;</span></span>
+<span class="cstat-no" title="statement not covered" >    return this.time(new Promise(<span class="fstat-no" title="function not covered" >(d</span>one) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      if (!cache &amp;&amp; lookup) <span class="cstat-no" title="statement not covered" >return lookup().then(done);</span></span>
+<span class="cstat-no" title="statement not covered" >      try {</span>
+        // try to nest information based on global id
+        let { __type } = <span class="cstat-no" title="statement not covered" >parseGlobalId(id);</span>
+<span class="cstat-no" title="statement not covered" >        id = `${__type}:${id}`;</span>
+      } catch (e) { /* tslint:disable-line */ };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      return this.idLoader.load(id)</span>
+        .then(<span class="fstat-no" title="function not covered" >da</span>ta =&gt; {
+<span class="cstat-no" title="statement not covered" >          if (!data) <span class="cstat-no" title="statement not covered" >return lookup().then(done);</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >          try { <span class="cstat-no" title="statement not covered" >data = JSON.parse(data); </span>} catch (e) {</span>
+<span class="cstat-no" title="statement not covered" >            return lookup().then(done);</span>
+          }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >          fromCache = true;</span>
+<span class="cstat-no" title="statement not covered" >          done(data);</span>
+        })
+        .catch(<span class="fstat-no" title="function not covered" >x </span>=&gt; <span class="cstat-no" title="statement not covered" >lookup().then(done))</span>;
+    }).then(<span class="fstat-no" title="function not covered" >(d</span>ata) =&gt; {
+<span class="cstat-no" title="statement not covered" >      if (data &amp;&amp; !fromCache) <span class="cstat-no" title="statement not covered" >process.nextTick(<span class="fstat-no" title="function not covered" >()</span> =&gt; { <span class="cstat-no" title="statement not covered" >this.set(id, data, ttl); </span>});</span></span>
+<span class="cstat-no" title="statement not covered" >      return data;</span>
+    }), log);
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  se</span>t(id, data, ttl = <span class="branch-0 cbranch-no" title="branch not covered" >86400)</span> {
+<span class="cstat-no" title="statement not covered" >    return new Promise(<span class="fstat-no" title="function not covered" >(d</span>one) =&gt; {</span>
+      // XXX this should technically never fail
+<span class="cstat-no" title="statement not covered" >      try {</span>
+        // save to cache
+<span class="cstat-no" title="statement not covered" >        db.set(id, JSON.stringify(data));</span>
+&nbsp;
+        // save to dataloader
+<span class="cstat-no" title="statement not covered" >        this.idLoader.prime(id, JSON.stringify(data));</span>
+&nbsp;
+        // clear cache
+<span class="cstat-no" title="statement not covered" >        db.expire(id, ttl);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return done(true);</span>
+      } catch (e) {
+<span class="cstat-no" title="statement not covered" >        return done(false);</span>
+      }
+    });
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  de</span>l(id) {
+    // try to nest information based on global id
+    let { __type } = <span class="cstat-no" title="statement not covered" >parseGlobalId(id);</span>
+<span class="cstat-no" title="statement not covered" >    id = `${__type}:${id}`;</span>
+<span class="cstat-no" title="statement not covered" >    db.del(id); </span>// clear redis
+<span class="cstat-no" title="statement not covered" >    this.idLoader.clear(id); </span>// clear dataloader
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  en</span>code(obj, type, user) {
+    const cipher = <span class="cstat-no" title="statement not covered" >Crypto.createHmac("sha256", this.secret);</span>
+<span class="cstat-no" title="statement not covered" >    type = type ? type + ":" : "";</span>
+<span class="cstat-no" title="statement not covered" >    user = user ? user + ":" : "";</span>
+    const str = <span class="cstat-no" title="statement not covered" >cipher.update(JSON.stringify(obj)).digest("hex");</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return `query:${type}${user}${str}`;</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  cl</span>earAll() {
+<span class="cstat-no" title="statement not covered" >    db.flushdb();</span>
+  }
+&nbsp;
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Nov 10 2016 19:26:34 GMT-0500 (EST)
+</div>
+</div>
+<script src="../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../sorter.js"></script>
+</body>
+</html>

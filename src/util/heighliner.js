@@ -40,7 +40,7 @@ export function createApplication(models) {
   };
 
   for (const model of models) {
-    joined.schema = [...joined.schema, ...[model.schema]];
+    joined.schema = [...joined.schema, ...model.schema];
     joined.models = merge(joined.models, model.models);
     joined.resolvers = merge(joined.resolvers, model.resolvers);
 
@@ -53,7 +53,7 @@ export function createApplication(models) {
 
 export function loadApplications(applications) {
   const joined = {
-    schema: [...[nodeSchema]],
+    schema: [...nodeSchema],
     models: {},
     resolvers: merge({}, nodeResolver, cacheResolver),
     mocks: merge({}, nodeMocks),

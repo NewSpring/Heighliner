@@ -1,5 +1,5 @@
 import models, { Rock } from "./model";
-import schema from "!!raw!./schema.graphql";
+import schema from "./schema";
 import resolvers from "./resolver";
 import queries from "./queries";
 // import mocks from "./mocks";

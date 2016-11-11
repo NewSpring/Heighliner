@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/rock/models/groups/resolver.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../../index.html">All files</a> / <a href="index.html">src/rock/models/groups</a> resolver.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/22</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/10</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/9</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/13</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276</td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { flatten } from "lodash";<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span></span></span></span></span></span></span>
+import { allData } from "geo-from-ip";
+import { geocode } from "google-geocoding";
+import Moment from "moment";
+import { createGlobalId } from "../../../util";
+&nbsp;
+function <span class="fstat-no" title="function not covered" >getPhotoFromTag(</span>tag) {
+  const photos <span class="cstat-no" title="statement not covered" >= {</span>
+    food: "//s3.amazonaws.com/ns.assets/apollos/groups/group-food.jpg",
+    gaming: "//s3.amazonaws.com/ns.assets/apollos/groups/group-games.jpg",
+    hobbies: "//s3.amazonaws.com/ns.assets/apollos/groups/group-hobbies.jpg",
+    moms: "//s3.amazonaws.com/ns.assets/apollos/groups/group-moms.jpg",
+    motorsports: "//s3.amazonaws.com/ns.assets/apollos/groups/group-motorsports.jpg", // tslint:disable-line
+    outdoor: "//s3.amazonaws.com/ns.assets/apollos/groups/group-outdoors.jpg",
+    "sports/fitness": "//s3.amazonaws.com/ns.assets/apollos/groups/group-sports.jpg", // tslint:disable-line
+  };
+<span class="cstat-no" title="statement not covered" >  return photos[tag.toLowerCase()] || null;</span>
+}
+&nbsp;
+function <span class="fstat-no" title="function not covered" >getPhotoFromDemo(</span>demo) {
+  const photos <span class="cstat-no" title="statement not covered" >= {</span>
+    coed: "//s3.amazonaws.com/ns.assets/apollos/groups/group-coed.jpg",
+    married: "//s3.amazonaws.com/ns.assets/apollos/groups/group-married.jpg",
+    men: "//s3.amazonaws.com/ns.assets/apollos/groups/group-men.jpg",
+    women: "//s3.amazonaws.com/ns.assets/apollos/groups/group-women.jpg",
+  };
+<span class="cstat-no" title="statement not covered" >  return photos[demo.toLowerCase()] || null;</span>
+}
+&nbsp;
+function <span class="fstat-no" title="function not covered" >getPhotoFromType(</span>type) {
+  const photos <span class="cstat-no" title="statement not covered" >= {</span>
+    care: "//s3.amazonaws.com/ns.assets/apollos/groups/group-care.jpg",
+    interests: "//s3.amazonaws.com/ns.assets/apollos/groups/group-interests.jpg", // tslint:disable-line
+    study: "//s3.amazonaws.com/ns.assets/apollos/groups/group-study.jpg",
+  };
+<span class="cstat-no" title="statement not covered" >  return photos[type.toLowerCase()] || null;</span>
+}
+&nbsp;
+function <span class="fstat-no" title="function not covered" >resolveAttribute(</span>id, resolver) {
+<span class="cstat-no" title="statement not covered" >  if (!resolver) <span class="cstat-no" title="statement not covered" >resolver = x =&gt; x;<span class="fstat-no" title="function not covered" ></span></span></span>
+  // XXX type this better
+<span class="cstat-no" title="statement not covered" >  return <span class="fstat-no" title="function not covered" >(d</span>ata, args, context) =&gt; {</span>
+    const { AttributeValues } = data;
+    const { models } = context;
+    const chunk <span class="cstat-no" title="statement not covered" >= AttributeValues.filte<span class="fstat-no" title="function not covered" >r(</span>x =&gt; x.Attribute &amp;&amp; x.Attribute.Id === id)[0];</span>
+<span class="cstat-no" title="statement not covered" >    if (!chunk) {</span>
+<span class="cstat-no" title="statement not covered" >      return Promise.resolve(null)</span>
+      .then(x<span class="fstat-no" title="function not covered" > =</span>&gt; resolver(x, data, args, context)); }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return models.Rock.getAttributeValuesFromId(chunk.Id, { models })</span>
+      .th<span class="fstat-no" title="function not covered" >en</span>(x =&gt; resolver(x, data, args, context));
+  };
+}
+&nbsp;
+export default {
+&nbsp;
+  Query: {
+    groups: async (
+      _, { campuses = [], offset, limit, attributes = [], query, clientIp }, { models, ip, person },
+    ) =&gt; {
+      if (campuses.length) {
+        campuses = campuses.map(x =&gt; ({ Name: { $like: x } }));
+        campuses = await models.Campus.find({ $or: campuses });
+        campuses = campuses.map(x =&gt; x.Id);
+      }
+&nbsp;
+      let geo = { latitude: null, longitude: null };
+      // XXX move to better location / cleanup
+      if (clientIp &amp;&amp; ip.match("204.116.47")) {
+        // newspring ip match
+        const campusIpMap = {
+          10.7: { latitude: 34.933124, longitude: -81.994480 },
+          10.6: { latitude: 32.915373, longitude: -80.100173 },
+          10.5: { latitude: 34.030287, longitude: -81.098588 },
+          10.4: { latitude: 35.065126, longitude: -82.007086 },
+          10.31: { latitude: 33.934511, longitude: -80.363124 },
+          "10.30": { latitude: 34.951512, longitude: -81.087497 },
+          10.3: { latitude: 34.800165, longitude: -82.488371 },
+          10.29: { latitude: 32.271941, longitude: -80.943806 },
+          10.28: { latitude: 33.572048, longitude: -81.774888 },
+          10.27: { latitude: 34.111041, longitude: -80.882638 },
+          10.25: { latitude: 34.685131, longitude: -82.895683 },
+          10.24: { latitude: 33.715901, longitude: -78.925047 },
+          10.23: { latitude: 34.212175, longitude: -79.797055 },
+          10.22: { latitude: 34.852042, longitude: -82.354571 },
+          "10.20": { latitude: 34.800165, longitude: -82.488371 },
+          10.16: { latitude: 34.778159, longitude: -82.487048 }, // NH
+          10.14: { latitude: 34.194508, longitude: -82.193192 },
+          10.13: { latitude: 33.979398, longitude: -81.307923 },
+          10.1: { latitude: 34.595434, longitude: -82.622224 },
+          "10.0": { latitude: 34.595434, longitude: -82.622224 },
+        };
+        // get first two values
+        const matcher = clientIp.split(".").slice(0, 2).join(".").trim();
+        for (const cpId in campusIpMap) {
+          if (matcher === cpId) {
+            geo = campusIpMap[cpId];
+            break;
+          }
+        }
+      } else if (person &amp;&amp; person.Id) {
+        const { latitude, longitude } = await models.Person.getHomesFromId(person.Id)
+          .then(([x]) =&gt; {
+            if (!x) return {};
+            if (!x.GeoPoint) return x;
+            return models.Group.getLocationFromLocationId(x.Id);
+          });
+        if (latitude &amp;&amp; longitude) {
+          geo.longitude = longitude;
+          geo.latitude = latitude;
+        } else {
+          const geoData = allData(ip);
+          geo.latitude = geoData.location.latitude;
+          geo.longitude = geoData.location.longitude;
+        }
+      } else {
+        const geoData = allData(ip);
+        geo.latitude = geoData.location.latitude;
+        geo.longitude = geoData.location.longitude;
+      }
+&nbsp;
+&nbsp;
+      attributes = attributes.filter(x =&gt; x); // only truthy values
+      if (attributes.indexOf("kid friendly") &gt; -1) {
+        attributes[attributes.indexOf("kid friendly")] = "childcare";
+      }
+      const zipRegex = /(\d{5}$)|(^\d{5}-\d{4}$)/;
+&nbsp;
+      // parse query for zipcodes
+      if (query &amp;&amp; query.match(zipRegex)) {
+        const zip = query.match(zipRegex)[0];
+&nbsp;
+        // remove zipcode data
+        query = query.replace(zipRegex, "").trim();
+&nbsp;
+        // find by zipcode
+        const googleGeoData = await new Promise((resolve, reject) =&gt; {
+          geocode(zip, (err, result) =&gt; {
+            // XXX we don't really want to reject this because
+            // this is an additive feature
+            if (err) return resolve({});
+            resolve(result);
+          });
+        });
+&nbsp;
+        geo.latitude = googleGeoData.lat;
+        geo.longitude = googleGeoData.lng;
+      }
+&nbsp;
+      return models.Group.findByAttributesAndQuery(
+        { query, attributes, campuses }, { limit, offset, geo },
+      );
+    },
+    groupAttributes: (_, $, { models }) =&gt; {
+      const ids = [
+        1409, // demographic
+        5406, // kid friendly
+        16815, // tags
+        16814, // type
+      ];
+      const queries = ids.map(id =&gt; models.Rock.getAttributesFromId(id, { models }));
+      return Promise.all(queries).then(flatten)
+        .then(x =&gt; x.filter(y =&gt; y.Value !== "Interests"))
+        .then(x =&gt; x.map((y) =&gt; {
+          y.Value = y.Value === "Childcare" ? "kid friendly" : y.Value;
+          return y;
+        }));
+    },
+  },
+&nbsp;
+  GroupMember: {
+    id: ({ Id }, _, $, { parentType }) =&gt; createGlobalId(Id, parentType.name),
+    role: ({ GroupTypeRole }) =&gt; GroupTypeRole &amp;&amp; GroupTypeRole.Name, // XXX should we expand this?
+    person: ({ PersonId }, _, { models }) =&gt; models.Person.getFromId(PersonId),
+  },
+&nbsp;
+  GroupLocation: {
+    id: ({ Id }, _, $, { parentType }) =&gt; createGlobalId(Id, parentType.name),
+    location: ({ LocationId }, _, { models }) =&gt;
+      // XXX abstract to location model
+      // models.Location.getFromId(LocationId);
+       models.Group.getLocationFromLocationId(LocationId)
+    ,
+  },
+&nbsp;
+  GroupSchedule: {
+    day: ({ WeeklyDayOfWeek }) =&gt; WeeklyDayOfWeek,
+    description: ({ WeeklyTimeOfDay, WeeklyDayOfWeek }) =&gt; {
+      if (!WeeklyTimeOfDay || !WeeklyDayOfWeek) return null;
+&nbsp;
+      try {
+        const week = Moment(WeeklyDayOfWeek, "E").format("dddd");
+        const time = Moment.utc(WeeklyTimeOfDay).format("h:mm A");
+&nbsp;
+        return `${week} @ ${time}`;
+      } catch (e) {
+        return null;
+      }
+    },
+    end: ({ EffectiveEndDate }) =&gt; EffectiveEndDate,
+    id: ({ Id }, _, $, { parentType }) =&gt; createGlobalId(Id, parentType.name),
+    name: ({ Name }) =&gt; Name,
+    start: ({ EffectiveStartDate }) =&gt; EffectiveStartDate,
+    time: ({ WeeklyTimeOfDay }) =&gt; WeeklyTimeOfDay,
+  },
+&nbsp;
+  Group: {
+    active: ({ IsActive }) =&gt; IsActive,
+    ageRange: resolveAttribute(691, (x = []) =&gt; {
+      // don't consider [0,0] an age range
+      const hasAgeRange = x.length &amp;&amp; x.reduce((start, finish) =&gt; (start &amp;&amp; finish));
+      if (!hasAgeRange) return null;
+      return x;
+    }),
+    campus: ({ CampusId }, _, { models }) =&gt; models.Campus.getFromId(CampusId),
+    demographic: resolveAttribute(1409, x =&gt; x &amp;&amp; x.length &amp;&amp; x[0].Value),
+    description: ({ Description }) =&gt; Description,
+    distance: ({ Id, Distance }, _, { models, ip }) =&gt; {
+      if (Distance) return Distance * 0.000621371;
+&nbsp;
+      const geo = { latitude: null, longitude: null };
+      // XXX lookup users lat and long from ip
+      const geoData = allData(ip);
+      geo.latitude = geoData.location.latitude;
+      geo.longitude = geoData.location.longitude;
+&nbsp;
+      return models.Group.getDistanceFromLatLng(Id, geo)
+        .then(x =&gt; x &amp;&amp; x * 0.000621371);
+    }, // convert to miles
+    entityId: ({ Id }) =&gt; Id,
+    id: ({ Id }, _, $, { parentType }) =&gt; createGlobalId(Id, parentType.name),
+    kidFriendly: resolveAttribute(5406),
+    locations: ({ Id }, _, { models }) =&gt; models.Group.getLocationsById(Id),
+    members: ({ Id }, _, { models }) =&gt; models.Group.getMembersById(Id),
+    name: ({ Name }) =&gt; Name,
+    photo: resolveAttribute(2569, async (photo, { AttributeValues }, _, { models }) =&gt; {
+      if (photo &amp;&amp; photo.Path) return photo.Path;
+&nbsp;
+      // check for tags first
+      const firstTag = await resolveAttribute(16815, x =&gt; x &amp;&amp; x.length &amp;&amp; x[0].Value)(
+        { AttributeValues }, _, { models },
+      );
+&nbsp;
+      if (firstTag) return getPhotoFromTag(firstTag);
+&nbsp;
+      // photo from demographic
+      const demographic = await resolveAttribute(1409, x =&gt; x &amp;&amp; x.length &amp;&amp; x[0].Value)(
+        { AttributeValues }, _, { models },
+      );
+&nbsp;
+      if (demographic) return getPhotoFromDemo(demographic);
+&nbsp;
+      // type goes last since its required
+      const type = await resolveAttribute(16814, x =&gt; x &amp;&amp; x.length &amp;&amp; x[0].Value)(
+        { AttributeValues }, _, { models },
+      );
+&nbsp;
+      if (type) return getPhotoFromType(type);
+&nbsp;
+      return null;
+    }),
+    schedule: ({ ScheduleId }, _, { models }) =&gt; models.Group.getScheduleFromScheduleId(ScheduleId),
+    tags: resolveAttribute(16815, (x) =&gt; {
+      if (x &amp;&amp; x.length) return x;
+      return [];
+    }),
+    type: resolveAttribute(16814, x =&gt; x &amp;&amp; x.length &amp;&amp; x[0].Value),
+  },
+&nbsp;
+  GroupSearch: {
+    count: ({ count }) =&gt; count,
+    results: ({ results }) =&gt; results,
+  },
+&nbsp;
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Nov 10 2016 19:26:34 GMT-0500 (EST)
+</div>
+</div>
+<script src="../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../sorter.js"></script>
+</body>
+</html>

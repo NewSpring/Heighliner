@@ -1,4 +1,4 @@
-import schema from "!!raw!./schema.graphql";
+import schema from "./schema";
 import resolvers from "./resolver";
 import models from "./model";
 import queries from "./queries";
