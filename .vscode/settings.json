@@ -13,10 +13,10 @@
     "Dockerfile": true,
     "data": true,
     "coverage": true,
-    ".babelrc": false,
+    ".babelrc": true,
     ".gitignore": true,
     ".env*": true,
-    "**/*.yml": true,
+    "**/*.yml": false,
     "scripts": true,
     "npm-debug.log": true
   }

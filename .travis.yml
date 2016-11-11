@@ -8,20 +8,24 @@ node_js:
 
 cache:
   directories:
-  - node_modules
-  - typings
+    - $HOME/.npm
+    - $HOME/.yarn-cache
+    - node_modules
+
 before_install:
-  - npm i -g tslint typings coveralls
-  - rm -rf ./typings
-  - typings i
+  - time npm install -g coveralls --cache-min 999999999
+  - time npm i -g yarn --cache-min 999999999
+
+install:
+  - yarn
 
 script:
-  - npm run lint
-  - npm test -- --verbose --no-cache
+  - npm test -- --verbose --coverage
+  # - npm run lint
   - "./scripts/deploy.sh"
 
-# after_success:
-  # - coveralls < ./coverage/lcov.info || true # ignore coveralls error
+after_success:
+  - coveralls < ./coverage/lcov.info || true # ignore coveralls error
 
 notifications:
   slack:
