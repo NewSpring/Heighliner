@@ -8,8 +8,9 @@
     "commit": "git-cz",
     "lint-fix": "eslint ./src  --fix",
     "lint": "eslint ./src",
-    "start": "webpack --watch & supervisor -q -w ./lib/server.js ./lib/server.js",
-    "build": "webpack"
+    "start": "NODE_ENV=development webpack --watch & supervisor -q -w ./lib/server.js ./lib/server.js",
+    "build": "NODE_ENV=development webpack",
+    "build:production": "NODE_ENV=production webpack"
   },
   "author": "jbaxleyiii",
   "jest": {
@@ -82,6 +83,7 @@
     "jest": "^17.0.0",
     "npm-install-webpack-plugin": "^4.0.4",
     "webpack": "^1.13.3",
+    "webpack-config-utils": "^2.1.0",
     "webpack-dashboard": "^0.2.0",
     "webpack-dev-middleware": "^1.8.4",
     "webpack-dotenv-plugin": "^1.4.0",

@@ -41,7 +41,7 @@ VERSION=$(echo $CURRENT_TAG | cut -d'/' -f3)
 yecho "### Installin deployment tooling"
 sudo pip install awscli
 aws --version
-npm run build
+npm run build:production
 docker build --rm=true -t heighliner . | cat # workaround progress weirdness
 
 yecho "### Deploying $APP to $CHANNEL ###"
