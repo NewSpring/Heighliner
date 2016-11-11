@@ -4,50 +4,45 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "TEST=true jest",
+    "test": "jest",
     "commit": "git-cz",
-    "lint": "tslint 'src/**/*.ts' && tslint 'test/**/*.ts'",
-    "start": "tsc --watch | supervisor -w lib index.js",
-    "build": "tsc && norma build"
+    "lint-fix": "eslint ./src  --fix",
+    "lint": "eslint ./src",
+    "start": "NODE_ENV=development webpack --watch & supervisor -q -w ./lib/server.js ./lib/server.js",
+    "build": "NODE_ENV=development webpack",
+    "build:production": "NODE_ENV=production webpack"
   },
   "author": "jbaxleyiii",
   "jest": {
-    "scriptPreprocessor": "./preprocessor.js",
     "moduleFileExtensions": [
-      "ts",
-      "tsx",
       "js",
-      "jsx",
       "json"
     ],
     "testPathDirs": [
       "./src"
     ],
-    "testRegex": "./__tests__/.*\\.(ts|tsx|js)$",
-    "testEnvironment": "node",
-    "coveragePathIgnorePatterns": [
-      "./src/.*\\.d.ts",
-      "./__tests__/.*\\.(ts|tsx|js)$",
-      "/node_modules/"
+    "collectCoverageFrom": [
+      "src/**/*.js"
     ],
+    "testRegex": "./__tests__/.*\\.(js)$",
+    "testEnvironment": "node",
     "collectCoverage": false
   },
   "license": "ISC",
   "dependencies": {
     "apollo-server": "^0.2.4",
-    "bluebird": "^3.1.1",
     "body-parser": "^1.14.2",
     "casual": "1.5.3",
     "connect-datadog": "0.0.6",
     "cors": "^2.7.1",
     "datadog-metrics": "^0.3.0",
     "dataloader": "^1.1.0",
-    "deasync": "^0.1.6",
     "express": "^4.13.3",
     "geo-from-ip": "^1.0.6",
     "google-geocoding": "^0.1.7",
     "graphql": "^0.6.2",
     "graphql-tools": "^0.6.4",
+    "graphql-typings": "0.0.1-beta-2",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.15.0",
     "moment": "^2.13.0",
@@ -55,10 +50,8 @@
     "morgan": "^1.7.0",
     "mssql-geoparser": "0.0.1",
     "mysql": "^2.10.2",
-    "node-env-file": "^0.1.8",
     "node-mssql": "0.0.1",
     "node-uuid": "^1.4.7",
-    "norma-copy": "^0.4.6",
     "optics-agent": "0.0.30",
     "php-unserialize": "0.0.1",
     "promise-timeout": "^1.0.0",
@@ -66,7 +59,6 @@
     "redis": "^2.4.2",
     "redis-commands": "github:newspring/redis-commands",
     "sequelize": "^3.24.0",
-    "strip-tags": "^0.1.1",
     "striptags": "^2.1.1",
     "tedious": "^1.14.0",
     "truncate": "^2.0.0",
@@ -74,30 +66,30 @@
     "xml2js": "^0.4.17"
   },
   "devDependencies": {
-    "ava": "^0.15.1",
     "babel-cli": "^6.9.0",
-    "babel-core": "^6.13.2",
-    "babel-eslint": "^6.0.4",
-    "babel-loader": "^6.2.4",
+    "babel-core": "^6.18.2",
+    "babel-eslint": "^6.1.2",
+    "babel-loader": "^6.2.7",
     "babel-plugin-transform-runtime": "^6.9.0",
-    "babel-polyfill": "^6.13.0",
-    "babel-preset-es2015": "^6.13.1",
+    "babel-preset-es2015": "^6.18.0",
     "babel-preset-stage-0": "^6.5.0",
-    "babel-runtime": "^6.9.2",
     "commitizen": "^2.8.5",
     "coveralls": "^2.11.9",
-    "eslint": "^3.3.0",
+    "eslint": "^3.9.1",
+    "eslint-config-airbnb-base": "^10.0.1",
+    "eslint-plugin-import": "^2.2.0",
     "ghooks": "^1.2.3",
     "graphql-tester": "0.0.4",
-    "jest": "^16.0.0",
-    "normajs": "^1.7.10",
-    "nyc": "7.1.0",
-    "remap-istanbul": "^0.6.4",
-    "supervisor": "^0.11.0",
-    "ts-jest": "^0.1.4",
-    "tslint": "^3.10.2",
-    "typescript": "^1.8.10",
-    "typings": "^1.0.4",
+    "jest": "^17.0.0",
+    "npm-install-webpack-plugin": "^4.0.4",
+    "webpack": "^1.13.3",
+    "webpack-config-utils": "^2.1.0",
+    "webpack-dashboard": "^0.2.0",
+    "webpack-dev-middleware": "^1.8.4",
+    "webpack-dotenv-plugin": "^1.4.0",
+    "webpack-hot-middleware": "^2.13.2",
+    "webpack-node-externals": "^1.5.4",
+    "webpack-validator": "^2.2.9",
     "word-wrap": "^1.1.0"
   },
   "config": {
@@ -105,13 +97,7 @@
       "path": "./scripts/commit"
     },
     "ghooks": {
-      "pre-commit": "npm run lint"
+      "pre-commit": "echo npm run lint"
     }
-  },
-  "nyc": {
-    "exclude": [
-      "**/*.spec.js",
-      "**/*.integration.js"
-    ]
   }
 }
