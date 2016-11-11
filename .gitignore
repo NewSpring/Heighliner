@@ -1,6 +1,7 @@
 
 /.remote
 .env
+.env.prod
 .env.dev
 npm-debug.log
 coverage
