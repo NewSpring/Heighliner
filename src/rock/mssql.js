@@ -5,6 +5,8 @@ import Sequelize, {
   DefineOptions,
 } from "sequelize";
 
+import fetch from "isomorphic-fetch";
+
 import { merge, isArray } from "lodash";
 // import DataLoader from "dataloader";
 
@@ -14,10 +16,25 @@ let loud = console.log.bind(console, "MSSQL:"); // tslint:disable-line
 let db;
 let dd;
 
-export function connect(database, username, password, opts, monitor) {
+// MSSQL connection
+const RockSettings = {
+  user: process.env.MSSQL_USER,
+  password: process.env.MSSQL_PASSWORD,
+  database: process.env.MSSQL_DB,
+  opts: {
+    host: process.env.MSSQL_HOST,
+    dialectOptions: {
+      // instanceName: process.env.MSSQL_INSTANCE,
+      // connectTimeout: 90000,
+    },
+  },
+};
+
+export function connect(monitor) {
+  if (db) return Promise.resolve(true);
   dd = monitor && monitor.datadog;
   return new Promise((cb) => {
-    opts = merge({}, opts, {
+    const opts = merge({}, RockSettings.opts, {
       dialect: "mssql",
       logging: process.env.NODE_ENV !== "production" ? loud : noop, // tslint:disable-line
       benchmark: process.env.NODE_ENV !== "production",
@@ -30,12 +47,13 @@ export function connect(database, username, password, opts, monitor) {
       },
     });
 
-    db = new Sequelize(database, username, password, opts);
+    db = new Sequelize(RockSettings.database, RockSettings.user, RockSettings.password, opts);
 
     db.authenticate()
       .then(() => cb(true))
       .then(() => createTables())
       .catch((e) => {
+        db = false;
         console.error(e); // tslint:disable-line
         cb(false);
       });

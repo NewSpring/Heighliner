@@ -5,7 +5,7 @@ import {
   SavedPayment as SavedPaymentTable,
 } from "../tables";
 
-// import removeSavedPaymentFromNMI from "../util/removeSavedPayment";
+import nmi from "../util/nmi";
 
 import { Rock } from "../../system";
 
@@ -17,7 +17,7 @@ export default class SavedPayment extends Rock {
     return this.cache.get(globalId, () => SavedPaymentTable.find({ where: { Id: id }}));
   }
 
-  async removeFromNodeId(id) {
+  async removeFromNodeId(id, gatewayDetails) {
     const existing = await this.getFromId(id);
     if (!existing || !existing.Id) return Promise.resolve({ error: "No saved account found" });
 
@@ -26,8 +26,15 @@ export default class SavedPayment extends Rock {
         if (response.status > 300) return response;
         if (!existing.ReferenceNumber) return response;
 
-        // XXX how do we want to handle NMI checks? Hard code the id?
-        // return removeSavedPaymentFromNMI(existing.ReferenceNumber);
+        return nmi({
+          "delete-customer": {
+            "api-key": gatewayDetails.SecurityKey,
+            "customer-vault-id": existing.ReferenceNumber,
+          },
+        }, gatewayDetails);
+      })
+      .catch(e => {
+        return { error: e.message };
       });
   }
 
