@@ -62,4 +62,11 @@ export default [`
     date: String
     payment: PaymentDetail
   }
+
+  type SavedPaymentMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+    payment: SavedPayment
+  }
 `];

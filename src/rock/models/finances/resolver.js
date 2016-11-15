@@ -62,10 +62,17 @@ export default {
 
   Mutation: {
     syncTransactions: (_, args, { models }) => models.Transaction.syncTransactions(args),
-    cancelSavedPayment: async (_, { id, gateway }, { models }) => {
+    cancelSavedPayment: async (_, { entityId, /* id, */gateway }, { models }) => {
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
-      return models.SavedPayment.removeFromNodeId(id, nmi);
+      return models.SavedPayment.removeFromEntityId(entityId, nmi);
     },
+  },
+
+  SavedPaymentMutationResponse: {
+    error: ({ error }) => error,
+    success: ({ error }) => !error,
+    code: ({ code }) => code,
+    payment: ({ Id }, _, { models }) => Id && models.SavedPayment.getFromId(Id),
   },
 
   TransactionDetail: {

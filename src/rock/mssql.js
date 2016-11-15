@@ -96,7 +96,7 @@ export class MSSQLConnector {
     return this.fetch("POST", "", body);
   }
 
-  delete(entityId) {
+  delete(entityId = "") {
     return this.fetch("DELETE", `${entityId}`);
   }
 
@@ -106,18 +106,20 @@ export class MSSQLConnector {
       "Authorization-Token": ROCK_TOKEN,
       "Content-Type": "application/json",
     };
-
-    return fetch(`${ROCK_URL}api/${this.route}`, {
+    let url = `${ROCK_URL}api/${this.route}`;
+    if (route) url = `${url}/${route}`;
+    return fetch(url, {
       headers, method, body: JSON.stringify(body),
     })
       .then(response => {
+
         const { status, statusText, error } = response;
 
         if (status === 204) return { json: () => ({ status: 204, statusText: "success" })};
         if (status >= 200 && status < 300) return response;
 
         return {
-          json: () => ({ status, statusText, error: error() }),
+          json: () => ({ status, statusText, error }),
         };
       })
       .then(x => x.json());

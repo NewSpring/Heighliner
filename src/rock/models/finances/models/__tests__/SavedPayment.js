@@ -26,8 +26,8 @@ describe("removing a saved payment", () => {
     const id = 1;
     const nodeId = createGlobalId(1, "SavedPayment");
     const Local = new SavedPayment({ cache: mockedCache });
-    SavedPaymentTable.find.mockReturnValueOnce(null);
-    const result = await Local.removeFromNodeId(1, {});
+    SavedPaymentTable.find.mockReturnValueOnce([]);
+    const result = await Local.removeFromEntityId(1, {});
 
     expect(SavedPaymentTable.find).toBeCalledWith({ where: { Id: id } });
     expect(mockedCache.get.mock.calls[0][0]).toEqual(nodeId);
@@ -37,42 +37,42 @@ describe("removing a saved payment", () => {
   it("tries to delete the loaded id from rock", async () => {
     const id = 1;
     const Local = new SavedPayment({ cache: mockedCache });
-    SavedPaymentTable.find.mockReturnValueOnce({ Id: id });
+    SavedPaymentTable.find.mockReturnValueOnce([{ Id: id }]);
     SavedPaymentTable.delete.mockReturnValueOnce(Promise.resolve({
       status: 504,
     }));
-    const result = await Local.removeFromNodeId(1, {});
+    const result = await Local.removeFromEntityId(1, {});
 
     expect(SavedPaymentTable.delete).toBeCalledWith(id);
-    expect(result).toEqual({ status: 504 });
+    expect(result).toEqual({ status: 504, Id: 1 });
   });
 
   it("doesn't try to delete the payment in NMI if response is missing a code", async () => {
     const id = 1;
     const Local = new SavedPayment({ cache: mockedCache });
-    SavedPaymentTable.find.mockReturnValueOnce({ Id: id });
+    SavedPaymentTable.find.mockReturnValueOnce([{ Id: id }]);
     SavedPaymentTable.delete.mockReturnValueOnce(Promise.resolve({
       status: 200,
     }));
-    const result = await Local.removeFromNodeId(1, {});
+    const result = await Local.removeFromEntityId(1, {});
 
     expect(SavedPaymentTable.delete).toBeCalledWith(id);
-    expect(result).toEqual({ status: 200 });
+    expect(result).toEqual({ status: 200, Id: 1 });
   });
 
   it("calls the nmi method with the passed security key and the code of the payment", async () => {
     const id = 1;
     const Local = new SavedPayment({ cache: mockedCache });
-    SavedPaymentTable.find.mockReturnValueOnce({
+    SavedPaymentTable.find.mockReturnValueOnce([{
       Id: id,
       ReferenceNumber: "10",
-    });
+    }]);
     SavedPaymentTable.delete.mockReturnValueOnce(Promise.resolve({
       status: 200,
     }));
 
     nmi.mockReturnValueOnce(Promise.resolve({ success: true }));
-    const result = await Local.removeFromNodeId(1, { SecurityKey: "safe" });
+    const result = await Local.removeFromEntityId(1, { SecurityKey: "safe" });
 
     expect(nmi).toBeCalledWith({
       "delete-customer": {
@@ -81,22 +81,24 @@ describe("removing a saved payment", () => {
       },
     }, { SecurityKey: "safe" });
 
-    expect(result).toEqual({ success: true });
+    expect(result).toEqual({ success: true, Id: 1 });
   });
 
   it("catches errors from NMI and reports it back", async () => {
     const id = 1;
     const Local = new SavedPayment({ cache: mockedCache });
-    SavedPaymentTable.find.mockReturnValueOnce({
+    SavedPaymentTable.find.mockReturnValueOnce([{
       Id: id,
       ReferenceNumber: "10",
-    });
+    }]);
+
     SavedPaymentTable.delete.mockReturnValueOnce(Promise.resolve({
       status: 200,
+      Id: 1,
     }));
 
     nmi.mockReturnValueOnce(Promise.reject(new Error("it failed")));
-    const result = await Local.removeFromNodeId(1, { SecurityKey: "safe" });
+    const result = await Local.removeFromEntityId(1, { SecurityKey: "safe" });
     expect(result).toEqual({ error: "it failed" });
   });
 });

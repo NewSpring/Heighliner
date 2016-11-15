@@ -17,14 +17,22 @@ export default class SavedPayment extends Rock {
     return this.cache.get(globalId, () => SavedPaymentTable.find({ where: { Id: id }}));
   }
 
-  async removeFromNodeId(id, gatewayDetails) {
-    const existing = await this.getFromId(id);
+  async removeFromEntityId(entityId, gatewayDetails) {
+    const globalId = createGlobalId(entityId, this.__type);
+
+    // XXX should getFromId return a single item or an array?
+    let existing = await this.getFromId(entityId);
+    if (existing && existing.length) existing = existing[0];
+
     if (!existing || !existing.Id) return Promise.resolve({ error: "No saved account found" });
 
     return SavedPaymentTable.delete(existing.Id)
       .then(response => {
         if (response.status > 300) return response;
         if (!existing.ReferenceNumber) return response;
+
+        // clear cache
+        this.cache.del(globalId);
 
         return nmi({
           "delete-customer": {
@@ -33,6 +41,7 @@ export default class SavedPayment extends Rock {
           },
         }, gatewayDetails);
       })
+      .then(x => ({ ...x, ...{ Id: entityId }}))
       .catch(e => {
         return { error: e.message };
       });

@@ -8,11 +8,12 @@ import { parseString } from "xml2js";
 import { createGlobalId } from "../../../../util";
 
 import translateFromNMI from "../util/translate-nmi";
+import nmi from "../util/nmi";
 import submitTransaction from "../util/submit-transaction";
 
 import {
   Transaction as TransactionTable,
-  // TransactionRefund,
+  SavedPayment,
   TransactionDetail,
   FinancialGateway,
   FinancialPaymentDetail,
@@ -183,5 +184,66 @@ export default class Transaction extends Rock {
       .then(y => y.filter(x => !!x))
       .then(this.getFromIds.bind(this))
       ;
+  }
+
+  async createNMITransaction({ data, instant, id, ip, requestUrl }, person) {
+    if (!data) return Promise.reject(new Error("No data provided"));
+
+    const gateway = await this.loadGatewayDetails("NMI Gateway");
+    const orderData = data;
+
+    let method = "sale";
+
+    orderData["redirect-url"] = `${requestUrl}`;
+    if (orderData["start-date"]) method = "add-subscription";
+    if (orderData.amount === 0) method = "validate";
+
+
+    if (method !== "add-subscription" && person && person.PrimaryAliasId) {
+      orderData["customer-id"] = person.PrimaryAliasId;
+    }
+
+    // XXX we should probably error out if they expect a saved account but we don't find one?
+    if (orderData.savedAccount) {
+      // XXX lookup only based on logged in status
+      const accountDetails = await SavedPayment.findOne({ where: { Id: orderData.savedAccount }});
+
+      delete orderData.savedAccount;
+      delete orderData.savedAccountName;
+      if (accountDetails && accountDetails.ReferenceNumber) {
+        delete orderData["customer-id"];
+        orderData["customer-vault-id"] = accountDetails.ReferenceNumber;
+      }
+    }
+
+    if (method !== "add-subscription") {
+      // add in IP address
+      orderData["ip-address"] = ip;
+
+      // strongly force CVV on acctions that aren't a saved account
+      if (!orderData["customer-vault-id"]) orderData["cvv-reject"] = "P|N|S|U";
+    }
+
+    if (!orderData["customer-vault-id"] && method === "sale") orderData["add-customer"] = "";
+    if (orderData["customer-vault-id"] && method === "add-subscription") {
+      delete orderData["redirect-url"];
+    }
+
+    const generatedId = `apollos_${Date.now()}_${Math.ceil(Math.random() * 100000)}`;
+
+    const order = {
+      [method]: {
+        ...{
+          "api-key": gateway.SecurityKey,
+          "order-description": "Online contribution from Apollos",
+          "order-id": generatedId || orderData.orderId,
+        },
+        ...orderData,
+      },
+    }
+
+    return nmi(order, gateway)
+      .catch(e => ({ error: e.message }));
+
   }
 }
