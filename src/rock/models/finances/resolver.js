@@ -66,13 +66,79 @@ export default {
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
       return models.SavedPayment.removeFromEntityId(entityId, nmi);
     },
+    createOrder: (_, { instant, id, data, url }, { models, person, ip, req }) => {
+      let requestUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+      if (url) requestUrl = url;
+      const parsedData = JSON.parse(data);
+      return models.Transaction.createNMITransaction({
+        data: parsedData,
+        instant,
+        id,
+        ip,
+        requestUrl,
+      }, person);
+    },
+    validate: async (_, { token, gateway }, { models }) => {
+      if (!token) return null;
+      const nmi = await models.Transaction.loadGatewayDetails(gateway);
+      return models.SavedPayment.validate({ token }, nmi);
+    },
+    charge: (_, { token, accountName }, { models, person }) => {
+      if (!token) return null;
+      return models.Transaction.charge(token, accountName, person);
+    },
+    savePayment: async (_, { token, gateway, accountName }, { models, person }) => {
+      const nmi = await models.Transaction.loadGatewayDetails(gateway);
+      return models.SavedPayment.save({ token, name: accountName, person }, nmi);
+    },
   },
 
-  SavedPaymentMutationResponse: {
+  ValidateMutationResponse: {
+    error: ({ error }) => error,
+    success: ({ success, error }) => success || !error,
+    code: ({ code }) => code,
+  },
+
+  SavePaymentMutationResponse: {
+    error: ({ error }) => error,
+    success: ({ success, error }) => success || !error,
+    code: ({ code }) => code,
+    savedPayment: ({ savedPaymentId }, _, { models }) => {
+      if (!savedPaymentId) return null;
+      return models.SavedPayment.getFromId(savedPaymentId)
+        .then(([x]) => x);
+    },
+  },
+
+  ChargeMutationResponse: {
     error: ({ error }) => error,
     success: ({ error }) => !error,
     code: ({ code }) => code,
-    payment: ({ Id }, _, { models }) => Id && models.SavedPayment.getFromId(Id),
+    transaction: ({ transactionId }, _, { models }) => {
+      if (!transactionId) return null;
+      return models.Transaction.getFromId(transactionId);
+    },
+    schedule: ({ scheduleId }, _, { models }) => {
+      if (!scheduleId) return null;
+      return models.Schedule.getFromId(scheduleId);
+    },
+    person: ({ personId }, _, { models, person }) => {
+      if (person) return person;
+      if (!personId) return null;
+      return models.Person.getFromId(personId);
+    },
+    savedPayment: ({ savedPaymentId }, _, { models }) => {
+      if (!savedPaymentId) return null;
+      return models.SavedPayment.getFromId(savedPaymentId);
+    },
+  },
+
+  OrderMutationResponse: {
+    error: ({ error }) => error,
+    success: ({ error }) => !error,
+    code: ({ code }) => code,
+    url: ({ url }) => url,
+    transactionId: ({ transactionId }) => transactionId,
   },
 
   TransactionDetail: {

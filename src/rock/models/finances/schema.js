@@ -34,6 +34,30 @@ export default [`
     person: Person
   }
 
+  type OrderMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+    url: String
+    transactionId: ID
+  }
+
+  type ChargeMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+    transaction: Transaction
+    schedule: ScheduledTransaction
+    person: Person
+    savedPayment: SavedPayment
+  }
+
+  type ValidateMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+  }
+
   type FinancialAccount implements Node {
     id: ID!
     entityId: Int!
@@ -63,10 +87,12 @@ export default [`
     payment: PaymentDetail
   }
 
-  type SavedPaymentMutationResponse implements MutationResponse {
+
+  type SavePaymentMutationResponse implements MutationResponse {
     error: String
     success: Boolean!
     code: Int
-    payment: SavedPayment
+    savedPayment: SavedPayment
   }
+
 `];

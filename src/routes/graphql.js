@@ -116,6 +116,7 @@ export default function (app, monitor) {
       hashedToken: request.headers.authorization,
       cache,
       ip,
+      req: request,
     };
 
     if (process.env.OPTICS_API_KEY && OpticsAgent) {

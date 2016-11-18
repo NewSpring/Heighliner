@@ -117,6 +117,7 @@ export class MSSQLConnector {
 
         if (status === 204) return { json: () => ({ status: 204, statusText: "success" })};
         if (status >= 200 && status < 300) return response;
+        if (status >= 400) throw new Error(error);
 
         return {
           json: () => ({ status, statusText, error }),

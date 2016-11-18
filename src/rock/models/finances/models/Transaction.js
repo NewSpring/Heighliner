@@ -197,6 +197,8 @@ export default class Transaction extends Rock {
     orderData["redirect-url"] = `${requestUrl}`;
     if (orderData["start-date"]) method = "add-subscription";
     if (orderData.amount === 0) method = "validate";
+    // omitted orderData
+    if (typeof orderData.amount === "undefined") method = "add-customer";
 
 
     if (method !== "add-subscription" && person && person.PrimaryAliasId) {
@@ -216,7 +218,7 @@ export default class Transaction extends Rock {
       }
     }
 
-    if (method !== "add-subscription") {
+    if (method !== "add-subscription" && method !== "add-customer") {
       // add in IP address
       orderData["ip-address"] = ip;
 
@@ -230,20 +232,26 @@ export default class Transaction extends Rock {
     }
 
     const generatedId = `apollos_${Date.now()}_${Math.ceil(Math.random() * 100000)}`;
+    if (method !== "add-customer") {
+      orderData["order-description"] = "Online contribution from Apollos",
+      orderData["order-id"] =  generatedId || orderData.orderId;
+    }
 
     const order = {
       [method]: {
-        ...{
-          "api-key": gateway.SecurityKey,
-          "order-description": "Online contribution from Apollos",
-          "order-id": generatedId || orderData.orderId,
-        },
+        ...{ "api-key": gateway.SecurityKey },
         ...orderData,
       },
-    }
+    };
 
     return nmi(order, gateway)
-      .catch(e => ({ error: e.message }));
+      .then(data => ({
+        success: data.result === 1,
+        code: data["result-code"],
+        url: data["form-url"],
+        transactionId: data["transaction-id"],
+      }))
+      .catch(e => ({ error: e.message, code: e.code }));
 
   }
 }

@@ -18,7 +18,6 @@ export default {
   252: "This card has been reported as stolen",
   253: "This card is not valid",
   260: "result-text",
-  300: "There was an error with our payment processor, you were not charged, please try again",
   400: "There was an error with our payment processor, you were not charged, please try again",
   410: "We had an issue processing transactions, please try again",
   411: "Looks like we are having connection issues with our processor, please try again later",

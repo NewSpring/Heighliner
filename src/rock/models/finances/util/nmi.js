@@ -38,8 +38,8 @@ export default (payload, gateway) => {
     }))
     .then(({ response }) => {
       const data = response;
-      if (data["result-code"] === "100") return data;
 
+      if (data["result-code"] === "100") return data;
       let number = Number(data["result-code"]);
 
       let err;
@@ -54,8 +54,9 @@ export default (payload, gateway) => {
       } else {
         err = data["result-text"];
       }
-
-      throw new Error(err);
+      const error = new Error(err);
+      error.code = number;
+      throw error;
     })
   , 60000)
     .catch((err) => {
