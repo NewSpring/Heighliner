@@ -1,6 +1,12 @@
 
 import { createGlobalId } from "../../../util";
 
+const MutationReponseResolver = {
+  error: ({ error }) => error,
+  success: ({ success, error }) => success || !error,
+  code: ({ code }) => code,
+};
+
 export default {
 
   Query: {
@@ -70,7 +76,7 @@ export default {
       let requestUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
       if (url) requestUrl = url;
       const parsedData = JSON.parse(data);
-      return models.Transaction.createNMITransaction({
+      return models.Transaction.createOrder({
         data: parsedData,
         instant,
         id,
@@ -83,26 +89,28 @@ export default {
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
       return models.SavedPayment.validate({ token }, nmi);
     },
-    charge: (_, { token, accountName }, { models, person }) => {
+    completeOrder: (_, { token, accountName }, { models, person }) => {
       if (!token) return null;
-      return models.Transaction.charge(token, accountName, person);
+      return models.Transaction.completeOrder({ token, accountName, person });
     },
     savePayment: async (_, { token, gateway, accountName }, { models, person }) => {
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
       return models.SavedPayment.save({ token, name: accountName, person }, nmi);
     },
+    cancelSchedule: async (_, { entityId, gateway }, { models }) => {
+      // XXX only let the owner cancel the schedule
+      const nmi = await models.Transaction.loadGatewayDetails(gateway);
+      return models.ScheduledTransaction.cancelNMISchedule(entityId, nmi)
+        .catch(error => ({ error: error.message, code: error.code }));
+    },
   },
 
   ValidateMutationResponse: {
-    error: ({ error }) => error,
-    success: ({ success, error }) => success || !error,
-    code: ({ code }) => code,
+    ...MutationReponseResolver,
   },
 
   SavePaymentMutationResponse: {
-    error: ({ error }) => error,
-    success: ({ success, error }) => success || !error,
-    code: ({ code }) => code,
+    ...MutationReponseResolver,
     savedPayment: ({ savedPaymentId }, _, { models }) => {
       if (!savedPaymentId) return null;
       return models.SavedPayment.getFromId(savedPaymentId)
@@ -110,17 +118,15 @@ export default {
     },
   },
 
-  ChargeMutationResponse: {
-    error: ({ error }) => error,
-    success: ({ error }) => !error,
-    code: ({ code }) => code,
+  CompleteOrderMutationResponse: {
+    ...MutationReponseResolver,
     transaction: ({ transactionId }, _, { models }) => {
       if (!transactionId) return null;
       return models.Transaction.getFromId(transactionId);
     },
     schedule: ({ scheduleId }, _, { models }) => {
       if (!scheduleId) return null;
-      return models.Schedule.getFromId(scheduleId);
+      return models.ScheduledTransaction.getFromId(scheduleId);
     },
     person: ({ personId }, _, { models, person }) => {
       if (person) return person;
@@ -134,11 +140,17 @@ export default {
   },
 
   OrderMutationResponse: {
-    error: ({ error }) => error,
-    success: ({ error }) => !error,
-    code: ({ code }) => code,
+    ...MutationReponseResolver,
     url: ({ url }) => url,
     transactionId: ({ transactionId }) => transactionId,
+  },
+
+  ScheduledTransactionMutationResponse: {
+    ...MutationReponseResolver,
+    schedule: ({ scheduleId }, _, { models }) => {
+      if (!scheduleId) return null;
+      return models.Schedule.getFromId(scheduleId);
+    },
   },
 
   TransactionDetail: {

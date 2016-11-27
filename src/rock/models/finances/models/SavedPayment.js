@@ -66,7 +66,7 @@ export default class SavedPayment extends Rock {
         FinancialPaymentDetail.Guid = uuid.v4();
 
         const FinancialPersonSavedAccounts = {
-          Name: name,
+          Name: name || "Bank Card",
           ReferenceNumber: response["customer-vault-id"],
           TransactionCode: response["transaction-id"],
           Guid: uuid.v4(),
@@ -133,7 +133,3 @@ export default class SavedPayment extends Rock {
 
   }
 }
-
-// {
-//   "data": "{\"billing\":{\"address1\":\"1 Linwa Blvd\",\"address2\":\"\",\"city\":\"Anderson\",\"email\":\"james.baxley@newspring.cc\",\"first-name\":\"James\",\"last-name\":\"Baxley\",\"postal\":29621,\"state\":\"SC\"}}"
-// }

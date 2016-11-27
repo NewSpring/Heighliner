@@ -1,5 +1,6 @@
 
 import { createGlobalId } from "../../../../util";
+import nmi from "../util/nmi";
 
 import {
   Transaction as TransactionTable,
@@ -51,6 +52,36 @@ export default class ScheduledTransaction extends Rock {
     , { cache })
       .then(this.getFromIds.bind(this))
       ;
+
+  }
+
+  async cancelNMISchedule(id, gatewayDetails) {
+    const existing = await this.getFromId(id);
+    if (!existing) throw new Error("Schedule not found");
+
+    const payload = {
+      "delete-subscription": {
+        "api-key": gatewayDetails.SecurityKey,
+        "subscription-id": existing.GatewayScheduleId,
+      }
+    };
+
+    const cancelinRock = () => {
+      if (existing.GatewayScheduleId) {
+        return ScheduledTransactionTable.patch(existing.Id, { IsActive: false });
+      }
+
+      return ScheduledTransactionTable.delete(existing.Id);
+    };
+
+    return nmi(payload, gatewayDetails)
+      .then(cancelinRock)
+      .catch((error) => {
+        // If this schedule isn't in NMI, go ahead and clean up Rock
+        if (!/Transaction not found/.test(error.message)) throw error;
+        return cancelinRock();
+      })
+      .catch((error) => ({ code: error.code, error: error.message }));
 
   }
 }

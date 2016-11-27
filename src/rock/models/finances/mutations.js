@@ -23,11 +23,11 @@ export default [
     url: String
   ): OrderMutationResponse`,
 
-  `charge(
+  `completeOrder(
     token: ID!
     accountName: String
     gateway: String = "NMI Gateway",
-  ): ChargeMutationResponse`,
+  ): CompleteOrderMutationResponse`,
 
   `validate(
     token: ID!
@@ -45,4 +45,10 @@ export default [
     accountName: String
     gateway: String = "NMI Gateway",
   ): SavePaymentMutationResponse`,
+
+  `cancelSchedule(
+    id: ID
+    entityId: Int
+    gateway: String = "NMI Gateway",
+  ): ScheduledTransactionMutationResponse`,
 ];

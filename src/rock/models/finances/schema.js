@@ -42,7 +42,7 @@ export default [`
     transactionId: ID
   }
 
-  type ChargeMutationResponse implements MutationResponse {
+  type CompleteOrderMutationResponse implements MutationResponse {
     error: String
     success: Boolean!
     code: Int
@@ -95,4 +95,10 @@ export default [`
     savedPayment: SavedPayment
   }
 
+  type ScheduledTransactionMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+    schedule: ScheduledTransaction
+  }
 `];

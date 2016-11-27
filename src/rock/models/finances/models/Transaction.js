@@ -1,4 +1,5 @@
 
+import uuid from "node-uuid";
 import Moment from "moment";
 import { assign, isArray } from "lodash";
 import QueryString from "querystring";
@@ -8,6 +9,7 @@ import { parseString } from "xml2js";
 import { createGlobalId } from "../../../../util";
 
 import translateFromNMI from "../util/translate-nmi";
+import formatTransaction from "../util/formatTransaction";
 import nmi from "../util/nmi";
 import submitTransaction from "../util/submit-transaction";
 
@@ -16,13 +18,14 @@ import {
   SavedPayment,
   TransactionDetail,
   FinancialGateway,
-  FinancialPaymentDetail,
+  FinancialPaymentDetail as FinancialPaymentDetailTable,
+  FinancialAccount,
 } from "../tables";
 
 import { AttributeValue, Attribute } from "../../system/tables";
 
 import {
-  Person,
+  Person as PersonTable,
   PersonAlias,
 } from "../../people/tables";
 
@@ -51,7 +54,7 @@ export default class Transaction extends Rock {
     if (!id) return Promise.resolve(null);
 
     const globalId = createGlobalId(`${id}`, "PaymentDetail");
-    return this.cache.get(globalId, () => FinancialPaymentDetail.findOne({
+    return this.cache.get(globalId, () => FinancialPaymentDetailTable.findOne({
         where: { Id: id },
       })
     );
@@ -92,7 +95,7 @@ export default class Transaction extends Rock {
             attributes: [],
             include: [
               {
-                model: Person.model,
+                model: PersonTable.model,
                 attributes: [],
                 where: include && include.length ? { Id: { $in: include } } : null,
                 include: [
@@ -150,7 +153,7 @@ export default class Transaction extends Rock {
       }))
       ;
 
-    this.gateway = assign(gateways, attributes);
+    this.gateway = assign(gateways, attributes, { SecurityKey: "2F822Rw39fx762MaV7Yy86jXGTC7sCDy" });
     return this.gateway;
   }
 
@@ -186,7 +189,7 @@ export default class Transaction extends Rock {
       ;
   }
 
-  async createNMITransaction({ data, instant, id, ip, requestUrl }, person) {
+  async createOrder({ data, instant, id, ip, requestUrl }, person) {
     if (!data) return Promise.reject(new Error("No data provided"));
 
     const gateway = await this.loadGatewayDetails("NMI Gateway");
@@ -251,6 +254,167 @@ export default class Transaction extends Rock {
         url: data["form-url"],
         transactionId: data["transaction-id"],
       }))
+      .catch(e => ({ error: e.message, code: e.code }));
+
+  }
+
+  async charge(token, gatewayDetails) {
+
+    const complete = {
+      "complete-action": {
+        "api-key": gatewayDetails.SecurityKey,
+        "token-id": token,
+      },
+    };
+
+    return nmi(complete, gatewayDetails);
+  }
+
+  async getOrCreatePerson(data) {
+    const { Person } = data;
+    if (Person.Id) return data;
+
+    const Id = await PersonTable.post(Person)
+    const Entities = data;
+    Entities.Person = await PersonTable.findOne({
+      where: { Id },
+      include: [{ model: PersonAlias.model }]
+    }).then(x => {
+      x.PrimaryAliasId = x.PersonAlias.Id
+      return x;
+    });
+
+    return Entities;
+  }
+
+  async createPaymentDetail(data){
+    const { FinancialPaymentDetail } = data;
+    if (FinancialPaymentDetail.Id) return data;
+
+    // create a payment detail
+    FinancialPaymentDetail.Id = await FinancialPaymentDetailTable
+      .post(FinancialPaymentDetail);
+
+    return data;
+  }
+
+  async findOrCreateTransaction(data) {
+    const {
+      FinancialPaymentDetail,
+      Transaction,
+      Person,
+    } = data;
+    if (Transaction.Id) return data;
+
+    // create a transaction if it doesn't exist
+    const Existing = await TransactionTable.find({
+      where: { TransactionCode: Transaction.TransactionCode }
+    });
+
+    let TransactionId;
+    if (Existing.length) {
+      TransactionId = Existing[0].Id;
+    } else {
+      Transaction.AuthorizedPersonAliasId = Person.PrimaryAliasId;
+      Transaction.CreatedByPersonAliasId = Person.PrimaryAliasId;
+      Transaction.ModifiedByPersonAliasId = Person.PrimaryAliasId;
+      // SourceTypeValueId: api._.rockId ? api._.rockId : 10;
+      // BatchId
+      Transaction.FinancialPaymentDetailId = FinancialPaymentDetail.Id;
+
+      Transaction.Id = await TransactionTable.post(Transaction);
+
+      return data;
+    }
+  }
+
+  async createTransactionDetails(data) {
+    const {
+      FinancialPaymentDetail,
+      Transaction,
+      Person,
+      TransactionDetails,
+      Campus,
+    } = data;
+
+    // create transaction details
+    data.TransactionDetails = await Promise.all(TransactionDetails.map(async (x) => {
+      if (x.Id) return x;
+
+      let AccountId = await FinancialAccountTable.findOne({
+        where: {
+          CampusId: Campus.Id,
+          ParentAccountId: x.AccountId,
+        }
+      })
+        .then(x => x.Id)
+
+      if (!AccountId) {
+        // XXX look up person's campusId to find the fund
+        AccountId = x.AccountId;
+      }
+
+      const detail = assign(x, {
+        CreatedByPersonAliasId: Person.PrimaryAliasId,
+        ModifiedByPersonAliasId: Person.PrimaryAliasId,
+        TransactionId: Transaction.Id,
+        AccountId,
+      });
+
+      x.Id = TransactionDetailTable.post(detail);
+      return x;
+    }));
+
+    return data;
+  }
+
+  async createSavedPayment(data) {
+    const {
+      FinancialPaymentDetail,
+      Transaction,
+      Person,
+      TransactionDetails,
+      Campus,
+      FinancialPersonSavedAccount,
+    } = data;
+
+    if (
+      FinancialPersonSavedAccount.Id ||
+      !FinancialPersonSavedAccount.Name ||
+      !FinancialPersonSavedAccount.ReferenceNumber
+    ) return data;
+
+    delete FinancialPaymentDetail.Id;
+    FinancialPaymentDetail.Guid = uuid.v4();
+
+    data = await createPaymentDetail(data);
+
+    FinancialPersonSavedAccount.Id = SavedPayment.post(assign(FinacialPersonSavedAccount, {
+      PersonAliasId: Person.PrimaryAliasId,
+      FinancialPaymentDetailId: data.FinancialPaymentDetail.Id,
+      CreatedByPersonAliasId: Person.PrimaryAliasId,
+      ModifiedByPersonAliasId: Person.PrimaryAliasId,
+    }));
+
+    return data;
+  }
+
+  async completeOrder({ token, person, accountName }) {
+    const gatewayDetails = await this.loadGatewayDetails("NMI Gateway");
+
+    return this.charge(token, gatewayDetails)
+      .then(response => formatTransaction({ response, person, accountName }, gatewayDetails))
+      .then(this.getOrCreatePerson)
+      .then(this.createPaymentDetail)
+      .then(this.findOrCreateTransaction)
+      .then(this.createTransactionDetails)
+      .then(this.createSavedPayment)
+      // .then(this.sendEmail)
+      // XXX update location better
+      // .then(x => {
+      //   const Entities = x;
+      // })
+      .then(this.debug)
       .catch(e => ({ error: e.message, code: e.code }));
 
   }

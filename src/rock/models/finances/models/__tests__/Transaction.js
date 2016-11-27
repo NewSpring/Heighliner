@@ -189,83 +189,74 @@ describe("createNMITransaction", () => {
   });
 
   it("correctly formats the data object", async () => {
-    nmi.mockImplementationOnce((...args) => Promise.resolve(...args));
+    nmi.mockImplementationOnce(order => Promise.resolve({
+      result: 1,
+      "result-code": 100,
+      "form-url": order,
+      "transaction-id": 1,
+    }));
 
     const data = await Local.createNMITransaction({
-      data: { test: true },
+      data: { test: true, amount: 1 },
       requestUrl: "https://my.newspring.cc/give/now",
       ip: "1",
     });
-    const expected = {
-      sale: {
-        "add-customer": "",
-        "api-key": "3",
-        "cvv-reject": "P|N|S|U",
-        "ip-address": "1",
-        "order-description": "Online contribution from Apollos",
-        "redirect-url": "https://my.newspring.cc/give/now",
-        test: true,
-      },
-    };
-    expect(data.sale["order-id"]).toBeTruthy();
-    delete data.sale["order-id"];
+
+    delete data.url.sale["order-id"];
 
     expect(nmi).toBeCalled();
-    expect(data).toEqual(expected);
+    expect(data).toMatchSnapshot();
   });
 
   it("correctly formats a subscription object", async () => {
-    nmi.mockImplementationOnce((...args) => Promise.resolve(...args));
+    nmi.mockImplementationOnce((order => Promise.resolve({
+      result: 1,
+      "result-code": 100,
+      "form-url": order,
+      "transaction-id": 1,
+    })));
 
     const data = await Local.createNMITransaction({
-      data: { "start-date": "01012020" },
+      data: { "start-date": "01012020", amount: 1 },
       requestUrl: "https://my.newspring.cc/give/now",
       ip: "1",
     });
-    const expected = {
-      "add-subscription": {
-        "api-key": "3",
-        "order-description": "Online contribution from Apollos",
-        "redirect-url": "https://my.newspring.cc/give/now",
-        "start-date": "01012020",
-      },
-    };
-    expect(data["add-subscription"]["order-id"]).toBeTruthy();
-    delete data["add-subscription"]["order-id"];
+
+    expect(data.url["add-subscription"]["order-id"]).toBeTruthy();
+    delete data.url["add-subscription"]["order-id"];
 
     expect(nmi).toBeCalled();
-    expect(data).toEqual(expected);
+    expect(data).toMatchSnapshot();
   });
 
   it("adds a persons PrimaryAliasId to an order", async () => {
-    nmi.mockImplementationOnce((...args) => Promise.resolve(...args));
+    nmi.mockImplementationOnce((order => Promise.resolve({
+      result: 1,
+      "result-code": 100,
+      "form-url": order,
+      "transaction-id": 1,
+    })));
 
     const data = await Local.createNMITransaction({
-      data: { },
+      data: { amount: 1 },
       requestUrl: "https://my.newspring.cc/give/now",
       ip: "1",
     }, { PrimaryAliasId: 10 });
 
-    const expected = {
-      sale: {
-        "api-key": "3",
-        "order-description": "Online contribution from Apollos",
-        "redirect-url": "https://my.newspring.cc/give/now",
-        "customer-id": 10,
-        "cvv-reject": "P|N|S|U",
-        "ip-address": "1",
-        "add-customer": "",
-      },
-    };
-    expect(data.sale["order-id"]).toBeTruthy();
-    delete data.sale["order-id"];
+    expect(data.url.sale["order-id"]).toBeTruthy();
+    delete data.url.sale["order-id"];
 
     expect(nmi).toBeCalled();
-    expect(data).toEqual(expected);
+    expect(data).toMatchSnapshot();
   });
 
   it("handles a validation attempt", async () => {
-    nmi.mockImplementationOnce((...args) => Promise.resolve(...args));
+    nmi.mockImplementationOnce((order => Promise.resolve({
+      result: 1,
+      "result-code": 100,
+      "form-url": order,
+      "transaction-id": 1,
+    })));
 
     const data = await Local.createNMITransaction({
       data: { amount: 0 },
@@ -273,53 +264,58 @@ describe("createNMITransaction", () => {
       ip: "1",
     }, { PrimaryAliasId: 10 });
 
-    const expected = {
-      validate: {
-        "api-key": "3",
-        "order-description": "Online contribution from Apollos",
-        "redirect-url": "https://my.newspring.cc/give/now",
-        "customer-id": 10,
-        "cvv-reject": "P|N|S|U",
-        "ip-address": "1",
-        amount: 0,
-      },
-    };
-    expect(data.validate["order-id"]).toBeTruthy();
-    delete data.validate["order-id"];
+    expect(data.url.validate["order-id"]).toBeTruthy();
+    delete data.url.validate["order-id"];
 
     expect(nmi).toBeCalled();
-    expect(data).toEqual(expected);
+    expect(data).toMatchSnapshot();
   });
 
-  it("attempts to look up a saved account via the id", async () => {
-    nmi.mockImplementationOnce((...args) => Promise.resolve(...args));
-    SavedPayment.findOne.mockReturnValueOnce(Promise.resolve({
-      ReferenceNumber: 100,
-    }));
+  it("handles an add customer attempt", async () => {
+    nmi.mockImplementationOnce((order => Promise.resolve({
+      result: 1,
+      "result-code": 100,
+      "form-url": order,
+      "transaction-id": 1,
+    })));
+
     const data = await Local.createNMITransaction({
-      data: { savedAccount: 10 },
+      data: {},
       requestUrl: "https://my.newspring.cc/give/now",
       ip: "1",
     }, { PrimaryAliasId: 10 });
 
-    const expected = {
-      sale: {
-        "api-key": "3",
-        "order-description": "Online contribution from Apollos",
-        "redirect-url": "https://my.newspring.cc/give/now",
-        "customer-vault-id": 100,
-        "ip-address": "1",
-      },
-    };
+    expect(data.url["add-customer"]["order-id"]).toBeFalsy();
+    delete data.url["add-customer"]["order-id"];
 
-    expect(data.sale["order-id"]).toBeTruthy();
-    delete data.sale["order-id"];
+    expect(nmi).toBeCalled();
+    expect(data).toMatchSnapshot();
+  });
+
+  it("attempts to look up a saved account via the id", async () => {
+    nmi.mockImplementationOnce((order => Promise.resolve({
+      result: 1,
+      "result-code": 100,
+      "form-url": order,
+      "transaction-id": 1,
+    })));
+    SavedPayment.findOne.mockReturnValueOnce(Promise.resolve({
+      ReferenceNumber: 100,
+    }));
+    const data = await Local.createNMITransaction({
+      data: { savedAccount: 10, amount: 1 },
+      requestUrl: "https://my.newspring.cc/give/now",
+      ip: "1",
+    }, { PrimaryAliasId: 10 });
+
+    expect(data.url.sale["order-id"]).toBeTruthy();
+    delete data.url.sale["order-id"];
 
     expect(SavedPayment.findOne).toBeCalledWith({
       where: { Id: 10 },
     });
     expect(nmi).toBeCalled();
-    expect(data).toEqual(expected);
+    expect(data).toMatchSnapshot();
   });
 
   it("resolves successfuly with an error from NMI", async () => {
@@ -332,6 +328,6 @@ describe("createNMITransaction", () => {
     });
 
     expect(nmi).toBeCalled();
-    expect(data).toEqual({ error: "nmi failure" });
+    expect(data).toEqual({ error: "nmi failure", code: undefined });
   });
 });

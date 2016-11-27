@@ -102,3 +102,75 @@ describe("removing a saved payment", () => {
     expect(result).toEqual({ error: "it failed" });
   });
 });
+
+describe("charging NMI for a saved payment", () => {
+  it("calls the nmi method witha complete-action object", async () => {
+    const Local = new SavedPayment({ cache: mockedCache });
+
+    nmi.mockImplementationOnce(() => Promise.resolve({ success: true }));
+
+    const result = await Local.charge("token", { SecurityKey: "safe" });
+
+    expect(nmi).toBeCalledWith({
+      "complete-action": {
+        "api-key": "safe",
+        "token-id": "token",
+      },
+    }, { SecurityKey: "safe" });
+
+    expect(result).toEqual({ success: true });
+  });
+});
+
+describe("validate", () => {
+  it("throws with a helpful error if no token provided", async () => {
+    const Local = new SavedPayment({ cache: mockedCache });
+    try {
+      await Local.validate({});
+      throw new Error("test failure");
+    } catch (e) {
+      expect(e.message).toMatch(/No token provided/);
+    }
+  });
+
+  it("calls charge with the needed data", async () => {
+    const Local = new SavedPayment({ cache: mockedCache });
+    Local.charge = jest.fn(() => Promise.resolve({
+      "result-code": "1",
+    }));
+    const result = await Local.validate({ token: "token" }, { SecurityKey: "foo" });
+    expect(result).toEqual({
+      code: "1",
+      success: true,
+      error: null,
+    });
+    expect(Local.charge).toBeCalledWith("token", { SecurityKey: "foo" });
+  });
+});
+
+describe("save", () => {
+  it("throws if missing a token with a helpful error", async () => {
+    const Local = new SavedPayment({ cache: mockedCache });
+    try {
+      await Local.save({});
+      throw new Error("test failure");
+    } catch (e) {
+      expect(e.message).toMatch(/No token provided/);
+    }
+  });
+
+  it("throws if missing a person with a helpful error", async () => {
+    const Local = new SavedPayment({ cache: mockedCache });
+    try {
+      await Local.save({ token: "foo" });
+      throw new Error("test failure");
+    } catch (e) {
+      expect(e.message).toMatch(/Must be signed in to save a payment/);
+    }
+  });
+
+  xit("correctly formats the creation of a saved account");
+  xit("correctly formats the creation of a payment details [CC]");
+  xit("correctly formats the creation of a payment details [ACH]");
+  xit("it clears the cache after success");
+});

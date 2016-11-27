@@ -1,5 +1,5 @@
 
-import { Builder, parseString } from "xml2js";
+import { Builder } from "xml2js";
 import fetch from "isomorphic-fetch";
 
 import nmi from "../nmi";
