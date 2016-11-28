@@ -108,16 +108,20 @@ export class MSSQLConnector {
     };
     let url = `${ROCK_URL}api/${this.route}`;
     if (route) url = `${url}/${route}`;
+
     return fetch(url, {
       headers, method, body: JSON.stringify(body),
     })
       .then(response => {
-
         const { status, statusText, error } = response;
 
         if (status === 204) return { json: () => ({ status: 204, statusText: "success" })};
         if (status >= 200 && status < 300) return response;
-        if (status >= 400) throw new Error(error);
+        if (status >= 400) {
+          const err = new Error(statusText);
+          err.code = status;
+          throw err;
+        }
 
         return {
           json: () => ({ status, statusText, error }),

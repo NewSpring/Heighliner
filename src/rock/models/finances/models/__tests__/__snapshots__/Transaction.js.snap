@@ -1,4 +1,4 @@
-exports[`createNMITransaction adds a persons PrimaryAliasId to an order 1`] = `
+exports[`createOrder adds a persons PrimaryAliasId to an order 1`] = `
 Object {
   "code": 100,
   "success": true,
@@ -18,7 +18,7 @@ Object {
 }
 `;
 
-exports[`createNMITransaction attempts to look up a saved account via the id 1`] = `
+exports[`createOrder attempts to look up a saved account via the id 1`] = `
 Object {
   "code": 100,
   "success": true,
@@ -36,7 +36,7 @@ Object {
 }
 `;
 
-exports[`createNMITransaction correctly formats a subscription object 1`] = `
+exports[`createOrder correctly formats a subscription object 1`] = `
 Object {
   "code": 100,
   "success": true,
@@ -53,7 +53,7 @@ Object {
 }
 `;
 
-exports[`createNMITransaction correctly formats the data object 1`] = `
+exports[`createOrder correctly formats the data object 1`] = `
 Object {
   "code": 100,
   "success": true,
@@ -73,7 +73,7 @@ Object {
 }
 `;
 
-exports[`createNMITransaction handles a validation attempt 1`] = `
+exports[`createOrder handles a validation attempt 1`] = `
 Object {
   "code": 100,
   "success": true,
@@ -92,7 +92,7 @@ Object {
 }
 `;
 
-exports[`createNMITransaction handles an add customer attempt 1`] = `
+exports[`createOrder handles an add customer attempt 1`] = `
 Object {
   "code": 100,
   "success": true,

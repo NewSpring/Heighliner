@@ -63,7 +63,7 @@ export {
 };
 
 export function connect() {
-  Person = new MSSQLConnector("Person", personSchema);
+  Person = new MSSQLConnector("Person", personSchema, {}, "People");
   PersonAlias = new MSSQLConnector("PersonAlias", aliasSchema);
   PhoneNumber = new MSSQLConnector("PhoneNumber", phoneNumberSchema);
 

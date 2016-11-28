@@ -57,7 +57,7 @@ export default class ScheduledTransaction extends Rock {
 
   async cancelNMISchedule(id, gatewayDetails) {
     const existing = await this.getFromId(id);
-    if (!existing) throw new Error("Schedule not found");
+    if (!existing) return Promise.resolve({ error: "Schedule not found" });
 
     const payload = {
       "delete-subscription": {
@@ -66,20 +66,26 @@ export default class ScheduledTransaction extends Rock {
       }
     };
 
-    const cancelinRock = () => {
-      if (existing.GatewayScheduleId) {
-        return ScheduledTransactionTable.patch(existing.Id, { IsActive: false });
-      }
-
-      return ScheduledTransactionTable.delete(existing.Id);
-    };
 
     return nmi(payload, gatewayDetails)
-      .then(cancelinRock)
       .catch((error) => {
         // If this schedule isn't in NMI, go ahead and clean up Rock
-        if (!/Transaction not found/.test(error.message)) throw error;
-        return cancelinRock();
+        if (
+          !/Transaction not found/.test(error.message) &&
+          !/No recurring subscriptions found/.test(error.message)
+        ) throw error;
+      })
+      .then(() => {
+        if (existing.GatewayScheduleId) {
+          return ScheduledTransactionTable.patch(existing.Id, { IsActive: false });
+        }
+
+        return ScheduledTransactionTable.delete(existing.Id);
+      })
+      .then(() => {
+        const nodeId = createGlobalId(`${existing.Id}`, this.__type);
+        this.cache.del(nodeId);
+        return { scheduleId: existing.Id };
       })
       .catch((error) => ({ code: error.code, error: error.message }));
 

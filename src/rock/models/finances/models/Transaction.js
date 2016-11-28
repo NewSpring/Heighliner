@@ -17,12 +17,18 @@ import {
   Transaction as TransactionTable,
   SavedPayment,
   TransactionDetail,
+  ScheduledTransaction,
+  ScheduledTransactionDetail,
   FinancialGateway,
   FinancialPaymentDetail as FinancialPaymentDetailTable,
   FinancialAccount,
 } from "../tables";
 
-import { AttributeValue, Attribute } from "../../system/tables";
+import {
+  AttributeValue,
+  Attribute,
+  DefinedValue,
+} from "../../system/tables";
 
 import {
   Person as PersonTable,
@@ -30,11 +36,41 @@ import {
 } from "../../people/tables";
 
 import {
+  Campus as CampusTable,
+} from "../../campuses/tables";
+
+import {
   Group,
   GroupMember,
 } from "../../groups/tables";
 
 import { Rock } from "../../system";
+
+export const readIdsFromFrequencies = (plan, frequencies) => {
+  const ids = {};
+  for (const f of frequencies) ids[f.Value] = f;
+  if (plan["day-frequency"]) {
+    switch (plan["day-frequency"]) { // eslint-disable-line
+      case "7":
+        return ids.Weekly.Id; // Every Week (Rock)
+      case "14":
+        return ids["Bi-Weekly"].Id; // Every Two Weeks (Rock)
+    }
+  }
+
+  if (plan["month-frequency"]) {
+    switch (plan["month-frequency"]) { // eslint-disable-line
+      case "2":
+        return ids["Twice a Month"].Id; // Twice A Month (Rock)
+      case "1":
+        return ids.Monthly.Id; // Once A Month (Rock)
+    }
+  }
+
+  if (plan["day-of-month"]) {
+    return ids["One-Time"].Id; // One Time (Rock)
+  }
+};
 
 export default class Transaction extends Rock {
   __type = "Transaction";
@@ -153,7 +189,11 @@ export default class Transaction extends Rock {
       }))
       ;
 
-    this.gateway = assign(gateways, attributes, { SecurityKey: "2F822Rw39fx762MaV7Yy86jXGTC7sCDy" });
+    this.gateway = assign(
+      gateways,
+      attributes,
+      { SecurityKey: "2F822Rw39fx762MaV7Yy86jXGTC7sCDy" }
+    );
     return this.gateway;
   }
 
@@ -189,7 +229,7 @@ export default class Transaction extends Rock {
       ;
   }
 
-  async createOrder({ data, instant, id, ip, requestUrl }, person) {
+  createOrder = async ({ data, instant, id, ip, requestUrl, origin }, person) => {
     if (!data) return Promise.reject(new Error("No data provided"));
 
     const gateway = await this.loadGatewayDetails("NMI Gateway");
@@ -198,10 +238,10 @@ export default class Transaction extends Rock {
     let method = "sale";
 
     orderData["redirect-url"] = `${requestUrl}`;
-    if (orderData["start-date"]) method = "add-subscription";
     if (orderData.amount === 0) method = "validate";
     // omitted orderData
     if (typeof orderData.amount === "undefined") method = "add-customer";
+    if (orderData["start-date"]) method = "add-subscription";
 
 
     if (method !== "add-subscription" && person && person.PrimaryAliasId) {
@@ -248,6 +288,19 @@ export default class Transaction extends Rock {
     };
 
     return nmi(order, gateway)
+      .then((data) => {
+        if (!instant) return data;
+        // XXX create a schedule from the transaction
+        const scheduleId = id;
+        return Promise.resolve(data)
+          .then(response => formatTransaction({ scheduleId, response, person, origin }, gateway))
+          .then(this.getOrCreatePerson)
+          .then(this.createPaymentDetail)
+          .then(this.findOrCreateTransaction)
+          .then(this.findOrCreateSchedule)
+          .then(this.createTransactionDetails)
+          .then(this.createSavedPayment)
+      })
       .then(data => ({
         success: data.result === 1,
         code: data["result-code"],
@@ -258,7 +311,7 @@ export default class Transaction extends Rock {
 
   }
 
-  async charge(token, gatewayDetails) {
+  charge = async (token, gatewayDetails) => {
 
     const complete = {
       "complete-action": {
@@ -270,7 +323,7 @@ export default class Transaction extends Rock {
     return nmi(complete, gatewayDetails);
   }
 
-  async getOrCreatePerson(data) {
+  getOrCreatePerson = async (data) => {
     const { Person } = data;
     if (Person.Id) return data;
 
@@ -287,7 +340,7 @@ export default class Transaction extends Rock {
     return Entities;
   }
 
-  async createPaymentDetail(data){
+  createPaymentDetail = async (data) => {
     const { FinancialPaymentDetail } = data;
     if (FinancialPaymentDetail.Id) return data;
 
@@ -298,12 +351,14 @@ export default class Transaction extends Rock {
     return data;
   }
 
-  async findOrCreateTransaction(data) {
+  findOrCreateTransaction = async (data) => {
     const {
       FinancialPaymentDetail,
-      Transaction,
       Person,
+      SourceTypeValue,
+      Transaction,
     } = data;
+    if (!Transaction.TransactionCode) return data;
     if (Transaction.Id) return data;
 
     // create a transaction if it doesn't exist
@@ -313,13 +368,20 @@ export default class Transaction extends Rock {
 
     let TransactionId;
     if (Existing.length) {
-      TransactionId = Existing[0].Id;
+      Transaction.Id = Existing[0].Id;
     } else {
+
+      if (!Transaction.SourceTypeValueId && SourceTypeValue.Url) {
+        Transaction.SourceTypeValueId = await DefinedValue.findOne({
+          where: { Value: SourceTypeValue.Url, DefinedTypeId: 12 },
+        })
+          .then(x => x && x.Id || 10);
+      }
+
       Transaction.AuthorizedPersonAliasId = Person.PrimaryAliasId;
       Transaction.CreatedByPersonAliasId = Person.PrimaryAliasId;
       Transaction.ModifiedByPersonAliasId = Person.PrimaryAliasId;
-      // SourceTypeValueId: api._.rockId ? api._.rockId : 10;
-      // BatchId
+      // XXX BatchId
       Transaction.FinancialPaymentDetailId = FinancialPaymentDetail.Id;
 
       Transaction.Id = await TransactionTable.post(Transaction);
@@ -328,10 +390,60 @@ export default class Transaction extends Rock {
     }
   }
 
-  async createTransactionDetails(data) {
+  findOrCreateSchedule = async (data) => {
+    const {
+      FinancialPaymentDetail,
+      Person,
+      Schedule,
+      SourceTypeValue,
+    } = data;
+    // not a schedule transaction
+    if (!Schedule.GatewayScheduleId) return data;
+
+    // if (Schedule.Id && )
+    const Existing = await ScheduledTransaction.find({
+      where: { GatewayScheduleId: Schedule.GatewayScheduleId }
+    });
+
+    let TransactionId;
+    if (Existing.length) {
+      Schedule.Id = Existing[0].Id;
+    } else {
+
+      if (Schedule.TransactionFrequencyValue) {
+        await DefinedValue.find({
+          where: { DefinedTypeId: 23 },
+        })
+          .then(x => readIdsFromFrequencies(Schedule.TransactionFrequencyValue, x))
+          .then(id => {
+            Schedule.TransactionFrequencyValueId = id;
+            delete Schedule.TransactionFrequencyValue;
+          })
+      }
+
+      if (!Schedule.SourceTypeValueId && SourceTypeValue.Url) {
+        Schedule.SourceTypeValueId = await DefinedValue.findOne({
+          where: { Value: SourceTypeValue.Url, DefinedTypeId: 12 },
+        })
+          .then(x => x && x.Id || 10);
+      }
+
+      Schedule.AuthorizedPersonAliasId = Person.PrimaryAliasId;
+      Schedule.CreatedByPersonAliasId = Person.PrimaryAliasId;
+      Schedule.ModifiedByPersonAliasId = Person.PrimaryAliasId;
+      // XXX BatchId
+      Schedule.FinancialPaymentDetailId = FinancialPaymentDetail.Id;
+      Schedule.Id = await ScheduledTransaction.post(Schedule)
+
+      return data;
+    }
+  }
+
+  createTransactionDetails = async (data) => {
     const {
       FinancialPaymentDetail,
       Transaction,
+      Schedule,
       Person,
       TransactionDetails,
       Campus,
@@ -341,40 +453,59 @@ export default class Transaction extends Rock {
     data.TransactionDetails = await Promise.all(TransactionDetails.map(async (x) => {
       if (x.Id) return x;
 
-      let AccountId = await FinancialAccountTable.findOne({
+      let AccountId = await FinancialAccount.findOne({
         where: {
           CampusId: Campus.Id,
           ParentAccountId: x.AccountId,
         }
       })
-        .then(x => x.Id)
+        .then(x => x && x.Id || null)
 
       if (!AccountId) {
-        // XXX look up person's campusId to find the fund
-        AccountId = x.AccountId;
+        // if no account is found, use the person's campus for the account
+        const FamilyCampus = await Group.findOne({
+          where: { GroupTypeId: 10 }, // family
+          include: [
+            { model: GroupMember.model, where: { PersonId: `${Person.Id}` } },
+            { model: CampusTable.model },
+          ],
+        })
+          .then(x => x && x.Campus || {});
+
+        AccountId = await FinancialAccount.findOne({
+          where: {
+            CampusId: FamilyCampus.Id,
+            ParentAccountId: x.AccountId,
+          }
+        })
+          .then(x => x && x.Id || null);
       }
 
       const detail = assign(x, {
         CreatedByPersonAliasId: Person.PrimaryAliasId,
         ModifiedByPersonAliasId: Person.PrimaryAliasId,
-        TransactionId: Transaction.Id,
         AccountId,
       });
 
-      x.Id = TransactionDetailTable.post(detail);
+      if (Schedule.Id && !Transaction.Id) {
+        detail.ScheduledTransactionId = Schedule.Id
+        x.Id = await ScheduledTransactionDetail.post(detail);
+      } else {
+        detail.TransactionId = Transaction.Id;
+        x.Id = await TransactionDetail.post(detail);
+      }
+
+
       return x;
     }));
 
     return data;
   }
 
-  async createSavedPayment(data) {
+  createSavedPayment = async (data) => {
     const {
       FinancialPaymentDetail,
-      Transaction,
       Person,
-      TransactionDetails,
-      Campus,
       FinancialPersonSavedAccount,
     } = data;
 
@@ -387,11 +518,11 @@ export default class Transaction extends Rock {
     delete FinancialPaymentDetail.Id;
     FinancialPaymentDetail.Guid = uuid.v4();
 
-    data = await createPaymentDetail(data);
+    data = await this.createPaymentDetail(data);
 
-    FinancialPersonSavedAccount.Id = SavedPayment.post(assign(FinacialPersonSavedAccount, {
+    FinancialPersonSavedAccount.Id = SavedPayment.post(assign(FinancialPersonSavedAccount, {
       PersonAliasId: Person.PrimaryAliasId,
-      FinancialPaymentDetailId: data.FinancialPaymentDetail.Id,
+      FinancialPaymentDetailId: FinancialPaymentDetail.Id,
       CreatedByPersonAliasId: Person.PrimaryAliasId,
       ModifiedByPersonAliasId: Person.PrimaryAliasId,
     }));
@@ -399,14 +530,17 @@ export default class Transaction extends Rock {
     return data;
   }
 
-  async completeOrder({ token, person, accountName }) {
+  async completeOrder({ scheduleId, token, person, accountName, origin }) {
     const gatewayDetails = await this.loadGatewayDetails("NMI Gateway");
 
     return this.charge(token, gatewayDetails)
-      .then(response => formatTransaction({ response, person, accountName }, gatewayDetails))
+      .then(response => formatTransaction({
+        scheduleId, response, person, accountName, origin
+      }, gatewayDetails))
       .then(this.getOrCreatePerson)
       .then(this.createPaymentDetail)
       .then(this.findOrCreateTransaction)
+      .then(this.findOrCreateSchedule)
       .then(this.createTransactionDetails)
       .then(this.createSavedPayment)
       // .then(this.sendEmail)
@@ -415,7 +549,10 @@ export default class Transaction extends Rock {
       //   const Entities = x;
       // })
       .then(this.debug)
-      .catch(e => ({ error: e.message, code: e.code }));
+      .catch(e =>  {
+        console.log(e);
+        return { error: e.message, code: e.code, success: false };
+      });
 
   }
 }

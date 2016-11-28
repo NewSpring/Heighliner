@@ -146,7 +146,7 @@ describe("syncTransactions", () => {
   });
 });
 
-describe("createNMITransaction", () => {
+describe("createOrder", () => {
   let Local;
   beforeEach(() => {
     Local = new Transaction({ cache: mockedCache });
@@ -166,7 +166,7 @@ describe("createNMITransaction", () => {
 
   it("rejects if no data is passed", async () => {
     try {
-      await Local.createNMITransaction({ });
+      await Local.createOrder({ });
       throw new Error("Should not run");
     } catch (e) { expect(e.message).toMatch(/No data provided/); }
   });
@@ -184,7 +184,7 @@ describe("createNMITransaction", () => {
 
     nmi.mockReturnValueOnce(Promise.resolve(true));
 
-    await Local.createNMITransaction({ data: {} });
+    await Local.createOrder({ data: {} });
     expect(Local.loadGatewayDetails).toBeCalledWith("NMI Gateway");
   });
 
@@ -196,7 +196,7 @@ describe("createNMITransaction", () => {
       "transaction-id": 1,
     }));
 
-    const data = await Local.createNMITransaction({
+    const data = await Local.createOrder({
       data: { test: true, amount: 1 },
       requestUrl: "https://my.newspring.cc/give/now",
       ip: "1",
@@ -216,7 +216,7 @@ describe("createNMITransaction", () => {
       "transaction-id": 1,
     })));
 
-    const data = await Local.createNMITransaction({
+    const data = await Local.createOrder({
       data: { "start-date": "01012020", amount: 1 },
       requestUrl: "https://my.newspring.cc/give/now",
       ip: "1",
@@ -237,7 +237,7 @@ describe("createNMITransaction", () => {
       "transaction-id": 1,
     })));
 
-    const data = await Local.createNMITransaction({
+    const data = await Local.createOrder({
       data: { amount: 1 },
       requestUrl: "https://my.newspring.cc/give/now",
       ip: "1",
@@ -258,7 +258,7 @@ describe("createNMITransaction", () => {
       "transaction-id": 1,
     })));
 
-    const data = await Local.createNMITransaction({
+    const data = await Local.createOrder({
       data: { amount: 0 },
       requestUrl: "https://my.newspring.cc/give/now",
       ip: "1",
@@ -279,7 +279,7 @@ describe("createNMITransaction", () => {
       "transaction-id": 1,
     })));
 
-    const data = await Local.createNMITransaction({
+    const data = await Local.createOrder({
       data: {},
       requestUrl: "https://my.newspring.cc/give/now",
       ip: "1",
@@ -302,7 +302,7 @@ describe("createNMITransaction", () => {
     SavedPayment.findOne.mockReturnValueOnce(Promise.resolve({
       ReferenceNumber: 100,
     }));
-    const data = await Local.createNMITransaction({
+    const data = await Local.createOrder({
       data: { savedAccount: 10, amount: 1 },
       requestUrl: "https://my.newspring.cc/give/now",
       ip: "1",
@@ -321,7 +321,7 @@ describe("createNMITransaction", () => {
   it("resolves successfuly with an error from NMI", async () => {
     nmi.mockImplementationOnce(() => Promise.reject(new Error("nmi failure")));
 
-    const data = await Local.createNMITransaction({
+    const data = await Local.createOrder({
       requestUrl: "https://my.newspring.cc/give/now",
       ip: "1",
       data: {},

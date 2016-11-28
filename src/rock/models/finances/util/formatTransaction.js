@@ -1,8 +1,10 @@
+
+import moment from "moment";
 import uuid from "node-uuid";
 import { isNil, omitBy } from "lodash";
 import { getCardType } from "./translate-nmi";
 
-export default ({ response, person = {}, accountName }, gatewayDetails) => {
+export default ({ response, person = {}, accountName, origin, scheduleId }, gatewayDetails) => {
   let FinancialPaymentDetail = {};
 
   if (response.billing["cc-number"]) {
@@ -20,7 +22,7 @@ export default ({ response, person = {}, accountName }, gatewayDetails) => {
     };
   }
 
-  const FinancialTransaction = {
+  const Transaction = {
     TransactionCode: response["transaction-id"],
     TransactionTypeValueId: 53,
     FinancialGatewayId: gatewayDetails.Id,
@@ -29,11 +31,25 @@ export default ({ response, person = {}, accountName }, gatewayDetails) => {
     TransactionDateTime: new Date(),
   };
 
+  const Schedule = omitBy({
+    Id: scheduleId,
+    GatewayScheduleId: response["subscription-id"],
+    TransactionFrequencyValue: response.plan,
+    IsActive: true,
+    Guid: uuid.v4(),
+  }, isNil);
+
+  if (response["merchant-defined-field-3"]) {
+    const date = `${moment(response["merchant-defined-field-3"], "YYYYMMDD").toISOString()}`;
+    Schedule.StartDate = date;
+    Schedule.NextPaymentDate = date;
+  }
+
   let Person = {};
-  if (person) {
+  if (person && person.PrimaryAliasId) {
     Person = {
       PrimaryAliasId: person.PrimaryAliasId,
-      PersonId: person.Id,
+      Id: person.Id,
     };
   } else {
     Person = omitBy({
@@ -65,31 +81,44 @@ export default ({ response, person = {}, accountName }, gatewayDetails) => {
     Guid: uuid.v4(),
   }, isNil);
 
+  if (!response.product) {
+    // eslint-disable-next-line
+    response.product = [{
+      "product-code": response["merchant-defined-field-1"],
+      "total-amount": response.plan.amount,
+    }];
+  }
   // eslint-disable-next-line
   if (!Array.isArray(response.product)) response.product = [response.product];
 
   const TransactionDetails = [];
   // eslint-disable-next-line
   for (const product of response.product) {
-    TransactionDetails.push({
+    TransactionDetails.push(omitBy({
       AccountId: Number(product["product-code"]),
       AccountName: product.description,
       Amount: Number(product["total-amount"]),
       Guid: uuid.v4(),
-    });
+    }, isNil));
   }
 
   const Campus = {
     Id: response["merchant-defined-field-2"],
   };
 
+  const SourceTypeValue = {
+    Url: origin,
+  };
+
   return {
     Campus,
     FinancialPaymentDetail,
     FinancialPersonSavedAccount,
-    FinancialTransaction,
+    Transaction,
+    Schedule,
     Location,
     Person,
     TransactionDetails,
+    SourceTypeValue,
   };
 };

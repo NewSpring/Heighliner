@@ -73,7 +73,8 @@ export default {
       return models.SavedPayment.removeFromEntityId(entityId, nmi);
     },
     createOrder: (_, { instant, id, data, url }, { models, person, ip, req }) => {
-      let requestUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+      let requestUrl = req.headers.referer;
+      const origin = req.headers.origin;
       if (url) requestUrl = url;
       const parsedData = JSON.parse(data);
       return models.Transaction.createOrder({
@@ -82,6 +83,7 @@ export default {
         id,
         ip,
         requestUrl,
+        origin,
       }, person);
     },
     validate: async (_, { token, gateway }, { models }) => {
@@ -89,9 +91,10 @@ export default {
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
       return models.SavedPayment.validate({ token }, nmi);
     },
-    completeOrder: (_, { token, accountName }, { models, person }) => {
+    completeOrder: (_, { token, accountName, scheduleId }, { models, person, req }) => {
       if (!token) return null;
-      return models.Transaction.completeOrder({ token, accountName, person });
+      const origin = req.headers.origin;
+      return models.Transaction.completeOrder({ token, accountName, person, origin, scheduleId });
     },
     savePayment: async (_, { token, gateway, accountName }, { models, person }) => {
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
@@ -149,7 +152,7 @@ export default {
     ...MutationReponseResolver,
     schedule: ({ scheduleId }, _, { models }) => {
       if (!scheduleId) return null;
-      return models.Schedule.getFromId(scheduleId);
+      return models.ScheduledTransaction.getFromId(scheduleId);
     },
   },
 
