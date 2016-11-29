@@ -32,6 +32,7 @@ export default [`
     details: [TransactionDetail]
     payment: PaymentDetail
     person: Person
+    schedule: ScheduledTransaction
   }
 
   type OrderMutationResponse implements MutationResponse {
