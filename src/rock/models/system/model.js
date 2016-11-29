@@ -9,6 +9,7 @@ import {
   Attribute as AttributeModel,
   AttributeValue as AttributeValueModel,
   AttributeQualifier as AttributeQualifierModel,
+  Note as NoteModel,
   // EntityType as EntityTypeModel,
 } from "./tables";
 
@@ -146,6 +147,12 @@ export class Rock extends Heighliner {
       })
       .then(flatten)
     );
+  }
+
+  async getNotesByTypes({ types }, { person }) {
+    return NoteModel.find({
+      where: { CreatedByPersonAliasId: person.PrimaryAliasId }
+    });
   }
 
 }
