@@ -28,7 +28,8 @@ export default ({ response, person = {}, accountName, origin, scheduleId }, gate
     FinancialGatewayId: gatewayDetails.Id,
     Summary: `Reference Number: ${response["transaction-id"]}`,
     Guid: uuid.v4(),
-    TransactionDateTime: new Date(),
+    // EST
+    TransactionDateTime: moment().subtract(5, "hours"),
   };
 
   const Schedule = omitBy({

@@ -22,6 +22,7 @@ export default (app) => {
 
   app.use(bodyParser.json());
 
+  // deprecated
   app.get("/alive", (req, res) => {
     res.status(200).json({ alive: true });
   });
