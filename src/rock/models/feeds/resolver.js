@@ -12,10 +12,11 @@ export default {
   Query: {
     userFeed: (_, { filters }, { models, person }) => {
       if (!person) return null;
-      // return models.SavedPayment.findByPersonAlias(person.aliases, {
-      //   limit, offset: skip,
-      // }, { cache },
-      // );
+      if (filters.includes("GIVING_DASHBOARD")){
+        return models.Transaction.findByPersonAlias(
+          person.aliases, _, _,
+        );
+      }
     },
   },
 
