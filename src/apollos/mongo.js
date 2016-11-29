@@ -4,13 +4,19 @@ import mongoose, { Schema } from "mongoose";
 
 let db;
 let dd;
-export function connect(address, monitor) {
+
+export function connect(monitor) {
+  if (db) return Promise.resolve(true);
   dd = monitor && monitor.datadog;
   return new Promise((cb) => {
-    db = mongoose.connect(address, {
+    db = mongoose.connect(process.env.MONGO_URL, {
       server: { reconnectTries: Number.MAX_VALUE },
     }, (err) => {
-      if (err) { cb(false); return; }
+      if (err) {
+        db = false;
+        cb(false);
+        return;
+      }
 
       cb(true);
     });

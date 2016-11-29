@@ -6,4 +6,10 @@ export default [`
     value: String
     description: String
   }
+
+  type Note implements Node {
+    id: ID!
+    entityId: Int
+    text: String
+  }
 `];

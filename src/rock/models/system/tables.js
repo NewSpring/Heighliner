@@ -75,6 +75,13 @@ const entityTypeSchema = {
   Name: { type: STRING },
 };
 
+const noteSchema = {
+  Id: { type: INTEGER, primaryKey: true },
+  EntityId: { type: INTEGER },
+  Text: { type: STRING },
+  CreatedByPersonAliasId: { type: INTEGER },
+};
+
 let DefinedType;
 let DefinedValue;
 let FieldType;
@@ -82,6 +89,7 @@ let Attribute;
 let AttributeQualifier;
 let AttributeValue;
 let EntityType;
+let Note;
 export {
   DefinedType,
   definedTypeSchema,
@@ -104,6 +112,9 @@ export {
   EntityType,
   entityTypeSchema,
 
+  Note,
+  noteSchema,
+
 };
 
 export function connect() {
@@ -116,6 +127,7 @@ export function connect() {
   );
   AttributeValue = new MSSQLConnector("AttributeValue", attributeValueSchema);
   EntityType = new MSSQLConnector("EntityType", entityTypeSchema);
+  Note = new MSSQLConnector("Note", noteSchema);
 
   return {
     DefinedType,

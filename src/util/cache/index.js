@@ -12,6 +12,12 @@ import {
   mutations,
 } from "./defaults";
 
+export async function createCache(monitor) {
+  const datadog = monitor && monitor.datadog;
+  const REDIS = await RedisConnect({ datadog });
+  return REDIS ? new RedisCache() : new InMemoryCache();
+}
+
 export {
   InMemoryCache,
   RedisCache,

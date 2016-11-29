@@ -1,0 +1,34 @@
+exports[`test matches schema snapshot 1`] = `
+Array [
+  "
+  type DefinedValue implements Node {
+    id: ID!
+    _id: Int
+    value: String
+    description: String
+  }
+
+  type Note implements Node {
+    id: ID!
+    entityId: Int
+    text: String
+  }
+",
+]
+`;
+
+exports[`test matches snapshot 1`] = `
+Array [
+  "definedValues(
+    id: Int!,
+    limit: Int = 20,
+    skip: Int = 0,
+    all: Boolean = false,
+  ): [DefinedValue]",
+  "notes(
+    limit: Int = 20,
+    skip: Int = 0,
+    types: [String],
+  ): [Note]",
+]
+`;

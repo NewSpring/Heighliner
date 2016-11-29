@@ -2,10 +2,7 @@
 import fetch from "isomorphic-fetch";
 
 export function connect() {
-  return new Promise((cb) => {
-    const hasKey = process.env.ESV_KEY;
-    cb(hasKey);
-  });
+  return Promise.resolve(!!process.env.ESV_KEY);
 }
 
 export class ESVFetchConnector {
