@@ -16,7 +16,7 @@
     ".babelrc": true,
     ".gitignore": true,
     ".eslintrc": true,
-    ".env*": true,
+    ".env*": false,
     "**/*.yml": true,
     "scripts": true,
     "npm-debug.log": true,
