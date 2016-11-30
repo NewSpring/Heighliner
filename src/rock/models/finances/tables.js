@@ -129,6 +129,15 @@ const financialGatewaySchema = {
   ModifiedDateTime: { type: DATE },
 };
 
+const financialBatchSchema = {
+  Id: { type: INTEGER, primaryKey: true },
+  BatchEndDateTime: { type: DATE },
+  BatchStartDateTime: { type: DATE },
+  CampusId: { type: INTEGER },
+  Name: { type: STRING },
+  Status: { type: STRING },
+};
+
 
 // FinancialAccounts,
 let Transaction;
@@ -140,6 +149,7 @@ let SavedPayment;
 let FinancialAccount;
 let FinancialPaymentDetail;
 let FinancialGateway;
+let FinancialBatch;
 export {
   Transaction,
   transactionSchema,
@@ -164,9 +174,11 @@ export {
 
   FinancialPaymentDetail,
 
-
   FinancialGateway,
   financialGatewaySchema,
+
+  FinancialBatch,
+  financialBatchSchema,
 };
 
 export function connect() {
@@ -185,6 +197,7 @@ export function connect() {
     "FinancialPaymentDetail", financialPaymentDetailSchema,
   );
   FinancialGateway = new MSSQLConnector("FinancialGateway", financialGatewaySchema);
+  FinancialBatch = new MSSQLConnector("FinancialBatch", financialBatchSchema, {}, "FinancialBatches");
 
   return {
     Transaction,
@@ -196,6 +209,7 @@ export function connect() {
     FinancialAccount,
     FinancialGateway,
     FinancialPaymentDetail,
+    FinancialBatch,
   };
 }
 

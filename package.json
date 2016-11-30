@@ -32,6 +32,7 @@
   "dependencies": {
     "apollo-server": "^0.2.4",
     "body-parser": "^1.14.2",
+    "bull": "^2.0.0",
     "connect-datadog": "0.0.6",
     "cors": "^2.7.1",
     "datadog-metrics": "^0.3.0",
@@ -41,7 +42,6 @@
     "google-geocoding": "^0.1.7",
     "graphql": "^0.6.2",
     "graphql-tools": "^0.6.4",
-    "graphql-typings": "0.0.1-beta-2",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.15.0",
     "moment": "^2.13.0",
@@ -61,7 +61,6 @@
     "striptags": "^2.1.1",
     "tedious": "^1.14.0",
     "truncate": "^2.0.0",
-    "typescript": "^1.8.10",
     "xml2js": "^0.4.17"
   },
   "devDependencies": {

@@ -75,6 +75,23 @@ const entityTypeSchema = {
   Name: { type: STRING },
 };
 
+const communicationSchema = {
+  Id: { type: INTEGER, primaryKey: true },
+};
+
+const communicationRecipientSchema = {
+  Id: { type: INTEGER, primaryKey: true },
+  CommunicationId: { type: INTEGER },
+};
+
+const systemEmailSchema = {
+  Id: { type: INTEGER, primaryKey: true },
+  Body: { type: STRING },
+  Subject: { type: STRING },
+  Title: { type: STRING },
+  IsSystem: { type: BOOLEAN },
+};
+
 let DefinedType;
 let DefinedValue;
 let FieldType;
@@ -82,6 +99,9 @@ let Attribute;
 let AttributeQualifier;
 let AttributeValue;
 let EntityType;
+let Communication;
+let CommunicationRecipient;
+let SystemEmail;
 export {
   DefinedType,
   definedTypeSchema,
@@ -104,6 +124,14 @@ export {
   EntityType,
   entityTypeSchema,
 
+  Communication,
+  communicationSchema,
+
+  CommunicationRecipient,
+  communicationRecipientSchema,
+
+  SystemEmail,
+  systemEmailSchema,
 };
 
 export function connect() {
@@ -117,6 +145,11 @@ export function connect() {
   AttributeValue = new MSSQLConnector("AttributeValue", attributeValueSchema);
   EntityType = new MSSQLConnector("EntityType", entityTypeSchema);
 
+  Communication = new MSSQLConnector("Communication", communicationSchema);
+  CommunicationRecipient = new MSSQLConnector("CommunicationRecipient", communicationRecipientSchema);
+
+  SystemEmail = new MSSQLConnector("SystemEmail", systemEmailSchema);
+
   return {
     DefinedType,
     DefinedValue,
@@ -125,6 +158,9 @@ export function connect() {
     AttributeValue,
     AttributeQualifier,
     EntityType,
+    Communication,
+    CommunicationRecipient,
+    SystemEmail,
   };
 }
 

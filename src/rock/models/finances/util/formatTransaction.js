@@ -2,11 +2,11 @@
 import moment from "moment";
 import uuid from "node-uuid";
 import { isNil, omitBy } from "lodash";
-import { getCardType } from "./translate-nmi";
+import { getCardType, getCardName } from "./translate-nmi";
 
 export default ({ response, person = {}, accountName, origin, scheduleId }, gatewayDetails) => {
   let FinancialPaymentDetail = {};
-
+  let FinancialPaymentValue;
   if (response.billing["cc-number"]) {
     FinancialPaymentDetail = {
       AccountNumberMasked: response.billing["cc-number"],
@@ -14,12 +14,14 @@ export default ({ response, person = {}, accountName, origin, scheduleId }, gate
       CreditCardTypeValueId: getCardType(response.billing["cc-number"]),
       Guid: uuid.v4(),
     };
+    FinancialPaymentValue = getCardName(response.billing["cc-number"]);
   } else {
     FinancialPaymentDetail = {
       AccountNumberMasked: response.billing["account-number"],
       CurrencyTypeValueId: 157,
       Guid: uuid.v4(),
     };
+    FinancialPaymentValue = "ACH";
   }
 
   const Transaction = {
@@ -70,8 +72,7 @@ export default ({ response, person = {}, accountName, origin, scheduleId }, gate
     Street2: response.billing.address2,
     City: response.billing.city,
     State: response.billing.state,
-    Postal: response.billing.postal,
-    Guid: uuid.v4(),
+    PostalCode: response.billing.postal,
   }, isNil);
 
   const FinancialPersonSavedAccount = omitBy({
@@ -121,5 +122,6 @@ export default ({ response, person = {}, accountName, origin, scheduleId }, gate
     Person,
     TransactionDetails,
     SourceTypeValue,
+    FinancialPaymentValue,
   };
 };
