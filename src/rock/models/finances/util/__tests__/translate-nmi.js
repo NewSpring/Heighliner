@@ -12,6 +12,10 @@ import {
 jest.mock("moment", () => (date) => ({ toISOString: () => `Mocked ISODate: ${date}` }));
 
 describe("getCardType", () => {
+  it("correctly identifies a visa with hashes", () => {
+    expect(getCardType("4***********1111")).toBe(7);
+  });
+
   it("correctly identifies a visa", () => {
     expect(getCardType("4111111111111111")).toBe(7);
   });
