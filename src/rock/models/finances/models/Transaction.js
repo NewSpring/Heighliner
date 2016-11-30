@@ -50,7 +50,7 @@ export default class Transaction extends Rock {
 
   async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(id, this.__type);
-    return this.cache.get(globalId, () => TransactionTable.findOne({ where: { Id: id }}));
+    return this.cache.get(globalId, () => TransactionTable.findOne({ where: { Id: id } }));
   }
 
   async getDetailsById(id) {
@@ -64,29 +64,28 @@ export default class Transaction extends Rock {
 
     const globalId = createGlobalId(`${id}`, "PaymentDetail");
     return this.cache.get(globalId, () => FinancialPaymentDetailTable.findOne({
-        where: { Id: id },
-      })
+      where: { Id: id },
+    }),
     );
   }
 
   async findByPersonAlias(aliases, { limit, offset }, { cache }) {
     const query = { aliases, limit, offset };
     return this.cache.get(this.cache.encode(query), () => TransactionTable.find({
-        where: { AuthorizedPersonAliasId: { $in: aliases }},
-        order: [
+      where: { AuthorizedPersonAliasId: { $in: aliases } },
+      order: [
           ["TransactionDateTime", "DESC"],
         ],
-        attributes: ["Id"],
-        limit,
-        offset,
-      })
+      attributes: ["Id"],
+      limit,
+      offset,
+    })
     , { cache })
       .then(this.getFromIds.bind(this));
-
   }
 
-  async findByGivingGroup({ id, include, start, end } , { limit, offset }, { cache }) {
-    let query = { id, include, start, end };
+  async findByGivingGroup({ id, include, start, end }, { limit, offset }, { cache }) {
+    const query = { id, include, start, end };
 
     let TransactionDateTime;
     if (start || end) TransactionDateTime = {};
@@ -94,10 +93,10 @@ export default class Transaction extends Rock {
     if (end) TransactionDateTime.$lt = Moment(end, "MM/YY");
 
     return this.cache.get(
-      this.cache.encode(query, `findByGivingGroup`), () => TransactionTable.find({
+      this.cache.encode(query, "findByGivingGroup"), () => TransactionTable.find({
         attributes: ["Id"],
-        order: [ ["TransactionDateTime", "DESC"] ],
-        where: TransactionDateTime ? [ { TransactionDateTime } ] : null,
+        order: [["TransactionDateTime", "DESC"]],
+        where: TransactionDateTime ? [{ TransactionDateTime }] : null,
         include: [
           {
             model: PersonAlias.model,
@@ -122,7 +121,7 @@ export default class Transaction extends Rock {
         ],
       })
     , { cache })
-      .then((x) => x.slice(offset, limit + offset))
+      .then(x => x.slice(offset, limit + offset))
       .then(this.getFromIds.bind(this))
       ;
   }
@@ -171,7 +170,6 @@ export default class Transaction extends Rock {
   }
 
   async syncTransactions(args) {
-
     const gateway = await this.loadGatewayDetails(args.gateway);
     delete args.gateway;
     const PersonId = args.personId;
@@ -203,7 +201,6 @@ export default class Transaction extends Rock {
   }
 
   charge = async (token, gatewayDetails) => {
-
     const complete = {
       "complete-action": {
         "api-key": gatewayDetails.SecurityKey,
@@ -236,7 +233,7 @@ export default class Transaction extends Rock {
     // XXX we should probably error out if they expect a saved account but we don't find one?
     if (orderData.savedAccount) {
       // XXX lookup only based on logged in status
-      const accountDetails = await SavedPayment.findOne({ where: { Id: orderData.savedAccount }});
+      const accountDetails = await SavedPayment.findOne({ where: { Id: orderData.savedAccount } });
 
       delete orderData.savedAccount;
       delete orderData.savedAccountName;
@@ -301,9 +298,8 @@ export default class Transaction extends Rock {
         TransactionJob.add(data);
         return data;
       })
-      .catch(e =>  {
-        return { error: e.message, code: e.code, success: false };
-      });
-
+      .catch((e) =>
+         ({ error: e.message, code: e.code, success: false })
+      );
   }
 }
