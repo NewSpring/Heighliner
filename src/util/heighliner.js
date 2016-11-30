@@ -47,9 +47,9 @@ export function createApplication(models) {
   };
 
   for (const model of models) {
-    joined.schema = [...joined.schema, ...model.schema];
-    joined.models = merge(joined.models, model.models);
-    joined.resolvers = merge(joined.resolvers, model.resolvers);
+    if (model.schema) joined.schema = [...joined.schema, ...model.schema];
+    if (model.models) joined.models = merge(joined.models, model.models);
+    if (model.resolvers) joined.resolvers = merge(joined.resolvers, model.resolvers);
 
     if (model.queries) joined.queries = [...joined.queries, ...model.queries];
     if (model.mutations) joined.mutations = [...joined.mutations, ...model.mutations];
