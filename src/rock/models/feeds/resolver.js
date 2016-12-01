@@ -19,7 +19,7 @@ export default {
 
   Query: {
     userFeed: (_, { filters }, { models, person }) => {
-      if (!person) return null;
+      if (!person || !filters) return null;
 
       if (filters.includes("GIVING_DASHBOARD")) {
         return Promise.all([
