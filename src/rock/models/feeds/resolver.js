@@ -35,7 +35,12 @@ export default {
               if (x.Name) x.__type = "SavedPayment";
               else x.__type = "Transaction";
               return x;
-            }));
+            })
+          )
+          .then((items) => {
+            return items;
+          })
+            ;
       }
 
       return null;

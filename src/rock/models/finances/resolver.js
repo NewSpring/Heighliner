@@ -286,6 +286,8 @@ export default {
 
       return models.Transaction.getPaymentDetailsById(FinancialPaymentDetailId);
     },
+    expirationMonth: ({ ExpirationMonthEncrypted }) => ExpirationMonthEncrypted,
+    expirationYear: ({ ExpirationYearEncrypted }) => ExpirationYearEncrypted,
   },
 
 };

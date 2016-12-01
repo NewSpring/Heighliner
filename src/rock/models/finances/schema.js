@@ -86,6 +86,8 @@ export default [`
     code: String!
     date: String
     payment: PaymentDetail
+    expirationMonth: String
+    expirationYear: String
   }
 
 

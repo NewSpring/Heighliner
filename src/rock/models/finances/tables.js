@@ -116,6 +116,8 @@ const financialPaymentDetailSchema = {
   AccountNumberMasked: { type: STRING },
   CurrencyTypeValueId: { type: INTEGER },
   CreditCardTypeValueId: { type: INTEGER },
+  ExpirationMonthEncrypted: { type: STRING },
+  ExpirationYearEncrypted: { type: STRING },
   CreatedDateTime: { type: DATE },
   ModifiedDateTime: { type: DATE },
 };
