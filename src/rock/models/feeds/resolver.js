@@ -1,20 +1,4 @@
 
-const resolverMap = {
-  Node: {
-    __resolveType(root, context, info) {
-      if (root.schedule) {
-        return info.schema.getType("Transaction");
-      }
-
-      if (root.guid && root.name) {
-        return info.schema.getType("SavedPayment");
-      }
-
-      return null;
-    },
-  },
-};
-
 export default {
 
   Query: {
