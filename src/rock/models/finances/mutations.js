@@ -15,10 +15,41 @@ export default [
     gateway: String = "NMI Gateway",
   ): [Transaction]`,
 
-  // used to cancel a saved payment
-  // id is the node id which will be parsed into the entity id
-  // `cancelSavedPayment(
-  //   id: ID!
-  // ): [MutationStatus]`,
+  `createOrder(
+    data: String!
+    id: ID
+    instant: Boolean = false,
+    gateway: String = "NMI Gateway",
+    url: String
+  ): OrderMutationResponse`,
 
+  `completeOrder(
+    token: ID!
+    scheduleId: ID
+    accountName: String
+    gateway: String = "NMI Gateway",
+  ): CompleteOrderMutationResponse`,
+
+  `validate(
+    token: ID!
+    gateway: String = "NMI Gateway",
+  ): ValidateMutationResponse`,
+
+  `cancelSavedPayment(
+    id: ID
+    entityId: Int
+    gateway: String = "NMI Gateway",
+  ): SavePaymentMutationResponse`,
+
+  `savePayment(
+    token: ID!
+    accountName: String
+    gateway: String = "NMI Gateway",
+  ): SavePaymentMutationResponse`,
+
+  `cancelSchedule(
+    id: ID
+    entityId: Int
+    gateway: String = "NMI Gateway",
+  ): ScheduledTransactionMutationResponse`,
 ];

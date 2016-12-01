@@ -2,10 +2,6 @@
 import { find, omitBy, isEmpty, flatten } from "lodash";
 
 import {
-  Tables,
-} from "./translate-nmi";
-
-import {
   Transaction as TransactionTable,
   TransactionDetail,
   ScheduledTransaction as ScheduledTransactionTable,

@@ -1,3 +1,112 @@
+exports[`createOrder adds a persons PrimaryAliasId to an order 1`] = `
+Object {
+  "code": 100,
+  "success": true,
+  "transactionId": 1,
+  "url": Object {
+    "sale": Object {
+      "add-customer": "",
+      "amount": 1,
+      "api-key": "3",
+      "customer-id": 10,
+      "cvv-reject": "P|N|S|U",
+      "ip-address": "1",
+      "order-description": "Online contribution from Apollos",
+      "redirect-url": "https://my.newspring.cc/give/now",
+    },
+  },
+}
+`;
+
+exports[`createOrder attempts to look up a saved account via the id 1`] = `
+Object {
+  "code": 100,
+  "success": true,
+  "transactionId": 1,
+  "url": Object {
+    "sale": Object {
+      "amount": 1,
+      "api-key": "3",
+      "customer-vault-id": 100,
+      "ip-address": "1",
+      "order-description": "Online contribution from Apollos",
+      "redirect-url": "https://my.newspring.cc/give/now",
+    },
+  },
+}
+`;
+
+exports[`createOrder correctly formats a subscription object 1`] = `
+Object {
+  "code": 100,
+  "success": true,
+  "transactionId": 1,
+  "url": Object {
+    "add-subscription": Object {
+      "amount": 1,
+      "api-key": "3",
+      "order-description": "Online contribution from Apollos",
+      "redirect-url": "https://my.newspring.cc/give/now",
+      "start-date": "01012020",
+    },
+  },
+}
+`;
+
+exports[`createOrder correctly formats the data object 1`] = `
+Object {
+  "code": 100,
+  "success": true,
+  "transactionId": 1,
+  "url": Object {
+    "sale": Object {
+      "add-customer": "",
+      "amount": 1,
+      "api-key": "3",
+      "cvv-reject": "P|N|S|U",
+      "ip-address": "1",
+      "order-description": "Online contribution from Apollos",
+      "redirect-url": "https://my.newspring.cc/give/now",
+      "test": true,
+    },
+  },
+}
+`;
+
+exports[`createOrder handles a validation attempt 1`] = `
+Object {
+  "code": 100,
+  "success": true,
+  "transactionId": 1,
+  "url": Object {
+    "validate": Object {
+      "amount": 0,
+      "api-key": "3",
+      "customer-id": 10,
+      "cvv-reject": "P|N|S|U",
+      "ip-address": "1",
+      "order-description": "Online contribution from Apollos",
+      "redirect-url": "https://my.newspring.cc/give/now",
+    },
+  },
+}
+`;
+
+exports[`createOrder handles an add customer attempt 1`] = `
+Object {
+  "code": 100,
+  "success": true,
+  "transactionId": 1,
+  "url": Object {
+    "add-customer": Object {
+      "api-key": "3",
+      "customer-id": 10,
+      "redirect-url": "https://my.newspring.cc/give/now",
+    },
+  },
+}
+`;
+
 exports[`loadGatewayDetails find the attributes for the found gatweway 1`] = `
 Array [
   Object {

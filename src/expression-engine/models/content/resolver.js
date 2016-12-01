@@ -17,7 +17,7 @@ export default {
       }, cache);
     },
 
-    feed(_, { excludeChannels, limit, skip, status, cache }, { models }) {
+    feed(_, { excludeChannels = [], limit, skip, status, cache }, { models }) {
       const allChannels = [
         "devotionals",
         "articles",
