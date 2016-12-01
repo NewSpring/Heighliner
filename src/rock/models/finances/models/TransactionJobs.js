@@ -238,7 +238,6 @@ export default class TransactionJobs extends Rock {
     // not a schedule transaction
     if (!Schedule.GatewayScheduleId) return data;
 
-    // if (Schedule.Id && )
     const Existing = await ScheduledTransaction.find({
       where: { GatewayScheduleId: Schedule.GatewayScheduleId },
     });
@@ -267,9 +266,34 @@ export default class TransactionJobs extends Rock {
       Schedule.AuthorizedPersonAliasId = Person.PrimaryAliasId;
       Schedule.CreatedByPersonAliasId = Person.PrimaryAliasId;
       Schedule.ModifiedByPersonAliasId = Person.PrimaryAliasId;
-      // XXX BatchId
       Schedule.FinancialPaymentDetailId = FinancialPaymentDetail.Id;
-      Schedule.Id = await ScheduledTransaction.post(Schedule);
+
+      // already in the system, but needs to be moved to NMI
+      // Delete all schedule transaction details associated with this account
+      // since new details were generated
+      if (Schedule.Id) {
+        const ScheduledTransactionId = Schedule.Id;
+        delete Schedule.Id;
+        delete Schedule.Guid;
+
+        // update the current one in Rock
+        await ScheduledTransaction.patch(ScheduledTransactionId, Schedule);
+        Schedule.Id = ScheduledTransactionId;
+
+        // update all the details
+        const currentDetails = await ScheduledTransactionDetail.find({
+          where: { ScheduledTransactionId: Schedule.Id },
+          attributes: ["Id"],
+        });
+
+        if (currentDetails && currentDetails.length) {
+          await Promise.all(
+            currentDetails.map(({ Id }) => ScheduledTransactionDetail.delete(Id)),
+          );
+        }
+      } else {
+        Schedule.Id = await ScheduledTransaction.post(Schedule);
+      }
 
       return data;
     }
