@@ -1,3 +1,4 @@
+import { flatten } from "lodash";
 
 import { createGlobalId } from "../../../util";
 
@@ -224,7 +225,7 @@ export default {
     order: ({ Order }) => Order,
     description: ({ PublicDescription }) => PublicDescription,
     summary: ({ Description }) => Description,
-    image: ({ Url, ImageBinaryFieldId }, _, { models }) => { // tslint:disable-line
+    image: ({ Url, ImageBinaryFieldId }, _, { models }) => {
       if (Url) return Url;
 
 
@@ -233,9 +234,45 @@ export default {
     },
     end: ({ EndDate }) => EndDate,
     start: ({ StartDate }) => StartDate,
-    images: ({ Id }, _, { models }) => { // tslint:disable-line
-      const field_id = "field_id_1513"; // rock account id
-      const channel_id = "69"; // give items
+    transactions: ({ Id, ParentAccountId }, { limit, skip, cache, start, end, people = [] }, { models, person }) => { // eslint-disable-line
+      let include = people;
+      if (!person) return null;
+      if (person && person.aliases && !people.length) include = person.aliases;
+      return models.Transaction.findByAccountType(
+        {
+          id: Id,
+          include,
+          start,
+          end,
+          parentId: ParentAccountId,
+        }, { limit, offset: skip }, { cache },
+      );
+    },
+    total: ({ Id, ParentAccountId }, { limit, skip, cache, start, end, people = [] }, { models, person }) => { // eslint-disable-line
+      let include = people;
+      if (!person) return null;
+      if (person && person.aliases && !people.length) include = person.aliases;
+
+      return models.Transaction.findByAccountType(
+        {
+          id: Id,
+          include,
+          start,
+          end,
+          parentId: ParentAccountId,
+        }, { limit, offset: skip }, { cache },
+      ).then((transactions) => {
+        if (!transactions) return null;
+
+        return transactions.map(x => x.FinancialTransactionDetails)
+          .map(flatten)
+          .map(x => x[0].Amount)
+          .reduce((x, y) => x + y, 0);
+      });
+    },
+    images: ({ Id }, _, { models }) => {
+      const field_id = "field_id_1513"; // eslint-disable-line
+      const channel_id = "69"; // eslint-disable-line
       return models.Content.getEntryFromFieldValue(Id, field_id, channel_id)
         .then(({ image, exp_channel, entry_id }) => {
           if (!image) return Promise.resolve([]);

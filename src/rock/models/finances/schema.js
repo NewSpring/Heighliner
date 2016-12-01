@@ -61,6 +61,19 @@ export default [`
   type FinancialAccount implements Node {
     id: ID!
     entityId: Int!
+    transactions(
+      limit: Int = 20,
+      skip: Int = 0,
+      cache: Boolean = true,
+      start: String,
+      end: String,
+      people: [Int],
+    ): [Transaction]
+    total(
+      start: String,
+      end: String,
+      people: [Int],
+    ): Int
     name: String
     order: Int
     description: String
