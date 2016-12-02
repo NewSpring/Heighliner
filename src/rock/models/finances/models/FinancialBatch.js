@@ -24,7 +24,7 @@ export default class FinancialBatch extends Rock {
 
     const batchName = `${prefix} ${paymentType} ${suffix}`.trim();
 
-    const batch = await FinancialBatchTable.findOne({
+    const batch = await FinancialBatchTable.find({
       where: {
         Status: 1,
         BatchStartDateTime: { $lte: date },
@@ -33,18 +33,18 @@ export default class FinancialBatch extends Rock {
       },
     });
 
-    if (batch) return batch;
+    if (batch.length) return batch[0];
 
     const BatchStartDateTime = moment(date)
       .startOf("day")
-      .subtract(5, "hours")
+      // .subtract(5, "hours")
       .subtract(1, "minute")
       .add(1, "day")
       .toISOString();
 
     const BatchEndDateTime = moment(date)
       .endOf("day")
-      .subtract(5, "hours")
+      // .subtract(5, "hours")
       .subtract(1, "minute")
       .add(1, "day")
       .toISOString();
