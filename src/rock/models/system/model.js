@@ -124,11 +124,11 @@ export class Rock extends Heighliner {
     );
   }
 
-  async sendEmail(title, people, data = {}) {
+  async sendEmail(title, people = [], data = {}) {
     if (!title) throw new Error("No email passed");
     const email = await SystemEmailTable.findOne({ where: { Title: title }});
 
-    if (!email.Body || !email.Subject) return null;
+    if (!email || !email.Body || !email.Subject) return null;
 
     const Communication = {
       SenderPersonAliasId: null,
@@ -157,12 +157,11 @@ export class Rock extends Heighliner {
           AdditionalMergeValuesJson: JSON.stringify(data),
         };
         return CommunicationRecipientTable.post(CommunicationRecipient);
-      })
+      }),
     );
   }
 
-  async getAttributesFromId(id, context) {
-
+  async getAttributesFromId(id) {
     return this.cache.get(`${id}:getAttributeValues`, () => AttributeModel.findOne({
       where: { Id: id },
       include: [

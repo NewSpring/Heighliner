@@ -40,6 +40,7 @@ import { Rock } from "../../system";
 // XXX move to util
 export const readIdsFromFrequencies = (plan, frequencies) => {
   const ids = {};
+  // eslint-disable-next-line
   for (const f of frequencies) ids[f.Value] = f;
   if (plan["day-frequency"]) {
     switch (plan["day-frequency"]) { // eslint-disable-line
@@ -62,6 +63,8 @@ export const readIdsFromFrequencies = (plan, frequencies) => {
   if (plan["day-of-month"]) {
     return ids["One-Time"].Id; // One Time (Rock)
   }
+
+  return null;
 };
 
 const TRANSACTION_QUEUE = queue("Transaction Receipt", 6379, process.env.REDIS_HOST);
@@ -72,7 +75,7 @@ export default class TransactionJobs extends Rock {
     this.FinancialBatch = new FinancialBatch({ cache });
     this.queue = TRANSACTION_QUEUE;
 
-    // XXX how do we test this stack of operations?
+    // XXX test order of operations
     this.queue.process(({ data }) =>  Promise.resolve(data)
       .then(this.getOrCreatePerson)
       .then(this.createPaymentDetail)
@@ -143,9 +146,8 @@ export default class TransactionJobs extends Rock {
       return data;
     }
 
-    Location.Guid = uuid.v4();
-    Location.Id = await LocationTable.post(Location);
-    let NewGroupId;
+    // look up family id if not already found
+    let NewGroupId = GroupId;
     if (!GroupId) {
       NewGroupId = await Group.findOne({
         where: { GroupTypeId: 10 }, // Family
@@ -157,17 +159,21 @@ export default class TransactionJobs extends Rock {
       data.GroupId = NewGroupId;
     }
 
-    const NewGroupLocation = {
-      GroupId: NewGroupId,
-      Order: 0,
-      LocationId: Location.Id,
-      // XXX ensure this is present on rock (it is on NewSpring's). Should be system
-      GroupLocationTypeValueId: 804, // BillingAddress
-      IsMailingLocation: true,
-      Guid: uuid.v4(),
-    };
-
+    // create the location and group location
     if (!GroupLocationId) {
+      Location.Guid = uuid.v4();
+      Location.Id = await LocationTable.post(Location);
+
+      const NewGroupLocation = {
+        GroupId: NewGroupId,
+        Order: 0,
+        LocationId: Location.Id,
+        // XXX ensure this is present on rock (it is on NewSpring's). Should be system
+        GroupLocationTypeValueId: 804, // BillingAddress
+        IsMailingLocation: true,
+        Guid: uuid.v4(),
+      };
+
       const NewGroupLocationId = await GroupLocation.post(NewGroupLocation);
       data.GroupLocationId = NewGroupLocationId;
     }
@@ -202,31 +208,31 @@ export default class TransactionJobs extends Rock {
       where: { TransactionCode: Transaction.TransactionCode },
     });
 
-    let TransactionId;
     if (Existing.length) {
       Transaction.Id = Existing[0].Id;
-    } else {
-      if (!Transaction.SourceTypeValueId && SourceTypeValue.Url) {
-        Transaction.SourceTypeValueId = await DefinedValue.findOne({
-          where: { Value: SourceTypeValue.Url, DefinedTypeId: 12 },
-        })
-          .then(x => x && x.Id || 10);
-      }
-
-      Transaction.AuthorizedPersonAliasId = Person.PrimaryAliasId;
-      Transaction.CreatedByPersonAliasId = Person.PrimaryAliasId;
-      Transaction.ModifiedByPersonAliasId = Person.PrimaryAliasId;
-      const Batch = await this.FinancialBatch.findOrCreate({
-        currencyType: FinancialPaymentValue,
-        date: Transaction.TransactionDateTime,
-      });
-      if (Batch && Batch.Id) Transaction.BatchId = Batch.Id;
-      Transaction.FinancialPaymentDetailId = FinancialPaymentDetail.Id;
-
-      Transaction.Id = await TransactionTable.post(Transaction);
-
       return data;
     }
+
+    if (!Transaction.SourceTypeValueId && SourceTypeValue.Url) {
+      Transaction.SourceTypeValueId = await DefinedValue.findOne({
+        where: { Value: SourceTypeValue.Url, DefinedTypeId: 12 },
+      })
+        .then(x => x && x.Id || 10);
+    }
+
+    Transaction.AuthorizedPersonAliasId = Person.PrimaryAliasId;
+    Transaction.CreatedByPersonAliasId = Person.PrimaryAliasId;
+    Transaction.ModifiedByPersonAliasId = Person.PrimaryAliasId;
+    const Batch = await this.FinancialBatch.findOrCreate({
+      currencyType: FinancialPaymentValue,
+      date: Transaction.TransactionDateTime,
+    });
+    if (Batch && Batch.Id) Transaction.BatchId = Batch.Id;
+    Transaction.FinancialPaymentDetailId = FinancialPaymentDetail.Id;
+
+    Transaction.Id = await TransactionTable.post(Transaction);
+
+    return data;
   }
 
   findOrCreateSchedule = async (data) => {
@@ -245,59 +251,60 @@ export default class TransactionJobs extends Rock {
 
     if (Existing.length) {
       Schedule.Id = Existing[0].Id;
-    } else {
-      if (Schedule.TransactionFrequencyValue) {
-        await DefinedValue.find({
-          where: { DefinedTypeId: 23 },
-        })
-          .then(x => readIdsFromFrequencies(Schedule.TransactionFrequencyValue, x))
-          .then((id) => {
-            Schedule.TransactionFrequencyValueId = id;
-            delete Schedule.TransactionFrequencyValue;
-          });
-      }
-
-      if (!Schedule.SourceTypeValueId && SourceTypeValue.Url) {
-        Schedule.SourceTypeValueId = await DefinedValue.findOne({
-          where: { Value: SourceTypeValue.Url, DefinedTypeId: 12 },
-        })
-          .then(x => x && x.Id || 10);
-      }
-
-      Schedule.AuthorizedPersonAliasId = Person.PrimaryAliasId;
-      Schedule.CreatedByPersonAliasId = Person.PrimaryAliasId;
-      Schedule.ModifiedByPersonAliasId = Person.PrimaryAliasId;
-      Schedule.FinancialPaymentDetailId = FinancialPaymentDetail.Id;
-
-      // already in the system, but needs to be moved to NMI
-      // Delete all schedule transaction details associated with this account
-      // since new details were generated
-      if (Schedule.Id) {
-        const ScheduledTransactionId = Schedule.Id;
-        delete Schedule.Id;
-        delete Schedule.Guid;
-
-        // update the current one in Rock
-        await ScheduledTransaction.patch(ScheduledTransactionId, Schedule);
-        Schedule.Id = ScheduledTransactionId;
-
-        // update all the details
-        const currentDetails = await ScheduledTransactionDetail.find({
-          where: { ScheduledTransactionId: Schedule.Id },
-          attributes: ["Id"],
-        });
-
-        if (currentDetails && currentDetails.length) {
-          await Promise.all(
-            currentDetails.map(({ Id }) => ScheduledTransactionDetail.delete(Id)),
-          );
-        }
-      } else {
-        Schedule.Id = await ScheduledTransaction.post(Schedule);
-      }
-
       return data;
     }
+
+    if (Schedule.TransactionFrequencyValue) {
+      await DefinedValue.find({
+        where: { DefinedTypeId: 23 },
+      })
+        .then(x => readIdsFromFrequencies(Schedule.TransactionFrequencyValue, x))
+        .then((id) => {
+          Schedule.TransactionFrequencyValueId = id;
+          delete Schedule.TransactionFrequencyValue;
+        });
+    }
+
+    if (!Schedule.SourceTypeValueId && SourceTypeValue.Url) {
+      Schedule.SourceTypeValueId = await DefinedValue.findOne({
+        where: { Value: SourceTypeValue.Url, DefinedTypeId: 12 },
+      })
+        .then(x => x && x.Id || 10);
+    }
+
+    Schedule.AuthorizedPersonAliasId = Person.PrimaryAliasId;
+    Schedule.CreatedByPersonAliasId = Person.PrimaryAliasId;
+    Schedule.ModifiedByPersonAliasId = Person.PrimaryAliasId;
+    Schedule.FinancialPaymentDetailId = FinancialPaymentDetail.Id;
+
+    // already in the system, but needs to be moved to NMI
+    // Delete all schedule transaction details associated with this account
+    // since new details were generated
+    if (Schedule.Id) {
+      const ScheduledTransactionId = Schedule.Id;
+      delete Schedule.Id;
+      delete Schedule.Guid;
+
+      // update the current one in Rock
+      await ScheduledTransaction.patch(ScheduledTransactionId, Schedule);
+      Schedule.Id = ScheduledTransactionId;
+
+      // update all the details
+      const currentDetails = await ScheduledTransactionDetail.find({
+        where: { ScheduledTransactionId: Schedule.Id },
+        attributes: ["Id"],
+      });
+
+      if (currentDetails && currentDetails.length) {
+        await Promise.all(
+          currentDetails.map(({ Id }) => ScheduledTransactionDetail.delete(Id)),
+        );
+      }
+    } else {
+      Schedule.Id = await ScheduledTransaction.post(Schedule);
+    }
+
+    return data;
   }
 
   createTransactionDetails = async (data) => {
@@ -355,7 +362,6 @@ export default class TransactionJobs extends Rock {
         x.Id = await TransactionDetail.post(detail);
       }
 
-
       return x;
     }));
 
@@ -380,7 +386,7 @@ export default class TransactionJobs extends Rock {
 
     data = await this.createPaymentDetail(data);
 
-    FinancialPersonSavedAccount.Id = SavedPayment.post(assign(FinancialPersonSavedAccount, {
+    FinancialPersonSavedAccount.Id = await SavedPayment.post(assign(FinancialPersonSavedAccount, {
       PersonAliasId: Person.PrimaryAliasId,
       FinancialPaymentDetailId: FinancialPaymentDetail.Id,
       CreatedByPersonAliasId: Person.PrimaryAliasId,
