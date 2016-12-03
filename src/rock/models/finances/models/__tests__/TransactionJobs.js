@@ -96,3 +96,22 @@ describe("add", () => {
     });
   });
 });
+
+describe("getOrCreatePerson", () => {
+  let Local;
+  beforeEach(() => {
+    Local = new TransactionJobs({ cache: mockedCache });
+  });
+  afterEach(() => {
+    Local = undefined;
+  });
+
+  it("keeps going if a person exists", async () => {
+    const Person = {
+      Id: 1,
+    };
+
+    const data = await Local.getOrCreatePerson({ Person });
+    expect(data).toEqual({ Person });
+  });
+});
