@@ -1,0 +1,483 @@
+exports[`test handles a schedule 1`] = `
+Object {
+  "Campus": Object {
+    "Id": "3",
+  },
+  "FinancialPaymentDetail": Object {
+    "AccountNumberMasked": 1111111111,
+    "CurrencyTypeValueId": 157,
+    "Guid": "guid",
+  },
+  "FinancialPaymentValue": "ACH",
+  "FinancialPersonSavedAccount": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "ReferenceNumber": "1573550949",
+    "TransactionCode": "3388531907",
+  },
+  "Location": Object {
+    "City": "Anderson",
+    "PostalCode": "29621-3452",
+    "State": "SC",
+    "Street1": "808 Pebble Ln",
+  },
+  "Person": Object {
+    "ConnectionStatusValueId": 67,
+    "Email": "james.baxley@newspring.cc",
+    "FirstName": "James",
+    "Gender": 0,
+    "Guid": "guid",
+    "IsSystem": false,
+    "LastName": "Baxley",
+    "SystemNote": "Created from Apollos",
+  },
+  "Schedule": Object {
+    "Guid": "guid",
+    "Id": 10,
+    "IsActive": true,
+    "NextPaymentDate": "Mocked ISODate: 20150101",
+    "StartDate": "Mocked ISODate: 20150101",
+    "TransactionFrequencyValue": Object {
+      "amount": 1.02,
+      "day-frequency": 1,
+      "day-of-month": 1,
+      "month-frequency": 2,
+      "payments": 0,
+      "plan-id": ";aljdflakf",
+    },
+  },
+  "SourceTypeValue": Object {
+    "Url": undefined,
+  },
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "Summary": "Reference Number: 3388531907",
+    "TransactionCode": "3388531907",
+    "TransactionDateTime": "Mocked subtract 5, hours",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": NaN,
+      "Amount": 1.02,
+      "Guid": "guid",
+    },
+  ],
+}
+`;
+
+exports[`test handles adding a saved account 1`] = `
+Object {
+  "Campus": Object {
+    "Id": "3",
+  },
+  "FinancialPaymentDetail": Object {
+    "AccountNumberMasked": "601160******6611",
+    "CreditCardTypeValueId": 160,
+    "CurrencyTypeValueId": 156,
+    "Guid": "guid",
+  },
+  "FinancialPaymentValue": "Credit Card",
+  "FinancialPersonSavedAccount": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "Name": "My Credit Card",
+    "ReferenceNumber": "1573550949",
+    "TransactionCode": "3388531907",
+  },
+  "Location": Object {
+    "City": "Anderson",
+    "PostalCode": "29621-3452",
+    "State": "SC",
+    "Street1": "808 Pebble Ln",
+  },
+  "Person": Object {
+    "Id": 1,
+    "PrimaryAliasId": 2,
+  },
+  "Schedule": Object {
+    "Guid": "guid",
+    "IsActive": true,
+  },
+  "SourceTypeValue": Object {
+    "Url": undefined,
+  },
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "Summary": "Reference Number: 3388531907",
+    "TransactionCode": "3388531907",
+    "TransactionDateTime": "Mocked subtract 5, hours",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": 125,
+      "AccountName": "General Fund",
+      "Amount": 1,
+      "Guid": "guid",
+    },
+  ],
+}
+`;
+
+exports[`test handles an ACH transaction 1`] = `
+Object {
+  "Campus": Object {
+    "Id": "3",
+  },
+  "FinancialPaymentDetail": Object {
+    "AccountNumberMasked": 1111111111,
+    "CurrencyTypeValueId": 157,
+    "Guid": "guid",
+  },
+  "FinancialPaymentValue": "ACH",
+  "FinancialPersonSavedAccount": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "ReferenceNumber": "1573550949",
+    "TransactionCode": "3388531907",
+  },
+  "Location": Object {
+    "City": "Anderson",
+    "PostalCode": "29621-3452",
+    "State": "SC",
+    "Street1": "808 Pebble Ln",
+  },
+  "Person": Object {
+    "ConnectionStatusValueId": 67,
+    "Email": "james.baxley@newspring.cc",
+    "FirstName": "James",
+    "Gender": 0,
+    "Guid": "guid",
+    "IsSystem": false,
+    "LastName": "Baxley",
+    "SystemNote": "Created from Apollos",
+  },
+  "Schedule": Object {
+    "Guid": "guid",
+    "IsActive": true,
+  },
+  "SourceTypeValue": Object {
+    "Url": undefined,
+  },
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "Summary": "Reference Number: 3388531907",
+    "TransactionCode": "3388531907",
+    "TransactionDateTime": "Mocked subtract 5, hours",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": 125,
+      "AccountName": "General Fund",
+      "Amount": 1,
+      "Guid": "guid",
+    },
+  ],
+}
+`;
+
+exports[`test handles an authenticated response 1`] = `
+Object {
+  "Campus": Object {
+    "Id": "3",
+  },
+  "FinancialPaymentDetail": Object {
+    "AccountNumberMasked": "601160******6611",
+    "CreditCardTypeValueId": 160,
+    "CurrencyTypeValueId": 156,
+    "Guid": "guid",
+  },
+  "FinancialPaymentValue": "Credit Card",
+  "FinancialPersonSavedAccount": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "ReferenceNumber": "1573550949",
+    "TransactionCode": "3388531907",
+  },
+  "Location": Object {
+    "City": "Anderson",
+    "PostalCode": "29621-3452",
+    "State": "SC",
+    "Street1": "808 Pebble Ln",
+  },
+  "Person": Object {
+    "Id": 1,
+    "PrimaryAliasId": 2,
+  },
+  "Schedule": Object {
+    "Guid": "guid",
+    "IsActive": true,
+  },
+  "SourceTypeValue": Object {
+    "Url": undefined,
+  },
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "Summary": "Reference Number: 3388531907",
+    "TransactionCode": "3388531907",
+    "TransactionDateTime": "Mocked subtract 5, hours",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": 125,
+      "AccountName": "General Fund",
+      "Amount": 1,
+      "Guid": "guid",
+    },
+  ],
+}
+`;
+
+exports[`test handles multipleTransactions 1`] = `
+Object {
+  "Campus": Object {
+    "Id": "3",
+  },
+  "FinancialPaymentDetail": Object {
+    "AccountNumberMasked": "601160******6611",
+    "CreditCardTypeValueId": 160,
+    "CurrencyTypeValueId": 156,
+    "Guid": "guid",
+  },
+  "FinancialPaymentValue": "Credit Card",
+  "FinancialPersonSavedAccount": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "ReferenceNumber": "1573550949",
+    "TransactionCode": "3388531907",
+  },
+  "Location": Object {
+    "City": "Anderson",
+    "PostalCode": "29621-3452",
+    "State": "SC",
+    "Street1": "808 Pebble Ln",
+  },
+  "Person": Object {
+    "ConnectionStatusValueId": 67,
+    "Email": "james.baxley@newspring.cc",
+    "FirstName": "James",
+    "Gender": 0,
+    "Guid": "guid",
+    "IsSystem": false,
+    "LastName": "Baxley",
+    "SystemNote": "Created from Apollos",
+  },
+  "Schedule": Object {
+    "Guid": "guid",
+    "IsActive": true,
+  },
+  "SourceTypeValue": Object {
+    "Url": undefined,
+  },
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "Summary": "Reference Number: 3388531907",
+    "TransactionCode": "3388531907",
+    "TransactionDateTime": "Mocked subtract 5, hours",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": 125,
+      "AccountName": "General Fund",
+      "Amount": 1,
+      "Guid": "guid",
+    },
+    Object {
+      "AccountId": 128,
+      "AccountName": "Step Up Fund",
+      "Amount": 3,
+      "Guid": "guid",
+    },
+  ],
+}
+`;
+
+exports[`test handles standard response data 1`] = `
+Object {
+  "Campus": Object {
+    "Id": "3",
+  },
+  "FinancialPaymentDetail": Object {
+    "AccountNumberMasked": "601160******6611",
+    "CreditCardTypeValueId": 160,
+    "CurrencyTypeValueId": 156,
+    "Guid": "guid",
+  },
+  "FinancialPaymentValue": "Credit Card",
+  "FinancialPersonSavedAccount": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "ReferenceNumber": "1573550949",
+    "TransactionCode": "3388531907",
+  },
+  "Location": Object {
+    "City": "Anderson",
+    "PostalCode": "29621-3452",
+    "State": "SC",
+    "Street1": "808 Pebble Ln",
+  },
+  "Person": Object {
+    "ConnectionStatusValueId": 67,
+    "Email": "james.baxley@newspring.cc",
+    "FirstName": "James",
+    "Gender": 0,
+    "Guid": "guid",
+    "IsSystem": false,
+    "LastName": "Baxley",
+    "SystemNote": "Created from Apollos",
+  },
+  "Schedule": Object {
+    "Guid": "guid",
+    "IsActive": true,
+  },
+  "SourceTypeValue": Object {
+    "Url": undefined,
+  },
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "Summary": "Reference Number: 3388531907",
+    "TransactionCode": "3388531907",
+    "TransactionDateTime": "Mocked subtract 5, hours",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": 125,
+      "AccountName": "General Fund",
+      "Amount": 1,
+      "Guid": "guid",
+    },
+  ],
+}
+`;
+
+exports[`test maps the source type value 1`] = `
+Object {
+  "Campus": Object {
+    "Id": "3",
+  },
+  "FinancialPaymentDetail": Object {
+    "AccountNumberMasked": "601160******6611",
+    "CreditCardTypeValueId": 160,
+    "CurrencyTypeValueId": 156,
+    "Guid": "guid",
+  },
+  "FinancialPaymentValue": "Credit Card",
+  "FinancialPersonSavedAccount": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "ReferenceNumber": "1573550949",
+    "TransactionCode": "3388531907",
+  },
+  "Location": Object {
+    "City": "Anderson",
+    "PostalCode": "29621-3452",
+    "State": "SC",
+    "Street1": "808 Pebble Ln",
+  },
+  "Person": Object {
+    "ConnectionStatusValueId": 67,
+    "Email": "james.baxley@newspring.cc",
+    "FirstName": "James",
+    "Gender": 0,
+    "Guid": "guid",
+    "IsSystem": false,
+    "LastName": "Baxley",
+    "SystemNote": "Created from Apollos",
+  },
+  "Schedule": Object {
+    "Guid": "guid",
+    "IsActive": true,
+  },
+  "SourceTypeValue": Object {
+    "Url": "http://example.com/give",
+  },
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "Summary": "Reference Number: 3388531907",
+    "TransactionCode": "3388531907",
+    "TransactionDateTime": "Mocked subtract 5, hours",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": 125,
+      "AccountName": "General Fund",
+      "Amount": 1,
+      "Guid": "guid",
+    },
+  ],
+}
+`;
+
+exports[`test sets the schedule Id to be recovered 1`] = `
+Object {
+  "Campus": Object {
+    "Id": "3",
+  },
+  "FinancialPaymentDetail": Object {
+    "AccountNumberMasked": "601160******6611",
+    "CreditCardTypeValueId": 160,
+    "CurrencyTypeValueId": 156,
+    "Guid": "guid",
+  },
+  "FinancialPaymentValue": "Credit Card",
+  "FinancialPersonSavedAccount": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "ReferenceNumber": "1573550949",
+    "TransactionCode": "3388531907",
+  },
+  "Location": Object {
+    "City": "Anderson",
+    "PostalCode": "29621-3452",
+    "State": "SC",
+    "Street1": "808 Pebble Ln",
+  },
+  "Person": Object {
+    "ConnectionStatusValueId": 67,
+    "Email": "james.baxley@newspring.cc",
+    "FirstName": "James",
+    "Gender": 0,
+    "Guid": "guid",
+    "IsSystem": false,
+    "LastName": "Baxley",
+    "SystemNote": "Created from Apollos",
+  },
+  "Schedule": Object {
+    "Guid": "guid",
+    "Id": 10,
+    "IsActive": true,
+  },
+  "SourceTypeValue": Object {
+    "Url": undefined,
+  },
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "Summary": "Reference Number: 3388531907",
+    "TransactionCode": "3388531907",
+    "TransactionDateTime": "Mocked subtract 5, hours",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": 125,
+      "AccountName": "General Fund",
+      "Amount": 1,
+      "Guid": "guid",
+    },
+  ],
+}
+`;

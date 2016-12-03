@@ -70,23 +70,24 @@ export default class TransactionJobs extends Rock {
   constructor({ cache }) {
     super({ cache });
     this.FinancialBatch = new FinancialBatch({ cache });
+    this.queue = TRANSACTION_QUEUE;
 
-    TRANSACTION_QUEUE.process(({ data }) => {
-      return Promise.resolve(data)
-        .then(this.getOrCreatePerson)
-        .then(this.createPaymentDetail)
-        .then(this.findOrCreateTransaction)
-        .then(this.findOrCreateSchedule)
-        .then(this.createTransactionDetails)
-        .then(this.createSavedPayment)
-        .then(this.updateBillingAddress)
-        .then(this.sendGivingEmail);
-    });
+    // XXX how do we test this stack of operations?
+    this.queue.process(({ data }) =>  Promise.resolve(data)
+      .then(this.getOrCreatePerson)
+      .then(this.createPaymentDetail)
+      .then(this.findOrCreateTransaction)
+      .then(this.findOrCreateSchedule)
+      .then(this.createTransactionDetails)
+      .then(this.createSavedPayment)
+      .then(this.updateBillingAddress)
+      .then(this.sendGivingEmail),
+    );
   }
 
   add = (data) => {
     // will retry every 5 minutes for one day
-    TRANSACTION_QUEUE.add(data, {
+    this.queue.add(data, {
       removeOnComplete: true,
       attempts: 288,
       backoff: { type: "fixed", delay: 60000 * 5 },

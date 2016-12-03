@@ -2,9 +2,12 @@
 import fetch from "isomorphic-fetch";
 import { parseString } from "xml2js";
 
+import { createGlobalId } from "../../../../../util/node";
+
 import {
   FinancialGateway,
   SavedPayment,
+  Transaction as TransactionTable,
 } from "../../tables";
 
 import {
@@ -12,6 +15,7 @@ import {
 } from "../../../system/tables";
 
 import Transaction from "../Transaction";
+import formatTransaction from "../../util/formatTransaction";
 import nmi from "../../util/nmi";
 
 jest.mock("../../util/nmi");
@@ -22,6 +26,9 @@ jest.mock("../../tables", () => ({
   },
   SavedPayment: {
     find: jest.fn(),
+    findOne: jest.fn(),
+  },
+  Transaction: {
     findOne: jest.fn(),
   },
 }));
@@ -42,6 +49,8 @@ jest.mock("xml2js", () => ({
 }));
 
 jest.mock("isomorphic-fetch", () => jest.fn(() => Promise.resolve()));
+jest.mock("../../util/formatTransaction");
+const jobAdd = jest.fn();
 
 const mockedCache = {
   get: jest.fn((id, lookup) => Promise.resolve().then(lookup)),
@@ -49,6 +58,23 @@ const mockedCache = {
   del() {},
   encode: jest.fn((obj, prefix) => `${prefix}${JSON.stringify(obj)}`),
 };
+
+describe("getFromId", () => {
+  it("tries to load the passed id", async () => {
+    const id = 1;
+    const localCache = { ...mockedCache };
+    localCache.get = jest.fn((guid, cb) => cb());
+
+    const Local = new Transaction({ cache: localCache });
+    const nodeId = createGlobalId(1, Local.__type);
+    TransactionTable.findOne.mockReturnValueOnce([]);
+    const result = await Local.getFromId(1);
+
+    expect(localCache.get.mock.calls[0][0]).toEqual(nodeId);
+    expect(TransactionTable.findOne).toBeCalledWith({ where: { Id: id } });
+    expect(result).toEqual([]);
+  });
+});
 
 describe("loadGatewayDetails", () => {
   it("is a callable method", () => {
@@ -329,5 +355,131 @@ describe("createOrder", () => {
 
     expect(nmi).toBeCalled();
     expect(data).toEqual({ error: "nmi failure", code: undefined });
+  });
+
+  it("adds a job to the queue if an schedule with saved payment", async () => {
+    nmi.mockImplementationOnce((order => Promise.resolve({
+      result: 1,
+      "result-code": 100,
+      "form-url": order,
+      "transaction-id": 1,
+    })));
+    formatTransaction.mockReturnValueOnce({});
+    Local.TransactionJob = {
+      add: jest.fn(),
+    };
+    const data = await Local.createOrder({
+      data: {},
+      instant: true,
+      requestUrl: "https://my.newspring.cc/give/now",
+      ip: "1",
+    }, { PrimaryAliasId: 10 });
+
+    expect(formatTransaction).toBeCalled();
+    expect(Local.TransactionJob.add).toBeCalled();
+    expect(data.url["add-customer"]["order-id"]).toBeFalsy();
+    delete data.url["add-customer"]["order-id"];
+    expect(jobAdd.mock.calls[0]).toMatchSnapshot();
+  });
+});
+
+describe("charging NMI", () => {
+  let Local;
+  beforeEach(() => {
+    Local = new Transaction({ cache: mockedCache });
+    Local.gateway = {
+      AdminUsername: "1",
+      AdminPassword: "2",
+      APIUrl: "3",
+      QueryUrl: "3",
+      SecurityKey: "3",
+      Name: "NMI Gateway",
+      Id: 1,
+    };
+  });
+  afterEach(() => {
+    Local = undefined;
+  });
+  it("calls the nmi method witha complete-action object", async () => {
+
+    nmi.mockImplementationOnce(() => Promise.resolve({ success: true }));
+
+    const result = await Local.charge("token", { SecurityKey: "safe" });
+
+    expect(nmi).toBeCalledWith({
+      "complete-action": {
+        "api-key": "safe",
+        "token-id": "token",
+      },
+    }, { SecurityKey: "safe" });
+
+    expect(result).toEqual({ success: true });
+  });
+});
+
+describe("completeOrder", () => {
+  let Local;
+  beforeEach(() => {
+    Local = new Transaction({ cache: mockedCache });
+    Local.gateway = {
+      AdminUsername: "1",
+      AdminPassword: "2",
+      APIUrl: "3",
+      QueryUrl: "3",
+      SecurityKey: "3",
+      Name: "NMI Gateway",
+      Id: 1,
+    };
+  });
+  afterEach(() => {
+    Local = undefined;
+  });
+  it("calls to charge NMI and creates a job", async () => {
+    nmi.mockImplementationOnce(() => Promise.resolve({ success: true }));
+    formatTransaction.mockClear();
+    formatTransaction.mockReturnValueOnce({});
+    Local.TransactionJob = {
+      add: jest.fn(),
+    };
+
+    await Local.completeOrder({
+      scheduleId: 1,
+      token: "token",
+      person: { FirstName: "James" },
+      accountName: "Visa",
+      origin: "http://example.com",
+    });
+
+    expect(formatTransaction).toBeCalledWith({
+      scheduleId: 1,
+      person: { FirstName: "James" },
+      accountName: "Visa",
+      origin: "http://example.com",
+      response: { success: true },
+    }, Local.gateway);
+    expect(Local.TransactionJob.add).toBeCalled();
+  });
+
+  it("gracefully handles errors", async () => {
+    nmi.mockImplementationOnce(() => Promise.reject(new Error("dang")));
+    formatTransaction.mockClear();
+    formatTransaction.mockReturnValueOnce({});
+    Local.TransactionJob = {
+      add: jest.fn(),
+    };
+
+    const result = await Local.completeOrder({
+      scheduleId: 1,
+      token: "token",
+      person: { FirstName: "James" },
+      accountName: "Visa",
+      origin: "http://example.com",
+    });
+
+    expect(result).toEqual({
+      error: "dang",
+      code: undefined,
+      success: false,
+    });
   });
 });

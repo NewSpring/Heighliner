@@ -42,11 +42,15 @@ import { Rock } from "../../system";
 
 import TransactionJobs from "./TransactionJobs";
 
-const redis = createCache();
-const TransactionJob = new TransactionJobs({ cache: redis });
+let TransactionJob = {};
+createCache().then((cache) => {
+  TransactionJob = new TransactionJobs({ cache });
+});
 
 export default class Transaction extends Rock {
   __type = "Transaction";
+  // makes it easier to test
+  TransactionJob = TransactionJob;
 
   async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(id, this.__type);
@@ -275,7 +279,7 @@ export default class Transaction extends Rock {
         // XXX create a schedule from the transaction
         const scheduleId = id;
         const response = formatTransaction({ scheduleId, response: data, person, origin }, gateway);
-        TransactionJob.add(response);
+        this.TransactionJob.add(response);
         return data;
       })
       .then(data => ({
@@ -295,11 +299,11 @@ export default class Transaction extends Rock {
         scheduleId, response, person, accountName, origin,
       }, gatewayDetails))
       .then((data) => {
-        TransactionJob.add(data);
+        this.TransactionJob.add(data);
         return data;
       })
-      .catch((e) =>
-         ({ error: e.message, code: e.code, success: false })
+      .catch(({ message, code }) =>
+         ({ error: message, code, success: false }),
       );
   }
 }
