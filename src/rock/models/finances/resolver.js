@@ -219,8 +219,6 @@ export default {
 
       return models.ScheduledTransaction.getFromId(FinancialScheduleId);
     },
-    expirationMonth: ({ ExpirationMonthEncrypted }) => ExpirationMonthEncrypted,
-    expirationYear: ({ ExpirationYearEncrypted }) => ExpirationYearEncrypted,
   },
 
   FinancialAccount: {
@@ -289,6 +287,8 @@ export default {
 
       return models.Transaction.getPaymentDetailsById(FinancialPaymentDetailId);
     },
+    expirationMonth: ({ ExpirationMonthEncrypted }) => ExpirationMonthEncrypted,
+    expirationYear: ({ ExpirationYearEncrypted }) => ExpirationYearEncrypted,
   },
 
 };
