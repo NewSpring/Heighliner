@@ -9,6 +9,7 @@ import Campuses from "./models/campuses";
 import System from "./models/system";
 import Groups from "./models/groups";
 import BinaryFiles from "./models/binary-files";
+import Feeds from "./models/feeds";
 
 export const { mutations, queries, models, resolvers, mocks, schema } = createApplication([
   People,
@@ -17,6 +18,7 @@ export const { mutations, queries, models, resolvers, mocks, schema } = createAp
   System,
   Groups,
   BinaryFiles,
+  Feeds,
 ]);
 
 export default {

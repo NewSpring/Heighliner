@@ -118,6 +118,8 @@ const financialPaymentDetailSchema = {
   CreditCardTypeValueId: { type: INTEGER },
   CreatedDateTime: { type: DATE },
   ModifiedDateTime: { type: DATE },
+  ExpirationMonthEncrypted: { type: STRING },
+  ExpirationYearEncrypted: { type: STRING },
 };
 
 const financialGatewaySchema = {

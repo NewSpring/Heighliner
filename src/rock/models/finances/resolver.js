@@ -213,8 +213,14 @@ export default {
       return models.Transaction.getPaymentDetailsById(FinancialPaymentDetailId);
     },
     person: ({ AuthorizedPersonAliasId }, _, { models }) =>
-       models.Person.getFromAliasId(AuthorizedPersonAliasId)
-    ,
+      models.Person.getFromAliasId(AuthorizedPersonAliasId),
+    schedule: ({ FinancialScheduleId }, $, { models }) => {
+      if (!FinancialScheduleId) return null;
+
+      return models.ScheduledTransaction.getFromId(FinancialScheduleId);
+    },
+    expirationMonth: ({ ExpirationMonthEncrypted }) => ExpirationMonthEncrypted,
+    expirationYear: ({ ExpirationYearEncrypted }) => ExpirationYearEncrypted,
   },
 
   FinancialAccount: {
