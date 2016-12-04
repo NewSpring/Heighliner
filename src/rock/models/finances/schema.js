@@ -32,6 +32,7 @@ export default [`
     details: [TransactionDetail]
     payment: PaymentDetail
     person: Person
+    schedule: ScheduledTransaction
   }
 
   type OrderMutationResponse implements MutationResponse {
@@ -85,6 +86,8 @@ export default [`
     code: String!
     date: String
     payment: PaymentDetail
+    expirationMonth: String
+    expirationYear: String
   }
 
 
