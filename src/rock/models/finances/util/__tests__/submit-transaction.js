@@ -86,9 +86,9 @@ it("returns a promise", () => {
   expect(submit().then).toBeTruthy();
 });
 
-it("returns immediately if no transaction is passed", () => {
-  return submit().then((result) => { expect(result).toBeFalsy(); });
-});
+it("returns immediately if no transaction is passed", () =>
+   submit().then((result) => { expect(result).toBeFalsy(); }),
+);
 
 it("looks to see if the transaction is already in Rock", () => {
   const sample = {
@@ -96,7 +96,7 @@ it("looks to see if the transaction is already in Rock", () => {
       TransactionCode: "1",
     },
   };
-  Transaction.find.mockReturnValueOnce(Promise.resolve([ { Id: "1" } ]));
+  Transaction.find.mockReturnValueOnce(Promise.resolve([{ Id: "1" }]));
   return submit(sample).then(() => {
     expect(Transaction.find).toBeCalled();
     expect(Transaction.find).toBeCalledWith({
@@ -111,7 +111,7 @@ it("exits if the transaction is in Rock", () => {
       TransactionCode: "1",
     },
   };
-  Transaction.find.mockReturnValueOnce([ { Id: "1" } ]);
+  Transaction.find.mockReturnValueOnce([{ Id: "1" }]);
   return submit(sample).then((result) => {
     expect(result).toBeFalsy();
     expect(Transaction.find).toBeCalled();
@@ -254,7 +254,7 @@ it("trieds to narrow down person by location", () => {
             {
               model: GroupMember.model,
               // XXX should this be an array of arrays?
-              where: { PersonId: { $in: [[1, 2]]} },
+              where: { PersonId: { $in: [[1, 2]] } },
             },
           ],
         },
@@ -295,7 +295,7 @@ it("trieds to narrow down person by location with found locations", () => {
     { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
   ]));
   GroupLocation.find.mockReturnValueOnce(Promise.resolve([
-    { Group: { GroupMembers: [ { PersonId: 1 } ]}},
+    { Group: { GroupMembers: [{ PersonId: 1 }] } },
   ]));
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
   Transaction.post.mockReturnValueOnce(Promise.resolve(100));
@@ -322,7 +322,7 @@ it("trieds to narrow down person by location with found locations", () => {
             {
               model: GroupMember.model,
               // XXX should this be an array of arrays?
-              where: { PersonId: { $in: [[1, 2]]} },
+              where: { PersonId: { $in: [[1, 2]] } },
             },
           ],
         },
@@ -425,7 +425,7 @@ it("creates a financial payment", () => {
   return submit(sample).then(() => {
     expect(FinancialPaymentDetail.post).toBeCalledWith(assign(
       sample.PaymentDetail,
-      { CreatedByPersonAliasId: 1 }
+      { CreatedByPersonAliasId: 1 },
     ));
   });
 });
@@ -488,7 +488,7 @@ it("attaches the ScheduledTransactionId if needed", () => {
         CreatedByPersonAliasId: 1,
         FinancialPaymentDetailId: 5,
         ScheduledTransactionId: 24,
-      }
+      },
     ));
   });
 });
@@ -550,7 +550,7 @@ it("logs an error if missing a schedule in Rock", () => {
         AuthorizedPersonAliasId: 1,
         CreatedByPersonAliasId: 1,
         FinancialPaymentDetailId: 5,
-      }
+      },
     ));
   });
 });
@@ -597,7 +597,7 @@ it("creates a FinancialTransaction", () => {
         AuthorizedPersonAliasId: 1,
         CreatedByPersonAliasId: 1,
         FinancialPaymentDetailId: 5,
-      }
+      },
     ));
   });
 });

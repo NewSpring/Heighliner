@@ -33,11 +33,15 @@ export class Campus extends Rock {
 
   async find(query) {
     query = merge({ IsActive: true }, query);
+    for (const key in query) {
+      if (!query[key]) delete query[key];
+    }
     return this.cache.get(this.cache.encode(query), () => CampusTable.find({
         where: query,
         attributes: ["Id"],
       })
-    )
+    ,)
+      .then(this.debug)
       .then(this.getFromIds.bind(this))
       .then((x) => x.filter(y => y.Name !== "Central"))
       ;

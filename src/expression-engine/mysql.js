@@ -14,10 +14,23 @@ let noop = (...args) => {}; // tslint:disable-line
 let loud = console.log.bind(console, "MYSQL:"); // tslint:disable-line
 let db;
 let dd;
-export function connect(database, username, password, opts, monitor) {
+
+// MySQL connections
+const EESettings = {
+  user: process.env.MYSQL_USER || "root",
+  password: process.env.MYSQL_PASSWORD || "password",
+  database: process.env.MYSQL_DB || "ee_local",
+  opts: {
+    host: process.env.MYSQL_HOST,
+    ssl: process.env.MYSQL_SSL || false,
+  }
+};
+
+export function connect(monitor) {
+  if (db) return Promise.resolve(true);
   dd = monitor && monitor.datadog;
   return new Promise((cb) => {
-    opts = merge({}, opts, {
+    const opts = merge({}, EESettings.opts, {
       dialect: "mysql",
       logging: process.env.NODE_ENV !== "production" ? loud : noop, // tslint:disable-line
       benchmark: process.env.NODE_ENV !== "production",
@@ -27,13 +40,14 @@ export function connect(database, username, password, opts, monitor) {
       },
     });
 
-    db = new Sequelize(database, username, password, opts);
+    db = new Sequelize(EESettings.database, EESettings.user, EESettings.password, opts);
 
     db.authenticate()
       .then(() => cb(true))
       .then(() => createTables())
       .catch((e) => {
         console.error(e); // tslint:disable-line
+        db = false;
         cb(false);
       });
   });

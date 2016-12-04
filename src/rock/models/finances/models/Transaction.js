@@ -6,22 +6,30 @@ import fetch from "isomorphic-fetch";
 import { parseString } from "xml2js";
 
 import { createGlobalId } from "../../../../util";
+import { createCache } from "../../../../util/cache";
+
 
 import translateFromNMI from "../util/translate-nmi";
+import formatTransaction from "../util/formatTransaction";
+import nmi from "../util/nmi";
 import submitTransaction from "../util/submit-transaction";
 
 import {
   Transaction as TransactionTable,
-  // TransactionRefund,
+  SavedPayment,
   TransactionDetail,
   FinancialGateway,
-  FinancialPaymentDetail,
+  FinancialPaymentDetail as FinancialPaymentDetailTable,
 } from "../tables";
 
-import { AttributeValue, Attribute } from "../../system/tables";
 
 import {
-  Person,
+  AttributeValue,
+  Attribute,
+} from "../../system/tables";
+
+import {
+  Person as PersonTable,
   PersonAlias,
 } from "../../people/tables";
 
@@ -32,12 +40,21 @@ import {
 
 import { Rock } from "../../system";
 
+import TransactionJobs from "./TransactionJobs";
+
+let TransactionJob = {};
+createCache().then((cache) => {
+  TransactionJob = new TransactionJobs({ cache });
+});
+
 export default class Transaction extends Rock {
   __type = "Transaction";
+  // makes it easier to test
+  TransactionJob = TransactionJob;
 
   async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(id, this.__type);
-    return this.cache.get(globalId, () => TransactionTable.findOne({ where: { Id: id }}));
+    return this.cache.get(globalId, () => TransactionTable.findOne({ where: { Id: id } }));
   }
 
   async getDetailsById(id) {
@@ -50,30 +67,29 @@ export default class Transaction extends Rock {
     if (!id) return Promise.resolve(null);
 
     const globalId = createGlobalId(`${id}`, "PaymentDetail");
-    return this.cache.get(globalId, () => FinancialPaymentDetail.findOne({
-        where: { Id: id },
-      })
+    return this.cache.get(globalId, () => FinancialPaymentDetailTable.findOne({
+      where: { Id: id },
+    }),
     );
   }
 
   async findByPersonAlias(aliases, { limit, offset }, { cache }) {
     const query = { aliases, limit, offset };
     return this.cache.get(this.cache.encode(query), () => TransactionTable.find({
-        where: { AuthorizedPersonAliasId: { $in: aliases }},
-        order: [
+      where: { AuthorizedPersonAliasId: { $in: aliases } },
+      order: [
           ["TransactionDateTime", "DESC"],
         ],
-        attributes: ["Id"],
-        limit,
-        offset,
-      })
+      attributes: ["Id"],
+      limit,
+      offset,
+    })
     , { cache })
       .then(this.getFromIds.bind(this));
-
   }
 
-  async findByGivingGroup({ id, include, start, end } , { limit, offset }, { cache }) {
-    let query = { id, include, start, end };
+  async findByGivingGroup({ id, include, start, end }, { limit, offset }, { cache }) {
+    const query = { id, include, start, end };
 
     let TransactionDateTime;
     if (start || end) TransactionDateTime = {};
@@ -81,17 +97,17 @@ export default class Transaction extends Rock {
     if (end) TransactionDateTime.$lt = Moment(end, "MM/YY");
 
     return this.cache.get(
-      this.cache.encode(query, `findByGivingGroup`), () => TransactionTable.find({
+      this.cache.encode(query, "findByGivingGroup"), () => TransactionTable.find({
         attributes: ["Id"],
-        order: [ ["TransactionDateTime", "DESC"] ],
-        where: TransactionDateTime ? [ { TransactionDateTime } ] : null,
+        order: [["TransactionDateTime", "DESC"]],
+        where: TransactionDateTime ? [{ TransactionDateTime }] : null,
         include: [
           {
             model: PersonAlias.model,
             attributes: [],
             include: [
               {
-                model: Person.model,
+                model: PersonTable.model,
                 attributes: [],
                 where: include && include.length ? { Id: { $in: include } } : null,
                 include: [
@@ -109,7 +125,7 @@ export default class Transaction extends Rock {
         ],
       })
     , { cache })
-      .then((x) => x.slice(offset, limit + offset))
+      .then(x => x.slice(offset, limit + offset))
       .then(this.getFromIds.bind(this))
       ;
   }
@@ -149,12 +165,15 @@ export default class Transaction extends Rock {
       }))
       ;
 
-    this.gateway = assign(gateways, attributes);
+    this.gateway = assign(
+      gateways,
+      attributes,
+      // { SecurityKey: "2F822Rw39fx762MaV7Yy86jXGTC7sCDy" }
+    );
     return this.gateway;
   }
 
   async syncTransactions(args) {
-
     const gateway = await this.loadGatewayDetails(args.gateway);
     delete args.gateway;
     const PersonId = args.personId;
@@ -183,5 +202,108 @@ export default class Transaction extends Rock {
       .then(y => y.filter(x => !!x))
       .then(this.getFromIds.bind(this))
       ;
+  }
+
+  charge = async (token, gatewayDetails) => {
+    const complete = {
+      "complete-action": {
+        "api-key": gatewayDetails.SecurityKey,
+        "token-id": token,
+      },
+    };
+
+    return nmi(complete, gatewayDetails);
+  }
+
+  async createOrder({ data, instant, id, ip, requestUrl, origin }, person) {
+    if (!data) return Promise.reject(new Error("No data provided"));
+
+    const gateway = await this.loadGatewayDetails("NMI Gateway");
+    const orderData = data;
+
+    let method = "sale";
+
+    orderData["redirect-url"] = `${requestUrl}`;
+    if (orderData.amount === 0) method = "validate";
+    // omitted orderData
+    if (typeof orderData.amount === "undefined") method = "add-customer";
+    if (orderData["start-date"]) method = "add-subscription";
+
+
+    if (method !== "add-subscription" && person && person.PrimaryAliasId) {
+      orderData["customer-id"] = person.PrimaryAliasId;
+    }
+
+    // XXX we should probably error out if they expect a saved account but we don't find one?
+    if (orderData.savedAccount) {
+      // XXX lookup only based on logged in status
+      const accountDetails = await SavedPayment.findOne({ where: { Id: orderData.savedAccount } });
+
+      delete orderData.savedAccount;
+      delete orderData.savedAccountName;
+      if (accountDetails && accountDetails.ReferenceNumber) {
+        delete orderData["customer-id"];
+        orderData["customer-vault-id"] = accountDetails.ReferenceNumber;
+      }
+    }
+
+    if (method !== "add-subscription" && method !== "add-customer") {
+      // add in IP address
+      orderData["ip-address"] = ip;
+
+      // strongly force CVV on acctions that aren't a saved account
+      if (!orderData["customer-vault-id"]) orderData["cvv-reject"] = "P|N|S|U";
+    }
+
+    if (!orderData["customer-vault-id"] && method === "sale") orderData["add-customer"] = "";
+    if (orderData["customer-vault-id"] && method === "add-subscription") {
+      delete orderData["redirect-url"];
+    }
+
+    const generatedId = `apollos_${Date.now()}_${Math.ceil(Math.random() * 100000)}`;
+    if (method !== "add-customer") {
+      orderData["order-description"] = "Online contribution from Apollos",
+      orderData["order-id"] = generatedId || orderData.orderId;
+    }
+
+    const order = {
+      [method]: {
+        ...{ "api-key": gateway.SecurityKey },
+        ...orderData,
+      },
+    };
+
+    return nmi(order, gateway)
+      .then((data) => {
+        if (!instant) return data;
+        // XXX create a schedule from the transaction
+        const scheduleId = id;
+        const response = formatTransaction({ scheduleId, response: data, person, origin }, gateway);
+        this.TransactionJob.add(response);
+        return data;
+      })
+      .then(data => ({
+        success: data.result === 1,
+        code: data["result-code"],
+        url: data["form-url"],
+        transactionId: data["transaction-id"],
+      }))
+      .catch(e => ({ error: e.message, code: e.code }));
+  }
+
+  async completeOrder({ scheduleId, token, person, accountName, origin }) {
+    const gatewayDetails = await this.loadGatewayDetails("NMI Gateway");
+
+    return this.charge(token, gatewayDetails)
+      .then(response => formatTransaction({
+        scheduleId, response, person, accountName, origin,
+      }, gatewayDetails))
+      .then((data) => {
+        this.TransactionJob.add(data);
+        return data;
+      })
+      .catch(({ message, code }) =>
+         ({ error: message, code, success: false }),
+      );
   }
 }

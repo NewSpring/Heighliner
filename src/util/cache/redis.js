@@ -9,12 +9,13 @@ import { parseGlobalId } from "./../node/model";
 
 let db;
 let dd;
-export function connect(address, port = 6379, monitor) {
+export function connect( monitor) {
+  if (db) return Promise.resolve(true);
   dd = monitor && monitor.datadog;
   let hasReturned = false;
   return new Promise((cb) => {
 
-    db = Redis.createClient(port, address);
+    db = Redis.createClient(6379, process.env.REDIS_HOST);
 
     db.on("connect", () => {
       hasReturned = true;

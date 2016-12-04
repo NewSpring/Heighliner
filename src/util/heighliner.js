@@ -12,6 +12,13 @@ import {
   mutations as cacheMutation,
 } from "./cache/defaults";
 
+export function getIp(request) {
+  return request.headers["x-forwarded-for"] ||
+    request.connection.remoteAddress ||
+    request.socket.remoteAddress ||
+    request.connection.socket.remoteAddress;
+}
+
 export function createQueries(queries) {
   return [`
     type Query {

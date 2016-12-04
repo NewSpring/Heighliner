@@ -36,8 +36,8 @@ it("`getByHashedToken` should allow searching for an encrypted token", async () 
     .digest("base64");
 
   users.model.findOne = function mockedFindOne(mongoQuery) {
-    const matches = mongoQuery["$or"];
-    for (let match of matches) {
+    const matches = mongoQuery.$or;
+    for (const match of matches) {
       const tok = match["services.resume.loginTokens.hashedToken"];
       if (tok !== encyptedToken) continue;
 
@@ -53,7 +53,7 @@ it("`getByHashedToken` should allow searching for an encrypted token", async () 
 });
 
 xit("`getFromId` should allow searching by an id", async () => {
-  let id = "id";
+  const id = "id";
   const users = new User();
   users.model.findOne = function mockedFindOne({ _id }) {
     expect(_id).toEqual(id);
@@ -64,8 +64,8 @@ xit("`getFromId` should allow searching by an id", async () => {
 });
 
 it("`getFromId` should try and read the data from the cache using the globalId", async () => {
-  let id = "id";
-  let globalId = "foo";
+  const id = "id";
+  const globalId = "foo";
 
   const cache = {
     get(global) {

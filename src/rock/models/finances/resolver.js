@@ -1,6 +1,12 @@
 
 import { createGlobalId } from "../../../util";
 
+const MutationReponseResolver = {
+  error: ({ error }) => error,
+  success: ({ success, error }) => success || !error,
+  code: ({ code }) => code,
+};
+
 export default {
 
   Query: {
@@ -62,7 +68,93 @@ export default {
 
   Mutation: {
     syncTransactions: (_, args, { models }) => models.Transaction.syncTransactions(args),
-    // cancelSavedPayment: (_, { id }, { models }) => models.SavedPayment.removeFromNodeId(id),
+    cancelSavedPayment: async (_, { entityId, /* id, */gateway }, { models }) => {
+      const nmi = await models.Transaction.loadGatewayDetails(gateway);
+      return models.SavedPayment.removeFromEntityId(entityId, nmi);
+    },
+    createOrder: (_, { instant, id, data }, { models, person, ip, req }) => {
+      const requestUrl = req.headers.referer;
+      const origin = req.headers.origin;
+      const parsedData = JSON.parse(data);
+      return models.Transaction.createOrder({
+        data: parsedData,
+        instant,
+        id,
+        ip,
+        requestUrl,
+        origin,
+      }, person);
+    },
+    validate: async (_, { token, gateway }, { models }) => {
+      if (!token) return null;
+      const nmi = await models.Transaction.loadGatewayDetails(gateway);
+      return models.SavedPayment.validate({ token }, nmi)
+        .catch(e => ({ error: e.message, code: e.code, success: false }));
+    },
+    completeOrder: (_, { token, accountName, scheduleId }, { models, person, req }) => {
+      if (!token) return null;
+      const origin = req.headers.origin;
+      return models.Transaction.completeOrder({ token, accountName, person, origin, scheduleId })
+        .catch(e => ({ error: e.message, code: e.code, success: false }));
+    },
+    savePayment: async (_, { token, gateway, accountName }, { models, person }) => {
+      const nmi = await models.Transaction.loadGatewayDetails(gateway);
+      return models.SavedPayment.save({ token, name: accountName, person }, nmi);
+    },
+    cancelSchedule: async (_, { entityId, gateway }, { models }) => {
+      // XXX only let the owner cancel the schedule
+      const nmi = await models.Transaction.loadGatewayDetails(gateway);
+      return models.ScheduledTransaction.cancelNMISchedule(entityId, nmi)
+        .catch(error => ({ error: error.message, code: error.code, success: false }));
+    },
+  },
+
+  ValidateMutationResponse: {
+    ...MutationReponseResolver,
+  },
+
+  SavePaymentMutationResponse: {
+    ...MutationReponseResolver,
+    savedPayment: ({ savedPaymentId }, _, { models }) => {
+      if (!savedPaymentId) return null;
+      return models.SavedPayment.getFromId(savedPaymentId)
+        .then(([x]) => x);
+    },
+  },
+
+  CompleteOrderMutationResponse: {
+    ...MutationReponseResolver,
+    transaction: ({ transactionId }, _, { models }) => {
+      if (!transactionId) return null;
+      return models.Transaction.getFromId(transactionId);
+    },
+    schedule: ({ scheduleId }, _, { models }) => {
+      if (!scheduleId) return null;
+      return models.ScheduledTransaction.getFromId(scheduleId);
+    },
+    person: ({ personId }, _, { models, person }) => {
+      if (person) return person;
+      if (!personId) return null;
+      return models.Person.getFromId(personId);
+    },
+    savedPayment: ({ savedPaymentId }, _, { models }) => {
+      if (!savedPaymentId) return null;
+      return models.SavedPayment.getFromId(savedPaymentId);
+    },
+  },
+
+  OrderMutationResponse: {
+    ...MutationReponseResolver,
+    url: ({ url }) => url,
+    transactionId: ({ transactionId }) => transactionId,
+  },
+
+  ScheduledTransactionMutationResponse: {
+    ...MutationReponseResolver,
+    schedule: ({ scheduleId }, _, { models }) => {
+      if (!scheduleId) return null;
+      return models.ScheduledTransaction.getFromId(scheduleId);
+    },
   },
 
   TransactionDetail: {

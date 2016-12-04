@@ -173,7 +173,7 @@ export class Content extends EE {
     );
   }
 
-  async findByParentId(entry_id, channels) {
+  async findByParentId(entry_id, channels = []) {
     // XXX make this single request by relating entries via ChannelData
     return this.cache.get(`${entry_id}:Playa`, () => Playa.find({
         where: { child_entry_id: entry_id },

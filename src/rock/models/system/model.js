@@ -2,6 +2,8 @@
 import { pick, sortBy, flatten } from "lodash";
 import { createGlobalId, Heighliner } from "../../../util";
 
+import uuid from "node-uuid";
+
 import {
   DefinedValue as DefinedValueModel,
   DefinedType as DefinedTypeModel,
@@ -9,6 +11,9 @@ import {
   Attribute as AttributeModel,
   AttributeValue as AttributeValueModel,
   AttributeQualifier as AttributeQualifierModel,
+  Communication as CommunicationTable,
+  CommunicationRecipient as CommunicationRecipientTable,
+  SystemEmail as SystemEmailTable,
   // EntityType as EntityTypeModel,
 } from "./tables";
 
@@ -119,8 +124,44 @@ export class Rock extends Heighliner {
     );
   }
 
-  async getAttributesFromId(id, context) {
+  async sendEmail(title, people = [], data = {}) {
+    if (!title) throw new Error("No email passed");
+    const email = await SystemEmailTable.findOne({ where: { Title: title }});
 
+    if (!email || !email.Body || !email.Subject) return null;
+
+    const Communication = {
+      SenderPersonAliasId: null,
+      Status: 3,
+      IsBulkCommunication: false,
+      Guid: uuid.v4(),
+      Subject: email.Subject,
+      MediumData: { HtmlMessage: email.Body },
+    };
+
+    Communication.Id = await CommunicationTable.post(Communication);
+
+    // this is a bug in Rock right now. We can't set Mandrill on the initial
+    // post because it locks everything up, we can however, patch it
+    await CommunicationTable.patch(Communication.Id, {
+      MediumEntityTypeId: 37, // Mandrill
+    });
+
+    return Promise.all(
+      people.map((PersonAliasId) => {
+        const CommunicationRecipient = {
+          PersonAliasId,
+          CommunicationId: Communication.Id,
+          Status: 0, // Pending
+          Guid: uuid.v4(),
+          AdditionalMergeValuesJson: JSON.stringify(data),
+        };
+        return CommunicationRecipientTable.post(CommunicationRecipient);
+      }),
+    );
+  }
+
+  async getAttributesFromId(id) {
     return this.cache.get(`${id}:getAttributeValues`, () => AttributeModel.findOne({
       where: { Id: id },
       include: [
