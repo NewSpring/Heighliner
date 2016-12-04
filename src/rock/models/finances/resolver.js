@@ -72,10 +72,9 @@ export default {
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
       return models.SavedPayment.removeFromEntityId(entityId, nmi);
     },
-    createOrder: (_, { instant, id, data, url }, { models, person, ip, req }) => {
-      let requestUrl = req.headers.referer;
+    createOrder: (_, { instant, id, data }, { models, person, ip, req }) => {
+      const requestUrl = req.headers.referer;
       const origin = req.headers.origin;
-      if (url) requestUrl = url;
       const parsedData = JSON.parse(data);
       return models.Transaction.createOrder({
         data: parsedData,
@@ -90,7 +89,7 @@ export default {
       if (!token) return null;
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
       return models.SavedPayment.validate({ token }, nmi)
-        .catch((e) => ({ error: e.message, code: e.code, success: false }));
+        .catch(e => ({ error: e.message, code: e.code, success: false }));
     },
     completeOrder: (_, { token, accountName, scheduleId }, { models, person, req }) => {
       if (!token) return null;
@@ -106,7 +105,7 @@ export default {
       // XXX only let the owner cancel the schedule
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
       return models.ScheduledTransaction.cancelNMISchedule(entityId, nmi)
-        .catch(error => ({ error: error.message, code: error.code }));
+        .catch(error => ({ error: error.message, code: error.code, success: false }));
     },
   },
 
