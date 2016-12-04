@@ -13,4 +13,4 @@ export const errors = (app) => {
   if (process.env.NODE_ENV === "production") {
     app.use(raven.middleware.express.errorHandler(process.env.SENTRY));
   }
-}
+};

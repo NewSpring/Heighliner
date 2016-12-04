@@ -401,7 +401,6 @@ describe("charging NMI", () => {
     Local = undefined;
   });
   it("calls the nmi method witha complete-action object", async () => {
-
     nmi.mockImplementationOnce(() => Promise.resolve({ success: true }));
 
     const result = await Local.charge("token", { SecurityKey: "safe" });

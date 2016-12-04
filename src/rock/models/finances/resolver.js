@@ -95,7 +95,7 @@ export default {
       if (!token) return null;
       const origin = req.headers.origin;
       return models.Transaction.completeOrder({ token, accountName, person, origin, scheduleId })
-        .catch((e) => ({ error: e.message, code: e.code, success: false }));
+        .catch(e => ({ error: e.message, code: e.code, success: false }));
     },
     savePayment: async (_, { token, gateway, accountName }, { models, person }) => {
       const nmi = await models.Transaction.loadGatewayDetails(gateway);

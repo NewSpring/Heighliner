@@ -93,7 +93,7 @@ describe("findOrCreate", () => {
       .mockReturnValueOnce({ endOf });
 
     FinancialBatchTable.post.mockReturnValueOnce(Promise.resolve({ Id: 1 }));
-    FinancialBatchTable.findOne.mockReturnValueOnce({ Id: 1 })
+    FinancialBatchTable.findOne.mockReturnValueOnce({ Id: 1 });
     const result = await Local.findOrCreate({
       currencyType: "Visa",
       date: "date",

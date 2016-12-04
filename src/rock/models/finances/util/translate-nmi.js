@@ -21,7 +21,7 @@ export const getCardName = (card) => {
 export const getCardType = (card) => {
   // XXX refering to the default was failing the tests?
   // I have not idea why
-  const cards  = {
+  const cards = {
     Visa: /^4[0-9\*]{0,15}$/gmi,
     MasterCard: /^5$|^5[1-5][0-9\*]{0,14}$/gmi,
     "American Express": /^3$|^3[47][0-9\*]{0,13}$/gmi,

@@ -8,7 +8,7 @@ import {
   multipleTransactions,
 } from "../__mocks__/sample-response";
 
-jest.mock("moment", () => (date) => ({
+jest.mock("moment", () => date => ({
   toISOString: () => `Mocked ISODate: ${date}`,
   subtract: (number, size) => `Mocked subtract ${number}, ${size}`,
 }));
