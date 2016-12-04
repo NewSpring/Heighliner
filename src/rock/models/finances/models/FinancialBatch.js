@@ -35,18 +35,15 @@ export default class FinancialBatch extends Rock {
 
     if (batch.length) return batch[0];
 
+    // 4pm => 12:00 am => 11:59 pm day before
     const BatchStartDateTime = moment(date)
       .startOf("day")
-      // .subtract(5, "hours")
       .subtract(1, "minute")
-      .add(1, "day")
       .toISOString();
 
+    // 4pm => 11:59 pm
     const BatchEndDateTime = moment(date)
       .endOf("day")
-      // .subtract(5, "hours")
-      .subtract(1, "minute")
-      .add(1, "day")
       .toISOString();
 
     const newBatch = {

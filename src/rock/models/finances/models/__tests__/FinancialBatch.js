@@ -83,10 +83,9 @@ describe("findOrCreate", () => {
     FinancialBatchTable.find.mockReturnValueOnce([]);
 
     const toISOString = jest.fn(() => "date");
-    const add = jest.fn(() => ({ toISOString }));
-    const subtract = jest.fn(() => ({ add }));
+    const subtract = jest.fn(() => ({ toISOString }));
     const startOf = jest.fn(() => ({ subtract }));
-    const endOf = jest.fn(() => ({ subtract }));
+    const endOf = jest.fn(() => ({ toISOString }));
 
     moment
       .mockReturnValueOnce({ startOf })
@@ -102,13 +101,10 @@ describe("findOrCreate", () => {
     expect(moment).toBeCalledWith("date");
     expect(startOf).toBeCalledWith("day");
     expect(subtract).toBeCalledWith(1, "minute");
-    expect(add).toBeCalledWith(1, "day");
     expect(toISOString).toBeCalled();
 
     expect(moment).toBeCalledWith("date");
     expect(endOf).toBeCalledWith("day");
-    expect(subtract).toBeCalledWith(1, "minute");
-    expect(add).toBeCalledWith(1, "day");
     expect(toISOString).toBeCalled();
 
     expect(FinancialBatchTable.post).toBeCalledWith({
