@@ -159,11 +159,6 @@ jest.mock("node-uuid", () => ({
   v4: jest.fn(() => "guid"),
 }));
 
-jest.mock("bull", () => jest.fn(() => ({
-  process: jest.fn(() => {}),
-  add: jest.fn(() => {}),
-})));
-
 const mockedCache = {
   get: jest.fn((id, lookup) => Promise.resolve().then(lookup)),
   set: jest.fn(() => Promise.resolve().then(() => true)),
