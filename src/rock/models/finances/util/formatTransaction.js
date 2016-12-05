@@ -38,6 +38,7 @@ export default ({ response, person = {}, accountName, origin, scheduleId }, gate
     Id: scheduleId,
     GatewayScheduleId: response["subscription-id"],
     TransactionFrequencyValue: response.plan,
+    FinancialGatewayId: gatewayDetails.Id,
     IsActive: true,
     Guid: uuid.v4(),
   }, isNil);
