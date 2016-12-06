@@ -85,6 +85,7 @@ export default class TransactionJobs extends Rock {
       .then(this.createTransactionDetails)
       .then(this.createSavedPayment)
       .then(this.updateBillingAddress)
+      .then(this.updateBatchControlAmount)
       .then(this.sendGivingEmail),
     );
   }
