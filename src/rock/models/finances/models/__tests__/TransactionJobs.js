@@ -11,6 +11,7 @@ import {
   ScheduledTransactionDetail,
   FinancialPaymentDetail as FinancialPaymentDetailTable,
   FinancialAccount,
+  FinancialBatch as FinancialBatchTable,
 } from "../../tables";
 
 import {
@@ -83,6 +84,13 @@ jest.mock("../../tables", () => ({
   },
   FinancialAccount: {
     model: "FinancialAccountModel",
+    find: jest.fn(),
+    findOne: jest.fn(),
+    delete: jest.fn(),
+    post: jest.fn(),
+    patch: jest.fn(),
+  },
+  FinancialBatch: {
     find: jest.fn(),
     findOne: jest.fn(),
     delete: jest.fn(),
@@ -1143,6 +1151,108 @@ describe("createSavedPayment", () => {
       Person,
       FinancialPersonSavedAccount,
       FinancialPaymentDetail,
+    });
+  });
+});
+
+describe("updateBatchControlAmount", () => {
+  let Local;
+  beforeEach(() => {
+    Local = new TransactionJobs({ cache: mockedCache });
+  });
+  afterEach(() => {
+    Local = undefined;
+  });
+
+  it("returns if already update the batch", async () => {
+    const hasUpdatedBatch = true;
+    const data = await Local.updateBatchControlAmount({ hasUpdatedBatch });
+    expect(data).toEqual({ hasUpdatedBatch });
+  });
+
+  it("returns if missing transaction id", async () => {
+    const Transaction = { BatchId: 1 };
+    const TransactionDetails = [{ Amount: 2 }];
+    const data = await Local.updateBatchControlAmount({
+      Transaction,
+      TransactionDetails,
+    });
+    expect(data).toEqual({
+      Transaction,
+      TransactionDetails,
+    });
+  });
+
+  it("returns if missing transaction batch id", async () => {
+    const Transaction = { Id: 1 };
+    const TransactionDetails = [{ Amount: 2 }];
+    const data = await Local.updateBatchControlAmount({
+      Transaction,
+      TransactionDetails,
+    });
+    expect(data).toEqual({
+      Transaction,
+      TransactionDetails,
+    });
+  });
+
+  it("returns if missing transaction details", async () => {
+    const Transaction = { BatchId: 1, Id: 1 };
+    const TransactionDetails = [];
+    const data = await Local.updateBatchControlAmount({
+      Transaction,
+      TransactionDetails,
+    });
+    expect(data).toEqual({
+      Transaction,
+      TransactionDetails,
+    });
+  });
+
+  it("prevents malformed data from posting", async () => {
+    const Transaction = { BatchId: 1, Id: 1 };
+    const TransactionDetails = [{ Amount: 2 }, { Amount: "3" }];
+    const data = await Local.updateBatchControlAmount({
+      Transaction,
+      TransactionDetails,
+    });
+    expect(data).toEqual({
+      Transaction,
+      TransactionDetails,
+    });
+  });
+
+  it("returns if batch can't be found in Rock", async () => {
+    const Transaction = { BatchId: 1, Id: 5 };
+    const TransactionDetails = [{ Amount: 2 }, { Amount: 3 }];
+    FinancialBatchTable.findOne.mockReturnValueOnce(Promise.resolve());
+    const data = await Local.updateBatchControlAmount({
+      Transaction,
+      TransactionDetails,
+    });
+
+    expect(FinancialBatchTable.findOne).toBeCalledWith({ where: { Id: 1 } });
+    expect(data).toEqual({
+      Transaction,
+      TransactionDetails,
+    });
+  });
+
+  it("updates the control amount and sets a finished flag", async () => {
+    const Transaction = { BatchId: 1, Id: 5 };
+    const TransactionDetails = [{ Amount: 2 }, { Amount: 3 }];
+    FinancialBatchTable.findOne.mockReturnValueOnce(Promise.resolve({ Id: 5, Control: 1 }));
+    FinancialBatchTable.patch.mockReturnValueOnce(Promise.resolve(true));
+    const data = await Local.updateBatchControlAmount({
+      Transaction,
+      TransactionDetails,
+    });
+
+    expect(FinancialBatchTable.patch).toBeCalledWith(5, { Control: 6 });
+    expect(data).toEqual({
+      Transaction,
+      TransactionDetails,
+      hasUpdatedBatch: true,
     });
   });
 });

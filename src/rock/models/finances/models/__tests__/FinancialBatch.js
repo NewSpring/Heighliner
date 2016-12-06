@@ -85,7 +85,7 @@ describe("findOrCreate", () => {
     const toISOString = jest.fn(() => "date");
     const subtract = jest.fn(() => ({ toISOString }));
     const startOf = jest.fn(() => ({ subtract }));
-    const endOf = jest.fn(() => ({ toISOString }));
+    const endOf = jest.fn(() => ({ subtract }));
 
     moment
       .mockReturnValueOnce({ startOf })
@@ -105,6 +105,7 @@ describe("findOrCreate", () => {
 
     expect(moment).toBeCalledWith("date");
     expect(endOf).toBeCalledWith("day");
+    expect(subtract).toBeCalledWith(1, "minute");
     expect(toISOString).toBeCalled();
 
     expect(FinancialBatchTable.post).toBeCalledWith({
