@@ -230,7 +230,6 @@ describe("batch process", () => {
 
     await batch({ data: true });
 
-    expect(batch.toString()).toMatchSnapshot();
     expect(Local.getOrCreatePerson).toBeCalled();
     expect(Local.createPaymentDetail).toBeCalled();
     expect(Local.findOrCreateTransaction).toBeCalled();
