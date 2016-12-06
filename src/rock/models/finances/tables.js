@@ -138,6 +138,7 @@ const financialBatchSchema = {
   CampusId: { type: INTEGER },
   Name: { type: STRING },
   Status: { type: STRING },
+  ControlAmount: { type: INTEGER },
 };
 
 

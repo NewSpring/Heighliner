@@ -41,9 +41,10 @@ export default class FinancialBatch extends Rock {
       .subtract(1, "minute")
       .toISOString();
 
-    // 4pm => 11:59 pm
+    // 4pm => 12:00 next day => 11:59 pm
     const BatchEndDateTime = moment(date)
       .endOf("day")
+      .subtract(1, "minute")
       .toISOString();
 
     const newBatch = {
