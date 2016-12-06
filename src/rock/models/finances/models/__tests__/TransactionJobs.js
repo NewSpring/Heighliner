@@ -213,6 +213,36 @@ it("starts up a transaction queue", () => {
   expect(queue.mock.calls[0][1]).toBe(6379);
 });
 
+describe("batch process", () => {
+  it("correctly orders the functions to be called", async () => {
+    const Local = new TransactionJobs({ cache: mockedCache });
+    const batch = Local.queue.process.mock.calls[0][0];
+
+    Local.getOrCreatePerson = jest.fn();
+    Local.createPaymentDetail = jest.fn();
+    Local.findOrCreateTransaction = jest.fn();
+    Local.findOrCreateSchedule = jest.fn();
+    Local.createTransactionDetails = jest.fn();
+    Local.createSavedPayment = jest.fn();
+    Local.updateBillingAddress = jest.fn();
+    Local.updateBatchControlAmount = jest.fn();
+    Local.sendGivingEmail = jest.fn();
+
+    await batch({ data: true });
+
+    expect(batch.toString()).toMatchSnapshot();
+    expect(Local.getOrCreatePerson).toBeCalled();
+    expect(Local.createPaymentDetail).toBeCalled();
+    expect(Local.findOrCreateTransaction).toBeCalled();
+    expect(Local.findOrCreateSchedule).toBeCalled();
+    expect(Local.createTransactionDetails).toBeCalled();
+    expect(Local.createSavedPayment).toBeCalled();
+    expect(Local.updateBillingAddress).toBeCalled();
+    expect(Local.updateBatchControlAmount).toBeCalled();
+    expect(Local.sendGivingEmail).toBeCalled();
+  });
+});
+
 describe("add", () => {
   let Local;
   beforeEach(() => {
