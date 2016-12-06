@@ -1241,14 +1241,14 @@ describe("updateBatchControlAmount", () => {
   it("updates the control amount and sets a finished flag", async () => {
     const Transaction = { BatchId: 1, Id: 5 };
     const TransactionDetails = [{ Amount: 2 }, { Amount: 3 }];
-    FinancialBatchTable.findOne.mockReturnValueOnce(Promise.resolve({ Id: 5, Control: 1 }));
+    FinancialBatchTable.findOne.mockReturnValueOnce(Promise.resolve({ Id: 5, ControlAmount: 1 }));
     FinancialBatchTable.patch.mockReturnValueOnce(Promise.resolve(true));
     const data = await Local.updateBatchControlAmount({
       Transaction,
       TransactionDetails,
     });
 
-    expect(FinancialBatchTable.patch).toBeCalledWith(5, { Control: 6 });
+    expect(FinancialBatchTable.patch).toBeCalledWith(5, { ControlAmount: 6 });
     expect(data).toEqual({
       Transaction,
       TransactionDetails,

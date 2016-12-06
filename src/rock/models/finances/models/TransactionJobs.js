@@ -408,7 +408,7 @@ export default class TransactionJobs extends Rock {
     const Batch = await FinancialBatchTable.findOne({ where: { Id: Transaction.BatchId }});
     if (!Batch) return data;
 
-    await FinancialBatchTable.patch(Batch.Id, { Control: Batch.Control + total });
+    await FinancialBatchTable.patch(Batch.Id, { ControlAmount: Batch.ControlAmount + total });
     data.hasUpdatedBatch = true;
     return data;
   }
