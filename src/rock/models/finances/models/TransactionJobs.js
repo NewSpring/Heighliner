@@ -400,20 +400,17 @@ export default class TransactionJobs extends Rock {
 
   updateBatchControlAmount = async (data) => {
     const { Transaction, TransactionDetails, hasUpdatedBatch } = data;
-    console.log(data);
     if (hasUpdatedBatch) return data;
     if (!Transaction.Id || !Transaction.BatchId || !TransactionDetails.length) return data;
 
     const total = TransactionDetails.reduce((prev, { Amount }) => Amount + prev, 0);
-    console.log(total);
     if (!isNumber(total)) return data;
 
     const Batch = await FinancialBatchTable.findOne({ where: { Id: Transaction.BatchId }});
-    console.log(Batch);
     if (!Batch) return data;
 
-    console.log(Batch.Id, { ControlAmount: Batch.ControlAmount + total });
-    await FinancialBatchTable.patch(Batch.Id, { ControlAmount: Batch.ControlAmount + total });
+    const ControlAmount = `${(Batch.ControlAmount + total).toFixed(2)}`;
+    await FinancialBatchTable.patch(Batch.Id, { ControlAmount: Number(ControlAmount) });
     data.hasUpdatedBatch = true;
     return data;
   }
