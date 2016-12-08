@@ -28,6 +28,7 @@ export default [`
     entityId: Int!
     summary: String
     status: String
+    statusMessage: String
     date: String
     details: [TransactionDetail]
     payment: PaymentDetail

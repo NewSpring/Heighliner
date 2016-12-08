@@ -202,6 +202,7 @@ export default {
     entityId: ({ Id }) => Id,
     summary: ({ Summary }) => Summary,
     status: ({ Status }) => Status,
+    statusMessage: ({ StatusMessage }) => StatusMessage,
     date: ({ TransactionDateTime, CreatedDate, ModifiedDate }) => (TransactionDateTime || ModifiedDate || CreatedDate),
     details: ({ Id, TransactionDetails }, _, { models }) => {
       if (TransactionDetails) return TransactionDetails;
