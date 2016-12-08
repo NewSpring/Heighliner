@@ -1,5 +1,6 @@
 
 import fetch from "isomorphic-fetch";
+import moment from "moment";
 import { parseString } from "xml2js";
 
 import { createGlobalId } from "../../../../../util/node";
@@ -8,6 +9,8 @@ import {
   FinancialGateway,
   SavedPayment,
   Transaction as TransactionTable,
+  TransactionDetail,
+  FinancialAccount,
 } from "../../tables";
 
 import {
@@ -18,11 +21,18 @@ import Transaction from "../Transaction";
 import formatTransaction from "../../util/formatTransaction";
 import nmi from "../../util/nmi";
 
+jest.mock("moment");
+
 jest.mock("../../util/nmi");
 
 jest.mock("../../tables", () => ({
   FinancialGateway: {
     find: jest.fn(),
+    model: "FinancialGateway",
+  },
+  FinancialAccount: {
+    find: jest.fn(),
+    model: "FinancialAccount",
   },
   SavedPayment: {
     find: jest.fn(),
@@ -30,6 +40,10 @@ jest.mock("../../tables", () => ({
   },
   Transaction: {
     findOne: jest.fn(),
+    find: jest.fn(),
+  },
+  TransactionDetail: {
+    model: "TransactionDetail",
   },
 }));
 
@@ -50,6 +64,9 @@ jest.mock("xml2js", () => ({
 
 jest.mock("isomorphic-fetch", () => jest.fn(() => Promise.resolve()));
 jest.mock("../../util/formatTransaction");
+
+moment.mockImplementation((date, format) => `${date} formatted as ${format}`);
+
 const jobAdd = jest.fn();
 
 const mockedCache = {
@@ -482,3 +499,136 @@ describe("completeOrder", () => {
     });
   });
 });
+
+describe("findByAccountType", () => {
+  let Local;
+  beforeEach(() => {
+    Local = new Transaction({ cache: mockedCache });
+  });
+  afterEach(() => {
+    Local = undefined;
+    TransactionTable.find.mockReset();
+  });
+
+  it("queries for related child account types", async () => {
+    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([
+      { Id: 1 },
+      { Id: 2 },
+      { Id: 3 },
+    ]));
+
+    TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
+
+    await Local.findByAccountType({
+      id: 1234,
+      include: [10, 11],
+      start: "10/13",
+      end: "10/15",
+    }, { limit: 3, offset: 0 }, { cache: null });
+
+    expect(FinancialAccount.find).toBeCalledWith({
+      where: { ParentAccountId: 1234 },
+    });
+  });
+
+  it("queries for transactions related to account type", async () => {
+    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([
+      { Id: 1 },
+      { Id: 2 },
+      { Id: 3 },
+    ]));
+    TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
+
+    await Local.findByAccountType({
+      id: 1234,
+      include: [10, 11],
+    }, { limit: null, offset: null }, { cache: null });
+
+    expect(TransactionTable.find).toBeCalledWith({
+      order: [["TransactionDateTime", "DESC"]],
+      where: {
+        AuthorizedPersonAliasId: {
+          $in: [10, 11],
+        },
+      },
+      include: [
+        {
+          model: TransactionDetail.model,
+          where: { AccountId: { $in: [1, 2, 3] } },
+        },
+      ],
+    });
+  });
+
+  it("queries based on a date range", async () => {
+    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([
+      { Id: 1 },
+      { Id: 2 },
+      { Id: 3 },
+    ]));
+    TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
+
+    await Local.findByAccountType({
+      id: 1234,
+      include: [10, 11],
+      start: "10/13",
+      end: "10/15",
+    }, { limit: null, offset: null }, { cache: null });
+
+    expect(TransactionTable.find).toBeCalledWith({
+      order: [["TransactionDateTime", "DESC"]],
+      where: {
+        AuthorizedPersonAliasId: {
+          $in: [10, 11],
+        },
+        TransactionDateTime: {
+          $gt: "10/13 formatted as MM/YY", $lt: "10/15 formatted as MM/YY",
+        },
+      },
+      include: [
+        {
+          model: TransactionDetail.model,
+          where: { AccountId: { $in: [1, 2, 3] } },
+        },
+      ],
+    });
+  });
+
+  it("limits the return value when defined", async () => {
+    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([]));
+    TransactionTable.find.mockReturnValueOnce(Promise.resolve([
+      { Id: 200 },
+      { Id: 300 },
+      { Id: 400 },
+      { Id: 500 },
+      { Id: 600 },
+    ]));
+
+    const data = await Local.findByAccountType({
+      id: 1234,
+      include: [10, 11],
+      start: "10/13",
+      end: "10/15",
+    }, { limit: 3, offset: 0 }, { cache: null });
+
+    // XXX why can't I use toHaveLength?
+    expect(data.length).toEqual(3);
+  });
+
+  it("fails if no person is included", async () => {
+    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([
+      { Id: 1 },
+      { Id: 2 },
+      { Id: 3 },
+    ]));
+
+    TransactionTable.find.mockReturnValueOnce(Promise.resolve());
+
+    const data = await Local.findByAccountType({
+      id: 1234,
+    }, { limit: null, offset: null }, { cache: null });
+
+    expect(data).toBeFalsy();
+  });
+});
+
