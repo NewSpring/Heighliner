@@ -238,7 +238,7 @@ export function bind({
 
   Transaction.model.hasMany(TransactionDetail.model, { foreignKey: "TransactionId" });
   TransactionDetail.model.belongsTo(Transaction.model, {
-    foreignKey: "TransactionId", targetKey: "Id",
+    foreignKey: "Id", targetKey: "TransactionId",
   });
 
   ScheduledTransaction.model.hasMany(Transaction.model, { foreignKey: "Id" });
