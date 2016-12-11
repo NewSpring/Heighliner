@@ -5,6 +5,7 @@ import {
   singleTransaction,
   singleACHTransaction,
   scheduleTransaction,
+  multiFundScheduleTransaction,
   multipleTransactions,
 } from "../__mocks__/sample-response";
 
@@ -68,5 +69,11 @@ it("handles a schedule", () => {
   expect(format({
     response: scheduleTransaction,
     scheduleId: 10,
+  }, { Id: 3 })).toMatchSnapshot();
+});
+
+it("handles a schedule with multipleTransactions", () => {
+  expect(format({
+    response: multiFundScheduleTransaction,
   }, { Id: 3 })).toMatchSnapshot();
 });

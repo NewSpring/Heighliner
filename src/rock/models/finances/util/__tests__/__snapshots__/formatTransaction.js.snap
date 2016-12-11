@@ -60,8 +60,82 @@ Object {
   },
   "TransactionDetails": Array [
     Object {
-      "AccountId": NaN,
+      "AccountId": 128,
       "Amount": 1.02,
+      "Guid": "guid",
+    },
+  ],
+}
+`;
+
+exports[`test handles a schedule with multipleTransactions 1`] = `
+Object {
+  "Campus": Object {
+    "Id": "3",
+  },
+  "FinancialPaymentDetail": Object {
+    "AccountNumberMasked": 1111111111,
+    "CurrencyTypeValueId": 157,
+    "Guid": "guid",
+  },
+  "FinancialPaymentValue": "ACH",
+  "FinancialPersonSavedAccount": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "ReferenceNumber": "1573550949",
+    "TransactionCode": "3388531907",
+  },
+  "Location": Object {
+    "City": "Anderson",
+    "PostalCode": "29621-3452",
+    "State": "SC",
+    "Street1": "808 Pebble Ln",
+  },
+  "Person": Object {
+    "ConnectionStatusValueId": 67,
+    "Email": "james.baxley@newspring.cc",
+    "FirstName": "James",
+    "Gender": 0,
+    "Guid": "guid",
+    "IsSystem": false,
+    "LastName": "Baxley",
+    "SystemNote": "Created from Apollos",
+  },
+  "Schedule": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "IsActive": true,
+    "NextPaymentDate": "Mocked ISODate: 20150101",
+    "StartDate": "Mocked ISODate: 20150101",
+    "TransactionFrequencyValue": Object {
+      "amount": 1.02,
+      "day-frequency": 1,
+      "day-of-month": 1,
+      "month-frequency": 2,
+      "payments": 0,
+      "plan-id": ";aljdflakf",
+    },
+  },
+  "SourceTypeValue": Object {
+    "Url": undefined,
+  },
+  "Transaction": Object {
+    "FinancialGatewayId": 3,
+    "Guid": "guid",
+    "Summary": "Reference Number: 3388531907",
+    "TransactionCode": "3388531907",
+    "TransactionDateTime": "Mocked subtract 5, hours",
+    "TransactionTypeValueId": 53,
+  },
+  "TransactionDetails": Array [
+    Object {
+      "AccountId": 128,
+      "Amount": 1.08,
+      "Guid": "guid",
+    },
+    Object {
+      "AccountId": 136,
+      "Amount": 1000.54,
       "Guid": "guid",
     },
   ],

@@ -84,12 +84,24 @@ export default ({ response, person = {}, accountName, origin, scheduleId }, gate
     Guid: uuid.v4(),
   }, isNil);
 
+  // this is a schedule
   if (!response.product) {
     // eslint-disable-next-line
-    response.product = [{
-      "product-code": response["merchant-defined-field-1"],
-      "total-amount": response.plan.amount,
-    }];
+    response.product = [];
+    if (!response["merchant-defined-field-1"]) {
+      // eslint-disable-next-line
+      response["merchant-defined-field-1"] = "";
+    }
+    const ids = response["merchant-defined-field-1"].split(",");
+    let amounts = response["merchant-defined-field-4"];
+    amounts = amounts ? amounts.split(",") : [response.plan.amount];
+
+    ids.forEach((id, key) => {
+      response.product.push({
+        "product-code": id,
+        "total-amount": amounts[key],
+      });
+    });
   }
   // eslint-disable-next-line
   if (!Array.isArray(response.product)) response.product = [response.product];
