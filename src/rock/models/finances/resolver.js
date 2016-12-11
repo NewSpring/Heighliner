@@ -201,6 +201,8 @@ export default {
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     entityId: ({ Id }) => Id,
     summary: ({ Summary }) => Summary,
+    status: ({ Status }) => Status,
+    statusMessage: ({ StatusMessage }) => StatusMessage,
     date: ({ TransactionDateTime, CreatedDate, ModifiedDate }) => (TransactionDateTime || ModifiedDate || CreatedDate),
     details: ({ Id, TransactionDetails }, _, { models }) => {
       if (TransactionDetails) return TransactionDetails;
