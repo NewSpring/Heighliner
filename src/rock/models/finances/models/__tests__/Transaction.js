@@ -45,13 +45,6 @@ jest.mock("../../tables", () => ({
   TransactionDetail: {
     model: "TransactionDetail",
   },
-  SavedPayment: {
-    find: jest.fn(),
-    findOne: jest.fn(),
-  },
-  Transaction: {
-    findOne: jest.fn(),
-  },
 }));
 
 jest.mock("../../../system/tables", () => ({
