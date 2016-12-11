@@ -19,6 +19,7 @@ import {
   SavedPayment,
   TransactionDetail,
   FinancialGateway,
+  FinancialAccount,
   FinancialPaymentDetail as FinancialPaymentDetailTable,
 } from "../tables";
 
@@ -86,6 +87,46 @@ export default class Transaction extends Rock {
     })
     , { cache })
       .then(this.getFromIds.bind(this));
+  }
+
+  async findByAccountType({ id, include = [], start, end }, { limit, offset }, { cache }) {
+    if (!include.length) return null;
+
+    const query = { id, include, start, end };
+
+    let TransactionDateTime;
+    if (start || end) TransactionDateTime = {};
+    if (start) TransactionDateTime.$gt = Moment(start, "MM/YY");
+    if (end) TransactionDateTime.$lt = Moment(end, "MM/YY");
+
+    let ParentAccount = await FinancialAccount.find({
+      where: { ParentAccountId: id }
+    }).then(x => x.map(y => y.Id));
+
+    const where = {
+      AuthorizedPersonAliasId: {
+        $in: include
+      }
+    };
+
+    if(start){
+      where.TransactionDateTime = TransactionDateTime;
+    }
+
+    return TransactionTable.find({
+        order: [["TransactionDateTime", "DESC"]],
+        where,
+        include: [
+          {
+            model: TransactionDetail.model,
+            where: { AccountId: { $in: ParentAccount }}
+          }
+        ]
+    }).then((x) => {
+      if(limit) return x.slice(offset, limit + offset);
+
+      return x;
+    });
   }
 
   async findByGivingGroup({ id, include, start, end }, { limit, offset }, { cache }) {

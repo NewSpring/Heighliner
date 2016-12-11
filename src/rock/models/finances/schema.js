@@ -60,9 +60,46 @@ export default [`
     code: Int
   }
 
+  type OrderMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+    url: String
+    transactionId: ID
+  }
+
+  type CompleteOrderMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+    transaction: Transaction
+    schedule: ScheduledTransaction
+    person: Person
+    savedPayment: SavedPayment
+  }
+
+  type ValidateMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+  }
+
   type FinancialAccount implements Node {
     id: ID!
     entityId: Int!
+    transactions(
+      limit: Int = 20,
+      skip: Int = 0,
+      cache: Boolean = true,
+      start: String,
+      end: String,
+      people: [Int],
+    ): [Transaction]
+    total(
+      start: String,
+      end: String,
+      people: [Int],
+    ): Int
     name: String
     order: Int
     description: String
@@ -89,6 +126,21 @@ export default [`
     payment: PaymentDetail
     expirationMonth: String
     expirationYear: String
+  }
+
+
+  type SavePaymentMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+    savedPayment: SavedPayment
+  }
+
+  type ScheduledTransactionMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+    schedule: ScheduledTransaction
   }
 
 

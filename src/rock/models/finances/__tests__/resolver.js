@@ -1,7 +1,6 @@
 
 import resolver from "../resolver";
 
-
 describe("Mutation", () => {
   describe("syncTransactions", () => {
     it("has a `syncTransactions` which passes args to Transaction.syncTransactions", () => {
@@ -246,5 +245,169 @@ describe("Mutation", () => {
       expect(models.ScheduledTransaction.cancelNMISchedule).toBeCalledWith(1, { nmi: true });
       expect(result).toEqual({ error: "failure", code: undefined, success: false });
     });
+  });
+});
+
+const sampleData = {
+  account: {
+    Id: 200,
+    ParentAccountId: 300,
+    CampusId: 1,
+    Name: "Fund",
+    PublicName: "Fund",
+    Description: "This is a giving fund",
+    IsTaxDeductible: true,
+    Order: 1,
+    IsActive: true,
+    StartDate: "2013-11-25T21:50:28.000Z",
+    EndDate: "2016-03-07T08:28:36.133Z",
+    AccountTypeValueId: 2,
+    CreatedDateTime: "2013-11-25T21:50:28.000Z",
+    ModifiedDateTime: "2016-03-07T08:28:36.133Z",
+    Url: "http://image.image",
+    PublicDescription: "A public description",
+    IsPublic: true,
+  },
+  transaction: {
+    Id: 14,
+    TransactionDateTime: "2013-11-25T21:50:28.000Z",
+    TransactionCode: null,
+    Summary: "Reference Number: 32343782727503333424",
+    TransactionTypeValueId: 53,
+    SourceTypeValueId: 10,
+    ScheduledTransactionId: null,
+    CreatedDateTime: "2013-11-25T21:50:28.000Z",
+    ModifiedDateTime: "2016-03-07T08:28:36.133Z",
+    ProcessedDateTime: null,
+    AuthorizedPersonAliasId: 44255,
+    FinancialGatewayId: null,
+    FinancialPaymentDetailId: 1465230,
+    Status: null,
+    StatusMessage: null,
+    FinancialTransactionDetails: [{
+      Id: 140,
+      TransactionId: 14,
+      AccountId: 10,
+      Amount: 100,
+      Summary: null,
+      CreatedDateTime: "2013-11-26T12:57:44.000Z",
+      ModifiedDateTime: null,
+    }],
+  },
+};
+
+describe("FinancialAccount", () => {
+  it("should have an Id", () => {
+    const { FinancialAccount } = resolver;
+
+    const entityId = FinancialAccount.entityId(sampleData.account);
+    expect(entityId).toEqual(sampleData.account.Id);
+  });
+
+  it("should have a Name", () => {
+    const { FinancialAccount } = resolver;
+
+    const Name = FinancialAccount.name(sampleData.account);
+    expect(Name).toEqual(sampleData.account.Name);
+  });
+
+  it("should have an Order", () => {
+    const { FinancialAccount } = resolver;
+
+    const order = FinancialAccount.order(sampleData.account);
+    expect(order).toEqual(sampleData.account.Order);
+  });
+
+  it("should have a Description", () => {
+    const { FinancialAccount } = resolver;
+
+    const description = FinancialAccount.description(sampleData.account);
+    expect(description).toEqual(sampleData.account.PublicDescription);
+  });
+
+  it("should have a summary", () => {
+    const { FinancialAccount } = resolver;
+
+    const summary = FinancialAccount.summary(sampleData.account);
+    expect(summary).toEqual(sampleData.account.Description);
+  });
+
+  it("should have a start date", () => {
+    const { FinancialAccount } = resolver;
+
+    const startDate = FinancialAccount.start(sampleData.account);
+    expect(startDate).toEqual(sampleData.account.StartDate);
+  });
+
+  it("should have an end date", () => {
+    const { FinancialAccount } = resolver;
+
+    const endDate = FinancialAccount.end(sampleData.account);
+    expect(endDate).toEqual(sampleData.account.EndDate);
+  });
+
+  it("should return null if there are no transactions", () => {
+    const { FinancialAccount } = resolver;
+
+    const models = {
+      Transaction: {
+        findByAccountType() {
+          return null;
+        },
+      },
+    };
+
+    const trans = FinancialAccount.transactions({ Id: 20, ParentAccountId: 30 }, {}, { models });
+    expect(trans).toEqual(null);
+  });
+
+  it("should return transaction details", async () => {
+    const { FinancialAccount } = resolver;
+
+    const models = {
+      Transaction: {
+        findByAccountType: jest.fn(() => Promise.resolve({})),
+      },
+    };
+
+    const person = {
+      PersonAliasId: 100,
+      aliases: [22222],
+    };
+
+    // eslint-disable-next-line
+    await FinancialAccount.transactions({ Id: 200, ParentAccountId: 300 }, { limit: 3, skip: 1, cache: true, start: "2013-11-03", end: "2015-12-03" }, { models, person });
+    expect(models.Transaction.findByAccountType).toBeCalledWith({
+      end: "2015-12-03",
+      id: 200,
+      include: [22222],
+      parentId: 300,
+      start: "2013-11-03",
+    }, { limit: 3, offset: 1 }, { cache: true });
+  });
+
+  it("should have a total", async () => {
+    const { FinancialAccount } = resolver;
+
+    const models = {
+      Transaction: {
+        findByAccountType: jest.fn(() => Promise.resolve([])),
+      },
+    };
+
+    const person = {
+      PersonAliasId: 100,
+      aliases: [22222],
+    };
+
+    // eslint-disable-next-line
+    await FinancialAccount.total({ Id: 200, ParentAccountId: 300 }, { limit: 3, skip: 1, cache: true, start: "2013-11-03", end: "2015-12-03" }, { models, person });
+    expect(models.Transaction.findByAccountType).toBeCalledWith({
+      end: "2015-12-03",
+      id: 200,
+      include: [22222],
+      parentId: 300,
+      start: "2013-11-03",
+    }, { limit: 3, offset: 1 }, { cache: true });
   });
 });
