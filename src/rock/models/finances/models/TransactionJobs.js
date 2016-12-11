@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import uuid from "node-uuid";
-import { assign } from "lodash";
+import { assign, isNumber } from "lodash";
 import queue from "bull";
 
 import {
@@ -10,6 +10,7 @@ import {
   ScheduledTransaction,
   ScheduledTransactionDetail,
   FinancialPaymentDetail as FinancialPaymentDetailTable,
+  FinancialBatch as FinancialBatchTable,
   FinancialAccount,
 } from "../tables";
 
@@ -84,6 +85,7 @@ export default class TransactionJobs extends Rock {
       .then(this.createTransactionDetails)
       .then(this.createSavedPayment)
       .then(this.updateBillingAddress)
+      .then(this.updateBatchControlAmount)
       .then(this.sendGivingEmail),
     );
   }
@@ -393,6 +395,23 @@ export default class TransactionJobs extends Rock {
       ModifiedByPersonAliasId: Person.PrimaryAliasId,
     }));
 
+    return data;
+  }
+
+  updateBatchControlAmount = async (data) => {
+    const { Transaction, TransactionDetails, hasUpdatedBatch } = data;
+    if (hasUpdatedBatch) return data;
+    if (!Transaction.Id || !Transaction.BatchId || !TransactionDetails.length) return data;
+
+    const total = TransactionDetails.reduce((prev, { Amount }) => Amount + prev, 0);
+    if (!isNumber(total)) return data;
+
+    const Batch = await FinancialBatchTable.findOne({ where: { Id: Transaction.BatchId }});
+    if (!Batch) return data;
+
+    const ControlAmount = `${(Batch.ControlAmount + total).toFixed(2)}`;
+    await FinancialBatchTable.patch(Batch.Id, { ControlAmount: Number(ControlAmount) });
+    data.hasUpdatedBatch = true;
     return data;
   }
 

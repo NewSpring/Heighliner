@@ -1,0 +1,28 @@
+exports[`Feed Query should return array of combined Transaction and SavedPayment data 1`] = `
+Array [
+  Object {
+    "__type": "Transaction",
+    "date": "today",
+    "details": "Details Object",
+    "entityId": 3,
+    "id": 2,
+    "payment": "Payment Object",
+    "person": "12345-ABCDE",
+    "schedule": "Schedule Object",
+    "status": "sample status",
+    "summary": "sample summary",
+  },
+  Object {
+    "Name": "my saved payment",
+    "__type": "SavedPayment",
+    "code": "1234567812345678",
+    "date": "today",
+    "entityId": 5,
+    "expirationMonth": "123456",
+    "expirationYear": "12345678",
+    "guid": "1234567890",
+    "id": 4,
+    "payment": "Payment Object",
+  },
+]
+`;

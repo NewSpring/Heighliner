@@ -118,6 +118,8 @@ const financialPaymentDetailSchema = {
   CreditCardTypeValueId: { type: INTEGER },
   CreatedDateTime: { type: DATE },
   ModifiedDateTime: { type: DATE },
+  ExpirationMonthEncrypted: { type: STRING },
+  ExpirationYearEncrypted: { type: STRING },
 };
 
 const financialGatewaySchema = {
@@ -136,6 +138,7 @@ const financialBatchSchema = {
   CampusId: { type: INTEGER },
   Name: { type: STRING },
   Status: { type: STRING },
+  ControlAmount: { type: INTEGER },
 };
 
 

@@ -1,0 +1,5 @@
+exports[`Feeds Queries has all needed queries 1`] = `
+Array [
+  "userFeed(filters: [String]!): [Node]",
+]
+`;
