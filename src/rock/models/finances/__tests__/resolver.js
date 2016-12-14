@@ -1,5 +1,47 @@
-
 import resolver from "../resolver";
+
+describe("Query", () => {
+  describe("SavedPayment", () => {
+    it("finds by person alias");
+  });
+  describe("Transactions", () => {
+    it("finds transactions by GivingGroupId if it is defined");
+    it("finds transactions by PersonAliases if no GroupId is defined");
+  });
+  describe("ScheduledTransaction", () => {
+    it("finds schedules by PersonAliases");
+  });
+  describe("Accounts", () => {
+    it("returns all accounts if none defined", () => {
+      const models = {
+        FinancialAccount: {
+          find: jest.fn(),
+        },
+      };
+
+      resolver.Query.accounts(null, { allFunds: true }, { models });
+      expect(models.FinancialAccount.find).toBeCalledWith({
+        name: undefined, isActive: undefined, isPublic: undefined,
+      });
+    });
+
+    it("returns the giving account specified", () => {
+      const models = {
+        FinancialAccount: {
+          find: jest.fn(),
+        },
+      };
+
+      resolver.Query.accounts(null, { name: "Tesla", isActive: true, isPublic: true }, { models });
+      expect(models.FinancialAccount.find).toBeCalledWith({
+        Name: "Tesla", IsActive: true, IsPublic: true,
+      });
+    });
+  });
+  describe("AccountFromCashtag", () => {
+    it("returns an account from a cashtag");
+  });
+});
 
 describe("Mutation", () => {
   describe("syncTransactions", () => {
