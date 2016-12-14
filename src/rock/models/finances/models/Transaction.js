@@ -91,7 +91,7 @@ export default class Transaction extends Rock {
 
   async findByAccountType({ personId, id, include = [], start, end }, { limit, offset }, { cache }) {
     if (!include.length) return null;
-    console.log(personId, Number(personId));
+
     const query = { id, include, start, end };
 
     let TransactionDateTime;
