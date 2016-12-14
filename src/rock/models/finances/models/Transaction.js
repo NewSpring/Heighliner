@@ -89,9 +89,9 @@ export default class Transaction extends Rock {
       .then(this.getFromIds.bind(this));
   }
 
-  async findByAccountType({ id, include = [], start, end }, { limit, offset }, { cache }) {
+  async findByAccountType({ personId, id, include = [], start, end }, { limit, offset }, { cache }) {
     if (!include.length) return null;
-
+    console.log(personId, Number(personId));
     const query = { id, include, start, end };
 
     let TransactionDateTime;
@@ -109,19 +109,42 @@ export default class Transaction extends Rock {
       }
     };
 
-    if(start){
-      where.TransactionDateTime = TransactionDateTime;
-    }
+    const includeQuery = [
+      {
+        model: TransactionDetail.model,
+        where: { AccountId: { $in: ParentAccount }}
+      },
+    ];
 
-    return TransactionTable.find({
-        order: [["TransactionDateTime", "DESC"]],
-        where,
+    if (personId) {
+      delete where.AuthorizedPersonAliasId;
+      includeQuery.push({
+        model: PersonAlias.model,
+        attributes: [],
         include: [
           {
-            model: TransactionDetail.model,
-            where: { AccountId: { $in: ParentAccount }}
-          }
-        ]
+            model: PersonTable.model,
+            attributes: [],
+            include: [
+              {
+                model: GroupMember.model,
+                attributes: [],
+                include: [
+                  { model: Group.model, attributes: [], where: { Id: personId } },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+    }
+
+    if (start) where.TransactionDateTime = TransactionDateTime;
+
+    return TransactionTable.find({
+      order: [["TransactionDateTime", "DESC"]],
+      where,
+      include: includeQuery,
     }).then((x) => {
       if(limit) return x.slice(offset, limit + offset);
 
@@ -166,7 +189,10 @@ export default class Transaction extends Rock {
         ],
       })
     , { cache })
-      .then(x => x.slice(offset, limit + offset))
+      .then(x => {
+        if (!limit) return x;
+        return x.slice(offset, limit + offset);
+      })
       .then(this.getFromIds.bind(this))
       ;
   }

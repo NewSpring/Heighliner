@@ -40,12 +40,18 @@ export default {
         limit, offset: skip, isActive,
       }, { cache });
     },
-    accounts: (_, { name, isActive, isPublic }, { models }) =>
-       models.FinancialAccount.find({
-         Name: name,
-         IsActive: isActive,
-         IsPublic: isPublic,
-       }),
+    accounts: (_, { name, isActive, isPublic, allFunds }, { models }) => {
+      if (allFunds) {
+        name = undefined;
+        isActive = undefined;
+        isPublic = undefined;
+      }
+      return models.FinancialAccount.find({
+        Name: name,
+        IsActive: isActive,
+        IsPublic: isPublic,
+      });
+    },
     accountFromCashTag: (_, { cashTag }, { models }) =>
        models.FinancialAccount.find({
          IsActive: true,
@@ -244,9 +250,11 @@ export default {
       let include = people;
       if (!person) return null;
       if (person && person.aliases && !people.length) include = person.aliases;
+      const personId = person.GivingGroupId;
       return models.Transaction.findByAccountType(
         {
           id: Id,
+          personId,
           include,
           start,
           end,
@@ -258,10 +266,10 @@ export default {
       let include = people;
       if (!person) return null;
       if (person && person.aliases && !people.length) include = person.aliases;
-
       return models.Transaction.findByAccountType(
         {
           id: Id,
+          personId: person.GivingGroupId,
           include,
           start,
           end,

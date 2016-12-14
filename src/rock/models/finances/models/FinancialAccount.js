@@ -40,6 +40,7 @@ export default class FinancialAccount extends Rock {
       },
       IsTaxDeductible: true,
     }, where);
+    console.log(where);
     return await this.cache.get(
       this.cache.encode(where),
       () => FinancialAccountTable.find({ where, attributes: ["Id"], order: ["Order"] })
