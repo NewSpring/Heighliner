@@ -17,6 +17,16 @@ import {
   AttributeValue,
 } from "../../../system/tables";
 
+import {
+  PersonAlias,
+  Person as PersonTable,
+} from "../../../people/tables";
+
+import {
+  GroupMember,
+  Group,
+} from "../../../groups/tables";
+
 import Transaction from "../Transaction";
 import formatTransaction from "../../util/formatTransaction";
 import nmi from "../../util/nmi";
@@ -44,6 +54,24 @@ jest.mock("../../tables", () => ({
   },
   TransactionDetail: {
     model: "TransactionDetail",
+  },
+}));
+
+jest.mock("../../../people/tables", () => ({
+  PersonAlias: {
+    model: "PersonAlias",
+  },
+  Person: {
+    model: "PersonTable",
+  },
+}));
+
+jest.mock("../../../groups/tables", () => ({
+  GroupMember: {
+    model: "GroupMember",
+  },
+  Group: {
+    model: "Group",
   },
 }));
 
@@ -555,6 +583,51 @@ describe("findByAccountType", () => {
         {
           model: TransactionDetail.model,
           where: { AccountId: { $in: [1, 2, 3] } },
+        },
+      ],
+    });
+  });
+
+  it("queries for transactions related to account type but based on a person ID", async () => {
+    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([
+      { Id: 1 },
+      { Id: 2 },
+      { Id: 3 },
+    ]));
+    TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
+
+    await Local.findByAccountType({
+      personId: 54321,
+      id: 1234,
+      include: [10, 11],
+    }, { limit: null, offset: null }, { cache: null });
+
+    expect(TransactionTable.find).toBeCalledWith({
+      order: [["TransactionDateTime", "DESC"]],
+      where: {},
+      include: [
+        {
+          model: TransactionDetail.model,
+          where: { AccountId: { $in: [1, 2, 3] } },
+        },
+        {
+          model: PersonAlias.model,
+          attributes: [],
+          include: [
+            {
+              model: PersonTable.model,
+              attributes: [],
+              include: [
+                {
+                  model: GroupMember.model,
+                  attributes: [],
+                  include: [
+                    { model: Group.model, attributes: [], where: { Id: 54321 } },
+                  ],
+                },
+              ],
+            },
+          ],
         },
       ],
     });
