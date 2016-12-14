@@ -1,5 +1,129 @@
-
 import resolver from "../resolver";
+
+describe("Query", () => {
+  describe("SavedPayment", () => {
+    it("finds by person alias", () => {
+      const models = {
+        SavedPayment: {
+          findByPersonAlias: jest.fn(),
+        },
+      };
+
+      const person = {
+        PersonAliasId: 100,
+        aliases: [22222],
+      };
+
+      resolver.Query.savedPayments(null, { limit: 3, cache: true, skip: 1 }, { models, person });
+      expect(models.SavedPayment.findByPersonAlias).toBeCalledWith([22222], {
+        limit: 3, offset: 1,
+      }, { cache: true });
+    });
+  });
+  describe("Transactions", () => {
+    it("finds transactions by GivingGroupId if it is defined", () => {
+      const models = {
+        Transaction: {
+          findByGivingGroup: jest.fn(),
+          findByPersonAlias: jest.fn(),
+        },
+      };
+
+      const person = {
+        PersonAliasId: 100,
+        aliases: [22222],
+        GivingGroupId: 7878,
+      };
+
+      resolver.Query.transactions(null, { people: [10, 11], start: "01/15", end: "01/16", limit: 3, skip: 1, cache: true }, { models, person });
+      expect(models.Transaction.findByGivingGroup).toBeCalledWith({
+        id: 7878,
+        include: [10, 11],
+        start: "01/15",
+        end: "01/16",
+      }, { limit: 3, offset: 1 }, { cache: true });
+      expect(models.Transaction.findByPersonAlias).not.toBeCalled();
+    });
+    it("finds transactions by PersonAliases if no GroupId is defined", () => {
+      const models = {
+        Transaction: {
+          findByGivingGroup: jest.fn(),
+          findByPersonAlias: jest.fn(),
+        },
+      };
+
+      const person = {
+        PersonAliasId: 100,
+        aliases: [22222],
+      };
+
+      resolver.Query.transactions(null, { people: [10, 11], start: "01/15", end: "01/16", limit: 3, skip: 1, cache: true }, { models, person });
+      expect(models.Transaction.findByGivingGroup).not.toBeCalled();
+      expect(models.Transaction.findByPersonAlias).toBeCalledWith([22222],
+        { limit: 3, offset: 1 }, { cache: true });
+    });
+  });
+  describe("ScheduledTransaction", () => {
+    it("finds schedules by PersonAliases", () => {
+      const models = {
+        ScheduledTransaction: {
+          findByPersonAlias: jest.fn(),
+        },
+      };
+
+      const person = {
+        PersonAliasId: 100,
+        aliases: [22222],
+      };
+
+      resolver.Query.scheduledTransactions(null,
+        { limit: 3, cache: true, skip: 1, isActive: true }, { models, person });
+      expect(models.ScheduledTransaction.findByPersonAlias).toBeCalledWith([22222],
+        { limit: 3, offset: 1, isActive: true }, { cache: true });
+    });
+  });
+  describe("Accounts", () => {
+    it("returns all accounts if none defined", () => {
+      const models = {
+        FinancialAccount: {
+          find: jest.fn(),
+        },
+      };
+
+      resolver.Query.accounts(null, { allFunds: true }, { models });
+      expect(models.FinancialAccount.find).toBeCalledWith({
+        name: undefined, isActive: undefined, isPublic: undefined,
+      });
+    });
+
+    it("returns the giving account specified", () => {
+      const models = {
+        FinancialAccount: {
+          find: jest.fn(),
+        },
+      };
+
+      resolver.Query.accounts(null, { name: "Tesla", isActive: true, isPublic: true }, { models });
+      expect(models.FinancialAccount.find).toBeCalledWith({
+        Name: "Tesla", IsActive: true, IsPublic: true,
+      });
+    });
+  });
+  describe("AccountFromCashtag", () => {
+    it("returns an account from a cashtag", async () => {
+      const models = {
+        FinancialAccount: {
+          find: jest.fn(() => Promise.resolve([])),
+        },
+      };
+
+      resolver.Query.accountFromCashTag(null, { cashTag: "$tesla" }, { models });
+      expect(models.FinancialAccount.find).toBeCalledWith({
+        IsActive: true, IsPublic: true,
+      });
+    });
+  });
+});
 
 describe("Mutation", () => {
   describe("syncTransactions", () => {
