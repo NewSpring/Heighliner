@@ -24,7 +24,7 @@ export default class FinancialAccount extends Rock {
     );
   }
 
-  async find(where) {
+  async find(where, { all }) {
 
     for (let key in where) {
       if (isUndefined(where[key])) delete where[key];
@@ -40,6 +40,10 @@ export default class FinancialAccount extends Rock {
       },
       IsTaxDeductible: true,
     }, where);
+      
+    if (all) {
+      where = { ParentAccountId: null, IsTaxDeductible: true };
+    }
 
     return await this.cache.get(
       this.cache.encode(where),
