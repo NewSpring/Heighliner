@@ -98,9 +98,25 @@ export default {
       return models.SavedPayment.validate({ token }, nmi)
         .catch(e => ({ error: e.message, code: e.code, success: false }));
     },
-    completeOrder: (_, { token, accountName, scheduleId }, { models, person, req }) => {
+    completeOrder: async (_, { token, accountName, scheduleId }, { models, person, req }) => {
       if (!token) return null;
       const origin = req.headers.origin;
+      
+      // right now scheduleId could also be a meteor userId. This is bad and legacy
+      // and should be properally fixed but old builds will still need to support the
+      // following headache
+      const castedId = Number(scheduleId);
+      if (isNaN(castedId)) {
+        const globalId = createGlobalId(scheduleId, "User")
+        // this is a meteor userId
+        const user = await models.User.getFromId(scheduleId, globalId);
+        if (user && user.services && user.services.rock) {
+          person = await models.Person.getFromAliasId(user.services.rock.PrimaryAliasId);
+          person.PrimaryAliasId = user.services.rock.PrimaryAliasId;
+          scheduleId = undefined;
+        }
+      }
+
       return models.Transaction.completeOrder({ token, accountName, person, origin, scheduleId })
         .catch(e => ({ error: e.message, code: e.code, success: false }));
     },
