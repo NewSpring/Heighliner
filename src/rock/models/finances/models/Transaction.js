@@ -96,8 +96,8 @@ export default class Transaction extends Rock {
 
     let TransactionDateTime;
     if (start || end) TransactionDateTime = {};
-    if (start) TransactionDateTime.$gt = Moment(start, "MM/YY");
-    if (end) TransactionDateTime.$lt = Moment(end, "MM/YY");
+    if (start) TransactionDateTime.$gt = Moment(start);
+    if (end) TransactionDateTime.$lt = Moment(end);
 
     let ParentAccount = await FinancialAccount.find({
       where: { ParentAccountId: id }
@@ -157,8 +157,8 @@ export default class Transaction extends Rock {
 
     let TransactionDateTime;
     if (start || end) TransactionDateTime = {};
-    if (start) TransactionDateTime.$gt = Moment(start, "MM/YY");
-    if (end) TransactionDateTime.$lt = Moment(end, "MM/YY");
+    if (start) TransactionDateTime.$gt = Moment(start);
+    if (end) TransactionDateTime.$lt = Moment(end);
 
     return this.cache.get(
       this.cache.encode(query, "findByGivingGroup"), () => TransactionTable.find({
