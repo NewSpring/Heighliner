@@ -41,16 +41,11 @@ export default {
       }, { cache });
     },
     accounts: (_, { name, isActive, isPublic, allFunds }, { models }) => {
-      if (allFunds) {
-        name = undefined;
-        isActive = undefined;
-        isPublic = undefined;
-      }
       return models.FinancialAccount.find({
         Name: name,
         IsActive: isActive,
         IsPublic: isPublic,
-      });
+      }, { all: allFunds });
     },
     accountFromCashTag: (_, { cashTag }, { models }) =>
        models.FinancialAccount.find({

@@ -93,7 +93,7 @@ describe("Query", () => {
       resolver.Query.accounts(null, { allFunds: true }, { models });
       expect(models.FinancialAccount.find).toBeCalledWith({
         name: undefined, isActive: undefined, isPublic: undefined,
-      });
+      }, { all: true });
     });
 
     it("returns the giving account specified", () => {
@@ -106,7 +106,7 @@ describe("Query", () => {
       resolver.Query.accounts(null, { name: "Tesla", isActive: true, isPublic: true }, { models });
       expect(models.FinancialAccount.find).toBeCalledWith({
         Name: "Tesla", IsActive: true, IsPublic: true,
-      });
+      }, { all: undefined });
     });
   });
   describe("AccountFromCashtag", () => {

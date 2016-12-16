@@ -93,7 +93,7 @@ jest.mock("xml2js", () => ({
 jest.mock("isomorphic-fetch", () => jest.fn(() => Promise.resolve()));
 jest.mock("../../util/formatTransaction");
 
-moment.mockImplementation((date, format) => `${date} formatted as ${format}`);
+moment.mockImplementation((date) => `${date}`);
 
 const jobAdd = jest.fn();
 
@@ -655,7 +655,7 @@ describe("findByAccountType", () => {
           $in: [10, 11],
         },
         TransactionDateTime: {
-          $gt: "10/13 formatted as MM/YY", $lt: "10/15 formatted as MM/YY",
+          $gt: "10/13", $lt: "10/15",
         },
       },
       include: [
