@@ -297,7 +297,12 @@ export default class Transaction extends Rock {
     if (orderData["start-date"]) method = "add-subscription";
 
 
-    if (method !== "add-subscription" && person && person.PrimaryAliasId) {
+    if (
+      method !== "add-subscription" &&
+      method !== "add-customer" &&
+      person &&
+      person.PrimaryAliasId
+    ) {
       orderData["customer-id"] = person.PrimaryAliasId;
     }
 
@@ -343,7 +348,6 @@ export default class Transaction extends Rock {
     return nmi(order, gateway)
       .then((data) => {
         if (!instant) return data;
-        // XXX create a schedule from the transaction
         const scheduleId = id;
         const response = formatTransaction({ scheduleId, response: data, person, origin }, gateway);
         this.TransactionJob.add(response);

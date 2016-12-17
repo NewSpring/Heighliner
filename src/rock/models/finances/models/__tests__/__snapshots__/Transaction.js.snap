@@ -102,7 +102,6 @@ Object {
   "url": Object {
     "add-customer": Object {
       "api-key": "3",
-      "customer-id": 10,
       "redirect-url": "https://my.newspring.cc/give/now",
     },
   },
