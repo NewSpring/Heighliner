@@ -1,6 +1,7 @@
 import { flatten } from "lodash";
 
 import { createGlobalId } from "../../../util";
+import renderStatement from "./util/statement";
 
 const MutationReponseResolver = {
   error: ({ error }) => error,
@@ -124,6 +125,29 @@ export default {
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
       return models.ScheduledTransaction.cancelNMISchedule(entityId, nmi)
         .catch(error => ({ error: error.message, code: error.code, success: false }));
+    },
+    transactionStatement: (_, { people, start, end, limit, cache, skip }, { models, person }) => {
+      if (!person) return ({ success: false, error: "You must be logged in" });
+
+      return renderStatement()
+        .then((file) => {
+          return ({ success: true, file });
+        })
+        .catch((e) => ({ error: e.message, code: 500, success: false }));
+      // limit = 0;
+      // if (person.GivingGroupId) {
+      //   return models.Transaction.findByGivingGroup(
+      //     {
+      //       id: person.GivingGroupId,
+      //       include: people,
+      //       start,
+      //       end,
+      //     }, { limit, offset: skip }, { cache },
+      //   ).then(renderStatement);
+      // }
+      // return models.Transaction.findByPersonAlias(
+      //   person.aliases, { limit, offset: skip }, { cache },
+      // ).then(renderStatement);
     },
   },
 
