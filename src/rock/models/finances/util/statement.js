@@ -248,5 +248,3 @@ const Statement = ({ transactions, person, home, total }) => (
 
 
 export default (props) => generatePDF(<Statement {...props} />);
-
-
