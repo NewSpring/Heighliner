@@ -211,17 +211,12 @@ export default class Transaction extends Rock {
       {
         model: TransactionDetail.model,
         attributes: ["Amount", "AccountId"],
-        include: [
-          { model: FinancialAccount.model }
-        ]
-      }
-    ];
-
-    if (givingGroupId) {
-      delete where.AuthorizedPersonAliasId;
-      includeQuery.push({
+        include: [{ model: FinancialAccount.model }]
+      },
+      {
         model: PersonAlias.model,
         attributes: [],
+        where: people && people.length ? { PersonId: { $in: people } } : null,
         include: [
           {
             model: PersonTable.model,
@@ -237,8 +232,8 @@ export default class Transaction extends Rock {
             ],
           },
         ],
-      });
-    }
+      }
+    ];
 
     if (start) where.TransactionDateTime = TransactionDateTime;
 
@@ -248,6 +243,7 @@ export default class Transaction extends Rock {
       if (parent) return parent.PublicName;
       return x.FinancialAccount.PublicName;
     }
+
     return TransactionTable.find({
       order: [["TransactionDateTime", "DESC"]],
       attributes: ["TransactionDateTime"],
@@ -256,6 +252,7 @@ export default class Transaction extends Rock {
     })
       .then((transactions) => {
         let total = 0;
+        console.log(transactions);
         const details = flatten(transactions.map(({ TransactionDateTime, FinancialTransactionDetails }) => {
           return FinancialTransactionDetails.map((x) => {
             total += x.Amount;
@@ -272,6 +269,7 @@ export default class Transaction extends Rock {
           total,
         }
       })
+      .catch(this.debug)
       ;
   }
 
