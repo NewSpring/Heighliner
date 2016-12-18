@@ -16,9 +16,6 @@ RUN apk add --update git python build-base curl bash && \
   apk del git python build-base curl && \
   rm -rf /usr/share/man /tmp/* /var/tmp/* /var/cache/apk/* /root/.npm /root/.node-gyp
 
-# Post install
-RUN npm run postinstall
-
 # If you had native dependencies you can now remove build tools
 # RUN apk del make gcc g++ python && \
 #   rm -rf /tmp/* /var/cache/apk/* /root/.npm /root/.node-gyp
