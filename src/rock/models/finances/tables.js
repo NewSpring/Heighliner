@@ -224,7 +224,7 @@ export function bind({
   ScheduledTransaction,
   ScheduledTransactionDetail,
   SavedPayment,
-  // FinancialAccount,
+  FinancialAccount,
   // FinancialGateway,
 }) {
   Transaction.model.belongsTo(PersonAlias.model, {
@@ -239,9 +239,8 @@ export function bind({
     foreignKey: "OriginalTransactionId", targetKey: "Id",
   });
 
-  Transaction.model.hasMany(TransactionDetail.model, { foreignKey: "TransactionId" });
-  TransactionDetail.model.belongsTo(Transaction.model, {
-    foreignKey: "Id", targetKey: "TransactionId",
+  TransactionDetail.model.belongsTo(FinancialAccount.model, {
+    foreignKey: "AccountId", targetKey: "Id",
   });
 
   ScheduledTransaction.model.hasMany(Transaction.model, { foreignKey: "Id" });
@@ -258,10 +257,48 @@ export function bind({
     foreignKey: "PersonAliasId", targetKey: "Id",
   });
 
-  // FinancialGateway.model.
+  Transaction.model.hasMany(TransactionDetail.model, { foreignKey: "TransactionId" });
+  TransactionDetail.model.belongsTo(Transaction.model, {
+    foreignKey: "Id", targetKey: "TransactionId",
+  });
+
 }
 
 export default {
   connect,
   bind,
 };
+// // SELSELECT [FinancialTransaction].[Id],
+//        [FinancialTransaction].[TransactionDateTime],
+//        [FinancialTransactionDetails].[Id]                          AS
+//        [FinancialTransactionDetails.Id],
+//        [FinancialTransactionDetails].[Amount]                      AS
+//        [FinancialTransactionDetails.Amount],
+//        [FinancialTransactionDetails].[AccountId]                   AS
+//        [FinancialTransactionDetails.AccountId],
+//        [FinancialTransactionDetails.FinancialAccount].[Id]         AS
+//        [FinancialTransactionDetails.FinancialAccount.Id],
+//        [FinancialTransactionDetails.FinancialAccount].[PublicName] AS
+//        [FinancialTransactionDetails.FinancialAccount.Name]
+// FROM   [FinancialTransaction] AS [FinancialTransaction]
+//        LEFT OUTER JOIN [FinancialTransactionDetail] AS
+//                        [FinancialTransactionDetails]
+//                     ON [FinancialTransaction].[Id] =
+//                        [FinancialTransactionDetails].[TransactionId]
+//        LEFT OUTER JOIN [FinancialAccount] AS
+//                        [FinancialTransactionDetails.FinancialAccount]
+//                     ON [FinancialTransactionDetails].[Id] =
+//                        [FinancialTransactionDetails.FinancialAccount].[Id]
+//        LEFT OUTER JOIN [PersonAlias] AS [PersonAlias]
+//                     ON [FinancialTransaction].[AuthorizedPersonAliasId] =
+//                        [PersonAlias].[Id]
+//        LEFT OUTER JOIN [Person] AS [PersonAlias.Person]
+//                     ON [PersonAlias].[PersonId] = [PersonAlias.Person].[Id]
+//        LEFT OUTER JOIN [GroupMember] AS [PersonAlias.Person.GroupMembers]
+//                     ON [PersonAlias.Person].[Id] =
+//        [PersonAlias.Person.GroupMembers].[PersonId]
+//        INNER JOIN [Group] AS [PersonAlias.Person.GroupMembers.Group]
+//                ON [PersonAlias.Person.GroupMembers].[GroupId] =
+//                              [PersonAlias.Person.GroupMembers.Group].[Id]
+//                   AND [PersonAlias.Person.GroupMembers.Group].[Id] = 130060
+// ORDER  BY [FinancialTransaction].[TransactionDateTime] DESC;

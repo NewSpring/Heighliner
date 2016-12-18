@@ -97,7 +97,7 @@ export default {
     completeOrder: async (_, { token, accountName, scheduleId }, { models, person, req }) => {
       if (!token) return null;
       const origin = req.headers.origin;
-      
+
       // right now scheduleId could also be a meteor userId. This is bad and legacy
       // and should be properally fixed but old builds will still need to support the
       // following headache
@@ -126,28 +126,20 @@ export default {
       return models.ScheduledTransaction.cancelNMISchedule(entityId, nmi)
         .catch(error => ({ error: error.message, code: error.code, success: false }));
     },
-    transactionStatement: (_, { people, start, end, limit, cache, skip }, { models, person }) => {
+    transactionStatement: async (_, { people, start, end }, { models, person }) => {
       if (!person) return ({ success: false, error: "You must be logged in" });
 
-      return renderStatement()
-        .then((file) => {
-          return ({ success: true, file });
-        })
-        .catch((e) => ({ error: e.message, code: 500, success: false }));
-      // limit = 0;
-      // if (person.GivingGroupId) {
-      //   return models.Transaction.findByGivingGroup(
-      //     {
-      //       id: person.GivingGroupId,
-      //       include: people,
-      //       start,
-      //       end,
-      //     }, { limit, offset: skip }, { cache },
-      //   ).then(renderStatement);
-      // }
-      // return models.Transaction.findByPersonAlias(
-      //   person.aliases, { limit, offset: skip }, { cache },
-      // ).then(renderStatement);
+      const homeLookup = models.Person.getHomesFromId(person.Id).then(x => x[0]);
+
+      const transactionLookup = models.Transaction.getStatement({
+        people, start, end, givingGroupId: person.GivingGroupId,
+      });
+
+      return Promise.all([homeLookup, transactionLookup])
+        .then(([home, { transactions, total }]) => ({ transactions, home, person, total }))
+        .then(renderStatement)
+        .then(file => ({ success: true, file }))
+        .catch(e => ({ error: e.message, code: 500, success: false }));
     },
   },
 
