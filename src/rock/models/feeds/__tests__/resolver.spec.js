@@ -12,6 +12,7 @@ const sampleData = {
     payment: "Payment Object",
     person: "12345-ABCDE",
     schedule: "Schedule Object",
+    __type: "Transaction",
   },
   SavedPayment: {
     id: 4,
@@ -23,6 +24,7 @@ const sampleData = {
     payment: "Payment Object",
     expirationMonth: "123456",
     expirationYear: "12345678",
+    __type: "SavedPayment",
   },
   PaymentDetail: {
     id: 1,

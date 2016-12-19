@@ -1,33 +1,47 @@
 
+import { flatten } from "lodash";
+
 export default {
 
   Query: {
-    userFeed: (_, { filters }, { models, person }) => {
-      if (!person || !filters) return null;
+    userFeed: (_, { filters, limit, skip, status, cache, options = "{}" }, { models, person }) => {
+      if (!filters) return null;
 
-      if (filters.includes("GIVING_DASHBOARD")) {
-        return Promise.all([
-          models.Transaction.findByPersonAlias(
-            person.aliases, { limit: 3, offset: 0 }, { cache: null },
-          ),
-          models.SavedPayment.findByPersonAlias(
-            person.aliases, { limit: 3, offset: 0 }, { cache: null },
-          ),
-        ])
-          .then(([txns, payments]) => [...txns, ...payments]
-            .map((x) => {
-              if (x.Name) x.__type = "SavedPayment";
-              else x.__type = "Transaction";
-              return x;
-            })
-          )
-          .then((items) => {
-            return items;
+      const opts = JSON.parse(options);
+      const filterQueries = [];
+
+      if (filters.includes("CONTENT")) {
+        let { channels } = opts.content;
+
+        channels = channels
+          .map(x => x.toLowerCase())
+          .map((x) => {
+            if (x === "series") return ["series_newspring"];
+            if (x === "music") return ["newspring_albums"];
+            if (x === "devotionals") return ["study_entries", "devotionals"];
+            return [x];
           })
-            ;
+          .map(flatten);
+
+        filterQueries.push(models.Content.find({
+          channel_name: { $or: channels }, offset: skip, limit, status,
+        }, cache));
       }
 
-      return null;
+      if (filters.includes("GIVING_DASHBOARD") && person) {
+        filterQueries.push(models.Transaction.findByPersonAlias(
+          person.aliases, { limit: 3, offset: 0 }, { cache: null },
+        ));
+
+        filterQueries.push(models.SavedPayment.findByPersonAlias(
+          person.aliases, { limit: 3, offset: 0 }, { cache: null },
+        ));
+      }
+
+      if (!filterQueries.length) return null;
+
+      return Promise.all(filterQueries)
+        .then(flatten);
     },
   },
 };
