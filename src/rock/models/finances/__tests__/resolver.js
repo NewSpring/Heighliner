@@ -370,6 +370,24 @@ describe("Mutation", () => {
       expect(result).toEqual({ error: "failure", code: undefined, success: false });
     });
   });
+
+  describe("transactionStatement", () => {
+    xit("returns a user's transaction statement information", async () => {
+      const models = {
+        Transaction: {
+          getStatement: jest.fn(Promise.resolve()),
+        },
+        Person: {
+          getHomesFromId: jest.fn(Promise.resolve([1,2])),
+        }
+      };
+      const result = await resolver.Mutation.transactionStatement(
+        null, { people: [1,2], start: "", end: "" }, { models }
+      );
+      expect(models.Transaction.getStatement).toBeCalled();
+      expect(models.Person.getHomesFromId).toBeCalled();
+    });
+  });
 });
 
 const sampleData = {
