@@ -93,6 +93,19 @@ jest.mock("xml2js", () => ({
 jest.mock("isomorphic-fetch", () => jest.fn(() => Promise.resolve()));
 jest.mock("../../util/formatTransaction");
 
+/*
+* this is what I was trying. The problem I was having was that whenever 
+* moment was called like Moment(start) right at the top of the method, the moment
+* object was being passed, not the datetime string. I couldn't get both the
+* toString to work AND the format() to be present.
+*/
+// moment.mockImplementation((date) => {
+//   return ({
+//     toISOString: (date) => `${date || now}`,
+//     format: (format) => `${date || now} formatted as ${format}`,
+//   });
+// });
+
 moment.mockImplementation((date) => `${date}`);
 
 const jobAdd = jest.fn();
