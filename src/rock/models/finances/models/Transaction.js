@@ -257,7 +257,7 @@ export default class Transaction extends Rock {
             total += x.Amount;
             return {
               Amount: x.Amount,
-              Date: Moment(TransactionDateTime).format("MMM D, YYYY"),
+              Date: Moment(TransactionDateTime)().format("MMM D, YYYY"),
               Name: getName(x),
             }
           })
