@@ -121,6 +121,94 @@ describe("getFromId", () => {
   });
 });
 
+describe("getStatement", () => {
+  const mockAccounts = [
+    { Id: 1, PublicName: "Cincinnati Zoo Fund"}
+  ]
+  const mockTransactions = [
+    {
+      TransactionDateTime: "2016-12-02T13:44:51.743Z",
+      FinancialTransactionDetails:
+        [{ Amount: 1, FinancialAccount: { ParentAccountId: 1, PublicName: "Cincinnati Zoo" } }],
+    },
+    {
+      TransactionDateTime: "2016-01-01T13:44:51.743Z",
+      FinancialTransactionDetails:
+        [{ Amount: 2, FinancialAccount: { ParentAccountId: 1, PublicName: "Harambe" } }],
+    },
+  ];
+
+  afterEach(() => {
+    TransactionTable.find.mockReset();
+  });
+
+  it("is a callable method", () => {
+    const Local = new Transaction({cache: mockedCache});
+    expect(Local.getStatement).toBeTruthy();
+  });
+
+  it("should return properly with no data or props", async () => {
+    const Local = new Transaction({cache: mockedCache});
+    TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
+    expect(await Local.getStatement({})).toEqual({"total": 0, "transactions": []});
+  });
+
+  it("should return full data with no props to filter", async () => {
+    const expected = {
+      "total": 3,
+      "transactions": [
+        {"Amount": 1, "Date": "2016-12-02T13:44:51.743Z", "Name": "Cincinnati Zoo Fund"},
+        {"Amount": 2, "Date": "2016-01-01T13:44:51.743Z", "Name": "Cincinnati Zoo Fund"}
+      ]
+    };
+    const Local = new Transaction({cache: mockedCache});
+    FinancialAccount.find.mockReturnValueOnce(Promise.resolve(mockAccounts));
+    TransactionTable.find.mockReturnValueOnce(Promise.resolve(mockTransactions));
+    expect(await Local.getStatement({})).toEqual(expected);
+  });
+
+  it("should pass props to query", async () => {
+    const params = {
+      people: [1, 2],
+      givingGroupId: 0,
+      start:"2016-01-01T00:00:00.743Z",
+      end:"2016-12-01T00:00:00.743Z"
+    };
+    const Local = new Transaction({cache: mockedCache});
+    TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
+    return Local.getStatement(params)
+      .then(() => {
+        const call = TransactionTable.find.mock.calls[0][0];
+        expect(call.include[1].where) // people prop check
+          .toEqual({ PersonId: { '$in': [1,2] }});
+        expect(call.include[1].include[0].include[0].include[0].where) // givingGroupId check
+          .toEqual({ Id: 0 });
+        expect(call.where) // start, end check
+          .toEqual({"TransactionDateTime": {"$gt": "2016-01-01T00:00:00.743Z", "$lt": "2016-12-01T00:00:00.743Z"}});
+      });
+  });
+
+  it("should properly filter to parent fund if present", () => {
+    const Local = new Transaction({cache: mockedCache});
+    FinancialAccount.find.mockReturnValueOnce(Promise.resolve(mockAccounts));
+    TransactionTable.find.mockReturnValueOnce(Promise.resolve(mockTransactions));
+    return Local.getStatement({})
+      .then((res) => {
+        expect(res.transactions[0].Name).toEqual("Cincinnati Zoo Fund");
+      });
+  });
+
+  it("should use transaction fund name if parent fund not present", () => {
+    const Local = new Transaction({cache: mockedCache});
+    TransactionTable.find.mockReturnValueOnce(Promise.resolve(mockTransactions));
+    return Local.getStatement({})
+      .then((res) => {
+        expect(res.transactions[1].Name).toEqual("Harambe");
+      });
+  });
+
+});
+
 describe("loadGatewayDetails", () => {
   it("is a callable method", () => {
     const Local = new Transaction({ cache: mockedCache });
