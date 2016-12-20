@@ -74,6 +74,9 @@ export default {
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
       return models.SavedPayment.removeFromEntityId(entityId, nmi);
     },
+    updateSavedPayment: async (_, { entityId, name }, { models }) => (
+      models.SavedPayment.changeName(entityId, name)
+    ),
     createOrder: (_, { instant, id, data }, { models, person, ip, req }) => {
       const requestUrl = req.headers.referer;
       const origin = req.headers.origin;
@@ -96,7 +99,7 @@ export default {
     completeOrder: async (_, { token, accountName, scheduleId }, { models, person, req }) => {
       if (!token) return null;
       const origin = req.headers.origin;
-      
+
       // right now scheduleId could also be a meteor userId. This is bad and legacy
       // and should be properally fixed but old builds will still need to support the
       // following headache

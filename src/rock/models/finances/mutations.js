@@ -47,6 +47,11 @@ export default [
     gateway: String = "NMI Gateway",
   ): SavePaymentMutationResponse`,
 
+  `updateSavedPayment(
+    entityId: Int
+    name: String!
+  ): SavePaymentMutationResponse`,
+
   `cancelSchedule(
     id: ID
     entityId: Int
