@@ -1,6 +1,6 @@
 
 import Moment from "moment";
-import { assign, isArray } from "lodash";
+import { assign, isArray, find, flatten } from "lodash";
 import QueryString from "querystring";
 import fetch from "isomorphic-fetch";
 import { parseString } from "xml2js";
@@ -194,6 +194,82 @@ export default class Transaction extends Rock {
         return x.slice(offset, limit + offset);
       })
       .then(this.getFromIds.bind(this))
+      ;
+  }
+
+  async getStatement({ people, start, end, givingGroupId }){
+    const query = { people, start, end };
+
+    let TransactionDateTime;
+    if (start || end) TransactionDateTime = {};
+    if (start) TransactionDateTime.$gt = Moment(start);
+    if (end) TransactionDateTime.$lt = Moment(end);
+
+    const where = { };
+
+    const includeQuery = [
+      {
+        model: TransactionDetail.model,
+        attributes: ["Amount", "AccountId"],
+        include: [{ model: FinancialAccount.model }]
+      },
+      {
+        model: PersonAlias.model,
+        attributes: [],
+        where: people && people.length ? { PersonId: { $in: people } } : null,
+        include: [
+          {
+            model: PersonTable.model,
+            attributes: [],
+            include: [
+              {
+                model: GroupMember.model,
+                attributes: [],
+                include: [
+                  { model: Group.model, attributes: [], where: { Id: givingGroupId } },
+                ],
+              },
+            ],
+          },
+        ],
+      }
+    ];
+
+    if (start) where.TransactionDateTime = TransactionDateTime;
+
+    const ParentAccounts = await FinancialAccount.find({ where: { ParentAccountId: null } });
+    const getName = (x) => {
+      const parent = find(ParentAccounts, { Id: x.FinancialAccount.ParentAccountId });
+      if (parent) return parent.PublicName;
+      return x.FinancialAccount.PublicName;
+    }
+
+    return TransactionTable.find({
+      order: [["TransactionDateTime", "DESC"]],
+      attributes: ["TransactionDateTime"],
+      where,
+      include: includeQuery,
+    })
+      .then((transactions) => {
+        let total = 0;
+        console.log(transactions);
+        const details = flatten(transactions.map(({ TransactionDateTime, FinancialTransactionDetails }) => {
+          return FinancialTransactionDetails.map((x) => {
+            total += x.Amount;
+            return {
+              Amount: x.Amount,
+              Date: Moment(TransactionDateTime).format("MMM D, YYYY"),
+              Name: getName(x),
+            }
+          })
+        }));
+
+        return {
+          transactions: details,
+          total,
+        }
+      })
+      .catch(this.debug)
       ;
   }
 

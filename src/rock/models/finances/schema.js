@@ -157,4 +157,11 @@ export default [`
     code: Int
     schedule: ScheduledTransaction
   }
+
+  type StatementMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+    file: String
+  }
 `];

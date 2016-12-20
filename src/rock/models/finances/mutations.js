@@ -52,4 +52,12 @@ export default [
     entityId: Int
     gateway: String = "NMI Gateway",
   ): ScheduledTransactionMutationResponse`,
+
+  `transactionStatement(
+    limit: Int
+    skip: Int
+    people: [Int]
+    start: String
+    end: String
+  ): StatementMutationResponse`
 ];
