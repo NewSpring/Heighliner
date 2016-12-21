@@ -92,7 +92,7 @@ export default class Transaction extends Rock {
   async findByAccountType({ personId, id, include = [], start, end }, { limit, offset }, { cache }) {
     if (!include.length) return null;
 
-    const query = { id, include, start, end };
+    const query = { id, include, start, end, personId };
 
     let TransactionDateTime;
     if (start || end) TransactionDateTime = {};
@@ -141,11 +141,13 @@ export default class Transaction extends Rock {
 
     if (start) where.TransactionDateTime = TransactionDateTime;
 
-    return TransactionTable.find({
-      order: [["TransactionDateTime", "DESC"]],
-      where,
-      include: includeQuery,
-    }).then((x) => {
+    return this.cache.get(
+      this.cache.encode(query, "findByAccountType"), () => TransactionTable.find({
+        order: [["TransactionDateTime", "DESC"]],
+        where,
+        include: includeQuery,
+      })
+    , { cache }).then((x) => {
       if(limit) return x.slice(offset, limit + offset);
 
       return x;
@@ -198,7 +200,7 @@ export default class Transaction extends Rock {
   }
 
   async getStatement({ people, start, end, givingGroupId }){
-    const query = { people, start, end };
+    const query = { people, start, end, givingGroupId };
 
     let TransactionDateTime;
     if (start || end) TransactionDateTime = {};
@@ -244,12 +246,14 @@ export default class Transaction extends Rock {
       return x.FinancialAccount.PublicName;
     }
 
-    return TransactionTable.find({
-      order: [["TransactionDateTime", "DESC"]],
-      attributes: ["TransactionDateTime"],
-      where,
-      include: includeQuery,
-    })
+    return this.cache.get(
+      this.cache.encode(query, "getStatement"), () => TransactionTable.find({
+        order: [["TransactionDateTime", "DESC"]],
+        attributes: ["TransactionDateTime"],
+        where,
+        include: includeQuery,
+      })
+    )
       .then((transactions) => {
         let total = 0;
         console.log(transactions);

@@ -28,12 +28,12 @@ export class Navigation extends EE {
   // XXX add caching
   // XXX support getting children from the node interface
   async getFromId(id) {
-    return Navee.findOne({
+    return this.cache.get(id, () => Navee.findOne({
       where: { navee_id: id },
       include: [
         { model: Sites.model },
       ],
-    })
+    }))
       .then((x) => {
         x.site_pages = Sites.parsePage(x.exp_site.site_pages)[x.site_id];
         return x;
