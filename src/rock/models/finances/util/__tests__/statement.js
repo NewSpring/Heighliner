@@ -51,6 +51,7 @@ describe("generatePDF", () => {
 
     // XXX can't properly snapshot the results, because of a creationDate
     // being injected by pdf.create (which we don't have time to properly mock)
-    expect(Buffer(results, "base64").toString()).toBeDefined();
+    // can use Buffer(results, "base64").toString() to print 
+    expect(results).toBeDefined();
   });
 });
