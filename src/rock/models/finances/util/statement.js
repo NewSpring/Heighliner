@@ -11,7 +11,7 @@ import ReactDOMServer from "react-dom/server";
 import pdf from "html-pdf";
 import uuid from "node-uuid";
 
-const generatePDF = (component) => {
+export const generatePDF = (component) => {
   const html = ReactDOMServer.renderToStaticMarkup(component);
   return new Promise((r, f) => {
     pdf.create(html, {
@@ -30,10 +30,11 @@ const generatePDF = (component) => {
   });
 };
 
-const formatMoney = (amount) => (
+export const formatMoney = (amount) => (
   `$${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
 );
-const Statement = ({ transactions, person, home, total }) => (
+
+export const Statement = ({ transactions, person, home, total }) => (
   <html>
     <head>
       <style>{`
