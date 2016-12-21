@@ -94,19 +94,19 @@ jest.mock("isomorphic-fetch", () => jest.fn(() => Promise.resolve()));
 jest.mock("../../util/formatTransaction");
 
 /*
-* this is what I was trying. The problem I was having was that whenever 
+* this is what I was trying. The problem I was having was that whenever
 * moment was called like Moment(start) right at the top of the method, the moment
 * object was being passed, not the datetime string. I couldn't get both the
 * toString to work AND the format() to be present.
 */
-// moment.mockImplementation((date) => {
-//   return ({
-//     toISOString: (date) => `${date || now}`,
-//     format: (format) => `${date || now} formatted as ${format}`,
-//   });
-// });
+moment.mockImplementation((date) => {
+  date = new String(date);
+  date.toISOString = () => `${date || "now"}`;
+  date.format = (format) => `${date || "now"} formatted as ${format}`;
+  return date;
+});
 
-moment.mockImplementation((date) => `${date}`);
+// moment.mockImplementation((date) => `${date}`);
 
 const jobAdd = jest.fn();
 
@@ -162,7 +162,7 @@ describe("getStatement", () => {
 
   it("should return properly with no data or props", async () => {
     const Local = new Transaction({cache: mockedCache});
-    TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
+    TransactionTable.find.mockReturnValueOnce(Promise.resolve());
     expect(await Local.getStatement({})).toEqual({"total": 0, "transactions": []});
   });
 
@@ -170,8 +170,8 @@ describe("getStatement", () => {
     const expected = {
       "total": 3,
       "transactions": [
-        {"Amount": 1, "Date": "2016-12-02T13:44:51.743Z", "Name": "Cincinnati Zoo Fund"},
-        {"Amount": 2, "Date": "2016-01-01T13:44:51.743Z", "Name": "Cincinnati Zoo Fund"}
+        {"Amount": 1, "Date": moment("2016-12-02T13:44:51.743Z").format("MMM D, YYYY"), "Name": "Cincinnati Zoo Fund"},
+        {"Amount": 2, "Date": moment("2016-01-01T13:44:51.743Z").format("MMM D, YYYY"), "Name": "Cincinnati Zoo Fund"}
       ]
     };
     const Local = new Transaction({cache: mockedCache});
