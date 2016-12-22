@@ -51,7 +51,21 @@ describe("generatePDF", () => {
 
     // XXX can't properly snapshot the results, because of a creationDate
     // being injected by pdf.create (which we don't have time to properly mock)
-    // can use Buffer(results, "base64").toString() to print 
+    // can use Buffer(results, "base64").toString() to print
     expect(results).toBeDefined();
   });
+
+  it("should fail with no component to render", async () => {
+    jest.mock("react-dom/server");
+    ReactDOMServer.renderToStaticMarkup = jest.fn((c) => c);
+    return generatePDF()
+      .then(
+        (res) => {
+          throw new Error("generatePDF didn't fail");
+        }, (res) => {
+          expect(res).toBeDefined();
+        }
+      );
+  });
+
 });
