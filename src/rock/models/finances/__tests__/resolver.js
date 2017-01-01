@@ -1,3 +1,4 @@
+import moment from "moment";
 import resolver from "../resolver";
 
 import render from "../util/statement";
@@ -391,7 +392,10 @@ describe("Mutation", () => {
         null, { people: [1,2], start: "", end: "" }, { models, person }
       )
 
-      expect(models.Transaction.getStatement).toBeCalledWith({ start: "", end: "", "givingGroupId": 1, "people": [1, 2] });
+
+
+      const defaultStart = moment().startOf("year");
+      expect(models.Transaction.getStatement).toBeCalledWith({ start: defaultStart, end: "", "givingGroupId": 1, "people": [1, 2] });
       expect(models.Person.getHomesFromId).toBeCalledWith(1);
       expect(render).toBeCalledWith({home: 1, person: person, total: 0, transactions: []});
     });
