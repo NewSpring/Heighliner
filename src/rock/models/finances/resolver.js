@@ -75,6 +75,9 @@ export default {
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
       return models.SavedPayment.removeFromEntityId(entityId, nmi);
     },
+    updateSavedPayment: async (_, { entityId, name }, { models }) => (
+      models.SavedPayment.changeName(entityId, name)
+    ),
     createOrder: (_, { instant, id, data }, { models, person, ip, req }) => {
       const requestUrl = req.headers.referer;
       const origin = req.headers.origin;

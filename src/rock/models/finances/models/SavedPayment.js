@@ -117,6 +117,14 @@ export default class SavedPayment extends Rock {
       .catch(e => ({ error: e.message, code: e.code }));
   }
 
+  async changeName(entityId, name) {
+    const globalId = createGlobalId(entityId, this.__type);
+    await SavedPaymentTable.patch(entityId, { Name: name });
+    // clear cache
+    this.cache.del(globalId);
+    return SavedPaymentTable.findOne({ where: { Id: entityId }});
+  }
+
   async findByPersonAlias(aliases, { limit, offset }, { cache }) {
     const query = { aliases, limit, offset };
     return await this.cache.get(this.cache.encode(query), () => SavedPaymentTable.find({
