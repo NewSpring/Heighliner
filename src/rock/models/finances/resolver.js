@@ -1,4 +1,5 @@
 import { flatten } from "lodash";
+import moment from "moment";
 
 import { createGlobalId } from "../../../util";
 import renderStatement from "./util/statement";
@@ -131,6 +132,10 @@ export default {
     },
     transactionStatement: async (_, { people, start, end }, { models, person }) => {
       if (!person) return ({ success: false, error: "You must be logged in" });
+
+      // default to start of current year if not passed
+      // eslint-disable-next-line
+      if (!start) start = moment().startOf("year");
 
       const homeLookup = models.Person.getHomesFromId(person.Id).then(x => x[0]);
 
