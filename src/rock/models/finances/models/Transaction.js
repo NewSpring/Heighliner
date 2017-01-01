@@ -252,17 +252,21 @@ export default class Transaction extends Rock {
     })
       .then((transactions) => {
         let total = 0;
-        console.log(transactions);
-        const details = flatten(transactions.map(({ TransactionDateTime, FinancialTransactionDetails }) => {
-          return FinancialTransactionDetails.map((x) => {
-            total += x.Amount;
-            return {
-              Amount: x.Amount,
-              Date: Moment(TransactionDateTime).format("MMM D, YYYY"),
-              Name: getName(x),
-            }
-          })
-        }));
+        let details;
+        if(!Array.isArray(transactions)) {
+          details = [];
+        } else {
+          details = flatten(transactions.map(({ TransactionDateTime, FinancialTransactionDetails }) => {
+            return FinancialTransactionDetails.map((x) => {
+              total += x.Amount;
+              return {
+                Amount: x.Amount,
+                Date: Moment(TransactionDateTime).format("MMM D, YYYY"),
+                Name: getName(x),
+              };
+            });
+          }));
+        }
 
         return {
           transactions: details,

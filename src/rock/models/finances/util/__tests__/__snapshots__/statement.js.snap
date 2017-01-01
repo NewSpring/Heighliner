@@ -1,0 +1,286 @@
+exports[`Statement should render with data 1`] = `
+<html>
+  <head>
+    <style>
+      
+              html,
+              body {
+                height: 100%;
+              }
+              @media all {
+                .page-break {
+                  display: block;
+      
+                  page-break-before: always;
+                }
+              }
+      
+              @media print {
+                .page-break {
+                  display: block;
+      
+                  page-break-before: always;
+                }
+              }
+              .container {
+                margin: 0 auto;
+              }
+      
+              .pre-text {
+                font-family: \"Courier New\";
+                font-size: 12px;
+                line-height: 1.4em;
+              }
+      
+              .print-subheader {
+                color: black;
+                font-family: \"Helvetica\";
+              }
+      
+              #logo-img {
+                margin-top: 1000px
+                width: 155px;
+                height: 40px;
+              }
+      
+              #church-address {
+                float: left;
+                margin-top: 0;
+                padding-right: 150px;
+              }
+      
+              #verse {
+                display: inline-block;
+              }
+      
+              #statement-table td {
+                padding-top: 10px;
+                padding-bottom: 10px;
+      
+                border-bottom: 1px solid #ddd;
+              }
+      
+              th {
+                padding-bottom: 10px;
+      
+                border-bottom: 1px solid #ddd;
+      
+                font-family: \"Helvetica\";
+                font-weight: 700;
+              }
+      
+              table {
+                text-align: left;
+      
+                font-family: \"Courier New\";
+                font-size: 12px;
+              }
+      
+              h7 {
+                font-size: 12px;
+              }
+      
+              .type {
+                width: 55%;
+              }
+      
+              .total {
+                color: black;
+      
+                font-family: \"Helvetica\";
+                font-size: 18px;
+                font-weight: 800;
+              }
+      
+              .newspring--icon,
+              .newspring--icon::after {
+                background-color: black;
+              }
+      
+              .newspring--icon {
+                position: absolute;
+      
+                margin-top: 200px;
+                margin-left: 200px;
+              }
+      
+              .logo-icon {
+                position: absolute;
+                right: 0;
+                bottom: 0;
+      
+                margin: 20px;
+              }
+      
+              #statement-table {
+                padding-top: 20px;
+              }
+      
+              #statement-table .total td {
+                padding-top: 20px;
+                padding-bottom: 20px;
+              }
+      
+              .footer-text {
+      
+                width: 6in;
+                margin-top: 40px;
+                margin-bottom: 100px;
+      
+                font-size: 12px;
+                font-style: italic;
+                line-height: 1.4em;
+              }
+      
+            
+    </style>
+  </head>
+  <body>
+    <div
+      className="container">
+      <p>
+        <br />
+        <br />
+        <br />
+      </p>
+      <img
+        id="logo-img"
+        src="https://s3.amazonaws.com/ns.images/newspring/icons/newspring-church-logo-black.png" />
+      <h2
+        className="print-subheader soft-sides soft-half-bottom"
+        style={
+          Object {
+            "fontFamily": "Helvetica",
+          }
+        }>
+        Contribution Statement
+      </h2>
+      <div
+        className="soft pre-text">
+        <p
+          id="church-address">
+          NewSpring Church  
+          <br />
+          EIN# 26-4189337 
+          <br />
+          PO Box 1407  
+          <br />
+          Anderson, SC 29622 US
+        </p>
+        <p>
+          
+           
+          
+          <br />
+          3400 Vine St
+          <br />
+          
+          Cincinnati
+           
+          OH
+           
+          45220
+        </p>
+        <p
+          id="verse">
+          Malachi 3:10 \"Bring the whole tithe into the storehouse, that there may be food in my house. Test me in this,\' says the LORD Almighty, \'and see if I will not throw open the floodgates of heaven and pour out so much blessing that you will not have room enough for it.\"
+        </p>
+      </div>
+      <table
+        className="soft"
+        id="statement-table"
+        style={
+          Object {
+            "width": "100%",
+          }
+        }>
+        <tbody>
+          <tr>
+            <th
+              className="type"
+              style={
+                Object {
+                  "fontFamily": "Helvetica",
+                  "fontWeight": 700,
+                }
+              }>
+              Account
+            </th>
+            <th
+              style={
+                Object {
+                  "fontFamily": "Helvetica",
+                  "fontWeight": 700,
+                }
+              }>
+              Date
+            </th>
+            <th
+              style={
+                Object {
+                  "fontFamily": "Helvetica",
+                  "fontWeight": 700,
+                }
+              }>
+              Amount
+            </th>
+          </tr>
+          <tr>
+            <td>
+              Admission
+            </td>
+            <td>
+              2016-01-01
+            </td>
+            <td>
+              $15.00
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Admission
+            </td>
+            <td>
+              2016-02-01
+            </td>
+            <td>
+              $15.00
+            </td>
+          </tr>
+          <tr
+            className="total"
+            style={
+              Object {
+                "width": "100%",
+              }
+            }>
+            <td
+              className="soft-ends"
+              style={
+                Object {
+                  "fontFamily": "Helvetica",
+                }
+              }>
+              Total
+            </td>
+            <td />
+            <td
+              className="soft-ends total-amount"
+              style={
+                Object {
+                  "fontFamily": "Helvetica",
+                }
+              }>
+              $30.00
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p
+        className="footer-text soft">
+        Thank you for your continued support. Please note that for taxation purposes, no goods or services were received in return for these contributions. If you have any questions or concerns, please contact us at giving@newspring.cc or 864-965-9990.
+      </p>
+    </div>
+  </body>
+</html>
+`;

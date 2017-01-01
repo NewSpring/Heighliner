@@ -1,5 +1,9 @@
 import resolver from "../resolver";
 
+import render from "../util/statement";
+
+jest.mock("../util/statement");
+
 describe("Query", () => {
   describe("SavedPayment", () => {
     it("finds by person alias", () => {
@@ -368,6 +372,48 @@ describe("Mutation", () => {
       expect(models.Transaction.loadGatewayDetails).toBeCalledWith("nmi");
       expect(models.ScheduledTransaction.cancelNMISchedule).toBeCalledWith(1, { nmi: true });
       expect(result).toEqual({ error: "failure", code: undefined, success: false });
+    });
+  });
+
+  describe("transactionStatement", () => {
+    it("properly calls the util to render a user's statement", async () => {
+      render.mockImplementation((data) => Promise.resolve(data));
+      const person = { GivingGroupId: 1, Id: 1 };
+      const models = {
+        Transaction: {
+          getStatement: jest.fn(() => Promise.resolve({total: 0, transactions: []})),
+        },
+        Person: {
+          getHomesFromId: jest.fn(() => Promise.resolve([1,2])),
+        }
+      };
+      await resolver.Mutation.transactionStatement(
+        null, { people: [1,2], start: "", end: "" }, { models, person }
+      )
+
+      expect(models.Transaction.getStatement).toBeCalledWith({ start: "", end: "", "givingGroupId": 1, "people": [1, 2] });
+      expect(models.Person.getHomesFromId).toBeCalledWith(1);
+      expect(render).toBeCalledWith({home: 1, person: person, total: 0, transactions: []});
+    });
+    it("gracefully handles errors", async () => {
+      render.mockImplementation((data) => Promise.resolve(data));
+      const person = { GivingGroupId: 1, Id: 1 };
+      const models = {
+        Transaction: {
+          getStatement: jest.fn(() => Promise.reject(new Error("force an error"))),
+        },
+        Person: {
+          getHomesFromId: jest.fn(() => Promise.reject(new Error("force an error"))),
+        }
+      };
+      const result = await resolver.Mutation.transactionStatement(
+        null, { people: [1,2], start: "", end: "" }, { models, person }
+      );
+
+      expect(models.Transaction.getStatement).toBeCalled();
+      expect(models.Person.getHomesFromId).toBeCalled();
+      expect(render).toBeCalledWith({home: 1, person: person, total: 0, transactions: []});
+      expect(result).toEqual({ code: 500, error: "force an error", success: false });
     });
   });
 });
