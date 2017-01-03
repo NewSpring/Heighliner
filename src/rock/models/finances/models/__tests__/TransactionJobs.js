@@ -283,20 +283,38 @@ describe("getOrCreatePerson", () => {
     expect(data).toEqual({ Person });
   });
 
+  it("keeps going if a person exists in the db", async () => {
+    const Person = {
+      Guid: "guid",
+    };
+
+    PersonTable.findOne.mockReturnValueOnce(Promise.resolve({
+      FirstName: "James",
+    }));
+
+    const data = await Local.getOrCreatePerson({ Person });
+    expect(PersonTable.findOne).toBeCalledWith({ where: { Guid: "guid" } });
+    expect(data).toEqual({ Person: { FirstName: "James" } });
+  });
+
   it("creates a person then pulls that data from Rock", async () => {
     const Person = {
       FirstName: "James",
+      Guid: "guid",
     };
+    PersonTable.findOne.mockReturnValueOnce(Promise.resolve());
     PersonTable.post.mockReturnValueOnce(1);
     PersonTable.findOne.mockReturnValueOnce(Promise.resolve({
       FirstName: "James",
+      Guid: "guid",
       PersonAlias: {
         Id: 2,
       },
     }));
     const data = await Local.getOrCreatePerson({ Person });
 
-    expect(PersonTable.post).toBeCalledWith({ FirstName: "James" });
+    expect(PersonTable.findOne).toBeCalledWith({ where: { Guid: "guid" } });
+    expect(PersonTable.post).toBeCalledWith({ FirstName: "James", Guid: "guid" });
     expect(PersonTable.findOne).toBeCalledWith({
       where: { Id: 1 },
       include: [{ model: PersonAlias.model }],
@@ -304,6 +322,7 @@ describe("getOrCreatePerson", () => {
     expect(data).toEqual({
       Person: {
         FirstName: "James",
+        Guid: "guid",
         PersonAlias: {
           Id: 2,
         },
@@ -441,8 +460,11 @@ describe("createPaymentDetail", () => {
 
     const data = await Local.createPaymentDetail({ FinancialPaymentDetail });
 
-    expect(FinancialPaymentDetailTable.post).toBeCalledWith(FinancialPaymentDetail);
-    expect(data).toEqual({ FinancialPaymentDetail: { Id: 1 } });
+    expect(FinancialPaymentDetailTable.post).toBeCalledWith({
+      Id: 1,
+      Guid: "guid",
+    });
+    expect(data).toEqual({ FinancialPaymentDetail: { Id: 1, Guid: "guid" } });
   });
 });
 

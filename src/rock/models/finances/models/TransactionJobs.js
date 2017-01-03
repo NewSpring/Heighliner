@@ -103,6 +103,13 @@ export default class TransactionJobs extends Rock {
     const { Person } = data;
     if (Person.Id) return data;
 
+    // make sure this person wasn't already created once before
+    const foundPerson = await PersonTable.findOne({ where: { Guid: Person.Guid } });
+    if (foundPerson) {
+      data.Person = foundPerson;
+      return data;
+    }
+
     const Id = await PersonTable.post(Person);
     const Entities = data;
     Entities.Person = await PersonTable.findOne({
@@ -186,6 +193,9 @@ export default class TransactionJobs extends Rock {
   createPaymentDetail = async (data) => {
     const { FinancialPaymentDetail } = data;
     if (FinancialPaymentDetail.Id) return data;
+
+    // ensure this is unique on creation since no lookup is done
+    FinancialPaymentDetail.Guid = uuid.v4();
 
     // create a payment detail
     FinancialPaymentDetail.Id = await FinancialPaymentDetailTable
