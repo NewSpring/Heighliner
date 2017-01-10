@@ -1,8 +1,8 @@
 
-import { pick, flatten, find, uniq, sampleSize } from "lodash";
+import { isNil, pick, flatten, find, uniq, sampleSize } from "lodash";
 import { defaultCache } from "../../../util/cache";
 import Sequelize from "sequelize";
-import { parseGlobalId } from "../../../util/node/model";
+import { parseGlobalId, createGlobalId } from "../../../util/node/model";
 
 import {
   Channels,
@@ -92,6 +92,45 @@ export class Content extends EE {
         {
           model: ChannelTitles.model,
           where: {
+            expiration_date: {
+              $or: [
+                { $eq: 0 },
+                { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+              ],
+            },
+          },
+        },
+      ],
+    })
+      .then(x => {
+        if (!x.exp_channel) return null;
+        x.exp_channel.exp_channel_fields = exp_channel_fields;
+        return x;
+      })
+    );
+  }
+
+  async getFromPublishedId(id, guid) {
+    console.log(id)
+    if (!id) return Promise.resolve();
+    const fields = await this.cache.get(`fields:${id}`, () => ChannelData.find({
+      where: { entry_id: Number(id) },
+      include: [ { model: Channels.model,  include: [ { model: ChannelFields.model } ] } ],
+    })
+      .then(this.debug)
+      .then(x => flatten(x.map(y => y.exp_channel.exp_channel_field)))
+      .then(x => this.createFieldNames(x, true))
+    );
+
+    const exp_channel_fields = this.createFieldObject(fields);
+    return await this.cache.get(`future:${guid}`, () => ChannelData.findOne({
+      where: { entry_id: Number(id) },
+      attributes:  ["entry_id", "channel_id", "site_id"].concat(fields),
+      include: [
+        { model: Channels.model},
+        {
+          model: ChannelTitles.model,
+          where: {
             entry_date: { $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
             expiration_date: {
               $or: [
@@ -149,7 +188,7 @@ export class Content extends EE {
     })
       .then(x => x.sort_order.split("|"))
       .then(x => x.filter(y => !!y).map(z => ({ entry_id: z }))) // used so the next line can work
-      .then(this.getFromIds.bind(this))
+      .then(this.getFromPublishedIds)
       .then(x => x.filter(y => !!y))
     , { ttl: 3600 }); // expire this lookup every hour
   }
@@ -168,19 +207,31 @@ export class Content extends EE {
       include,
     })
       .then(x => ([x]))// used so the next line can work
-      .then(this.getFromIds.bind(this))
+      .then(this.getFromPublishedIds)
       .then(x => (x[0]))
     );
   }
 
-  async findByParentId(entry_id, channels = []) {
+  getFromPublishedIds = async (data = []) => {
+    if (!data || !data.length) return Promise.resolve([]);
+    return Promise.all(data.map(x => this.getFromPublishedId(x[this.id], createGlobalId(x[this.id], this.__type))))
+      .then(flatten)
+      .then(x => x.filter(y => !isNil(y)).map(z => {
+        const item = z;
+        item.__type = this.__type;
+        return item;
+      }));
+  }
+
+  async findByParentId(entry_id, channels = [], future = false) {
+    const fetchMethod = future ? this.getFromIds : this.getFromPublishedIds;
     // XXX make this single request by relating entries via ChannelData
     return this.cache.get(`${entry_id}:Playa`, () => Playa.find({
         where: { child_entry_id: entry_id },
         attributes: [["parent_entry_id", "entry_id"]],
       })
     , { cache: false }) // this intermentally breaks when cached
-      .then(this.getFromIds.bind(this))
+      .then(fetchMethod.bind(this))
       // XXX remove when channel is part of query
       .then((x) => x.filter(
         y => !channels.length || channels.indexOf(y && y.exp_channel.channel_name) > -1
@@ -195,7 +246,7 @@ export class Content extends EE {
       })
     )
       .then(x => [x])
-      .then(this.getFromIds.bind(this))
+      .then(this.getFromPublishedIds)
       .then(x => x[0])
       ;
   }
@@ -280,7 +331,7 @@ export class Content extends EE {
         // XXX find how to do this in the query?
         return x.slice(offset, limit + offset);
       })
-      .then(this.getFromIds.bind(this))
+      .then(this.getFromPublishedIds)
       .then(x => x.filter(y => !!y))
       ;
   }
@@ -359,7 +410,7 @@ export class Content extends EE {
         // XXX make a WileySort for this instead of random stuff
         return sampleSize(x, limit);
       })
-      .then(this.getFromIds.bind(this))
+      .then(this.getFromPublishedIds)
       .then(x => x.filter(y => !!y))
       ;
   }
@@ -398,7 +449,7 @@ export class Content extends EE {
       offset,
     })
     , { ttl: 3600, cache: false })
-      .then(this.getFromIds.bind(this))
+      .then(this.getFromPublishedIds)
       .then((x) => x.filter(y => !!y))
       ;
   }
