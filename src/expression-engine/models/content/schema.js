@@ -66,7 +66,7 @@ export default [`
     content: ContentData
     authors: [String]
     parent: Content # XXX determine if this can be multiple
-    children(channels: [String]): [Content]
+    children(channels: [String], showFutureEntries: Boolean = false): [Content]
     related(
       includeChannels: [String],
       limit: Int = 20,

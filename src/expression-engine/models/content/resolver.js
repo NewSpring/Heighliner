@@ -212,8 +212,8 @@ export default {
       const authors = author ? author : editorial_authors;
       return authors ? authors.split(",") : null;
     },
-    children: ({ entry_id }, { channels }, { models }) =>
-       models.Content.findByParentId(entry_id, channels),
+    children: ({ entry_id }, { channels, showFutureEntries }, { models }) =>
+       models.Content.findByParentId(entry_id, channels, showFutureEntries),
     related: ({ tags }, { includeChannels, limit, skip, cache }, { models }) => {
       tags = models.Content.splitByNewLines(tags);
       if (!tags || !tags.length) return null;
