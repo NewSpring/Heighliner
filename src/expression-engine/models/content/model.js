@@ -331,7 +331,7 @@ export class Content extends EE {
         // XXX find how to do this in the query?
         return x.slice(offset, limit + offset);
       })
-      .then(this.getFromPublishedIds.bind)
+      .then(this.getFromPublishedIds)
       .then(x => x.filter(y => !!y))
       ;
   }
