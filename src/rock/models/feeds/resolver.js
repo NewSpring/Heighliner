@@ -39,7 +39,6 @@ export default {
       }
 
       if (filters.includes("LIKES") && user) {
-        console.log("-------- LIKES --------");
         filterQueries.push(models.Like.getLikedContent(user._id, models.Node));
       }
 

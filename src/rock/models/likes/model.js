@@ -29,37 +29,37 @@ export class Like {
 
   async getLikedContent(userId, node) {
     const likes = await this.getFromUserId(userId);
-    console.log("likes", likes);
     return await likes.map(async (like) => {
       return await node.get(like.entryId);
     });
   }
 
-  // public async toggleLike(nodeId: string, userId: string, contentModel: any): Promise<any[]> {
-  //   const entry = parseGlobalId(nodeId);
-  //   // XXX what should the response be if not a content type?
-  //   if (entry.__type !== "Content") return null;
-  //
-  //   const existingLike = await this.model.findOne({
-  //     entryId: entry.id,
-  //     userId,
-  //   }) as LikeDocument;
-  //
-  //   if (existingLike) {
-  //     await this.model.remove({
-  //       _id: existingLike._id,
-  //     });
-  //   } else {
-  //     await this.model.create({
-  //       userId,
-  //       entryId: entry.id,
-  //       type: entry.__type,
-  //       createdAt: new Date(),
-  //     });
-  //   }
-  //   await this.cache.del(`${this.__type}:${userId}`);
-  //   return this.getLikedContent(userId, contentModel);
-  // }
+  async toggleLike(nodeId, userId, nodeModel) {
+    const entry = await nodeModel.get(nodeId);
+
+    // XXX what should the response be if not a content type?
+    if (entry.__type !== "Content") return null;
+
+    const existingLike = await this.model.findOne({
+      entryId: entry.entry_id,
+      userId,
+    });
+
+    if (existingLike) {
+      await this.model.remove({
+        _id: existingLike._id,
+      });
+    } else {
+      await this.model.create({
+        userId,
+        entryId: entry.entry_id,
+        type: entry.__type,
+        createdAt: new Date(),
+      });
+    }
+    await this.cache.del(`${this.__type}:${userId}`);
+    return this.getLikedContent(userId, nodeModel);
+  }
 
 }
 
