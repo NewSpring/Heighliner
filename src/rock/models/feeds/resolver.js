@@ -4,7 +4,7 @@ import { flatten } from "lodash";
 export default {
 
   Query: {
-    userFeed: (_, { filters, limit, skip, status, cache, options = "{}" }, { models, person }) => {
+    userFeed: (_, { filters, limit, skip, status, cache, options = "{}" }, { models, person, user }) => {
       if (!filters) return null;
 
       const opts = JSON.parse(options);
@@ -36,6 +36,11 @@ export default {
         filterQueries.push(models.SavedPayment.findByPersonAlias(
           person.aliases, { limit: 3, offset: 0 }, { cache: null },
         ));
+      }
+
+      if (filters.includes("LIKES") && user) {
+        console.log("-------- LIKES --------");
+        filterQueries.push(models.Like.getLikedContent(user._id, models.Node));
       }
 
       if (!filterQueries.length) return null;
