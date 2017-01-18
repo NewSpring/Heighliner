@@ -2,6 +2,8 @@
 import uuid from "node-uuid";
 import { assign, isNumber } from "lodash";
 import queue from "bull";
+import Raven, { parsers } from "raven";
+import fetch from "node-fetch";
 
 import {
   Transaction as TransactionTable,
@@ -75,8 +77,11 @@ export default class TransactionJobs extends Rock {
     super({ cache });
     this.FinancialBatch = new FinancialBatch({ cache });
     this.queue = TRANSACTION_QUEUE;
-
-    // XXX test order of operations
+    
+    if (process.env.SENTRY) {
+      this.sentry = new Raven.Client(process.env.SENTRY)
+    }
+    
     this.queue.process(({ data }) =>  Promise.resolve(data)
       .then(this.getOrCreatePerson)
       .then(this.createPaymentDetail)
@@ -88,6 +93,42 @@ export default class TransactionJobs extends Rock {
       .then(this.updateBatchControlAmount)
       .then(this.sendGivingEmail),
     );
+
+    const report = ({ data, attemptsMade }, error) => {
+      if (!this.sentry) {
+        console.error("ERROR", error);
+        return;
+      }
+
+      if (data && data.Person) {
+        this.sentry.setUserContext({ id: data.Person.Id });
+        if (data.Person.Email) this.sentry.setUserContext({ email: data.Person.Email });
+      }
+
+      this.sentry.captureException(error, { extra: { data, attemptsMade } });
+      
+      if (process.env.SLACK) {
+        const message = {
+          username: "Heighliner",
+          icon_emoji: ":feelsbulbman:",
+          text: "ATTENTION: there has been an error processing a transasction, drop what you are doing and look into the error on sentry",
+          channel: "systems",
+        }
+
+        fetch(process.env.SLACK, {
+          method: "POST",
+          body: JSON.stringify(message),
+        });
+
+      }
+    }
+
+    // XXX rewrite mock to support events
+    if (!this.queue.on) return;
+
+    this.queue
+      .on("error", (e) => report({}, e))
+      .on("failed", report)
   }
 
   add = (data) => {
