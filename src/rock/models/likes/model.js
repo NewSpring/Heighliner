@@ -2,7 +2,7 @@
 import uuid from "node-uuid";
 import { Cache, defaultCache } from "../../../util/cache";
 import { MongoConnector } from "../../../apollos/mongo";
-import { parseGlobalId, createGlobalId } from "../../../util/node/model";
+import { createGlobalId } from "../../../util/node/model";
 
 const schema = {
   _id: String,
