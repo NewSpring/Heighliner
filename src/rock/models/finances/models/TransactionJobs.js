@@ -77,11 +77,11 @@ export default class TransactionJobs extends Rock {
     super({ cache });
     this.FinancialBatch = new FinancialBatch({ cache });
     this.queue = TRANSACTION_QUEUE;
-    
+
     if (process.env.SENTRY) {
       this.sentry = new Raven.Client(process.env.SENTRY)
     }
-    
+
     this.queue.process(({ data }) =>  Promise.resolve(data)
       .then(this.getOrCreatePerson)
       .then(this.createPaymentDetail)
@@ -106,12 +106,13 @@ export default class TransactionJobs extends Rock {
       }
 
       this.sentry.captureException(error, { extra: { data, attemptsMade } });
-      
-      if (process.env.SLACK) {
+
+      // only log to slack the first time an error has happened
+      if (process.env.SLACK && (!attemptsMade || attemptsMade === 1)) {
         const message = {
           username: "Heighliner",
           icon_emoji: ":feelsbulbman:",
-          text: "ATTENTION: there has been an error processing a transasction, drop what you are doing and look into the error on sentry",
+          text: `ATTENTION: there has been an error processing a transasction, drop what you are doing and look into the error on sentry. The error is ${error.message}`,
           channel: "systems",
         }
 
