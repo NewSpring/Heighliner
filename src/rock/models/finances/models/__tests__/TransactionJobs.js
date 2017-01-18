@@ -255,6 +255,7 @@ describe("add", () => {
     Local.queue = {
       process: jest.fn(),
       add: jest.fn(),
+      on: jest.fn(),
     };
 
     Local.add({ test: "TEST" });
