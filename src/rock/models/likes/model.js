@@ -1,8 +1,11 @@
+
+import uuid from "node-uuid";
 import { Cache, defaultCache } from "../../../util/cache";
 import { MongoConnector } from "../../../apollos/mongo";
 import { parseGlobalId, createGlobalId } from "../../../util/node/model";
 
 const schema = {
+  _id: String,
   userId: String,
   entryId: String,
   type: String,
@@ -12,19 +15,18 @@ const schema = {
 const Model = new MongoConnector("like", schema);
 
 export class Like {
-  __type = "Like";
+  // __type = "Like";
 
-  constructor({ cache } = { cache }) {
+  constructor({ cache } = { cache: defaultCache }) {
     this.model = Model;
     this.cache = cache;
   }
 
   async getFromUserId(userId) {
-    // return await this.cache.get(`${this.__type}:${userId}`, () => (
-    //   this.model.find({ userId })
-    // ));
-    // XXX Turn caching back on
-    return this.model.find({ userId })
+    const guid = createGlobalId(userId);
+    return await this.cache.get(guid, () => (
+      this.model.find({ userId })
+    ));
   }
 
   async getLikedContent(userId, node) {
@@ -35,13 +37,8 @@ export class Like {
   }
 
   async toggleLike(nodeId, userId, nodeModel) {
-    const entry = await nodeModel.get(nodeId);
-
-    // XXX what should the response be if not a content type?
-    if (entry.__type !== "Content") return null;
-
     const existingLike = await this.model.findOne({
-      entryId: entry.entry_id,
+      entryId: nodeId,
       userId,
     });
 
@@ -51,13 +48,14 @@ export class Like {
       });
     } else {
       await this.model.create({
+        _id: uuid.v4(),
         userId,
-        entryId: entry.entry_id,
-        type: entry.__type,
+        entryId: nodeId,
         createdAt: new Date(),
       });
     }
-    await this.cache.del(`${this.__type}:${userId}`);
+    const guid = createGlobalId(userId);
+    await this.cache.del(guid);
     return this.getLikedContent(userId, nodeModel);
   }
 
