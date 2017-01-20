@@ -10,8 +10,8 @@ import { parseGlobalId } from "./../node/model";
 let db;
 let dd;
 export function connect( monitor) {
-  if (db) return Promise.resolve(true);
   dd = monitor && monitor.datadog;
+  if (db) return Promise.resolve(true);
   let hasReturned = false;
   return new Promise((cb) => {
 
