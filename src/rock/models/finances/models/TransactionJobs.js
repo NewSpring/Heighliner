@@ -100,6 +100,10 @@ export default class TransactionJobs extends Rock {
         return;
       }
 
+      // don't log to sentry or slack on every attempt
+      // only log of the first event if possible
+      if (!attemptsMade || attemptsMade !== 1) return;
+
       if (data && data.Person) {
         this.sentry.setUserContext({ id: data.Person.Id });
         if (data.Person.Email) this.sentry.setUserContext({ email: data.Person.Email });
@@ -108,11 +112,11 @@ export default class TransactionJobs extends Rock {
       this.sentry.captureException(error, { extra: { data, attemptsMade } });
 
       // only log to slack the first time an error has happened
-      if (process.env.SLACK && (!attemptsMade || attemptsMade === 1)) {
+      if (process.env.SLACK) {
         const message = {
           username: "Heighliner",
           icon_emoji: ":feelsbulbman:",
-          text: `ATTENTION: there has been an error processing a transasction, drop what you are doing and look into the error on sentry. The error is ${error.message}`,
+          text: `ATTENTION: there has been an error processing a transasction. The transaction reference number is ${data.Transaction.ReferenceNumber} The error is ${error.message}`,
           channel: "systems",
         }
 
