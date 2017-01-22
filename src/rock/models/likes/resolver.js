@@ -1,5 +1,9 @@
 
-// import { flatten } from "lodash";
+const MutationReponseResolver = {
+  error: ({ error }) => error,
+  success: ({ success, error }) => success || !error,
+  code: ({ code }) => code,
+};
 
 export default {
   Mutation: {
@@ -9,4 +13,8 @@ export default {
       return models.Like.toggleLike(nodeId, user._id, models.Node);
     },
   },
+  LikesMutationResponse: {
+    ...MutationReponseResolver,
+    like: ({ like }) => like,
+  }
 };

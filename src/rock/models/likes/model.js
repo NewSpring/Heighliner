@@ -37,7 +37,7 @@ export class Like {
   }
 
   async toggleLike(nodeId, userId, nodeModel) {
-    const existingLike = await this.model.findOne({
+    let existingLike = await this.model.findOne({
       entryId: nodeId,
       userId,
     });
@@ -54,9 +54,16 @@ export class Like {
         createdAt: new Date(),
       });
     }
+
     const guid = createGlobalId(userId);
     await this.cache.del(guid);
-    return this.getLikedContent(userId, nodeModel);
+
+    return ({
+      like: nodeModel.get(nodeId),
+      success: true,
+      error: "",
+      code: "",
+    });
   }
 
 }
