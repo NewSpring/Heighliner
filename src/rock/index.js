@@ -10,6 +10,7 @@ import System from "./models/system";
 import Groups from "./models/groups";
 import BinaryFiles from "./models/binary-files";
 import Feeds from "./models/feeds";
+import Likes from "./models/likes";
 
 export const { mutations, queries, models, resolvers, mocks, schema } = createApplication([
   People,
@@ -19,6 +20,7 @@ export const { mutations, queries, models, resolvers, mocks, schema } = createAp
   Groups,
   BinaryFiles,
   Feeds,
+  Likes,
 ]);
 
 export default {
