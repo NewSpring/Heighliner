@@ -79,7 +79,6 @@ export default {
 
     contentWithUrlTitle(_, { channel, urlTitle }, { models }) {
       return models.Content.findByUrlTitle(channel, urlTitle);
-      // return null;
     },
   },
 
