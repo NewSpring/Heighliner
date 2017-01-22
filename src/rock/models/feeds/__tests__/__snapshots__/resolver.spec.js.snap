@@ -1,3 +1,22 @@
+exports[`Feed Query should return a list of user's likes with correct filter 1`] = `
+Array [
+  Object {
+    "__type": "Content",
+    "channelName": "articles",
+    "content": Object {
+      "images": Array [
+        Object {
+          "label": "2:1",
+          "url": "//drhztd8q3iayu.cloudfront.net/newspring/editorial/articles/newspring.blog.hero.monasterypews.large.jpg",
+        },
+      ],
+    },
+    "id": "16c44ac3fe07af726455feac35ab2be9",
+    "title": "One place where everyone is welcome",
+  },
+]
+`;
+
 exports[`Feed Query should return array of combined Transaction and SavedPayment data 1`] = `
 Array [
   Object {

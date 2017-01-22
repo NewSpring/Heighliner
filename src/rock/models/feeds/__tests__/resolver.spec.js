@@ -43,6 +43,15 @@ const sampleData = {
     BirthMonth: "10",
     Email: "email@example.com",
   },
+  like: {
+    "id": "16c44ac3fe07af726455feac35ab2be9",
+    "title": "One place where everyone is welcome",
+    "channelName": "articles",
+    "content": {
+      "images": [ { "url": "//drhztd8q3iayu.cloudfront.net/newspring/editorial/articles/newspring.blog.hero.monasterypews.large.jpg", "label": "2:1" } ]
+    },
+    __type: "Content"
+  }
 };
 
 describe("Feed Query", () => {
@@ -53,6 +62,12 @@ describe("Feed Query", () => {
     SavedPayment: {
       findByPersonAlias: jest.fn(),
     },
+    Like: {
+      getLikedContent: jest.fn(),
+    },
+    Node: {
+
+    }
   };
 
   afterEach(() => {
@@ -106,5 +121,21 @@ describe("Feed Query", () => {
     expect(results).toMatchSnapshot();
     expect(results[0].__type).toEqual("Transaction");
     expect(results[1].__type).toEqual("SavedPayment");
+  });
+
+  it("should return a list of user's likes with correct filter", async () => {
+    const { Query } = Resolver;
+
+    mockModels.Like.getLikedContent.mockReturnValueOnce([sampleData.like]);
+
+    const results = await Query.userFeed( //eslint-disable-line
+      null,
+      { filters: ["LIKES"] },
+      { models: mockModels, person: null, user: { _id: "1234" } },
+    );
+
+    expect(mockModels.Like.getLikedContent).toHaveBeenCalledWith("1234", {});
+    expect(results).toMatchSnapshot();
+    expect(results[0].__type).toEqual("Content");
   });
 });

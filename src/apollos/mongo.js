@@ -31,6 +31,7 @@ export class MongoConnector {
   constructor(collection, schema) {
     this.db = db;
     this.model = mongoose.model(collection, new Schema(schema));
+    this.count = 0;
 
     // XXX integrate data loader
   }
@@ -60,6 +61,27 @@ export class MongoConnector {
         console.timeEnd(label);
         return x;
       });
+  }
+
+  find(...args) {
+    const label = `MongoConnector${this.getCount()}`;
+    console.time(label);
+    return this.model.find.apply(this.model, args)
+      .then(x => { console.timeEnd(label); return x; });
+  }
+
+  remove(...args) {
+    const label = `MongoConnector${this.getCount()}`;
+    console.time(label);
+    return this.model.remove.apply(this.model, args)
+      .then(x => { console.timeEnd(label); return x; });
+  }
+
+  create(...args) {
+    const label = `MongoConnector${this.getCount()}`;
+    console.time(label);
+    return this.model.create.apply(this.model, args)
+      .then(x => { console.timeEnd(label); return x; });
   }
 
   getCount() {
