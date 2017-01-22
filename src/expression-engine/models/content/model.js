@@ -415,6 +415,10 @@ export class Content extends EE {
       ;
   }
 
+  async findByUrlTitle(channel, urlTitle) {
+    return null;
+  };
+
   async find(query = {}, cache) {
     const { limit, offset } = query; // true options
 

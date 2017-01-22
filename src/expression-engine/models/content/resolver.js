@@ -76,6 +76,11 @@ export default {
     live(_, $, { models }) {
       return models.Content.getLiveStream();
     },
+
+    contentByUrlTitle(_, { channel, urlTitle }, { models }) {
+      return models.Content.findByUrlTitle(channel, urlTitle);
+      // return null;
+    },
   },
 
   LiveFeed: {
