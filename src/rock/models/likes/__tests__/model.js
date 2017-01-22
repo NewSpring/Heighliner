@@ -129,10 +129,15 @@ describe("Like", () => {
       expect(createGlobalId).toBeCalledWith("1234");
       expect(cache.del).toBeCalledWith("123456789");
     });
-    it("returns list of likes", async () => {
+    it("returns mutation response", async () => {
       like.getLikedContent.mockReturnValueOnce([{}, {}]);
+      mockData.nodeModel.get.mockReturnValueOnce("like: {...}");
       const likes = await like.toggleLike("abcde", "1234", mockData.nodeModel);
-      expect(Array.isArray(likes)).toBe(true);
+
+      expect(likes.code).toBeDefined()
+      expect(likes.error).toBeDefined();
+      expect(likes.like).toEqual("like: {...}");
+      expect(likes.success).toBeDefined()
     });
   });
 
