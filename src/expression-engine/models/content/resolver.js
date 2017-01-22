@@ -77,7 +77,7 @@ export default {
       return models.Content.getLiveStream();
     },
 
-    contentByUrlTitle(_, { channel, urlTitle }, { models }) {
+    contentWithUrlTitle(_, { channel, urlTitle }, { models }) {
       return models.Content.findByUrlTitle(channel, urlTitle);
       // return null;
     },

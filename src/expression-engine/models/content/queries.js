@@ -35,9 +35,9 @@ export default [
 
   "live: LiveFeed",
 
-  `contentByUrlTitle(
+  `contentWithUrlTitle(
     channel: String!,
     urlTitle: String!,
-  ): Node`,
+  ): String`,
 
 ];
