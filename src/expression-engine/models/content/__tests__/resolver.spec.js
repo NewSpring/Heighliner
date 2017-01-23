@@ -260,6 +260,24 @@ it("`Query` live should call model", () => {
   Query.live({}, {}, { models });
 });
 
+it("`Query` contentWithUrlTitle should exist", () => {
+  const { Query } = Resolver;
+  expect(Query.contentWithUrlTitle).toBeTruthy();
+});
+
+it("`Query` contentWithUrlTitle should call model", () => {
+  const { Query } = Resolver;
+  const models = {
+    Content: {
+      findByUrlTitle: () => {
+        expect(true).toBeTruthy();
+      },
+    },
+  };
+
+  Query.contentWithUrlTitle({}, {}, { models });
+});
+
 it("`LiveFeed` should return the live flag", () => {
   const { LiveFeed } = Resolver;
 

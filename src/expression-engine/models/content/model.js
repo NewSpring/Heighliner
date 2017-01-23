@@ -415,6 +415,20 @@ export class Content extends EE {
       ;
   }
 
+  async findByUrlTitle(channel, urlTitle) {
+    const results = await this.cache.get(
+      this.cache.encode({ channel, urlTitle }, this.__type), () => ChannelTitles.findOne({
+        where: { url_title: urlTitle },
+        attributes: ["entry_id"],
+        include: [
+          { model: Channels.model, where: { channel_name: channel } },
+        ]
+      }, { ttl: 3600, cache: false })
+    );
+
+    return createGlobalId(results.entry_id, this.__type);
+  };
+
   async find(query = {}, cache) {
     const { limit, offset } = query; // true options
 
