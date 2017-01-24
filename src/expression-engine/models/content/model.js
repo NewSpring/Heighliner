@@ -426,6 +426,7 @@ export class Content extends EE {
       }, { ttl: 3600, cache: false })
     );
 
+    if(!results || !results.entry_id) return null;
     return createGlobalId(results.entry_id, this.__type);
   };
 
