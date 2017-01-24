@@ -38,4 +38,11 @@ describe("findByUrlTitle", () => {
     expect(createGlobalId).toBeCalledWith("1123", "Content");
   });
 
+  it("should return null for invalid lookup", async () => {
+    createGlobalId.mockReset();
+    Model.cache.get = jest.fn(() => ({}));
+    const res = await Model.findByUrlTitle("articles","harambe");
+    expect(res).toEqual(null);
+  });
+
 });
