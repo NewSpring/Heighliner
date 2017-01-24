@@ -6,6 +6,12 @@ const MutationReponseResolver = {
 };
 
 export default {
+  Query: {
+    recentlyLiked(_, $, { models, user }) {
+      models.Like.getRecentlyLiked(user._id, models.Node);
+      // return null;
+    }
+  },
   Mutation: {
     toggleLike(_, { nodeId }, { models, user }) {
       // XXX what should the response be if invalid/insufficient data?

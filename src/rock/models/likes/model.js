@@ -36,6 +36,10 @@ export class Like {
     });
   }
 
+  async getRecentlyLiked(userId, nodeModel) {
+    return null;
+  }
+
   async toggleLike(nodeId, userId, nodeModel) {
     let existingLike = await this.model.findOne({
       entryId: nodeId,
