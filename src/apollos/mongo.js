@@ -84,6 +84,13 @@ export class MongoConnector {
       .then(x => { console.timeEnd(label); return x; });
   }
 
+  distinct(field, query) {
+    const label = `MongoConnector${this.getCount()}`;
+    console.time(label);
+    return this.model.distinct(field, query)
+      .then(x => { console.timeEnd(label); console.log(x); return x; });
+  }
+
   getCount() {
     this.count++;
     return this.count;

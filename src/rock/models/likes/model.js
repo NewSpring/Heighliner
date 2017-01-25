@@ -36,8 +36,23 @@ export class Like {
     });
   }
 
-  async getRecentlyLiked(userId, nodeModel) {
-    return null;
+  async getRecentlyLiked({ limit, skip, cache }, userId, nodeModel) {
+    const query = userId
+      ? { userId: { $ne: userId } }
+      : { };
+
+    // const guid = createGlobalId(userId);
+    // const entryIds = await this.cache.get(guid, () => (
+      const entryIds = await this.model.distinct(
+        "entryId", query
+      );
+    // ));
+
+    // "entryId", { ...query, ...{ offset: skip, limit } }
+    // "entryId", query, { offset: skip, limit }
+    // "entryId", query, offset: skip, limit
+
+    return entryIds.map(like => nodeModel.get(like));
   }
 
   async toggleLike(nodeId, userId, nodeModel) {
