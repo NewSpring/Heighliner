@@ -15,7 +15,7 @@ const schema = {
 const Model = new MongoConnector("like", schema);
 
 export class Like {
-  // __type = "Like";
+  __type = "Like";
 
   constructor({ cache } = { cache: defaultCache }) {
     this.model = Model;
@@ -41,17 +41,23 @@ export class Like {
       ? { userId: { $ne: userId } }
       : { };
 
-    // const guid = createGlobalId(userId);
-    // const entryIds = await this.cache.get(guid, () => (
-      const entryIds = await this.model.distinct(
-        "entryId", query
-      );
-    // ));
+    const guid = createGlobalId(`${limit}:${skip}:${userId}`, this.__type);
+    const entryIds = await this.cache.get(guid, async () => {
+      const ids = await this.model.distinct("entryId", query);
+      if(skip && skip >= ids.length) return null; // skips more than we have
 
-    // "entryId", { ...query, ...{ offset: skip, limit } }
-    // "entryId", query, { offset: skip, limit }
-    // "entryId", query, offset: skip, limit
+      /*
+      * first slice: trims the front of the array by "skip"
+      * second: trims the back.
+      *   it checks for limit, then checks if it would be outside of array bounds
+      *     if it's outside of array bounds, just returns whole array
+      */
+      return ids
+        .slice(skip ? skip : 0)
+        .slice(0, limit ? (limit > ids.length ? ids.length : limit): null);
+    });
 
+    if(!entryIds || !entryIds.length) return null;
     return entryIds.map(like => nodeModel.get(like));
   }
 
