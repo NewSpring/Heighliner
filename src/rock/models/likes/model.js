@@ -72,7 +72,10 @@ export class Like {
     });
 
     if(!entryIds || !entryIds.length) return null;
-    return entryIds.map(like => nodeModel.get(like));
+    return entryIds
+      .filter(x => x) // remove empty entries
+      .map(like => nodeModel.get(like));
+
   }
 
   async toggleLike(nodeId, userId, nodeModel) {
