@@ -14,6 +14,30 @@ const schema = {
 
 const Model = new MongoConnector("like", schema);
 
+/*
+  skip?: Int, // how many to trim off the front
+  limit?: Int, // max array size at the end
+  arr!: Array, // input array
+  emptyRet: any // what to return if array is empty at any point (null, [], {}, etc)
+*/
+export const safeTrimArray = (skip, limit, arr, emptyRet) => {
+  if(!arr || !arr.length) return emptyRet;
+  if(skip && skip >= arr.length) return emptyRet; // skips more than we have
+
+  /*
+  * first slice: trims the front of the array by "skip"
+  * second: trims the back.
+  *   it checks for limit, then checks if it would be outside of array bounds
+  *     if it's outside of array bounds, just returns whole array
+  */
+  const trimmed = arr
+    .slice(skip ? skip : 0)
+    .slice(0, limit ? (limit > arr.length ? arr.length : limit): null);
+
+  if(!trimmed || !trimmed.length) return emptyRet;
+  return trimmed;
+};
+
 export class Like {
   __type = "Like";
 
@@ -38,23 +62,13 @@ export class Like {
 
   async getRecentlyLiked({ limit, skip, cache }, userId, nodeModel) {
     const query = userId
-      ? { userId: { $ne: userId } }
+      ? { userId: { $ne: userId } } // exlude user if there is one
       : { };
 
     const guid = createGlobalId(`${limit}:${skip}:${userId}`, this.__type);
     const entryIds = await this.cache.get(guid, async () => {
       const ids = await this.model.distinct("entryId", query);
-      if(skip && skip >= ids.length) return null; // skips more than we have
-
-      /*
-      * first slice: trims the front of the array by "skip"
-      * second: trims the back.
-      *   it checks for limit, then checks if it would be outside of array bounds
-      *     if it's outside of array bounds, just returns whole array
-      */
-      return ids
-        .slice(skip ? skip : 0)
-        .slice(0, limit ? (limit > ids.length ? ids.length : limit): null);
+      return safeTrimArray(skip, limit, ids, null);
     });
 
     if(!entryIds || !entryIds.length) return null;
