@@ -194,6 +194,18 @@ describe("Like", () => {
       const res = await like.getRecentlyLiked({limit: 99, skip: 0, cache: null}, "harambe", mockData.nodeModel);
       expect(res).toEqual([{entryId: "abc"}, {entryId: "def"}]);
     });
+    it("handles null results in mongo return array", async () => {
+      mongo.distinct.mockReturnValueOnce(["123", undefined, "456"]);
+      mockData.nodeModel.get.mockReturnValueOnce({entryId: "abc"});
+      mockData.nodeModel.get.mockReturnValueOnce({entryId: "def"});
+      mockData.nodeModel.get.mockReturnValueOnce({entryId: "ghi"});
+      defaultCache.get.mockImplementationOnce((a, b) => b());
+
+      const res = await like.getRecentlyLiked({limit: 99, skip: 0, cache: null}, "harambe", mockData.nodeModel);
+      expect(res).toEqual([{entryId: "abc"}, {entryId: "def"}]);
+      expect(res.length).toEqual(2);
+      mongo.distinct.mockReset();
+    });
     it("returns null if no results", async () => {
       mongo.distinct.mockReturnValueOnce(null);
       defaultCache.get.mockImplementationOnce((a, b) => b());
