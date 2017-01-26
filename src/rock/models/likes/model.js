@@ -72,7 +72,31 @@ export class Like {
     });
 
     if(!entryIds || !entryIds.length) return null;
-    return entryIds.map(like => nodeModel.get(like));
+
+    // let entries = entryIds
+    //   .map(like => nodeModel.get(like)) // [Promise]
+    //   // .filter(x => x.then( // x: Promise
+    //   //   val => {
+    //   //     console.log("val", val); // results of promise
+    //   //     console.log("FILTER", val != null);
+    //   //     return(val != null);
+    //   //     // Promise.resolve(val != null)
+    //   //   }, () => { return false }
+    //   // ))
+      // .filter(async x => {
+      //   const res = await x;
+      //   console.log(res);
+      //   if(x == null) Promise.reject("null value")
+      //   return x != null;
+      // })
+
+    let entries = entryIds
+      .map(like => nodeModel.get(like).then(x => !!x).catch(console.error)) // [Promise]
+      .filter((Boolean));
+
+    console.log("ENTRIES", entries);
+    return entries;
+    // return entryIds.map(like => nodeModel.get(like).then(x => console.log(x)));
   }
 
   async toggleLike(nodeId, userId, nodeModel) {
