@@ -8,7 +8,7 @@ const MutationReponseResolver = {
 export default {
   Query: {
     recentlyLiked(_, { limit, skip, cache }, { models, user }) {
-      const userId = user ? user._id : null
+      const userId = user ? user._id : null;
       return models.Like.getRecentlyLiked({ limit, skip, cache }, userId, models.Node);
     }
   },
