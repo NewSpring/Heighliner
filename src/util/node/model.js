@@ -18,6 +18,7 @@ export default class Node {
 
     try {
       const data = await (this.models[__type].getFromId(id, encodedId));
+      if(!data) return null;
       data.__type = __type;
       return data;
     } catch (e) {

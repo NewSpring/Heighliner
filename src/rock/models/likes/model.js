@@ -72,7 +72,12 @@ export class Like {
     });
 
     if(!entryIds || !entryIds.length) return null;
-    return entryIds.map(like => nodeModel.get(like));
+
+    let promises = entryIds.map(x => nodeModel.get(x))
+    return Promise.all(promises)
+      .then(likes => {
+        return likes.filter(x => x);
+      });
   }
 
   async toggleLike(nodeId, userId, nodeModel) {
