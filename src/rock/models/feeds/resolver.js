@@ -19,6 +19,7 @@ export default {
             if (x === "series") return ["series_newspring"];
             if (x === "music") return ["newspring_albums"];
             if (x === "devotionals") return ["study_entries", "devotionals"];
+            if (x === "events") return ["newspring_now"];
             return [x];
           })
           .map(flatten);
