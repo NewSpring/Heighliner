@@ -46,10 +46,12 @@ export default {
     birthYear: ({ BirthYear }) => BirthYear,
     email: ({ Email }) => Email,
     campus: ({ Id }, { cache = true }, { models }) =>
-       models.Person.getCampusFromId(Id, { cache }),
+      models.Person.getCampusFromId(Id, { cache }),
     home: ({ Id }, { cache = true }, { models }) =>
-       models.Person.getHomesFromId(Id, { cache }).then(x => x[0]) // only return the first home for now
-    ,
+      models.Person.getHomesFromId(Id, { cache })
+      .then(x => x[0]), // only return the first home for now,
+    roles: ({ Id }, { cache = true }, { models }) =>
+      models.Person.getSecurityRoles(Id),
   },
 
   PhoneNumber: {

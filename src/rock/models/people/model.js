@@ -12,6 +12,8 @@ import {
   Group,
   GroupMember,
   GroupLocation,
+  GroupTypeRole,
+  GroupType,
 } from "../groups/tables";
 
 import {
@@ -164,6 +166,17 @@ export class Person extends Rock {
     return this.cache.get(this.createGlobalGuidId(guid), () => PersonTable.findOne({
       where: { Guid: guid },
     }));
+  }
+
+  async getSecurityRoles(id) {
+    return this.cache.get(`${id}:GroupMemberId`, () => Group.find({
+        attributes: [ "Name", "Id", "GroupId" ],
+        where: { GroupTypeId: 1 },
+        include: [
+          { model: GroupMember.model, where: { PersonId: `${id}` }, attributes: [] },
+        ],
+      })
+    );
   }
 
 }
