@@ -1,6 +1,6 @@
 
 // import Resolver from "../resolver";
-import { Like } from "../model";
+import { Like, safeTrimArray } from "../model";
 
 import uuid from "node-uuid";
 import { Cache, defaultCache } from "../../../../util/cache";
@@ -17,6 +17,7 @@ jest.mock("../../../../apollos/mongo", () => {
   MongoConnector.prototype.remove = jest.fn();
   MongoConnector.prototype.create = jest.fn();
   MongoConnector.prototype.findOne = jest.fn();
+  MongoConnector.prototype.distinct = jest.fn();
   return { MongoConnector };
 });
 
@@ -138,6 +139,67 @@ describe("Like", () => {
       expect(likes.error).toBeDefined();
       expect(likes.like).toEqual("like: {...}");
       expect(likes.success).toBeDefined()
+    });
+  });
+
+  describe("helper - safeTrimArray", () => {
+    // safeTrimArray = (skip, limit, arr, emptyRet) => {}
+    const testArr = [0,1,2,3,4,5];
+
+    it("should return 4th arg with empty array passed in", () => {
+      expect(safeTrimArray(1, 1, [], null)).toEqual(null);
+      expect(safeTrimArray(1, 1, [], [])).toEqual([]);
+    });
+    it("should skip properly", () => {
+      expect(safeTrimArray(1, 99, testArr, null)).toEqual([1,2,3,4,5]);
+      expect(safeTrimArray(3, 99, testArr, null)).toEqual([3,4,5]);
+      //test out of bounds skip
+      expect(safeTrimArray(10, 99, testArr, null)).toEqual(null);
+    });
+    it("should limit properly", () => {
+      expect(safeTrimArray(0, 99, testArr, null)).toEqual([0,1,2,3,4,5]);
+      //zero length return relies on the 4th arg
+      expect(safeTrimArray(0, 0, testArr, null)).toEqual(null);
+      expect(safeTrimArray(0, 2, testArr, null)).toEqual([0,1]);
+    });
+  });
+
+  describe("getRecentlyLiked", () => {
+
+    it("should call createGlobalId properly", async () => {
+      createGlobalId.mockReset();
+      await like.getRecentlyLiked({limit: 1, skip: 2, cache: null}, "harambe", mockData.nodeModel);
+      expect(createGlobalId).toBeCalledWith("1:2:harambe", "Like");
+    });
+    it("call distinct with proper query for no user", async () => {
+      mongo.distinct.mockReturnValueOnce(null);
+      defaultCache.get.mockImplementationOnce((a, b) => b());
+
+      await like.getRecentlyLiked({limit: 1, skip: 2, cache: null}, null, mockData.nodeModel);
+      expect(mongo.distinct).toBeCalledWith("entryId", { });
+    });
+    it("call distinct with proper query for user", async () => {
+      mongo.distinct.mockReturnValueOnce(null);
+      defaultCache.get.mockImplementationOnce((a, b) => b());
+
+      await like.getRecentlyLiked({limit: 1, skip: 2, cache: null}, "harambe", mockData.nodeModel);
+      expect(mongo.distinct).toBeCalledWith("entryId", { userId: { $ne: "harambe" } });
+    });
+    it("returns correct shape of data", async () => {
+      mongo.distinct.mockReturnValueOnce(["123", "456"]);
+      mockData.nodeModel.get.mockReturnValueOnce({entryId: "abc"});
+      mockData.nodeModel.get.mockReturnValueOnce({entryId: "def"});
+      defaultCache.get.mockImplementationOnce((a, b) => b());
+
+      const res = await like.getRecentlyLiked({limit: 99, skip: 0, cache: null}, "harambe", mockData.nodeModel);
+      expect(res).toEqual([{entryId: "abc"}, {entryId: "def"}]);
+    });
+    it("returns null if no results", async () => {
+      mongo.distinct.mockReturnValueOnce(null);
+      defaultCache.get.mockImplementationOnce((a, b) => b());
+
+      const res = await like.getRecentlyLiked({limit: 99, skip: 0, cache: null}, "harambe", mockData.nodeModel);
+      expect(res).toEqual(null);
     });
   });
 

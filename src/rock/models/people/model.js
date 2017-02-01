@@ -178,6 +178,7 @@ export class Person extends Rock {
       })
     );
   }
+
 }
 
 export default {
