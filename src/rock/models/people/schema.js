@@ -26,5 +26,6 @@ export default [`
     email: String
     campus(cache: Boolean = true): Campus
     home(cache: Boolean = true): Location
+    roles(cache: Boolean = true): [Group]
   }
 `];
