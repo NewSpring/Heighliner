@@ -405,6 +405,10 @@ async findByAttributesAndQuery({ attributes, query, campuses }, { limit, offset,
     );
 
   }
+
+  async requestGroupInfo() {
+    return null;
+  }
 }
 
 export default {

@@ -45,4 +45,11 @@ export default [`
     count: Int
     results: [Group]
   }
+
+  type GroupsMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+    group: Node
+  }
 `];
