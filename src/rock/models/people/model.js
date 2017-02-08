@@ -39,6 +39,16 @@ export class PhoneNumber extends Rock {
       code: 400, success: false, error: "Insufficient information",
     };
 
+    // make sure user doesn't already have a phone number on file
+    const query = {
+      where: {
+        NumberTypeValueId: 12,
+        PersonId: person.Id,
+      }
+    };
+    const hasPhoneNumber = await PhoneNumberTable.findOne(query);
+    if (hasPhoneNumber) return { code: 400, error: "You already have a phone number on file." };
+
     const nonFormattedPhoneNumber = phoneNumber.replace(/[-+() ]/g, "");
 
     const post = await PhoneNumberTable.post({
