@@ -1,0 +1,5 @@
+exports[`test should have all needed mutations 1`] = `
+Array [
+  "setPhoneNumber(phoneNumber: String!): PhoneNumberMutationResponse",
+]
+`;

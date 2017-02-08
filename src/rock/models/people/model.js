@@ -23,6 +23,42 @@ import {
 
 import { Rock } from "../system";
 
+export class PhoneNumber extends Rock {
+  __type = "PhoneNumber";
+  cacheTypes = [
+    "Rock.Model.PhoneNumber",
+  ];
+
+  constructor({ cache } = { cache: defaultCache }) {
+    super({ cache });
+    this.cache = cache;
+  }
+
+  async setPhoneNumber({ phoneNumber }, person) {
+    if (!phoneNumber) return {
+      code: 400, success: false, error: "Insufficient information",
+    };
+
+    const nonFormattedPhoneNumber = phoneNumber.replace(/[-+() ]/g, "");
+
+    const post = await PhoneNumberTable.post({
+      IsMessagingEnabled: false,
+      IsSystem: false,
+      Number: nonFormattedPhoneNumber,
+      NumberFormatted: phoneNumber,
+      NumberTypeValueId: 12,
+      PersonId: person.Id,
+    });
+
+    if (post && post.status >= 400) return {
+      code: post.status, error: post.statusText, success: false
+    };
+
+    return { code: 200, success: true };
+  }
+
+}
+
 export class Person extends Rock {
   __type = "Person";
   cacheTypes = [
@@ -183,4 +219,5 @@ export class Person extends Rock {
 
 export default {
   Person,
+  PhoneNumber,
 };
