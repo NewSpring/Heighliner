@@ -42,11 +42,12 @@ export default {
         limit, offset: skip, isActive,
       }, { cache });
     },
-    accounts: (_, { name, isActive, isPublic, allFunds }, { models }) => {
+    accounts: (_, { name, isActive, isPublic, isTaxDeductible, allFunds }, { models }) => {
       return models.FinancialAccount.find({
         Name: name,
         IsActive: isActive,
         IsPublic: isPublic,
+        IsTaxDeductible: isTaxDeductible,
       }, { all: allFunds });
     },
     accountFromCashTag: (_, { cashTag }, { models }) =>
