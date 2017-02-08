@@ -75,6 +75,10 @@ export default class Transaction extends Rock {
   }
 
   async findByPersonAlias(aliases, { limit, offset }, { cache }) {
+    let deductibleAccounts = await FinancialAccount.find({
+      where: { IsTaxDeductible: true }
+    }).then(x => x.map(y => y.Id));
+
     const query = { aliases, limit, offset };
     return this.cache.get(this.cache.encode(query), () => TransactionTable.find({
       where: { AuthorizedPersonAliasId: { $in: aliases } },
@@ -82,6 +86,9 @@ export default class Transaction extends Rock {
           ["TransactionDateTime", "DESC"],
         ],
       attributes: ["Id"],
+      include: [
+        { model: TransactionDetail.model, where: { AccountId: { $in: deductibleAccounts } } },
+      ],
       limit,
       offset,
     })
@@ -156,6 +163,9 @@ export default class Transaction extends Rock {
 
   async findByGivingGroup({ id, include, start, end }, { limit, offset }, { cache }) {
     const query = { id, include, start, end };
+    let deductibleAccounts = await FinancialAccount.find({
+      where: { IsTaxDeductible: true }
+    }).then(x => x.map(y => y.Id));
 
     let TransactionDateTime;
     if (start || end) TransactionDateTime = {};
@@ -168,6 +178,7 @@ export default class Transaction extends Rock {
         order: [["TransactionDateTime", "DESC"]],
         where: TransactionDateTime ? [{ TransactionDateTime }] : null,
         include: [
+          { model: TransactionDetail.model, where: { AccountId: { $in: deductibleAccounts } } },
           {
             model: PersonAlias.model,
             attributes: [],
@@ -207,12 +218,17 @@ export default class Transaction extends Rock {
     if (start) TransactionDateTime.$gt = Moment(start);
     if (end) TransactionDateTime.$lt = Moment(end);
 
+    let deductibleAccounts = await FinancialAccount.find({
+      where: { IsTaxDeductible: true }
+    }).then(x => x.map(y => y.Id));
+
     const where = { };
 
     const includeQuery = [
       {
         model: TransactionDetail.model,
         attributes: ["Amount", "AccountId"],
+        where: { AccountId: { $in: deductibleAccounts } },
         include: [{ model: FinancialAccount.model }]
       },
       {

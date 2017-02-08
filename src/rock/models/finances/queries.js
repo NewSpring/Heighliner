@@ -16,7 +16,7 @@ export default [
   ): [ScheduledTransaction]`,
 
   `accounts(
-    allFunds: Boolean = false, name: String, isActive: Boolean = true, isPublic: Boolean = true
+    allFunds: Boolean = false, name: String, isActive: Boolean = true, isPublic: Boolean = true, isTaxDeductable: Boolean = true
   ): [FinancialAccount]`,
 
   "accountFromCashTag(cashTag: String!): FinancialAccount",
