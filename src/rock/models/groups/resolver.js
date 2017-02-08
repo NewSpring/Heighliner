@@ -4,6 +4,12 @@ import { geocode } from "google-geocoding";
 import Moment from "moment";
 import { createGlobalId } from "../../../util";
 
+const MutationReponseResolver = {
+  error: ({ error }) => error,
+  success: ({ success, error }) => success || !error,
+  code: ({ code }) => code,
+};
+
 function getPhotoFromTag(tag) {
   const photos = {
     food: "//s3.amazonaws.com/ns.assets/apollos/groups/group-food.jpg",
@@ -168,6 +174,15 @@ export default {
     },
   },
 
+  Mutation: {
+    requestGroupInfo: async (
+      _, { groupId, message, communicationPreference }, { models, person },
+    ) => {
+      if (!person) return { code: 401, success: false, error: "Must be logged in to make this request" };
+      return await models.Group.requestGroupInfo({ groupId, message, communicationPreference }, person);
+    },
+  },
+
   GroupMember: {
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     role: ({ GroupTypeRole }) => GroupTypeRole && GroupTypeRole.Name, // XXX should we expand this?
@@ -272,4 +287,7 @@ export default {
     results: ({ results }) => results,
   },
 
+  GroupsMutationResponse: {
+    ...MutationReponseResolver,
+  },
 };
