@@ -429,7 +429,7 @@ async findByAttributesAndQuery({ attributes, query, campuses }, { limit, offset,
         GroupId: groupId,
         PersonId: person.Id,
       }
-    }
+    };
 
     const isMember = await GroupMemberTable.findOne(query);
     if (isMember) return { code: 400, error: "You are already a member of this group" };
@@ -456,7 +456,7 @@ async findByAttributesAndQuery({ attributes, query, campuses }, { limit, offset,
       Note: message,
     });
 
-    if (post & post.status >= 400) return {
+    if (post && post.status >= 400) return {
       code: post.status, error: post.statusText, success: false
     };
 

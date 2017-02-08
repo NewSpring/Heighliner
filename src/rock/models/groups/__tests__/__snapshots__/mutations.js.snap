@@ -1,0 +1,9 @@
+exports[`test should contain mutations 1`] = `
+Array [
+  "requestGroupInfo(
+    groupId: ID!,
+    message: String!,
+    communicationPreference: String!,
+  ): GroupsMutationResponse",
+]
+`;
