@@ -176,9 +176,14 @@ export default {
 
   Mutation: {
     requestGroupInfo: async (
-      _, { campuses = [], offset, limit, attributes = [], query, clientIp }, { models, ip, person },
+      _, { groupId, message, communicationPreference }, { models, person },
     ) => {
-      return models.Group.requestGroupInfo();
+      // error for no person
+      if (!person) return null;
+      //error incorrect data
+      if (!groupId || !message || !communicationPreference) return null;
+
+      return models.Group.requestGroupInfo({ groupId, message, communicationPreference }, person);
     },
   },
 

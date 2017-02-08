@@ -16,6 +16,10 @@ import {
 } from "./tables";
 
 import {
+  PhoneNumber as PhoneNumberTable,
+} from "../people/tables";
+
+import {
   Campus as CampusTable,
 } from "../campuses/tables";
 
@@ -406,8 +410,18 @@ async findByAttributesAndQuery({ attributes, query, campuses }, { limit, offset,
 
   }
 
-  async requestGroupInfo() {
-    return null;
+  async requestGroupInfo({ groupId, message, communicationPreference }, person) {
+    /* make sure group exists */
+    const group = await this.getFromId(groupId);
+    // if (!group) return `No group with id ${groupId} found`; // or something
+    if (!group) console.log("AHH IM ANGRY");
+
+    /* make sure user is not member of this group */
+    // TODO
+
+    return null; // XXX for now
+    /* hit REST endpoint to add groupmember with preference and message */
+    //GroupMemberTable.post({});
   }
 }
 
