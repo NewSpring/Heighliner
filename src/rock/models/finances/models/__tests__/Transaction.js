@@ -154,6 +154,7 @@ describe("getStatement", () => {
 
   it("should return properly with no data or props", async () => {
     const Local = new Transaction({cache: mockedCache});
+    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([])); //for deductible accounts
     TransactionTable.find.mockReturnValueOnce(Promise.resolve());
     expect(await Local.getStatement({})).toEqual({"total": 0, "transactions": []});
   });
@@ -167,6 +168,7 @@ describe("getStatement", () => {
       ]
     };
     const Local = new Transaction({cache: mockedCache});
+    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([])); //for deductible accounts
     FinancialAccount.find.mockReturnValueOnce(Promise.resolve(mockAccounts));
     TransactionTable.find.mockReturnValueOnce(Promise.resolve(mockTransactions));
     expect(await Local.getStatement({})).toEqual(expected);
@@ -180,6 +182,7 @@ describe("getStatement", () => {
       end:"2016-12-01T00:00:00.743Z"
     };
     const Local = new Transaction({cache: mockedCache});
+    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([])); //for deductible accounts
     TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
     return Local.getStatement(params)
       .then(() => {
@@ -195,6 +198,7 @@ describe("getStatement", () => {
 
   it("should properly filter to parent fund if present", () => {
     const Local = new Transaction({cache: mockedCache});
+    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([])); //for deductible accounts
     FinancialAccount.find.mockReturnValueOnce(Promise.resolve(mockAccounts));
     TransactionTable.find.mockReturnValueOnce(Promise.resolve(mockTransactions));
     return Local.getStatement({})
@@ -205,11 +209,22 @@ describe("getStatement", () => {
 
   it("should use transaction fund name if parent fund not present", () => {
     const Local = new Transaction({cache: mockedCache});
+    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([])); //for deductible accounts
     TransactionTable.find.mockReturnValueOnce(Promise.resolve(mockTransactions));
     return Local.getStatement({})
       .then((res) => {
         expect(res.transactions[1].Name).toEqual("Harambe");
       });
+  });
+
+  it("should add join for deductible accounts in lookup", async () => {
+    const Local = new Transaction({cache: mockedCache});
+    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([{ Id: 99 }, { Id: 909 }])); //for deductible accounts
+    TransactionTable.find.mockReturnValueOnce(Promise.resolve(mockTransactions));
+    const res = await Local.getStatement({});
+
+    const call = TransactionTable.find.mock.calls[0][0];
+    expect(call.include[0].where).toEqual({ AccountId: { $in: [99,909]}});
   });
 
 });
