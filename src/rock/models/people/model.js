@@ -170,7 +170,7 @@ export class Person extends Rock {
 
   async getSecurityRoles(id) {
     return this.cache.get(`${id}:GroupMemberId`, () => Group.find({
-        attributes: [ "Name", "Id", "GroupId" ],
+        attributes: [ "Name", "Id" ],
         where: { GroupTypeId: 1 },
         include: [
           { model: GroupMember.model, where: { PersonId: `${id}` }, attributes: [] },
