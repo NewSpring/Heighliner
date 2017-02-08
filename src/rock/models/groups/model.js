@@ -411,16 +411,31 @@ async findByAttributesAndQuery({ attributes, query, campuses }, { limit, offset,
   }
 
   async requestGroupInfo({ groupId, message, communicationPreference }, person) {
+    //error incorrect data
+    if (!groupId || !message || !communicationPreference) return {
+      code: 400, success: false, error: "Insufficient information",
+    };
+
     /* make sure group exists */
-    const group = await this.getFromId(groupId);
-    // if (!group) return `No group with id ${groupId} found`; // or something
-    if (!group) console.log("AHH IM ANGRY");
+    if (!await this.getFromId(groupId)) return {
+      code: 404, success: false, error: `No group with id ${groupId} found`,
+    };
 
     /* make sure user is not member of this group */
-    // TODO
+    const query = {
+      where: {
+        GroupId: groupId,
+        PersonId: person.Id,
+        GroupMemberStatus: 1,
+      }
+    }
 
-    return null; // XXX for now
+    const isMember = await GroupMemberTable.findOne(query);
+    if (isMember) return { code: 400, error: "You are already a member of this group" };
+
     /* hit REST endpoint to add groupmember with preference and message */
+    return { code: 200, success: true };
+
     //GroupMemberTable.post({});
   }
 }

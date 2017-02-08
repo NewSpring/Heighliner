@@ -178,12 +178,10 @@ export default {
     requestGroupInfo: async (
       _, { groupId, message, communicationPreference }, { models, person },
     ) => {
-      // error for no person
-      if (!person) return null;
-      //error incorrect data
-      if (!groupId || !message || !communicationPreference) return null;
-
-      return models.Group.requestGroupInfo({ groupId, message, communicationPreference }, person);
+      if (!person) return { code: 401, success: false, error: "Must be logged in to make this request" };
+      const res = await models.Group.requestGroupInfo({ groupId, message, communicationPreference }, person);
+      console.log("RESULTS", res);
+      return res;
     },
   },
 
@@ -293,6 +291,5 @@ export default {
 
   GroupsMutationResponse: {
     ...MutationReponseResolver,
-    group: ({ group }) => group,
   },
 };

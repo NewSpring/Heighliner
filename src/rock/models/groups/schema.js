@@ -50,6 +50,6 @@ export default [`
     error: String
     success: Boolean!
     code: Int
-    group: Node
   }
+
 `];
