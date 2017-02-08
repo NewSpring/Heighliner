@@ -1,5 +1,6 @@
 import { merge, filter, sortBy } from "lodash";
 import { geography } from "mssql-geoparser";
+import uuid from "node-uuid";
 
 import { defaultCache } from "../../../util/cache";
 import { createGlobalId } from "../../../util";
@@ -16,6 +17,7 @@ import {
 } from "./tables";
 
 import {
+  Person as PersonTable,
   PhoneNumber as PhoneNumberTable,
 } from "../people/tables";
 
@@ -410,33 +412,55 @@ async findByAttributesAndQuery({ attributes, query, campuses }, { limit, offset,
 
   }
 
-  async requestGroupInfo({ groupId, message, communicationPreference }, person) {
+  requestGroupInfo = async ({ groupId, message, communicationPreference }, person) => {
     //error incorrect data
     if (!groupId || !message || !communicationPreference) return {
       code: 400, success: false, error: "Insufficient information",
     };
 
-    /* make sure group exists */
+    // make sure group exists
     if (!await this.getFromId(groupId)) return {
       code: 404, success: false, error: `No group with id ${groupId} found`,
     };
 
-    /* make sure user is not member of this group */
+    // make sure user is not member of this group
     const query = {
       where: {
         GroupId: groupId,
         PersonId: person.Id,
-        GroupMemberStatus: 1,
       }
     }
 
     const isMember = await GroupMemberTable.findOne(query);
     if (isMember) return { code: 400, error: "You are already a member of this group" };
 
-    /* hit REST endpoint to add groupmember with preference and message */
-    return { code: 200, success: true };
+    // change communicationPreference
+    const update = await PersonTable.fetch(
+      "POST",
+      `attributevalue/${person.Id}?AttributeKey=CommunicationPreference&AttributeValue=${communicationPreference}`,
+      {}
+    );
+    if (update && update.status >= 400) return {
+      code: update.status, error: update.statusText, success: false
+    };
 
-    //GroupMemberTable.post({});
+    // hit REST endpoint to add groupmember with message
+    const post = await GroupMemberTable.post({
+      IsSystem: false,
+      GroupId: groupId,
+      PersonId: person.Id,
+      GroupMemberStatus: 2, //pending
+      IsNotified: false,
+      GroupRoleId: 23, //member
+      Guid: uuid.v4(),
+      Note: message,
+    });
+
+    if (post & post.status >= 400) return {
+      code: post.status, error: post.statusText, success: false
+    };
+
+    return { code: 200, success: true };
   }
 }
 

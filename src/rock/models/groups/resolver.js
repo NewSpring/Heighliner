@@ -179,9 +179,7 @@ export default {
       _, { groupId, message, communicationPreference }, { models, person },
     ) => {
       if (!person) return { code: 401, success: false, error: "Must be logged in to make this request" };
-      const res = await models.Group.requestGroupInfo({ groupId, message, communicationPreference }, person);
-      console.log("RESULTS", res);
-      return res;
+      return await models.Group.requestGroupInfo({ groupId, message, communicationPreference }, person);
     },
   },
 
