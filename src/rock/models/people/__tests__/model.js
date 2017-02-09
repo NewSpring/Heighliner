@@ -41,16 +41,16 @@ describe("setPhoneNumber", () => {
 
     await setPhoneNumber(mockArgs, { Id: 9999999999 });
     expect(PhoneNumberTable.findOne).toHaveBeenCalledWith({
-      where: { NumberTypeValueId: 12, PersonId: 9999999999 },
+      where: { Number: "5555555555", PersonId: 9999999999 },
     });
   });
 
-  it("should return 400 if user already has a mobile phone on file", async () => {
+  it("should return 204 if user already has a mobile phone on file", async () => {
     const { setPhoneNumber } = phoneNumberModel;
     PhoneNumberTable.findOne.mockReturnValueOnce("hello");
 
     const result = await setPhoneNumber(mockArgs, { Id: 9999999999 });
-    expect(result.code).toEqual(400);
+    expect(result.code).toEqual(204);
   });
 
   it("should fail if adding the phone number fails", async () => {
