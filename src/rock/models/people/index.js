@@ -2,6 +2,7 @@
 import schema from "./schema";
 import resolvers from "./resolver";
 import models from "./model";
+import mutations from "./mutations";
 import queries from "./queries";
 
 export default {
@@ -9,4 +10,5 @@ export default {
   resolvers,
   models,
   queries,
+  mutations,
 };

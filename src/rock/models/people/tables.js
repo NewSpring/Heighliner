@@ -6,7 +6,7 @@ import {
   BOOLEAN,
 } from "sequelize";
 
-import { MSSQLConnector, Tables } from "../../mssql";
+import { MSSQLConnector } from "../../mssql";
 
 const personSchema = {
   Id: { type: INTEGER, primaryKey: true },
