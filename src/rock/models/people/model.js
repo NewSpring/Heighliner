@@ -34,7 +34,7 @@ export class PhoneNumber extends Rock {
     this.cache = cache;
   }
 
-  async setPhoneNumber({ phoneNumber }, person) {
+  setPhoneNumber = async ({ phoneNumber }, person) => {
     if (!phoneNumber) {
       return {
         code: 400,
@@ -42,7 +42,6 @@ export class PhoneNumber extends Rock {
         error: "Insufficient information",
       };
     }
-
 
     const nonFormattedPhoneNumber = phoneNumber.replace(/[-+() ]/g, "");
 
@@ -72,6 +71,7 @@ export class PhoneNumber extends Rock {
       };
     }
 
+    this.cache.del(`${person.Id}:PersonPhoneNumbers`);
     return { code: 200, success: true };
   }
 

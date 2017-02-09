@@ -7,6 +7,9 @@ jest.mock("../tables", () => ({
   PhoneNumber: {
     post: jest.fn(),
     findOne: jest.fn(),
+    cache: {
+      del: jest.fn(() => {}),
+    },
   },
 }));
 
