@@ -28,4 +28,10 @@ export default [`
     home(cache: Boolean = true): Location
     roles(cache: Boolean = true): [Group]
   }
+
+  type PhoneNumberMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+  }
 `];

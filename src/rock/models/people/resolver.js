@@ -2,6 +2,12 @@
 import Moment from "moment";
 import { createGlobalId } from "../../../util";
 
+const MutationReponseResolver = {
+  error: ({ error }) => error,
+  success: ({ success, error }) => success || !error,
+  code: ({ code }) => code,
+};
+
 export default {
 
   Query: {
@@ -23,6 +29,13 @@ export default {
 
   },
 
+  Mutation: {
+    setPhoneNumber: (_, { phoneNumber }, { models, person }) => {
+      if (!person) return { code: 401, success: false, error: "Must be logged in to make this request" };
+      return models.PhoneNumber.setPhoneNumber({ phoneNumber }, person);
+    },
+  },
+
   Person: {
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     entityId: ({ Id }) => Id,
@@ -30,8 +43,7 @@ export default {
     lastName: ({ LastName }) => LastName,
     nickName: ({ NickName }) => NickName,
     phoneNumbers: ({ Id }, _, { models }) =>  // tslint:disable-line
-       [],      // XXX
-      // return models.Person.getPhoneNumbersFromId(Id);
+      models.Person.getPhoneNumbersFromId(Id),
 
     photo: ({ PhotoId }, _, { models }) => {
       if (!PhotoId) return "//dg0ddngxdz549.cloudfront.net/images/cached/images/remote/http_s3.amazonaws.com/ns.images/all/member_images/members.nophoto_1000_1000_90_c1.jpg"; // tslint:disable-line
@@ -64,6 +76,9 @@ export default {
     person: ({ PersonId }, _, { models }) => models.Person.getFromId(PersonId),
   },
 
+  PhoneNumberMutationResponse: {
+    ...MutationReponseResolver,
+  },
 };
 
 
