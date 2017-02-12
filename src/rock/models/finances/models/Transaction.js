@@ -87,12 +87,19 @@ export default class Transaction extends Rock {
         ],
       attributes: ["Id"],
       include: [
-        { model: TransactionDetail.model, where: { AccountId: { $in: deductibleAccounts } } },
+        {
+          model: TransactionDetail.model,
+          where: { AccountId: { $in: deductibleAccounts } },
+          attributes: [],
+        },
       ],
-      limit,
-      offset,
     })
     , { cache })
+      .then((x) => {
+        if(limit) return x.slice(offset, limit + offset);
+
+        return x;
+      })
       .then(this.getFromIds.bind(this));
   }
 

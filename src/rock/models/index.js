@@ -24,7 +24,7 @@ export function createTables() {
       createdTables = merge(createdTables, tables[table].connect());
     } catch (e) { console.error(e); }
   }
-  console.log(tables)
+
   for (const table in tables) {
     try {
       if (tables[table].bind) tables[table].bind(createdTables);
