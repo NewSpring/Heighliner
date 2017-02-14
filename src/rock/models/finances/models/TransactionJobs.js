@@ -397,6 +397,12 @@ export default class TransactionJobs extends Rock {
         })
           .then(x => x && x.Campus || {});
 
+        // ERROR IF THIS IS MISSING
+        if (!FamilyCampus || !FamilyCampus.Id) {
+          if(!FamilyCampus) report({}, new Error("FamilyCampus missing when creating transaction details"));
+          else report({}, new Error("FamilyCampus.Id missing when creating transaction details"));
+        }
+
         AccountId = await FinancialAccount.findOne({
           where: {
             CampusId: FamilyCampus.Id,

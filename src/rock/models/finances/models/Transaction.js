@@ -13,6 +13,7 @@ import translateFromNMI from "../util/translate-nmi";
 import formatTransaction from "../util/formatTransaction";
 import nmi from "../util/nmi";
 import submitTransaction from "../util/submit-transaction";
+import { validateNMIResponse } from "../util/validateOrderData";
 
 import {
   Transaction as TransactionTable,
@@ -416,6 +417,10 @@ export default class Transaction extends Rock {
       if (accountDetails && accountDetails.ReferenceNumber) {
         delete orderData["customer-id"];
         orderData["customer-vault-id"] = accountDetails.ReferenceNumber;
+      } else {
+        // ERROR IF ACCOUNT DETAILS OR REFERENCE NUMBER IS MISSING
+        if (!accountDetails) report({}, new Error("Account details lookup failed"));
+        else report({}, new Error("Account Details doesn't have a reference number"));
       }
     }
 
@@ -445,11 +450,18 @@ export default class Transaction extends Rock {
       },
     };
 
+    // XXX here
+    // what info do I need to check for here?
+
     return nmi(order, gateway)
       .then((data) => {
         if (!instant) return data;
         const scheduleId = id;
         const response = formatTransaction({ scheduleId, response: data, person, origin }, gateway);
+
+        const validationError = validateNMIResponse(response);
+        // if (validationError) report({}, validationError);
+
         this.TransactionJob.add(response);
         return data;
       })
