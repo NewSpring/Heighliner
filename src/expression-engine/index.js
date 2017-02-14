@@ -1,4 +1,3 @@
-
 import { connect } from "./mysql";
 
 import { createApplication } from "../util/heighliner";

@@ -1,7 +1,4 @@
-
-
 export default [
-
   `userFeed(
     filters: [String]!
     options: String = "{}"
@@ -10,5 +7,4 @@ export default [
     status: String = "open",
     cache: Boolean = true
   ): [Node]`,
-
 ];

@@ -1,4 +1,3 @@
-
 import { assign } from "lodash";
 
 import {
@@ -9,20 +8,11 @@ import {
   ScheduledTransaction,
 } from "../../tables";
 
-import {
-  Person,
-  PersonAlias,
-} from "../../../people/tables";
+import { Person, PersonAlias } from "../../../people/tables";
 
-import {
-  Group,
-  GroupLocation,
-  GroupMember,
-} from "../../../groups/tables";
+import { Group, GroupLocation, GroupMember } from "../../../groups/tables";
 
-import {
-  Location,
-} from "../../../campuses/tables";
+import { Location } from "../../../campuses/tables";
 
 import submit from "../submit-transaction";
 
@@ -86,8 +76,11 @@ it("returns a promise", () => {
   expect(submit().then).toBeTruthy();
 });
 
-it("returns immediately if no transaction is passed", () =>
-   submit().then((result) => { expect(result).toBeFalsy(); }),
+it(
+  "returns immediately if no transaction is passed",
+  () => submit().then(result => {
+    expect(result).toBeFalsy();
+  }),
 );
 
 it("looks to see if the transaction is already in Rock", () => {
@@ -112,7 +105,7 @@ it("exits if the transaction is in Rock", () => {
     },
   };
   Transaction.find.mockReturnValueOnce([{ Id: "1" }]);
-  return submit(sample).then((result) => {
+  return submit(sample).then(result => {
     expect(result).toBeFalsy();
     expect(Transaction.find).toBeCalled();
     expect(Transaction.find).toBeCalledWith({
@@ -133,7 +126,7 @@ it("tries to find a person record for the transaction", () => {
   };
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
   Person.find.mockReturnValueOnce(Promise.resolve([]));
-  return submit(sample).then((result) => {
+  return submit(sample).then(result => {
     expect(result).toBeFalsy();
     expect(Transaction.find).toBeCalledWith({
       where: { TransactionCode: "1" },
@@ -169,18 +162,17 @@ it("allows for manually setting the PersonId", () => {
       PostalCode: "29621",
       Country: undefined,
     },
-    TransactionDetails: [
-      { AccountId: 138 },
-      { AccountId: 128 },
-    ],
+    TransactionDetails: [{ AccountId: 138 }, { AccountId: 128 }],
     CampusId: 1,
     ScheduledTransaction: {},
   };
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
-  Person.find.mockReturnValueOnce(Promise.resolve([
-    { Id: 11, FirstName: "Norma", PersonAlias: { Id: 12 } },
-    { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-  ]));
+  Person.find.mockReturnValueOnce(
+    Promise.resolve([
+      { Id: 11, FirstName: "Norma", PersonAlias: { Id: 12 } },
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
+    ]),
+  );
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
   Transaction.post.mockReturnValueOnce(Promise.resolve(100));
   FinancialAccount.findOne.mockReturnValueOnce(Promise.resolve(180));
@@ -188,10 +180,9 @@ it("allows for manually setting the PersonId", () => {
 
   return submit(sample).then(() => {
     expect(GroupLocation.find).not.toBeCalled();
-    expect(FinancialPaymentDetail.post).toBeCalledWith(assign(
-      sample.PaymentDetail,
-      { CreatedByPersonAliasId: 12 },
-    ));
+    expect(FinancialPaymentDetail.post).toBeCalledWith(
+      assign(sample.PaymentDetail, { CreatedByPersonAliasId: 12 }),
+    );
   });
 });
 
@@ -224,10 +215,12 @@ it("trieds to narrow down person by location", () => {
     ScheduledTransaction: {},
   };
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
-  Person.find.mockReturnValueOnce(Promise.resolve([
-    { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-    { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-  ]));
+  Person.find.mockReturnValueOnce(
+    Promise.resolve([
+      { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
+    ]),
+  );
   GroupLocation.find.mockReturnValueOnce(Promise.resolve([]));
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
   Transaction.post.mockReturnValueOnce(Promise.resolve(100));
@@ -290,19 +283,23 @@ it("trieds to narrow down person by location with found locations", () => {
     ScheduledTransaction: {},
   };
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
-  Person.find.mockReturnValueOnce(Promise.resolve([
-    { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-    { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-  ]));
-  GroupLocation.find.mockReturnValueOnce(Promise.resolve([
-    { Group: { GroupMembers: [{ PersonId: 1 }] } },
-  ]));
+  Person.find.mockReturnValueOnce(
+    Promise.resolve([
+      { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
+    ]),
+  );
+  GroupLocation.find.mockReturnValueOnce(
+    Promise.resolve([{ Group: { GroupMembers: [{ PersonId: 1 }] } }]),
+  );
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
   Transaction.post.mockReturnValueOnce(Promise.resolve(100));
   const originalWarn = console.warn;
   console.warn = jest.fn();
   return submit(sample).then(() => {
-    expect(console.warn).not.toBeCalledWith("no locations found for Norma,Tissa");
+    expect(console.warn).not.toBeCalledWith(
+      "no locations found for Norma,Tissa",
+    );
     console.warn = originalWarn;
     expect(GroupLocation.find).toBeCalledWith({
       include: [
@@ -331,7 +328,6 @@ it("trieds to narrow down person by location with found locations", () => {
   });
 });
 
-
 it("looks up the correct FinancialAccount based on CampusId", () => {
   const sample = {
     Transaction: {
@@ -355,18 +351,17 @@ it("looks up the correct FinancialAccount based on CampusId", () => {
       PostalCode: "29621",
       Country: undefined,
     },
-    TransactionDetails: [
-      { AccountId: 138 },
-      { AccountId: 128 },
-    ],
+    TransactionDetails: [{ AccountId: 138 }, { AccountId: 128 }],
     CampusId: 1,
     ScheduledTransaction: {},
   };
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
-  Person.find.mockReturnValueOnce(Promise.resolve([
-    { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-    { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-  ]));
+  Person.find.mockReturnValueOnce(
+    Promise.resolve([
+      { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
+    ]),
+  );
   GroupLocation.find.mockReturnValueOnce(Promise.resolve([]));
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
   Transaction.post.mockReturnValueOnce(Promise.resolve(100));
@@ -385,7 +380,6 @@ it("looks up the correct FinancialAccount based on CampusId", () => {
     expect(Id).toEqual(100);
   });
 });
-
 
 it("creates a financial payment", () => {
   const sample = {
@@ -414,23 +408,26 @@ it("creates a financial payment", () => {
     ScheduledTransaction: {},
   };
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
-  Person.find.mockReturnValueOnce(Promise.resolve([
-    { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-    { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-  ]));
+  Person.find.mockReturnValueOnce(
+    Promise.resolve([
+      { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
+    ]),
+  );
   GroupLocation.find.mockReturnValueOnce(Promise.resolve([]));
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
   Transaction.post.mockReturnValueOnce(Promise.resolve(100));
 
   return submit(sample).then(() => {
-    expect(FinancialPaymentDetail.post).toBeCalledWith(assign(
-      sample.PaymentDetail,
-      { CreatedByPersonAliasId: 1 },
-    ));
+    expect(FinancialPaymentDetail.post).toBeCalledWith(
+      assign(sample.PaymentDetail, { CreatedByPersonAliasId: 1 }),
+    );
   });
 });
 
-xit("it batches the rest of the actions if failure on creating a finanical payment");
+xit(
+  "it batches the rest of the actions if failure on creating a finanical payment",
+);
 
 it("attaches the ScheduledTransactionId if needed", () => {
   const sample = {
@@ -455,41 +452,41 @@ it("attaches the ScheduledTransactionId if needed", () => {
       PostalCode: "29621",
       Country: undefined,
     },
-    TransactionDetails: [
-      { AccountId: 138 },
-      { AccountId: 128 },
-    ],
+    TransactionDetails: [{ AccountId: 138 }, { AccountId: 128 }],
     CampusId: 1,
     ScheduledTransaction: {
       GatewayScheduleId: "19",
     },
   };
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
-  Person.find.mockReturnValueOnce(Promise.resolve([
-    { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-    { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-  ]));
+  Person.find.mockReturnValueOnce(
+    Promise.resolve([
+      { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
+    ]),
+  );
   GroupLocation.find.mockReturnValueOnce(Promise.resolve([]));
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
   Transaction.post.mockReturnValueOnce(Promise.resolve(100));
   FinancialAccount.findOne.mockReturnValueOnce(Promise.resolve(180));
   FinancialAccount.findOne.mockReturnValueOnce(Promise.resolve(120));
-  ScheduledTransaction.findOne.mockReturnValueOnce(Promise.resolve({
-    Id: 24,
-  }));
+  ScheduledTransaction.findOne.mockReturnValueOnce(
+    Promise.resolve({
+      Id: 24,
+    }),
+  );
   return submit(sample).then(() => {
     expect(ScheduledTransaction.findOne).toBeCalledWith({
       where: sample.ScheduledTransaction,
     });
-    expect(Transaction.post).toBeCalledWith(assign(
-      sample.Transaction,
-      {
+    expect(Transaction.post).toBeCalledWith(
+      assign(sample.Transaction, {
         AuthorizedPersonAliasId: 1,
         CreatedByPersonAliasId: 1,
         FinancialPaymentDetailId: 5,
         ScheduledTransactionId: 24,
-      },
-    ));
+      }),
+    );
   });
 });
 
@@ -517,20 +514,19 @@ it("logs an error if missing a schedule in Rock", () => {
       PostalCode: "29621",
       Country: undefined,
     },
-    TransactionDetails: [
-      { AccountId: 138 },
-      { AccountId: 128 },
-    ],
+    TransactionDetails: [{ AccountId: 138 }, { AccountId: 128 }],
     CampusId: 1,
     ScheduledTransaction: {
       GatewayScheduleId: "19",
     },
   };
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
-  Person.find.mockReturnValueOnce(Promise.resolve([
-    { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-    { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-  ]));
+  Person.find.mockReturnValueOnce(
+    Promise.resolve([
+      { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
+    ]),
+  );
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
   Transaction.post.mockReturnValueOnce(Promise.resolve(100));
   FinancialAccount.findOne.mockReturnValueOnce(Promise.resolve(180));
@@ -542,16 +538,15 @@ it("logs an error if missing a schedule in Rock", () => {
     expect(ScheduledTransaction.findOne).toBeCalledWith({
       where: sample.ScheduledTransaction,
     });
-    expect((console.error).mock.calls[0]).toMatchSnapshot();
+    expect(console.error.mock.calls[0]).toMatchSnapshot();
     console.error = originalError;
-    expect(Transaction.post).toBeCalledWith(assign(
-      sample.Transaction,
-      {
+    expect(Transaction.post).toBeCalledWith(
+      assign(sample.Transaction, {
         AuthorizedPersonAliasId: 1,
         CreatedByPersonAliasId: 1,
         FinancialPaymentDetailId: 5,
-      },
-    ));
+      }),
+    );
   });
 });
 
@@ -582,23 +577,24 @@ it("creates a FinancialTransaction", () => {
     ScheduledTransaction: {},
   };
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
-  Person.find.mockReturnValueOnce(Promise.resolve([
-    { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-    { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-  ]));
+  Person.find.mockReturnValueOnce(
+    Promise.resolve([
+      { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
+    ]),
+  );
   GroupLocation.find.mockReturnValueOnce(Promise.resolve([]));
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
   Transaction.post.mockReturnValueOnce(Promise.resolve(100));
 
   return submit(sample).then(() => {
-    expect(Transaction.post).toBeCalledWith(assign(
-      sample.Transaction,
-      {
+    expect(Transaction.post).toBeCalledWith(
+      assign(sample.Transaction, {
         AuthorizedPersonAliasId: 1,
         CreatedByPersonAliasId: 1,
         FinancialPaymentDetailId: 5,
-      },
-    ));
+      }),
+    );
   });
 });
 
@@ -627,18 +623,17 @@ it("creates TransactionDetail entities", () => {
       PostalCode: "29621",
       Country: undefined,
     },
-    TransactionDetails: [
-      { AccountId: 138 },
-      { AccountId: 128 },
-    ],
+    TransactionDetails: [{ AccountId: 138 }, { AccountId: 128 }],
     CampusId: 1,
     ScheduledTransaction: {},
   };
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
-  Person.find.mockReturnValueOnce(Promise.resolve([
-    { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-    { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-  ]));
+  Person.find.mockReturnValueOnce(
+    Promise.resolve([
+      { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
+    ]),
+  );
   GroupLocation.find.mockReturnValueOnce(Promise.resolve([]));
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
   Transaction.post.mockReturnValueOnce(Promise.resolve(100));
@@ -646,23 +641,21 @@ it("creates TransactionDetail entities", () => {
   FinancialAccount.findOne.mockReturnValueOnce(Promise.resolve(120));
 
   return submit(sample).then(() => {
-    expect(TransactionDetail.post).toBeCalledWith(assign(
-      sample.TransactionDetails[0],
-      {
+    expect(TransactionDetail.post).toBeCalledWith(
+      assign(sample.TransactionDetails[0], {
         TransactionId: 100,
         CreatedByPersonAliasId: 1,
         AccountId: 180,
-      },
-    ));
+      }),
+    );
 
-    expect(TransactionDetail.post).toBeCalledWith(assign(
-      sample.TransactionDetails[1],
-      {
+    expect(TransactionDetail.post).toBeCalledWith(
+      assign(sample.TransactionDetails[1], {
         TransactionId: 100,
         CreatedByPersonAliasId: 1,
         AccountId: 120,
-      },
-    ));
+      }),
+    );
   });
 });
 
@@ -691,18 +684,17 @@ it("returns the FinancialTransactionId", () => {
       PostalCode: "29621",
       Country: undefined,
     },
-    TransactionDetails: [
-      { AccountId: 138 },
-      { AccountId: 128 },
-    ],
+    TransactionDetails: [{ AccountId: 138 }, { AccountId: 128 }],
     CampusId: 1,
     ScheduledTransaction: {},
   };
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
-  Person.find.mockReturnValueOnce(Promise.resolve([
-    { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-    { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-  ]));
+  Person.find.mockReturnValueOnce(
+    Promise.resolve([
+      { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
+    ]),
+  );
   GroupLocation.find.mockReturnValueOnce(Promise.resolve([]));
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
   Transaction.post.mockReturnValueOnce(Promise.resolve(100));

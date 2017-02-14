@@ -1,11 +1,6 @@
 /* tslint:disable:no-shadowed-variable */
 
-import {
-  INTEGER,
-  STRING,
-  BOOLEAN,
-  UUID,
-} from "sequelize";
+import { INTEGER, STRING, BOOLEAN, UUID } from "sequelize";
 
 import { MSSQLConnector } from "../../mssql";
 
@@ -105,31 +100,22 @@ let SystemEmail;
 export {
   DefinedType,
   definedTypeSchema,
-
   DefinedValue,
   definedValueSchema,
-
   FieldType,
   fieldTypeSchema,
-
   Attribute,
   attributeSchema,
-
   AttributeQualifier,
   attributeQualifierSchema,
-
   AttributeValue,
   attributeValueSchema,
-
   EntityType,
   entityTypeSchema,
-
   Communication,
   communicationSchema,
-
   CommunicationRecipient,
   communicationRecipientSchema,
-
   SystemEmail,
   systemEmailSchema,
 };
@@ -140,13 +126,17 @@ export function connect() {
   FieldType = new MSSQLConnector("FieldType", fieldTypeSchema);
   Attribute = new MSSQLConnector("Attribute", attributeSchema);
   AttributeQualifier = new MSSQLConnector(
-    "AttributeQualifier", attributeQualifierSchema,
+    "AttributeQualifier",
+    attributeQualifierSchema,
   );
   AttributeValue = new MSSQLConnector("AttributeValue", attributeValueSchema);
   EntityType = new MSSQLConnector("EntityType", entityTypeSchema);
 
   Communication = new MSSQLConnector("Communication", communicationSchema);
-  CommunicationRecipient = new MSSQLConnector("CommunicationRecipient", communicationRecipientSchema);
+  CommunicationRecipient = new MSSQLConnector(
+    "CommunicationRecipient",
+    communicationRecipientSchema,
+  );
 
   SystemEmail = new MSSQLConnector("SystemEmail", systemEmailSchema);
 
@@ -164,34 +154,59 @@ export function connect() {
   };
 }
 
-export function bind({
-  DefinedType,
-  DefinedValue,
-  FieldType,
-  Attribute,
-  AttributeQualifier,
-  AttributeValue,
-  EntityType,
-}) {
-  DefinedType.model.belongsTo(FieldType.model, { foreignKey: "FieldTypeId", targetKey: "Id" });
+export function bind(
+  {
+    DefinedType,
+    DefinedValue,
+    FieldType,
+    Attribute,
+    AttributeQualifier,
+    AttributeValue,
+    EntityType,
+  },
+) {
+  DefinedType.model.belongsTo(FieldType.model, {
+    foreignKey: "FieldTypeId",
+    targetKey: "Id",
+  });
   FieldType.model.hasMany(DefinedType.model, { foreignKey: "Id" });
 
-  DefinedValue.model.belongsTo(DefinedType.model, { foreignKey: "DefinedTypeId", targetKey: "Id" });
+  DefinedValue.model.belongsTo(DefinedType.model, {
+    foreignKey: "DefinedTypeId",
+    targetKey: "Id",
+  });
   DefinedType.model.hasMany(DefinedValue.model, { foreignKey: "Id" });
 
-  AttributeValue.model.belongsTo(Attribute.model, { foreignKey: "AttributeId", targetKey: "Id" });
+  AttributeValue.model.belongsTo(Attribute.model, {
+    foreignKey: "AttributeId",
+    targetKey: "Id",
+  });
   Attribute.model.hasMany(AttributeValue.model, { foreignKey: "Id" });
 
-  AttributeQualifier.model.belongsTo(Attribute.model, { foreignKey: "AttributeId", targetKey: "Id" });
-  Attribute.model.hasMany(AttributeQualifier.model, { foreignKey: "AttributeId" });
+  AttributeQualifier.model.belongsTo(Attribute.model, {
+    foreignKey: "AttributeId",
+    targetKey: "Id",
+  });
+  Attribute.model.hasMany(AttributeQualifier.model, {
+    foreignKey: "AttributeId",
+  });
 
-  Attribute.model.belongsTo(EntityType.model, { foreignKey: "EntityTypeId", targetKey: "Id" });
-  Attribute.model.belongsTo(FieldType.model, { foreignKey: "FieldTypeId", targetKey: "Id" });
+  Attribute.model.belongsTo(EntityType.model, {
+    foreignKey: "EntityTypeId",
+    targetKey: "Id",
+  });
+  Attribute.model.belongsTo(FieldType.model, {
+    foreignKey: "FieldTypeId",
+    targetKey: "Id",
+  });
 
   // DefinedValue.model.belongsTo(AttributeValue.model, { foreignKey: "Value", targetKey: "Guid"});
   // AttributeValue.model.hasMany(DefinedValue.model, { foreignKey: "Guid"  });
 
-  AttributeValue.model.belongsTo(DefinedValue.model, { foreignKey: "Value", targetKey: "Guid" });
+  AttributeValue.model.belongsTo(DefinedValue.model, {
+    foreignKey: "Value",
+    targetKey: "Guid",
+  });
   DefinedValue.model.hasMany(AttributeValue.model, { foreignKey: "Guid" });
 }
 

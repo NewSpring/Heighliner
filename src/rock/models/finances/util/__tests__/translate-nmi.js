@@ -9,7 +9,8 @@ import {
   NMIExample,
 } from "../__mocks__/sample-response";
 
-jest.mock("moment", () => date => ({ toISOString: () => `Mocked ISODate: ${date}` }));
+jest.mock("moment", () =>
+  date => ({ toISOString: () => `Mocked ISODate: ${date}` }));
 
 describe("getCardType", () => {
   it("correctly identifies a visa with hashes", () => {
@@ -91,17 +92,26 @@ describe("translate", () => {
   });
 
   it("returns null for a refund transaction", () => {
-    const example = defaultsDeep({ action: { action_type: "refund" } }, standard);
+    const example = defaultsDeep(
+      { action: { action_type: "refund" } },
+      standard,
+    );
     expect(translate(example, { Id: 3 })).toBeFalsy();
   });
 
   xit("correctly formats refunds", () => {
-    const example = defaultsDeep({ action: { action_type: "refund" } }, standard);
+    const example = defaultsDeep(
+      { action: { action_type: "refund" } },
+      standard,
+    );
     expect(translate(example, { Id: 3 })).toMatchSnapshot();
   });
 
   it("returns null for a credit transaction", () => {
-    const example = defaultsDeep({ action: { action_type: "credit" } }, standard);
+    const example = defaultsDeep(
+      { action: { action_type: "credit" } },
+      standard,
+    );
     expect(translate(example, { Id: 3 })).toBeFalsy();
   });
 
@@ -111,7 +121,10 @@ describe("translate", () => {
   });
 
   it("returns null for a capture transaction", () => {
-    const example = defaultsDeep({ action: { action_type: "capture" } }, standard);
+    const example = defaultsDeep(
+      { action: { action_type: "capture" } },
+      standard,
+    );
     expect(translate(example, { Id: 3 })).toBeFalsy();
   });
 
@@ -121,12 +134,18 @@ describe("translate", () => {
   });
 
   it("returns null for a return transaction", () => {
-    const example = defaultsDeep({ action: { action_type: "return" } }, standard);
+    const example = defaultsDeep(
+      { action: { action_type: "return" } },
+      standard,
+    );
     expect(translate(example, { Id: 3 })).toBeFalsy();
   });
 
   xit("correctly formats a return action", () => {
-    const example = defaultsDeep({ action: { action_type: "return" } }, standard);
+    const example = defaultsDeep(
+      { action: { action_type: "return" } },
+      standard,
+    );
     expect(translate(example, { Id: 3 })).toMatchSnapshot();
   });
 
@@ -140,14 +159,19 @@ describe("translate", () => {
   });
 
   it("supports multiple funds", () => {
-    const example = defaultsDeep({ product: [
-      standard.product,
+    const example = defaultsDeep(
       {
-        sku: "128",
-        quantity: "10.0000",
-        description: "Step Up",
+        product: [
+          standard.product,
+          {
+            sku: "128",
+            quantity: "10.0000",
+            description: "Step Up",
+          },
+        ],
       },
-    ] }, standard);
+      standard,
+    );
     expect(translate(example, { Id: 3 })).toMatchSnapshot();
   });
 

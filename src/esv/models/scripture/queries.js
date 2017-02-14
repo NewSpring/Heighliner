@@ -1,4 +1,1 @@
-
-export default [
-  "scripture(query: String!): ESVScripture",
-];
+export default ["scripture(query: String!): ESVScripture"];

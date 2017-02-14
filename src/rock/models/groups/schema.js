@@ -1,5 +1,5 @@
-
-export default [`
+export default [
+  `
   type GroupMember implements Node {
     id: ID!
     role: String
@@ -52,4 +52,5 @@ export default [`
     code: Int
   }
 
-`];
+`,
+];

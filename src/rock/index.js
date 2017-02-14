@@ -1,4 +1,3 @@
-
 import { connect } from "./mssql";
 
 import { createApplication } from "../util/heighliner";
@@ -12,7 +11,14 @@ import BinaryFiles from "./models/binary-files";
 import Feeds from "./models/feeds";
 import Likes from "./models/likes";
 
-export const { mutations, queries, models, resolvers, mocks, schema } = createApplication([
+export const {
+  mutations,
+  queries,
+  models,
+  resolvers,
+  mocks,
+  schema,
+} = createApplication([
   People,
   Finances,
   Campuses,

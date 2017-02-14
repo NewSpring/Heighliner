@@ -48,21 +48,25 @@ function resolveAttribute(id, resolver) {
   return (data, args, context) => {
     const { AttributeValues } = data;
     const { models } = context;
-    const chunk = AttributeValues.filter(x => x.Attribute && x.Attribute.Id === id)[0];
+    const chunk = AttributeValues.filter(
+      x => x.Attribute && x.Attribute.Id === id,
+    )[0];
     if (!chunk) {
-      return Promise.resolve(null)
-      .then(x => resolver(x, data, args, context)); }
+      return Promise.resolve(null).then(x => resolver(x, data, args, context));
+    }
 
-    return models.Rock.getAttributeValuesFromId(chunk.Id, { models })
+    return models.Rock
+      .getAttributeValuesFromId(chunk.Id, { models })
       .then(x => resolver(x, data, args, context));
   };
 }
 
 export default {
-
   Query: {
     groups: async (
-      _, { campuses = [], offset, limit, attributes = [], query, clientIp }, { models, ip, person },
+      _,
+      { campuses = [], offset, limit, attributes = [], query, clientIp },
+      { models, ip, person },
     ) => {
       if (campuses.length) {
         campuses = campuses.map(x => ({ Name: { $like: x } }));
@@ -105,7 +109,8 @@ export default {
           }
         }
       } else if (person && person.Id) {
-        const { latitude, longitude } = await models.Person.getHomesFromId(person.Id)
+        const { latitude, longitude } = await models.Person
+          .getHomesFromId(person.Id)
           .then(([x]) => {
             if (!x) return {};
             if (!x.GeoPoint) return x;
@@ -124,7 +129,6 @@ export default {
         geo.latitude = geoData.location.latitude;
         geo.longitude = geoData.location.longitude;
       }
-
 
       attributes = attributes.filter(x => x); // only truthy values
       if (attributes.indexOf("kid friendly") > -1) {
@@ -154,7 +158,8 @@ export default {
       }
 
       return models.Group.findByAttributesAndQuery(
-        { query, attributes, campuses }, { limit, offset, geo },
+        { query, attributes, campuses },
+        { limit, offset, geo },
       );
     },
     groupAttributes: (_, $, { models }) => {
@@ -164,40 +169,48 @@ export default {
         16815, // tags
         16814, // type
       ];
-      const queries = ids.map(id => models.Rock.getAttributesFromId(id, { models }));
-      return Promise.all(queries).then(flatten)
+      const queries = ids.map(id =>
+        models.Rock.getAttributesFromId(id, { models }));
+      return Promise.all(queries)
+        .then(flatten)
         .then(x => x.filter(y => y.Value !== "Interests"))
-        .then(x => x.map((y) => {
+        .then(x => x.map(y => {
           y.Value = y.Value === "Childcare" ? "kid friendly" : y.Value;
           return y;
         }));
     },
   },
-
   Mutation: {
     requestGroupInfo: async (
-      _, { groupId, message, communicationPreference }, { models, person },
+      _,
+      { groupId, message, communicationPreference },
+      { models, person },
     ) => {
-      if (!person) return { code: 401, success: false, error: "Must be logged in to make this request" };
-      return await models.Group.requestGroupInfo({ groupId, message, communicationPreference }, person);
+      if (!person) {
+        return {
+          code: 401,
+          success: false,
+          error: "Must be logged in to make this request",
+        };
+      }
+      return await models.Group.requestGroupInfo(
+        { groupId, message, communicationPreference },
+        person,
+      );
     },
   },
-
   GroupMember: {
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     role: ({ GroupTypeRole }) => GroupTypeRole && GroupTypeRole.Name, // XXX should we expand this?
     person: ({ PersonId }, _, { models }) => models.Person.getFromId(PersonId),
   },
-
   GroupLocation: {
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     location: ({ LocationId }, _, { models }) =>
       // XXX abstract to location model
       // models.Location.getFromId(LocationId);
-       models.Group.getLocationFromLocationId(LocationId)
-    ,
+      models.Group.getLocationFromLocationId(LocationId),
   },
-
   GroupSchedule: {
     day: ({ WeeklyDayOfWeek }) => WeeklyDayOfWeek,
     description: ({ WeeklyTimeOfDay, WeeklyDayOfWeek }) => {
@@ -218,12 +231,12 @@ export default {
     start: ({ EffectiveStartDate }) => EffectiveStartDate,
     time: ({ WeeklyTimeOfDay }) => WeeklyTimeOfDay,
   },
-
   Group: {
     active: ({ IsActive }) => IsActive,
     ageRange: resolveAttribute(691, (x = []) => {
       // don't consider [0,0] an age range
-      const hasAgeRange = x.length && x.reduce((start, finish) => (start && finish));
+      const hasAgeRange = x.length &&
+        x.reduce((start, finish) => start && finish);
       if (!hasAgeRange) return null;
       return x;
     }),
@@ -239,7 +252,8 @@ export default {
       geo.latitude = geoData.location.latitude;
       geo.longitude = geoData.location.longitude;
 
-      return models.Group.getDistanceFromLatLng(Id, geo)
+      return models.Group
+        .getDistanceFromLatLng(Id, geo)
         .then(x => x && x * 0.000621371);
     }, // convert to miles
     entityId: ({ Id }) => Id,
@@ -248,45 +262,52 @@ export default {
     locations: ({ Id }, _, { models }) => models.Group.getLocationsById(Id),
     members: ({ Id }, _, { models }) => models.Group.getMembersById(Id),
     name: ({ Name }) => Name,
-    photo: resolveAttribute(2569, async (photo, { AttributeValues }, _, { models }) => {
+    photo: resolveAttribute(2569, async (
+      photo,
+      { AttributeValues },
+      _,
+      { models },
+    ) => {
       if (photo && photo.Path) return photo.Path;
 
       // check for tags first
-      const firstTag = await resolveAttribute(16815, x => x && x.length && x[0].Value)(
-        { AttributeValues }, _, { models },
-      );
+      const firstTag = await resolveAttribute(
+        16815,
+        x => x && x.length && x[0].Value,
+      )({ AttributeValues }, _, { models });
 
       if (firstTag) return getPhotoFromTag(firstTag);
 
       // photo from demographic
-      const demographic = await resolveAttribute(1409, x => x && x.length && x[0].Value)(
-        { AttributeValues }, _, { models },
-      );
+      const demographic = await resolveAttribute(
+        1409,
+        x => x && x.length && x[0].Value,
+      )({ AttributeValues }, _, { models });
 
       if (demographic) return getPhotoFromDemo(demographic);
 
       // type goes last since its required
-      const type = await resolveAttribute(16814, x => x && x.length && x[0].Value)(
-        { AttributeValues }, _, { models },
-      );
+      const type = await resolveAttribute(
+        16814,
+        x => x && x.length && x[0].Value,
+      )({ AttributeValues }, _, { models });
 
       if (type) return getPhotoFromType(type);
 
       return null;
     }),
-    schedule: ({ ScheduleId }, _, { models }) => models.Group.getScheduleFromScheduleId(ScheduleId),
-    tags: resolveAttribute(16815, (x) => {
+    schedule: ({ ScheduleId }, _, { models }) =>
+      models.Group.getScheduleFromScheduleId(ScheduleId),
+    tags: resolveAttribute(16815, x => {
       if (x && x.length) return x;
       return [];
     }),
     type: resolveAttribute(16814, x => x && x.length && x[0].Value),
   },
-
   GroupSearch: {
     count: ({ count }) => count,
     results: ({ results }) => results,
   },
-
   GroupsMutationResponse: {
     ...MutationReponseResolver,
   },

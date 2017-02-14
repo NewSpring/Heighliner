@@ -1,4 +1,3 @@
-
 import moment from "moment";
 
 import FinancialBatch from "../FinancialBatch";
@@ -26,7 +25,8 @@ jest.mock("node-uuid", () => ({
 const mockedCache = {
   get: jest.fn((id, lookup) => Promise.resolve().then(lookup)),
   set: jest.fn(() => Promise.resolve().then(() => true)),
-  del() {},
+  del() {
+  },
   encode: jest.fn((obj, prefix) => `${prefix}${JSON.stringify(obj)}`),
 };
 
@@ -87,9 +87,7 @@ describe("findOrCreate", () => {
     const startOf = jest.fn(() => ({ subtract }));
     const endOf = jest.fn(() => ({ subtract }));
 
-    moment
-      .mockReturnValueOnce({ startOf })
-      .mockReturnValueOnce({ endOf });
+    moment.mockReturnValueOnce({ startOf }).mockReturnValueOnce({ endOf });
 
     FinancialBatchTable.post.mockReturnValueOnce(Promise.resolve({ Id: 1 }));
     FinancialBatchTable.findOne.mockReturnValueOnce({ Id: 1 });

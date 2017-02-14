@@ -1,12 +1,9 @@
-
 import uuid from "node-uuid";
 import moment from "moment";
 
 import { createGlobalId } from "../../../../util";
 
-import {
-  FinancialBatch as FinancialBatchTable,
-} from "../tables";
+import { FinancialBatch as FinancialBatchTable } from "../tables";
 
 import { Rock } from "../../system";
 
@@ -15,10 +12,13 @@ export default class FinancialBatch extends Rock {
 
   async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(id, this.__type);
-    return this.cache.get(globalId, () => FinancialBatchTable.findOne({ where: { Id: id }}));
+    return this.cache.get(globalId, () =>
+      FinancialBatchTable.findOne({ where: { Id: id } }));
   }
 
-  async findOrCreate({ prefix = "Online Giving", suffix = "", currencyType, date }) {
+  async findOrCreate(
+    { prefix = "Online Giving", suffix = "", currencyType, date },
+  ) {
     let paymentType = "";
     if (currencyType) paymentType = currencyType;
 
@@ -61,5 +61,4 @@ export default class FinancialBatch extends Rock {
     const batchId = await FinancialBatchTable.post(newBatch);
     return FinancialBatchTable.findOne({ where: { Id: batchId } });
   }
-
 }

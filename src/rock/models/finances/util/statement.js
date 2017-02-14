@@ -11,36 +11,39 @@ import ReactDOMServer from "react-dom/server";
 import pdf from "html-pdf";
 import uuid from "node-uuid";
 
-export const generatePDF = (component) => {
+export const generatePDF = component => {
   const html = ReactDOMServer.renderToStaticMarkup(component);
   return new Promise((r, f) => {
     // XXX James says this isn't really worth mocking independent parts
     // of pdf.create. So instead we just verify it fails, or returns a base64 stringify
     // from a given react component
-    pdf.create(html, {
-      format: "letter",
-      border: {
-        top: "0.6in",
-        right: "0.6in",
-        bottom: "0.6in",
-        left: "0.6in",
-      },
-    }).toBuffer((err, buffer) => {
-      if (err) return f(err);
+    pdf
+      .create(html, {
+        format: "letter",
+        border: {
+          top: "0.6in",
+          right: "0.6in",
+          bottom: "0.6in",
+          left: "0.6in",
+        },
+      })
+      .toBuffer((err, buffer) => {
+        if (err) return f(err);
 
-      r(buffer.toString("base64"));
-    });
+        r(buffer.toString("base64"));
+      });
   });
 };
 
-export const formatMoney = (amount) => (
-  `$${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
-);
+export const formatMoney = amount =>
+  `$${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
 
 export const Statement = ({ transactions, person, home, total }) => (
   <html>
     <head>
-      <style>{`
+      <style>
+        {
+          `
         html,
         body {
           height: 100%;
@@ -170,37 +173,42 @@ export const Statement = ({ transactions, person, home, total }) => (
           line-height: 1.4em;
         }
 
-      `}</style>
+      `
+        }
+      </style>
     </head>
     <body>
       <div className="container">
         <p>
-          <br/>
-          <br/>
-          <br/>
+          <br />
+          <br />
+          <br />
         </p>
         <img
-          id="logo-img" src="https://s3.amazonaws.com/ns.images/newspring/icons/newspring-church-logo-black.png"
+          id="logo-img"
+          src="https://s3.amazonaws.com/ns.images/newspring/icons/newspring-church-logo-black.png"
         />
         <h2
           style={{ fontFamily: "Helvetica" }}
           className="print-subheader soft-sides soft-half-bottom"
         >
-            Contribution Statement
+          Contribution Statement
         </h2>
 
         <div className="soft pre-text">
           <p id="church-address">
-            NewSpring Church  <br/>
-            EIN# 26-4189337 <br/>
-            PO Box 1407  <br/>
+            NewSpring Church
+            <br />
+            EIN# 26-4189337 <br />
+            PO Box 1407
+            <br />
             Anderson, SC 29622 US
           </p>
 
           <p>
-            {person.NickName || person.FirstName} {person.LastName}<br/>
-            {home.Street1}<br/>
-            {home.Street2 && (<span>{home.Street2}<br/></span>)}
+            {person.NickName || person.FirstName} {person.LastName}<br />
+            {home.Street1}<br />
+            {home.Street2 && <span>{home.Street2}<br /></span>}
             {home.City} {home.State} {home.PostalCode}
           </p>
 
@@ -212,7 +220,10 @@ export const Statement = ({ transactions, person, home, total }) => (
         <table className="soft" style={{ width: "100%" }} id="statement-table">
           <tbody>
             <tr>
-              <th className="type" style={{ fontFamily: "Helvetica", fontWeight: 700 }}>
+              <th
+                className="type"
+                style={{ fontFamily: "Helvetica", fontWeight: 700 }}
+              >
                 Account
               </th>
               <th style={{ fontFamily: "Helvetica", fontWeight: 700 }}>
@@ -230,11 +241,14 @@ export const Statement = ({ transactions, person, home, total }) => (
               </tr>
             ))}
             <tr className="total" style={{ width: "100%" }}>
-              <td className="soft-ends" style={{ fontFamily: "Helvetica" }} >
+              <td className="soft-ends" style={{ fontFamily: "Helvetica" }}>
                 Total
               </td>
               <td />
-              <td className="soft-ends total-amount" style={{ fontFamily: "Helvetica" }}>
+              <td
+                className="soft-ends total-amount"
+                style={{ fontFamily: "Helvetica" }}
+              >
                 {formatMoney(total)}
               </td>
             </tr>
@@ -250,5 +264,4 @@ export const Statement = ({ transactions, person, home, total }) => (
   </html>
 );
 
-
-export default (props) => generatePDF(<Statement {...props} />);
+export default props => generatePDF(<Statement {...props} />);

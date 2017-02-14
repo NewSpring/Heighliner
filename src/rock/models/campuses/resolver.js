@@ -2,11 +2,10 @@ import { geography } from "mssql-geoparser";
 import { createGlobalId } from "../../../util";
 
 export default {
-
   Query: {
-    campuses: (_, { name, id }, { models }) => models.Campus.find({ Id: id, Name: name }),
+    campuses: (_, { name, id }, { models }) =>
+      models.Campus.find({ Id: id, Name: name }),
   },
-
   Campus: {
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     entityId: ({ Id }) => Id,
@@ -19,18 +18,16 @@ export default {
 
       const days = {};
 
-      ServiceTimes.split("|")
-        .filter(x => !!x)
-        .forEach((x) => {
-          let [day, time] = x.split("^");
-          day = day.trim();
-          time = time.trim();
-          if (!days[day]) days[day] = [];
+      ServiceTimes.split("|").filter(x => !!x).forEach(x => {
+        let [day, time] = x.split("^");
+        day = day.trim();
+        time = time.trim();
+        if (!days[day]) days[day] = [];
 
-          if (days[day].indexOf(time) === -1) days[day].push(time);
-        });
+        if (days[day].indexOf(time) === -1) days[day].push(time);
+      });
 
-      return Object.keys(days).map((x) => {
+      return Object.keys(days).map(x => {
         let str = `${x} at `;
         if (days[x].length === 1) {
           str += `& ${days[x]}`;
@@ -39,7 +36,6 @@ export default {
 
         str += `${[...days[x]].slice(0, days[x].length - 1).join(", ")} `;
         str += `& ${[...days[x]].pop()}`;
-
 
         return str;
       });
@@ -51,7 +47,6 @@ export default {
       return models.Campus.findByLocationId(LocationId);
     },
   },
-
   Location: {
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     name: ({ Name }) => Name,
@@ -67,7 +62,9 @@ export default {
       try {
         const { points } = geography(GeoPoint);
         return points[0].x;
-      } catch (e) { return null; }
+      } catch (e) {
+        return null;
+      }
     },
     longitude: ({ GeoPoint, longitude }) => {
       if (longitude) return longitude;
@@ -75,9 +72,12 @@ export default {
       try {
         const { points } = geography(GeoPoint);
         return points[0].y;
-      } catch (e) { return null; }
+      } catch (e) {
+        return null;
+      }
     },
-    distance: ({ Id, Distance }) => { // tslint:disable-line
+    distance: ({ Id, Distance }) => {
+      // tslint:disable-line
       if (Distance) return Distance;
 
       return null;
@@ -85,5 +85,4 @@ export default {
       // this is typically used from a geo based lookup
     },
   },
-
 };

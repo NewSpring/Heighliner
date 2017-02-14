@@ -1,5 +1,5 @@
-
-export default [`
+export default [
+  `
   type TransactionDetail implements Node {
     id: ID!
     amount: Float!
@@ -164,4 +164,5 @@ export default [`
     code: Int
     file: String
   }
-`];
+`,
+];

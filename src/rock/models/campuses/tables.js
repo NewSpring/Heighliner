@@ -1,11 +1,6 @@
 /* tslint:disable:no-shadowed-variable */
 
-import {
-  INTEGER,
-  STRING,
-  BOOLEAN,
-  GEOGRAPHY,
-} from "sequelize";
+import { INTEGER, STRING, BOOLEAN, GEOGRAPHY } from "sequelize";
 
 import { MSSQLConnector } from "../../mssql";
 
@@ -39,13 +34,7 @@ const locationSchema = {
 
 let Campus;
 let Location;
-export {
-  Campus,
-  campusSchema,
-
-  Location,
-  locationSchema,
-};
+export { Campus, campusSchema, Location, locationSchema };
 
 export function connect() {
   Campus = new MSSQLConnector("Campus", campusSchema);
@@ -57,11 +46,16 @@ export function connect() {
   };
 }
 
-export function bind({
-  Campus,
-  Location,
-}) {
-  Campus.model.belongsTo(Location.model, { foreignKey: "LocationId", targetKey: "Id" });
+export function bind(
+  {
+    Campus,
+    Location,
+  },
+) {
+  Campus.model.belongsTo(Location.model, {
+    foreignKey: "LocationId",
+    targetKey: "Id",
+  });
 }
 
 export default {

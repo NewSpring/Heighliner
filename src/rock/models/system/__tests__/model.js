@@ -1,4 +1,3 @@
-
 import { Rock } from "../model";
 
 import {
@@ -27,7 +26,8 @@ jest.mock("node-uuid", () => ({
 const mockedCache = {
   get: jest.fn((id, lookup) => Promise.resolve().then(lookup)),
   set: jest.fn(() => Promise.resolve().then(() => true)),
-  del() {},
+  del() {
+  },
   encode: jest.fn((obj, prefix) => `${prefix}${JSON.stringify(obj)}`),
 };
 
@@ -58,7 +58,9 @@ describe("sendEmail", () => {
     expect(result).toBe(null);
   });
   it("it should return null if no Body", async () => {
-    SystemEmailTable.findOne.mockReturnValueOnce(Promise.resolve({ Subject: "foo" }));
+    SystemEmailTable.findOne.mockReturnValueOnce(
+      Promise.resolve({ Subject: "foo" }),
+    );
 
     const result = await Local.sendEmail("test");
 
@@ -68,7 +70,9 @@ describe("sendEmail", () => {
     expect(result).toBe(null);
   });
   it("it should return null if no Subject", async () => {
-    SystemEmailTable.findOne.mockReturnValueOnce(Promise.resolve({ Body: "foo" }));
+    SystemEmailTable.findOne.mockReturnValueOnce(
+      Promise.resolve({ Body: "foo" }),
+    );
 
     const result = await Local.sendEmail("test");
 
@@ -78,9 +82,12 @@ describe("sendEmail", () => {
     expect(result).toBe(null);
   });
   it("it should create a Communication and patch it", async () => {
-    SystemEmailTable.findOne.mockReturnValueOnce(Promise.resolve({
-      Subject: "foo", Body: "bar",
-    }));
+    SystemEmailTable.findOne.mockReturnValueOnce(
+      Promise.resolve({
+        Subject: "foo",
+        Body: "bar",
+      }),
+    );
     CommunicationTable.post.mockReturnValueOnce(Promise.resolve(10));
     CommunicationTable.patch.mockReturnValueOnce(Promise.resolve(true));
 
@@ -101,9 +108,12 @@ describe("sendEmail", () => {
     expect(result).toEqual([]);
   });
   it("it should create CommunicationRecipient for all people", async () => {
-    SystemEmailTable.findOne.mockReturnValueOnce(Promise.resolve({
-      Subject: "foo", Body: "bar",
-    }));
+    SystemEmailTable.findOne.mockReturnValueOnce(
+      Promise.resolve({
+        Subject: "foo",
+        Body: "bar",
+      }),
+    );
     CommunicationTable.post.mockReturnValueOnce(Promise.resolve(10));
     CommunicationTable.patch.mockReturnValueOnce(Promise.resolve(true));
     CommunicationRecipientTable.post.mockReturnValueOnce(Promise.resolve(12));

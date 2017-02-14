@@ -1,7 +1,6 @@
-
 import Metrics from "datadog-metrics";
 
-export default (app) => {
+export default app => {
   let dogstatsd;
   if (process.env.DATADOG_API_KEY && process.env.NODE_ENV === "production") {
     dogstatsd = new Metrics.BufferedMetricsLogger({
@@ -11,12 +10,15 @@ export default (app) => {
       flushIntervalSeconds: 15,
     });
 
-    setInterval(() => {
-      const memUsage = process.memoryUsage();
-      dogstatsd.gauge("memory.rss", memUsage.rss);
-      dogstatsd.gauge("memory.heapTotal", memUsage.heapTotal);
-      dogstatsd.gauge("memory.heapUsed", memUsage.heapUsed);
-    }, 5000);
+    setInterval(
+      () => {
+        const memUsage = process.memoryUsage();
+        dogstatsd.gauge("memory.rss", memUsage.rss);
+        dogstatsd.gauge("memory.heapTotal", memUsage.heapTotal);
+        dogstatsd.gauge("memory.heapUsed", memUsage.heapUsed);
+      },
+      5000,
+    );
   }
 
   // datadog
@@ -38,7 +40,7 @@ export default (app) => {
         dogstatsd.increment(`response_code.${res.statusCode}`, 1, statTags);
         dogstatsd.increment("response_code.all", 1, statTags);
 
-        const now = (new Date()) - req._startTime;
+        const now = new Date() - req._startTime;
         dogstatsd.histogram("response_time", now, statTags);
       };
 

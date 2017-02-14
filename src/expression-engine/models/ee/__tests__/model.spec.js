@@ -53,12 +53,14 @@ it("`cleanMarkup` should remove multiple asset tags", () => {
     </h3>
   `;
   const result = ee.cleanMarkup(testMarkup);
-  expect(result).toBe(`
+  expect(result).toBe(
+    `
     <h3>
       <img src="${testImage1}" />
       <img src="${testImage2}" />
     </h3>
-  `);
+  `,
+  );
 });
 
 it("`cleanMarkup` should remove multiple asset tags on the same line", () => {
@@ -71,7 +73,9 @@ it("`cleanMarkup` should remove multiple asset tags on the same line", () => {
     <h3><img src="${testAsset1}" /><img src="${testAsset2}" /></h3>
   `;
   const result = ee.cleanMarkup(testMarkup);
-  expect(result).toBe(`
+  expect(result).toBe(
+    `
     <h3><img src="${testImage1}" /><img src="${testImage2}" /></h3>
-  `);
+  `,
+  );
 });

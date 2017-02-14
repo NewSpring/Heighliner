@@ -1,5 +1,5 @@
-
-export default [`
+export default [
+  `
   type LiveFeed {
     live: Boolean!
     embedCode: String
@@ -78,4 +78,5 @@ export default [`
     tracks: [File]
     seriesId: ID
   }
-`];
+`,
+];

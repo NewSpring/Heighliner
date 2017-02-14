@@ -1,4 +1,3 @@
-
 import { connect } from "./fetch";
 
 import { createApplication } from "../util/heighliner";

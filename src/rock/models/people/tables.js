@@ -1,10 +1,6 @@
 /* tslint:disable:no-shadowed-variable */
 
-import {
-  INTEGER,
-  STRING,
-  BOOLEAN,
-} from "sequelize";
+import { INTEGER, STRING, BOOLEAN } from "sequelize";
 
 import { MSSQLConnector } from "../../mssql";
 
@@ -54,10 +50,8 @@ let PhoneNumber;
 export {
   Person,
   personSchema,
-
   PersonAlias,
   aliasSchema,
-
   PhoneNumber,
   phoneNumberSchema,
 };
@@ -74,16 +68,24 @@ export function connect() {
   };
 }
 
-export function bind({
-  Person,
-  PersonAlias,
-  PhoneNumber,
-  Group,
-}) {
-  PersonAlias.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
+export function bind(
+  {
+    Person,
+    PersonAlias,
+    PhoneNumber,
+    Group,
+  },
+) {
+  PersonAlias.model.belongsTo(Person.model, {
+    foreignKey: "PersonId",
+    targetKey: "Id",
+  });
   Person.model.hasOne(PersonAlias.model, { foreignKey: "PersonId" });
 
-  PhoneNumber.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
+  PhoneNumber.model.belongsTo(Person.model, {
+    foreignKey: "PersonId",
+    targetKey: "Id",
+  });
 
   Person.model.belongsToMany(Group.model, {
     as: "Groups",

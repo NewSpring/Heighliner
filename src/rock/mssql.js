@@ -11,8 +11,8 @@ import { merge, isArray } from "lodash";
 // import DataLoader from "dataloader";
 
 import { createTables } from "./models";
-let noop = (...args) => {}; // tslint:disable-line
-let loud = console.log.bind(console, "MSSQL:"); // tslint:disable-line
+const noop = (...args) => {}; // tslint:disable-line
+const loud = console.log.bind(console, "MSSQL:"); // tslint:disable-line
 let db;
 let dd;
 
@@ -33,7 +33,7 @@ const RockSettings = {
 export function connect(monitor) {
   if (db) return Promise.resolve(true);
   dd = monitor && monitor.datadog;
-  return new Promise((cb) => {
+  return new Promise(cb => {
     const opts = merge({}, RockSettings.opts, {
       dialect: "mssql",
       logging: process.env.NODE_ENV !== "production" ? loud : noop, // tslint:disable-line
@@ -47,12 +47,18 @@ export function connect(monitor) {
       },
     });
 
-    db = new Sequelize(RockSettings.database, RockSettings.user, RockSettings.password, opts);
+    db = new Sequelize(
+      RockSettings.database,
+      RockSettings.user,
+      RockSettings.password,
+      opts,
+    );
 
-    db.authenticate()
+    db
+      .authenticate()
       .then(() => cb(true))
       .then(() => createTables())
-      .catch((e) => {
+      .catch(e => {
         db = false;
         console.error(e); // tslint:disable-line
         cb(false);
@@ -77,15 +83,21 @@ export class MSSQLConnector {
 
   find(...args) {
     // console.log("finding", args)
-    return this.time(this.model.findAll.apply(this.model, args)
-      .then(this.getValues)
-      .then(data => data.map(this.mergeData)));
+    return this.time(
+      this.model.findAll
+        .apply(this.model, args)
+        .then(this.getValues)
+        .then(data => data.map(this.mergeData)),
+    );
   }
 
   findOne(...args) {
-    return this.time(this.model.findOne.apply(this.model, args)
-      .then((x) => x && x.dataValues)
-      .then(this.mergeData));
+    return this.time(
+      this.model.findOne
+        .apply(this.model, args)
+        .then(x => x && x.dataValues)
+        .then(this.mergeData),
+    );
   }
 
   patch(entityId = "", body) {
@@ -110,12 +122,16 @@ export class MSSQLConnector {
     if (route) url = `${url}/${route}`;
 
     return fetch(url, {
-      headers, method, body: JSON.stringify(body),
+      headers,
+      method,
+      body: JSON.stringify(body),
     })
       .then(response => {
         const { status, statusText, error } = response;
 
-        if (status === 204) return { json: () => ({ status: 204, statusText: "success" })};
+        if (status === 204) {
+          return { json: () => ({ status: 204, statusText: "success" }) };
+        }
         if (status >= 200 && status < 300) return response;
         if (status >= 400) {
           const err = new Error(statusText);
@@ -130,15 +146,15 @@ export class MSSQLConnector {
       .then(x => x.json());
   }
 
-  mergeData = (data) => {
+  mergeData = data => {
     if (!data) return data;
 
     const keys = [];
-    for (let key in data) {
+    for (const key in data) {
       if (key.indexOf(this.prefix) > -1) keys.push(key);
     }
 
-    for (let key of keys) {
+    for (const key of keys) {
       const table = data[key];
       if (!data[key]) continue;
 
@@ -150,7 +166,7 @@ export class MSSQLConnector {
     }
 
     return data;
-  }
+  };
 
   getValues(data) {
     return data.map(x => x.dataValues || x);
@@ -171,17 +187,16 @@ export class MSSQLConnector {
     return promise
       .then(x => {
         const end = new Date();
-        if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
+        if (dd) dd.histogram(`${prefix}.transaction.time`, end - start, [""]);
         console.timeEnd(label); // tslint:disable-line
         return x;
       })
       .catch(x => {
         const end = new Date();
-        if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
+        if (dd) dd.histogram(`${prefix}.transaction.time`, end - start, [""]);
         if (dd) dd.increment(`${prefix}.transaction.error`);
         console.timeEnd(label); // tslint:disable-line
         return x;
       });
   }
-
 }

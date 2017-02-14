@@ -1,4 +1,3 @@
-
 export default [
   `recentlyLiked(
     limit: Int = 20,

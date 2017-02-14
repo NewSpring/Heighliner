@@ -1,5 +1,5 @@
-
-export default [`
+export default [
+  `
   type PhoneNumber implements Node {
     id: ID!
     countryCode: String
@@ -34,4 +34,5 @@ export default [`
     success: Boolean!
     code: Int
   }
-`];
+`,
+];

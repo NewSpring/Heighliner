@@ -1,5 +1,3 @@
-
-
 function getTag(tagName, { pagemap }) {
   if (!pagemap || !pagemap.metatags) return null;
   return pagemap.metatags[0][tagName];
@@ -20,28 +18,27 @@ export default {
         query += `&=${site}`;
       }
 
-      return models.SSearch.query(query)
-        .then((x) => {
-          let next,
-            previous;
-          if (x.queries) {
-            next = x.queries.nextPage ? x.queries.nextPage[0].startIndex : 0;
-            previous = x.queries.previousPage ? x.queries.previousPage[0].startIndex : 0;
-          } else {
-            next = 0;
-            previous = 0;
-          }
+      return models.SSearch.query(query).then(x => {
+        let next, previous;
+        if (x.queries) {
+          next = x.queries.nextPage ? x.queries.nextPage[0].startIndex : 0;
+          previous = x.queries.previousPage
+            ? x.queries.previousPage[0].startIndex
+            : 0;
+        } else {
+          next = 0;
+          previous = 0;
+        }
 
-          return {
-            total: Number(x.searchInformation.totalResults),
-            next: Number(next),
-            previous: Number(previous),
-            items: x.items ? x.items : [],
-          };
-        });
+        return {
+          total: Number(x.searchInformation.totalResults),
+          next: Number(next),
+          previous: Number(previous),
+          items: x.items ? x.items : [],
+        };
+      });
     },
   },
-
   SSSearchResult: {
     id: ({ cacheId }) => cacheId,
     title: ({ title }) => title.split("|")[0].trim(),
@@ -54,12 +51,10 @@ export default {
     section: data => getTag("article:section", data),
     image: ({ pagemap }) => pagemap && pagemap.cse_image[0].src,
   },
-
   SSSearch: {
     total: ({ total }) => total,
     next: ({ next }) => next,
     previous: ({ previous }) => previous,
     items: ({ items }) => items,
   },
-
 };

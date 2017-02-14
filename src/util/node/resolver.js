@@ -1,4 +1,3 @@
-
 export default {
   Query: {
     node: (_, { id }, { models }) => models.Node.get(id),

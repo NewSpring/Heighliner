@@ -1,9 +1,6 @@
 /* tslint:disable:no-shadowed-variable */
 
-import {
-  INTEGER,
-  STRING,
-} from "sequelize";
+import { INTEGER, STRING } from "sequelize";
 
 import { MySQLConnector } from "../../mysql";
 
@@ -19,16 +16,9 @@ const tagEntriesSchema = {
   entry_id: { type: INTEGER },
 };
 
-
 let Tags;
 let TagEntries;
-export {
-  Tags,
-  tagSchema,
-
-  TagEntries,
-  tagEntriesSchema,
-};
+export { Tags, tagSchema, TagEntries, tagEntriesSchema };
 
 export function connect() {
   Tags = new MySQLConnector("exp_tag_tags", tagSchema);

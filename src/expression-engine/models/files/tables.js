@@ -1,9 +1,6 @@
 /* tslint:disable:no-shadowed-variable */
 
-import {
-  INTEGER,
-  STRING,
-} from "sequelize";
+import { INTEGER, STRING } from "sequelize";
 
 import { MySQLConnector } from "../../mysql";
 
@@ -43,20 +40,20 @@ let AssetsSources;
 export {
   Assets,
   assetsFilesSchema,
-
   AssetsSelections,
   assetsSelectionSchema,
-
   AssetsFolders,
   assetsFoldersSchema,
-
   AssetsSources,
   assetsSourcesSchema,
 };
 
 export function connect() {
   Assets = new MySQLConnector("exp_assets_files", assetsFilesSchema);
-  AssetsSelections = new MySQLConnector("exp_assets_selections", assetsSelectionSchema);
+  AssetsSelections = new MySQLConnector(
+    "exp_assets_selections",
+    assetsSelectionSchema,
+  );
   AssetsFolders = new MySQLConnector("exp_assets_folders", assetsFoldersSchema);
   AssetsSources = new MySQLConnector("exp_assets_sources", assetsSourcesSchema);
 
@@ -71,13 +68,15 @@ export function connect() {
   };
 }
 
-export function bind({
-  ChannelData,
-  Assets,
-  AssetsSelections,
-  AssetsFolders,
-  AssetsSources,
-}) {
+export function bind(
+  {
+    ChannelData,
+    Assets,
+    AssetsSelections,
+    AssetsFolders,
+    AssetsSources,
+  },
+) {
   Assets.model.hasMany(AssetsSelections.model, { foreignKey: "file_id" });
   AssetsSelections.model.belongsTo(Assets.model, { foreignKey: "file_id" });
 

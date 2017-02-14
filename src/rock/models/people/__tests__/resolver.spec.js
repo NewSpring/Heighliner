@@ -43,7 +43,7 @@ describe("Person Tests", () => {
     expect(lastName).toEqual(sampleData.person.LastName);
   });
 
-  xit("Pullng phone numbers seems to be disabled at the moment.", () => { }); // tslint:disable-line
+  xit("Pullng phone numbers seems to be disabled at the moment.", () => {}); // tslint:disable-line
 
   it("`Person` has a photo.", () => {
     const { Person } = Resolver;
@@ -66,15 +66,11 @@ describe("Person Tests", () => {
     const noPhotoAvailable = Person.photo({ PhotoId: null }, null, { models });
     expect(placeHolderPhoto === noPhotoAvailable).toBeTruthy();
   });
-
   // it("`Person` has an approximate age.", () => {
   //   const { Person } = Resolver;
-
   //   const age = Person.age(sampleData.person);
   //   t.deepEqual(age, `${Moment().diff(Moment(sampleData.person.BirthDate), "years")}`);
   // });
-
-
   // it("`PhoneNumber` returns details about a persons phone number", () => {
   //   t.pass();
   // });
@@ -85,18 +81,30 @@ describe("PhoneNumber Mutations", () => {
     const { setPhoneNumber } = Resolver.Mutation;
     const result = await setPhoneNumber(null, "(555) 555-5555", {});
     expect(result).toEqual({
-      code: 401, error: "Must be logged in to make this request", success: false,
+      code: 401,
+      error: "Must be logged in to make this request",
+      success: false,
     });
   });
 
-  it("should call the setPhoneNumber function properly if there is a person", async () => {
-    const models = { PhoneNumber: { setPhoneNumber: jest.fn() } };
-    const { setPhoneNumber } = Resolver.Mutation;
-    await setPhoneNumber(null, {
-      phoneNumber: "(555) 555-5555",
-    }, { models, person: "person" });
-    expect(models.PhoneNumber.setPhoneNumber).toHaveBeenCalledWith({
-      phoneNumber: "(555) 555-5555",
-    }, "person");
-  });
+  it(
+    "should call the setPhoneNumber function properly if there is a person",
+    async () => {
+      const models = { PhoneNumber: { setPhoneNumber: jest.fn() } };
+      const { setPhoneNumber } = Resolver.Mutation;
+      await setPhoneNumber(
+        null,
+        {
+          phoneNumber: "(555) 555-5555",
+        },
+        { models, person: "person" },
+      );
+      expect(models.PhoneNumber.setPhoneNumber).toHaveBeenCalledWith(
+        {
+          phoneNumber: "(555) 555-5555",
+        },
+        "person",
+      );
+    },
+  );
 });

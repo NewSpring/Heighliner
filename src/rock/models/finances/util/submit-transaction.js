@@ -1,4 +1,3 @@
-
 import { find, omitBy, isEmpty, flatten } from "lodash";
 
 import {
@@ -14,22 +13,13 @@ import {
 
 // import { AttributeValue, Attribute } from "../../system/tables";
 
-import {
-  Person as PersonTable,
-  PersonAlias,
-} from "../../people/tables";
+import { Person as PersonTable, PersonAlias } from "../../people/tables";
 
-import {
-  Group,
-  GroupLocation,
-  GroupMember,
-} from "../../groups/tables";
+import { Group, GroupLocation, GroupMember } from "../../groups/tables";
 
-import {
-  Location as LocationModel,
-} from "../../campuses/tables";
+import { Location as LocationModel } from "../../campuses/tables";
 
-export default async (transaction) => {
+export default async transaction => {
   if (!transaction) return Promise.resolve();
   const {
     CampusId,
@@ -41,14 +31,19 @@ export default async (transaction) => {
     ScheduledTransaction,
   } = transaction;
 
-  const Existing = await TransactionTable.find({ where: {
-    TransactionCode: Transaction.TransactionCode,
-  } });
+  const Existing = await TransactionTable.find({
+    where: {
+      TransactionCode: Transaction.TransactionCode,
+    },
+  });
 
   const exists = Existing.length > 0;
   if (exists) return Promise.resolve();
 
-  const People = await PersonTable.find({ where: Person, include: [{ model: PersonAlias.model }] });
+  const People = await PersonTable.find({
+    where: Person,
+    include: [{ model: PersonAlias.model }],
+  });
   if (!People.length) return Promise.resolve();
 
   let ids;
@@ -70,7 +65,9 @@ export default async (transaction) => {
     });
 
     if (FoundLocations.length) {
-      ids = flatten(FoundLocations.map(x => x.Group.GroupMembers)).map(x => x.PersonId);
+      ids = flatten(FoundLocations.map(x => x.Group.GroupMembers)).map(
+        x => x.PersonId,
+      );
     } else {
       ids = [People[0].Id];
       console.warn(`no locations found for ${People.map(x => x.FirstName)}`);
@@ -85,9 +82,13 @@ export default async (transaction) => {
   // translate to child account based on campus
   if (CampusId) {
     for (const detail of TransactionDetails) {
-      detail.AccountId = await FinancialAccountTable.findOne({ where: {
-        CampusId, ParentAccountId: detail.AccountId,
-      } })
+      detail.AccountId = await FinancialAccountTable
+        .findOne({
+          where: {
+            CampusId,
+            ParentAccountId: detail.AccountId,
+          },
+        })
         .then(x => x.Id);
 
       detail.CreatedByPersonAliasId = PrimaryAliasId;
@@ -98,22 +99,29 @@ export default async (transaction) => {
   Transaction.AuthorizedPersonAliasId = PrimaryAliasId;
   Transaction.CreatedByPersonAliasId = PrimaryAliasId;
 
-  const FinancialPaymentDetailId = await FinancialPaymentDetail.post(PaymentDetail);
+  const FinancialPaymentDetailId = await FinancialPaymentDetail.post(
+    PaymentDetail,
+  );
 
   Transaction.FinancialPaymentDetailId = FinancialPaymentDetailId;
 
   if (ScheduledTransaction.GatewayScheduleId) {
-    const ScheduledTransactionId = await ScheduledTransactionTable.findOne({
-      where: ScheduledTransaction,
-    })
+    const ScheduledTransactionId = await ScheduledTransactionTable
+      .findOne({
+        where: ScheduledTransaction,
+      })
       .then(x => x && x.Id);
 
-    if (ScheduledTransactionId) Transaction.ScheduledTransactionId = ScheduledTransactionId;
+    if (ScheduledTransactionId) {
+      Transaction.ScheduledTransactionId = ScheduledTransactionId;
+    }
     if (!ScheduledTransactionId) {
-      console.error(`
+      console.error(
+        `
         Scheduled Transaction is missing for person ${FoundPerson.Id} with
         GatewayScheduleId of ${ScheduledTransaction.GatewayScheduleId}
-      `);
+      `,
+      );
     }
   }
   const FinancialTransactionId = await TransactionTable.post(Transaction);
