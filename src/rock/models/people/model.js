@@ -71,7 +71,7 @@ export class PhoneNumber extends Rock {
       };
     }
 
-    this.cache.del(`${person.Id}:PersonPhoneNumbers`);
+    this.cache.del(createGlobalId(`${person.Id}:PersonPhoneNumbers`));
     return { code: 200, success: true };
   }
 
@@ -153,7 +153,7 @@ export class Person extends Rock {
   }
 
   async getPhoneNumbersFromId(id) {
-    return await this.cache.get(`${id}:PersonPhoneNumbers`, () => PhoneNumberTable.find({
+    return await this.cache.get(createGlobalId(`${id}:PersonPhoneNumbers`), () => PhoneNumberTable.find({
         where: { PersonId: `${id}` },
       })
     );
