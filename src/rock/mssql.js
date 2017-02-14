@@ -15,6 +15,7 @@ let noop = (...args) => {}; // tslint:disable-line
 let loud = console.log.bind(console, "MSSQL:"); // tslint:disable-line
 let db;
 let dd;
+let isReady;
 
 // MSSQL connection
 const RockSettings = {
@@ -31,7 +32,7 @@ const RockSettings = {
 };
 
 export function connect(monitor) {
-  if (db) return Promise.resolve(true);
+  if (isReady) return Promise.resolve(true);
   dd = monitor && monitor.datadog;
   return new Promise((cb) => {
     const opts = merge({}, RockSettings.opts, {
@@ -52,6 +53,7 @@ export function connect(monitor) {
     db.authenticate()
       .then(() => cb(true))
       .then(() => createTables())
+      .then(() => { isReady = true; })
       .catch((e) => {
         db = false;
         console.error(e); // tslint:disable-line

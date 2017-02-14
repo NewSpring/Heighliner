@@ -14,6 +14,7 @@ let noop = (...args) => {}; // tslint:disable-line
 let loud = console.log.bind(console, "MYSQL:"); // tslint:disable-line
 let db;
 let dd;
+let isReady;
 
 // MySQL connections
 const EESettings = {
@@ -27,7 +28,7 @@ const EESettings = {
 };
 
 export function connect(monitor) {
-  if (db) return Promise.resolve(true);
+  if (isReady) return Promise.resolve(true);
   dd = monitor && monitor.datadog;
   return new Promise((cb) => {
     const opts = merge({}, EESettings.opts, {
@@ -45,6 +46,7 @@ export function connect(monitor) {
     db.authenticate()
       .then(() => cb(true))
       .then(() => createTables())
+      .then(() => { isReady = true; })
       .catch((e) => {
         console.error(e); // tslint:disable-line
         db = false;
