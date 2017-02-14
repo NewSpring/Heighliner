@@ -1,7 +1,5 @@
 import { PhoneNumber } from "../model";
-import {
-  PhoneNumber as PhoneNumberTable,
-} from "../tables";
+import { PhoneNumber as PhoneNumberTable } from "../tables";
 
 jest.mock("../tables", () => ({
   PhoneNumber: {
@@ -38,23 +36,29 @@ describe("setPhoneNumber", () => {
     expect(result.code).toEqual(200);
   });
 
-  it("should lookup phone number with proper query and fail if found", async () => {
-    const { setPhoneNumber } = phoneNumberModel;
-    PhoneNumberTable.findOne.mockReturnValueOnce("hello");
+  it(
+    "should lookup phone number with proper query and fail if found",
+    async () => {
+      const { setPhoneNumber } = phoneNumberModel;
+      PhoneNumberTable.findOne.mockReturnValueOnce("hello");
 
-    await setPhoneNumber(mockArgs, { Id: 9999999999 });
-    expect(PhoneNumberTable.findOne).toHaveBeenCalledWith({
-      where: { Number: "5555555555", PersonId: 9999999999 },
-    });
-  });
+      await setPhoneNumber(mockArgs, { Id: 9999999999 });
+      expect(PhoneNumberTable.findOne).toHaveBeenCalledWith({
+        where: { Number: "5555555555", PersonId: 9999999999 },
+      });
+    },
+  );
 
-  it("should return 204 if user already has a mobile phone on file", async () => {
-    const { setPhoneNumber } = phoneNumberModel;
-    PhoneNumberTable.findOne.mockReturnValueOnce("hello");
+  it(
+    "should return 204 if user already has a mobile phone on file",
+    async () => {
+      const { setPhoneNumber } = phoneNumberModel;
+      PhoneNumberTable.findOne.mockReturnValueOnce("hello");
 
-    const result = await setPhoneNumber(mockArgs, { Id: 9999999999 });
-    expect(result.code).toEqual(204);
-  });
+      const result = await setPhoneNumber(mockArgs, { Id: 9999999999 });
+      expect(result.code).toEqual(204);
+    },
+  );
 
   it("should fail if adding the phone number fails", async () => {
     const { setPhoneNumber } = phoneNumberModel;

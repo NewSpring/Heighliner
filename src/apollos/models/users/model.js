@@ -20,7 +20,6 @@ const schema = {
 const Model = new MongoConnector("user", schema);
 
 export class User {
-
   constructor({ cache } = { cache: defaultCache }) {
     this.cache = cache;
     this.model = Model;
@@ -35,16 +34,17 @@ export class User {
     const rawToken = token;
 
     // allow for client or server side auth calls
-    token = crypto.createHash("sha256")
-      .update(token)
-      .digest("base64");
+    token = crypto.createHash("sha256").update(token).digest("base64");
 
-    return await this.cache.get(`hashedToken:${token}`, () => this.model.findOne({
-      $or: [
-        { "services.resume.loginTokens.hashedToken": token },
-        { "services.resume.loginTokens.hashedToken": rawToken },
-      ],
-    }));
+    return await this.cache.get(
+      `hashedToken:${token}`,
+      () => this.model.findOne({
+        $or: [
+          { "services.resume.loginTokens.hashedToken": token },
+          { "services.resume.loginTokens.hashedToken": rawToken },
+        ],
+      }),
+    );
   }
 }
 

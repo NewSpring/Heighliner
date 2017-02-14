@@ -1,13 +1,10 @@
-
 import { Group } from "../model";
 import {
   Group as GroupTable,
   GroupMember as GroupMemberTable,
 } from "../tables";
 
-import {
-  Person as PersonTable
-} from "../../people/tables";
+import { Person as PersonTable } from "../../people/tables";
 
 jest.mock("dataloader");
 jest.mock("../tables", () => ({
@@ -19,7 +16,7 @@ jest.mock("../tables", () => ({
   GroupMember: {
     findOne: jest.fn(),
     post: jest.fn(),
-  }
+  },
 }));
 jest.mock("../../system/tables", () => ({
   Attribute: { model: "12345" },
@@ -31,7 +28,11 @@ jest.mock("../../people/tables", () => ({
   },
 }));
 
-const mockArgs = { groupId: 1234, message: "harambe", communicationPreference: "phone" };
+const mockArgs = {
+  groupId: 1234,
+  message: "harambe",
+  communicationPreference: "phone",
+};
 
 describe("requestGroupInfo", () => {
   let groupModel;
@@ -42,7 +43,7 @@ describe("requestGroupInfo", () => {
 
   afterEach(() => {
     jest.resetAllMocks();
-  })
+  });
 
   it("should return 400 if missing info", async () => {
     const { requestGroupInfo } = groupModel;
@@ -61,7 +62,7 @@ describe("requestGroupInfo", () => {
     GroupTable.findOne.mockReturnValueOnce("hello");
     GroupMemberTable.findOne.mockReturnValueOnce("yo");
 
-    await requestGroupInfo(mockArgs, {Id: 9999999999});
+    await requestGroupInfo(mockArgs, { Id: 9999999999 });
     expect(GroupMemberTable.findOne).toHaveBeenCalledWith({
       where: { GroupId: 1234, PersonId: 9999999999 },
     });
@@ -72,7 +73,7 @@ describe("requestGroupInfo", () => {
     GroupTable.findOne.mockReturnValueOnce("hello");
     GroupMemberTable.findOne.mockReturnValueOnce("yo");
 
-    const res = await requestGroupInfo(mockArgs, {Id: 9999999999});
+    const res = await requestGroupInfo(mockArgs, { Id: 9999999999 });
     expect(res.code).toEqual(400);
   });
 
@@ -80,11 +81,13 @@ describe("requestGroupInfo", () => {
     const { requestGroupInfo } = groupModel;
     GroupTable.findOne.mockReturnValueOnce("hello");
 
-    await requestGroupInfo(mockArgs, {Id: 9999999999});
-    expect(PersonTable.fetch).toHaveBeenCalledWith(
+    await requestGroupInfo(mockArgs, { Id: 9999999999 });
+    expect(
+      PersonTable.fetch,
+    ).toHaveBeenCalledWith(
       "POST",
       "attributevalue/9999999999?AttributeKey=CommunicationPreference&AttributeValue=phone",
-      {}
+      {},
     );
   });
 
@@ -93,8 +96,8 @@ describe("requestGroupInfo", () => {
     GroupTable.findOne.mockReturnValueOnce("hello");
     PersonTable.fetch.mockReturnValueOnce({ status: 400, statusText: "ANGRY" });
 
-    const res = await requestGroupInfo(mockArgs, {Id: 9999999999});
-    expect(res).toEqual({ code: 400, error: "ANGRY", success: false});
+    const res = await requestGroupInfo(mockArgs, { Id: 9999999999 });
+    expect(res).toEqual({ code: 400, error: "ANGRY", success: false });
   });
 
   it("should fail if adding user to group fails", async () => {
@@ -105,24 +108,24 @@ describe("requestGroupInfo", () => {
       statusText: "BAD BAD BAD",
     });
 
-    const res = await requestGroupInfo(mockArgs, {Id: 9999999999});
-    expect(res).toEqual({ code: 404, success: false, error: "BAD BAD BAD"});
+    const res = await requestGroupInfo(mockArgs, { Id: 9999999999 });
+    expect(res).toEqual({ code: 404, success: false, error: "BAD BAD BAD" });
   });
 
   it("should call post if user isn't member of group", async () => {
     const { requestGroupInfo } = groupModel;
     GroupTable.findOne.mockReturnValueOnce("hello");
 
-    const res = await requestGroupInfo(mockArgs, {Id: 9999999999});
-    expect(res).toEqual({ code: 200, success: true});
+    const res = await requestGroupInfo(mockArgs, { Id: 9999999999 });
+    expect(res).toEqual({ code: 200, success: true });
   });
 
   it("should return MutationResponse", async () => {
     const { requestGroupInfo } = groupModel;
     GroupTable.findOne.mockReturnValueOnce("hello");
 
-    const res = await requestGroupInfo(mockArgs, {Id: 9999999999});
-    //the bare minimum for mutation responses
+    const res = await requestGroupInfo(mockArgs, { Id: 9999999999 });
+    // the bare minimum for mutation responses
     expect(Object.keys(res)).toEqual(["code", "success"]);
   });
 });

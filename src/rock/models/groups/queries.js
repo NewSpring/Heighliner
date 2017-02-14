@@ -1,4 +1,3 @@
-
 export default [
   `groups(
     attributes: [String],
@@ -9,7 +8,6 @@ export default [
     campuses: [String],
     clientIp: String,
   ): GroupSearch`,
-
   // XXX should this take a group type id?
   "groupAttributes: [DefinedValue]",
 ];

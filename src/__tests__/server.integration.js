@@ -5,7 +5,6 @@
 // import bodyParser from "body-parser";
 // import { createApp } from "../schema";
 
-
 // let Heighliner;
 // beforeEach(async () => {
 //   const app = express();
@@ -22,21 +21,18 @@
 //   });
 // });
 
+xit("Valid queries should return success", () => Heighliner(
+  JSON.stringify({ query: "{ currentUser { id } }" }),
+).then(response => {
+  expect(response.success).toBeTruthy();
+  expect(response.status).toEqual(200);
+  expect(response.data).toBeTruthy();
+}));
 
-xit("Valid queries should return success", () =>
-   Heighliner(JSON.stringify({ query: "{ currentUser { id } }" }))
-    .then((response) => {
-      expect(response.success).toBeTruthy();
-      expect(response.status).toEqual(200);
-      expect(response.data).toBeTruthy();
-    }),
-);
-
-xit("Invalid queries should fail", () =>
-   Heighliner(JSON.stringify({ query: "{ foobar { id } }" }))
-    .then((response) => {
-      expect(response.success).toBeFalsy;
-      expect(response.status).toEqual(400);
-      expect(response.errors).toBeTruthy();
-    }),
-);
+xit("Invalid queries should fail", () => Heighliner(
+  JSON.stringify({ query: "{ foobar { id } }" }),
+).then(response => {
+  expect(response.success).toBeFalsy;
+  expect(response.status).toEqual(400);
+  expect(response.errors).toBeTruthy();
+}));

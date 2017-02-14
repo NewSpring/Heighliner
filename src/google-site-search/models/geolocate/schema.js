@@ -1,5 +1,5 @@
-
-export default [`
+export default [
+  `
   type GGeoLocate {
     destination_addresses: [String]
     origin_addresses: [String]
@@ -21,4 +21,5 @@ export default [`
     text: String
     value: Int
   }
-`];
+`,
+];

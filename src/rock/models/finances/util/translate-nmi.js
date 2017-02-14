@@ -11,14 +11,14 @@ export const defaultCardRegex = {
   Discover: d,
 };
 
-export const getCardName = (card) => {
+export const getCardName = card => {
   for (const regex in defaultCardRegex) {
     if (defaultCardRegex[regex].test(card)) return regex;
   }
   return "Credit Card";
 };
 
-export const getCardType = (card) => {
+export const getCardType = card => {
   // XXX refering to the default was failing the tests?
   // I have not idea why
   const cards = {
@@ -54,7 +54,10 @@ export default (response, gateway, person) => {
   }
 
   if (transaction.condition !== "complete") return null;
-  if (transaction.action.action_type !== "sale" && transaction.action.action_type !== "settle") {
+  if (
+    transaction.action.action_type !== "sale" &&
+    transaction.action.action_type !== "settle"
+  ) {
     return null;
   }
 
@@ -66,15 +69,20 @@ export default (response, gateway, person) => {
     FinancialGatewayId: gateway.Id,
     Summary: `Reference Number: ${transaction.transaction_id}`,
     SourceTypeValueId: 798, // XXX make this dynamic
-    TransactionDateTime: Moment(transaction.action.date, "YYYYMMDDHHmmss").toISOString(),
+    TransactionDateTime: Moment(
+      transaction.action.date,
+      "YYYYMMDDHHmmss",
+    ).toISOString(),
   };
 
   const TransactionDetails = [];
   if (transaction.product) {
-    if (!isArray(transaction.product)) transaction.product = [transaction.product];
+    if (!isArray(transaction.product)) {
+      transaction.product = [transaction.product];
+    }
     for (const product of transaction.product) {
       TransactionDetails.push({
-         // XXX support multiple transactions
+        // XXX support multiple transactions
         // XXX this needs a change on the app side before possible
         Amount: Number(transaction.action.amount),
         AccountId: Number(product.sku),
@@ -86,7 +94,9 @@ export default (response, gateway, person) => {
       // XXX support multiple transactions
       // XXX this needs a change on the app side before possible
       Amount: Number(transaction.action.amount),
-      AccountId: Number((find(transaction.merchant_defined_field, { id: "1" }))._),
+      AccountId: Number(
+        find(transaction.merchant_defined_field, { id: "1" })._,
+      ),
       Guid: uuid.v4(),
     });
   }
@@ -97,11 +107,14 @@ export default (response, gateway, person) => {
     Guid: uuid.v4(),
   };
   PaymentDetail.AccountNumberMasked = PaymentDetail.AccountNumberMasked.replace(
-    new RegExp("x", "gmi"), "*",
+    new RegExp("x", "gmi"),
+    "*",
   );
 
   if (transaction.cc_number) {
-    PaymentDetail.CreditCardTypeValueId = getCardType(PaymentDetail.AccountNumberMasked);
+    PaymentDetail.CreditCardTypeValueId = getCardType(
+      PaymentDetail.AccountNumberMasked,
+    );
   }
 
   let CampusId;
@@ -111,10 +124,12 @@ export default (response, gateway, person) => {
     }
     try {
       CampusId = Number(
-        (find(transaction.merchant_defined_field, { id: "2" }))._,
+        find(transaction.merchant_defined_field, { id: "2" })._,
       );
     } catch (e) {
-      console.warn(`Cannot find campus in NMI for ${transaction.transaction_id}`);
+      console.warn(
+        `Cannot find campus in NMI for ${transaction.transaction_id}`,
+      );
     }
   }
 

@@ -1,9 +1,6 @@
 /* tslint:disable:no-shadowed-variable */
 
-import {
-  INTEGER,
-  STRING,
-} from "sequelize";
+import { INTEGER, STRING } from "sequelize";
 
 import { MySQLConnector, Tables } from "../../mysql";
 
@@ -19,10 +16,7 @@ const playaSchema = {
   rel_order: { type: INTEGER },
 };
 let Playa;
-export {
-  Playa,
-  playaSchema,
-};
+export { Playa, playaSchema };
 
 export function connect() {
   Playa = new MySQLConnector("exp_playa_relationships", playaSchema);

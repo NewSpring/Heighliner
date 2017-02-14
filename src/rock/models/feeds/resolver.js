@@ -1,10 +1,12 @@
-
 import { flatten } from "lodash";
 
 export default {
-
   Query: {
-    userFeed: (_, { filters, limit, skip, status, cache, options = "{}" }, { models, person, user }) => {
+    userFeed: (
+      _,
+      { filters, limit, skip, status, cache, options = "{}" },
+      { models, person, user },
+    ) => {
       if (!filters) return null;
 
       const opts = JSON.parse(options);
@@ -15,7 +17,7 @@ export default {
 
         channels = channels
           .map(x => x.toLowerCase())
-          .map((x) => {
+          .map(x => {
             if (x === "series") return ["series_newspring"];
             if (x === "music") return ["newspring_albums"];
             if (x === "devotionals") return ["study_entries", "devotionals"];
@@ -24,19 +26,35 @@ export default {
           })
           .map(flatten);
 
-        filterQueries.push(models.Content.find({
-          channel_name: { $or: channels }, offset: skip, limit, status,
-        }, cache));
+        filterQueries.push(
+          models.Content.find(
+            {
+              channel_name: { $or: channels },
+              offset: skip,
+              limit,
+              status,
+            },
+            cache,
+          ),
+        );
       }
 
       if (filters.includes("GIVING_DASHBOARD") && person) {
-        filterQueries.push(models.Transaction.findByPersonAlias(
-          person.aliases, { limit: 3, offset: 0 }, { cache: null },
-        ));
+        filterQueries.push(
+          models.Transaction.findByPersonAlias(
+            person.aliases,
+            { limit: 3, offset: 0 },
+            { cache: null },
+          ),
+        );
 
-        filterQueries.push(models.SavedPayment.findByPersonAlias(
-          person.aliases, { limit: 3, offset: 0 }, { cache: null },
-        ));
+        filterQueries.push(
+          models.SavedPayment.findByPersonAlias(
+            person.aliases,
+            { limit: 3, offset: 0 },
+            { cache: null },
+          ),
+        );
       }
 
       if (filters.includes("LIKES") && user) {
@@ -45,8 +63,7 @@ export default {
 
       if (!filterQueries.length) return null;
 
-      return Promise.all(filterQueries)
-        .then(flatten);
+      return Promise.all(filterQueries).then(flatten);
     },
   },
 };

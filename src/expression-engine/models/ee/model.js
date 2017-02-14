@@ -1,4 +1,3 @@
-
 import { Heighliner } from "../../../util";
 
 export class EE extends Heighliner {
@@ -6,8 +5,10 @@ export class EE extends Heighliner {
   id = "entry_id";
 
   getDate(day, month, year) {
-    if (!day || !month || !year) throw new Error("Missing information from `getDate`");
-    return `${new Date(Number(year), Number(month) - 1 , Number(day))}`;
+    if (!day || !month || !year) {
+      throw new Error("Missing information from `getDate`");
+    }
+    return `${new Date(Number(year), Number(month) - 1, Number(day))}`;
   }
 
   getDateFromUnix(timestamp) {
@@ -17,12 +18,14 @@ export class EE extends Heighliner {
   contentImages(markup) {
     if (!markup) return [];
 
-    let images = markup.match(/src=".*\.(jpg|jpeg|png)"/gmi);
+    const images = markup.match(/src=".*\.(jpg|jpeg|png)"/gmi);
     if (!images) return [];
 
-    return images
-      .filter(x => x.slice(5, -1) !== "")
-      .map(image => ({ fileLabel: "inline", s3: image.slice(5, -1), url: image.slice(5, -1) }));
+    return images.filter(x => x.slice(5, -1) !== "").map(image => ({
+      fileLabel: "inline",
+      s3: image.slice(5, -1),
+      url: image.slice(5, -1),
+    }));
   }
 
   splitByNewLines(tags) {
@@ -45,11 +48,11 @@ export class EE extends Heighliner {
   cleanMarkup(markup) {
     if (!markup) return false;
 
-    let parsed = markup.match(/src="{assets_\d*.*}"/gmi);
+    const parsed = markup.match(/src="{assets_\d*.*}"/gmi);
     if (!parsed) return markup;
 
     // remove {assets_IDSTRING:} and make protocal relative
-    markup = markup.replace(/{assets_\d*.*?}/gmi, (link) => {
+    markup = markup.replace(/{assets_\d*.*?}/gmi, link => {
       link = link.trim().substring(0, link.length - 1);
       link = link.replace(/{assets_\d*:/gmi, "");
       return link;

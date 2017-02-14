@@ -1,4 +1,3 @@
-
 import schema from "./schema";
 import models from "./model";
 import mutations from "./mutations";

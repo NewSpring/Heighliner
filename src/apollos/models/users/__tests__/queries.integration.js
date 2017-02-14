@@ -5,7 +5,6 @@
 // import bodyParser from "body-parser";
 // import { createApp } from "../../../../schema";
 
-
 // let Heighliner;
 // beforeEach(async () => {
 //   const app = express();
@@ -23,8 +22,10 @@
 // });
 
 xit("Valid queries should return success", async () => {
-  const response = await Heighliner(JSON.stringify({
-    query: `
+  const response = await Heighliner(
+    JSON.stringify({
+      query: (
+        `
       query CurrentUser {
         currentUser {
           id
@@ -46,8 +47,10 @@ xit("Valid queries should return success", async () => {
           }
         }
       }
-    `,
-  }));
+    `
+      ),
+    }),
+  );
 
   expect(response.success).toBeTruthy();
   expect(response.status).toEqual(200);

@@ -1,10 +1,8 @@
-
 import { flatten, isNil } from "lodash";
 import { defaultCache } from "./cache";
 import { createGlobalId } from "./node/model";
 
 export class Heighliner {
-
   constructor({ cache } = { cache: defaultCache }) {
     this.cache = cache;
   }
@@ -19,7 +17,11 @@ export class Heighliner {
 
   async getFromIds(data = []) {
     if (!data || !data.length) return Promise.resolve([]);
-    return Promise.all(data.map(x => this.getFromId(x[this.id], createGlobalId(x[this.id], this.__type))))
+    return Promise
+      .all(
+        data.map(x =>
+          this.getFromId(x[this.id], createGlobalId(x[this.id], this.__type))),
+      )
       .then(x => flatten(x))
       .then(x => x.filter(y => !isNil(y)).map(z => {
         const item = z;
@@ -32,5 +34,4 @@ export class Heighliner {
     console.log("DEBUG:", data); // tslint:disable-line
     return data;
   }
-
 }

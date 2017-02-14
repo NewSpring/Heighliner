@@ -66,9 +66,7 @@ it("`Campus` should have service times formmated correctly", () => {
   const { Campus } = Resolver;
 
   const services = Campus.services(sampleData.campuses);
-  expect(services).toEqual([
-    "Sunday at 9:15am & 11:15am",
-  ]);
+  expect(services).toEqual(["Sunday at 9:15am & 11:15am"]);
 });
 
 it("`Campus` should have a shortCode.", () => {
@@ -151,7 +149,10 @@ it("`Location` should return latitude.", () => {
   const noGeoPoint = Location.latitude({ GeoPoint: null, latitude: null });
   expect(null).toEqual(noGeoPoint);
 
-  const Latitude = Location.latitude({ GeoPoint: null, latitude: sampleData.location.Latitude });
+  const Latitude = Location.latitude({
+    GeoPoint: null,
+    latitude: sampleData.location.Latitude,
+  });
   expect(sampleData.location.Latitude).toEqual(Latitude);
 });
 

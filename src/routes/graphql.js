@@ -1,4 +1,3 @@
-
 import OpticsAgent from "optics-agent";
 import { apolloExpress } from "apollo-server";
 import { timeout } from "promise-timeout";
@@ -8,16 +7,11 @@ import { makeExecutableSchema } from "graphql-tools";
 import Node from "../util/node/model";
 import { createCache } from "../util/cache";
 
-import {
-  createSchema,
-  loadApplications,
-  getIp,
-} from "../util/heighliner";
+import { createSchema, loadApplications, getIp } from "../util/heighliner";
 
 // Import Apollos
 import Apollos, {
-  queries as ApollosQueries,
-  // mutations as ApollosMutations,
+  queries as ApollosQueries, // mutations as ApollosMutations,
 } from "../apollos";
 
 // Import Rock
@@ -74,27 +68,32 @@ if (process.env.OPTICS_API_KEY) OpticsAgent.instrumentSchema(executabledSchema);
 export function createModels({ cache }) {
   // create all of the models on app start up
   const createdModels = {};
-  Object.keys(models).forEach((name) => { createdModels[name] = new models[name]({ cache }); });
+  Object.keys(models).forEach(name => {
+    createdModels[name] = new models[name]({ cache });
+  });
 
   createdModels.Node = new Node({ cache, models: createdModels });
   return createdModels;
 }
 
-export default function (app, monitor) {
+export default function(app, monitor) {
   const datadog = monitor && monitor.datadog;
 
-  const graphql = async (request) => {
+  const graphql = async request => {
     let cache;
     // connect to all dbs
-    await Promise.all([
-      createCache({ datadog }),
-      Apollos.connect({ datadog }),
-      ExpressionEngine.connect({ datadog }),
-      Rock.connect({ datadog }),
-      GoogleSS.connect(),
-      ESV.connect(),
-    ])
-      .then(([REDIS]) => { cache = REDIS; });
+    await Promise
+      .all([
+        createCache({ datadog }),
+        Apollos.connect({ datadog }),
+        ExpressionEngine.connect({ datadog }),
+        Rock.connect({ datadog }),
+        GoogleSS.connect(),
+        ESV.connect(),
+      ])
+      .then(([REDIS]) => {
+        cache = REDIS;
+      });
 
     // build the models
     const createdModels = createModels({ cache });
@@ -128,18 +127,28 @@ export default function (app, monitor) {
       // bind the logged in user to the context overall
       let user;
       try {
-        user = await timeout(createdModels.User.getByHashedToken(context.hashedToken), 1000);
+        user = await timeout(
+          createdModels.User.getByHashedToken(context.hashedToken),
+          1000,
+        );
         context.user = user;
-      } catch (e) { /* tslint:disable-line */ }
+      } catch (e) {
+        /* tslint:disable-line */
+      }
 
       let person;
       if (user && user.services && user.services.rock) {
         try {
           person = await timeout(
-            createdModels.Person.getFromAliasId(user.services.rock.PrimaryAliasId)
-          , 1000);
+            createdModels.Person.getFromAliasId(
+              user.services.rock.PrimaryAliasId,
+            ),
+            1000,
+          );
           person.PrimaryAliasId = user.services.rock.PrimaryAliasId;
-        } catch (e) { /* tslint:disable-line */ }
+        } catch (e) {
+          /* tslint:disable-line */
+        }
       }
       context.person = person;
     }
@@ -148,7 +157,10 @@ export default function (app, monitor) {
       const sentry = new Raven.Client(process.env.SENTRY);
       context.sentry = sentry;
       if (context.person) {
-        sentry.setUserContext({ email: context.person.Email, id: context.person.PersonId });
+        sentry.setUserContext({
+          email: context.person.Email,
+          id: context.person.PersonId,
+        });
       }
     }
 
@@ -158,7 +170,7 @@ export default function (app, monitor) {
         ...{ models: createdModels },
       },
       schema: executabledSchema,
-      formatError: (error) => {
+      formatError: error => {
         if (process.env.NODE_ENV === "production") {
           if (datadog) datadog.increment("graphql.error");
           context.sentry.captureError(error, parsers.parseRequest(request));

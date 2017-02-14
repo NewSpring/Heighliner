@@ -1,4 +1,3 @@
-
 import Resolver from "../resolver";
 
 const sampleData = {
@@ -44,14 +43,19 @@ const sampleData = {
     Email: "email@example.com",
   },
   like: {
-    "id": "16c44ac3fe07af726455feac35ab2be9",
-    "title": "One place where everyone is welcome",
-    "channelName": "articles",
-    "content": {
-      "images": [ { "url": "//drhztd8q3iayu.cloudfront.net/newspring/editorial/articles/newspring.blog.hero.monasterypews.large.jpg", "label": "2:1" } ]
+    id: "16c44ac3fe07af726455feac35ab2be9",
+    title: "One place where everyone is welcome",
+    channelName: "articles",
+    content: {
+      images: [
+        {
+          url: "//drhztd8q3iayu.cloudfront.net/newspring/editorial/articles/newspring.blog.hero.monasterypews.large.jpg",
+          label: "2:1",
+        },
+      ],
     },
-    __type: "Content"
-  }
+    __type: "Content",
+  },
 };
 
 describe("Feed Query", () => {
@@ -65,9 +69,7 @@ describe("Feed Query", () => {
     Like: {
       getLikedContent: jest.fn(),
     },
-    Node: {
-
-    }
+    Node: {},
   };
 
   afterEach(() => {
@@ -85,8 +87,14 @@ describe("Feed Query", () => {
   it("should return null with no valid filters", () => {
     const { Query } = Resolver;
 
-    const results = Query.userFeed(null, {}, { models: null, person: sampleData.person });
-    const resultsWithFilter = Query.userFeed(null, { filters: ["INVALID"] }, { models: null, person: sampleData.person });
+    const results = Query.userFeed(null, {}, {
+      models: null,
+      person: sampleData.person,
+    });
+    const resultsWithFilter = Query.userFeed(null, { filters: ["INVALID"] }, {
+      models: null,
+      person: sampleData.person,
+    });
     expect(results).toEqual(null);
     expect(resultsWithFilter).toEqual(null);
   });
@@ -106,33 +114,40 @@ describe("Feed Query", () => {
     expect(results).toEqual([]);
   });
 
-  it("should return array of combined Transaction and SavedPayment data", async () => {
-    const { Query } = Resolver;
+  it(
+    "should return array of combined Transaction and SavedPayment data",
+    async () => {
+      const { Query } = Resolver;
 
-    mockModels.Transaction.findByPersonAlias.mockReturnValueOnce([sampleData.Transaction]);
-    mockModels.SavedPayment.findByPersonAlias.mockReturnValueOnce([sampleData.SavedPayment]);
+      mockModels.Transaction.findByPersonAlias.mockReturnValueOnce([
+        sampleData.Transaction,
+      ]);
+      mockModels.SavedPayment.findByPersonAlias.mockReturnValueOnce([
+        sampleData.SavedPayment,
+      ]);
 
-    const results = await Query.userFeed( //eslint-disable-line
-      null,
-      { filters: ["GIVING_DASHBOARD"] },
-      { models: mockModels, person: sampleData.person },
-    );
+      const results = await Query.userFeed( //eslint-disable-line
+        null,
+        { filters: ["GIVING_DASHBOARD"] },
+        { models: mockModels, person: sampleData.person },
+      );
 
-    expect(results).toMatchSnapshot();
-    expect(results[0].__type).toEqual("Transaction");
-    expect(results[1].__type).toEqual("SavedPayment");
-  });
+      expect(results).toMatchSnapshot();
+      expect(results[0].__type).toEqual("Transaction");
+      expect(results[1].__type).toEqual("SavedPayment");
+    },
+  );
 
   it("should return a list of user's likes with correct filter", async () => {
     const { Query } = Resolver;
 
     mockModels.Like.getLikedContent.mockReturnValueOnce([sampleData.like]);
 
-    const results = await Query.userFeed( //eslint-disable-line
-      null,
-      { filters: ["LIKES"] },
-      { models: mockModels, person: null, user: { _id: "1234" } },
-    );
+    const results = await Query.userFeed(null, { filters: ["LIKES"] }, { //eslint-disable-line
+      models: mockModels,
+      person: null,
+      user: { _id: "1234" },
+    });
 
     expect(mockModels.Like.getLikedContent).toHaveBeenCalledWith("1234", {});
     expect(results).toMatchSnapshot();

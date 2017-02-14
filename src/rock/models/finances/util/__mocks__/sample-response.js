@@ -22,9 +22,7 @@ export const standard = {
   tax: "0.00",
   currency: "USD",
   entry_mode: "Keyed",
-  merchant_defined_field: [
-    { id: "2", _: "16" },
-  ],
+  merchant_defined_field: [{ id: "2", _: "16" }],
   cc_bin: "111111",
   product: {
     sku: "125",
@@ -76,9 +74,7 @@ export const check = {
   tax: "0.00",
   currency: "USD",
   entry_mode: "Keyed",
-  merchant_defined_field: [
-    { id: "2", _: "16" },
-  ],
+  merchant_defined_field: [{ id: "2", _: "16" }],
   cc_bin: "111111",
   product: {
     sku: "125",
@@ -101,7 +97,6 @@ export const check = {
     requested_amount: "1",
   },
 };
-
 
 export const recurring = {
   transaction_id: "1",
@@ -128,10 +123,7 @@ export const recurring = {
   tax: "0.00",
   currency: "USD",
   entry_mode: "Keyed",
-  merchant_defined_field: [
-    { id: "2", _: "16" },
-    { id: "1", _: "128" },
-  ],
+  merchant_defined_field: [{ id: "2", _: "16" }, { id: "1", _: "128" }],
   cc_bin: "111111",
   product: {
     sku: "125",
@@ -229,7 +221,6 @@ export const NMIExample = {
     },
   ],
 };
-
 
 export const singleTransaction = {
   result: "1",

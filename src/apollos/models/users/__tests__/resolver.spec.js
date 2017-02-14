@@ -1,4 +1,3 @@
-
 import casual from "casual";
 import Resolver from "../resolver";
 import { parseGlobalId } from "../../../../util";
@@ -50,7 +49,6 @@ it("`UserTokens` should return the login token from the data", () => {
   const tokens = UserTokens.tokens(sampleData.services.resume);
   expect(tokens).toEqual(sampleData.services.resume.loginTokens);
 });
-
 
 it("`UserRock` should return the 'Id' from the data", () => {
   const { UserRock } = Resolver;

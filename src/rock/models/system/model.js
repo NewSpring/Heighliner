@@ -1,4 +1,3 @@
-
 import { pick, sortBy, flatten } from "lodash";
 import { createGlobalId, Heighliner } from "../../../util";
 
@@ -13,8 +12,7 @@ import {
   AttributeQualifier as AttributeQualifierModel,
   Communication as CommunicationTable,
   CommunicationRecipient as CommunicationRecipientTable,
-  SystemEmail as SystemEmailTable,
-  // EntityType as EntityTypeModel,
+  SystemEmail as SystemEmailTable, // EntityType as EntityTypeModel,
 } from "./tables";
 
 import FieldTypeResolvers from "./fieldTypeResolvers";
@@ -33,25 +31,27 @@ export class Rock extends Heighliner {
   id = "Id";
   baseUrl = process.env.ROCK_URL;
 
-
   processDefinedValues(values) {
     const promises = values.map(x => {
       if (FieldTypeResolvers.hasOwnProperty(x.DefinedType.FieldType.Class)) {
-        return Promise.resolve()
-          .then(() => {
-            x.Value = FieldTypeResolvers[x.DefinedType.FieldType.Class](x.Value, null, this.cache);
-            return pick(x, definedValueKeys);
-          });
+        return Promise.resolve().then(() => {
+          x.Value = FieldTypeResolvers[x.DefinedType.FieldType.Class](
+            x.Value,
+            null,
+            this.cache,
+          );
+          return pick(x, definedValueKeys);
+        });
       }
 
-      console.error(`No field type resolver found for ${x.DefinedType.FieldType.Class}`);
+      console.error(
+        `No field type resolver found for ${x.DefinedType.FieldType.Class}`,
+      );
       // XXX how should we alert on missing defined value types?
-      return Promise.resolve()
-        .then(() => pick(x, definedValueKeys));
+      return Promise.resolve().then(() => pick(x, definedValueKeys));
     });
 
-    return Promise.all([].concat(promises))
-      .then(x => sortBy(x, "Order"));
+    return Promise.all([].concat(promises)).then(x => sortBy(x, "Order"));
   }
 
   processAttributeValue(value) {
@@ -59,8 +59,7 @@ export class Rock extends Heighliner {
 
     const { FieldType, DefaultValue } = value.Attribute;
     if (FieldTypeResolvers.hasOwnProperty(FieldType.Class)) {
-      return Promise.resolve()
-      .then(() => {
+      return Promise.resolve().then(() => {
         const method = FieldTypeResolvers[FieldType.Class];
         return method.apply(this, [value.Value, DefaultValue]);
       });
@@ -72,7 +71,8 @@ export class Rock extends Heighliner {
 
   async getDefinedValuesByTypeId(id, { limit, offset } = {}) {
     const query = { limit, offset, id };
-    return this.cache.get(this.cache.encode(query), () => DefinedValueModel.find({
+    return this.cache.get(this.cache.encode(query), () => DefinedValueModel
+      .find({
         include: [
           {
             model: DefinedTypeModel.model,
@@ -84,49 +84,61 @@ export class Rock extends Heighliner {
         limit,
         offset,
       })
-        .then(this.processDefinedValues)
-    );
+      .then(this.processDefinedValues));
   }
 
   async getDefinedValueId(id) {
     const globalId = createGlobalId(`${id}`, "RockDefinedValue");
-    return this.cache.get(globalId, () => DefinedValueModel.findOne({
+    return this.cache.get(globalId, () => DefinedValueModel
+      .findOne({
         where: { Id: id },
         include: [
-          { model: DefinedTypeModel.model, include: [{ model: FieldTypeModel.model }] },
+          {
+            model: DefinedTypeModel.model,
+            include: [{ model: FieldTypeModel.model }],
+          },
         ],
       })
-        .then(x => this.processDefinedValues([x]))
-        .then(x => x[0])
-    );
+      .then(x => this.processDefinedValues([x]))
+      .then(x => x[0]));
   }
 
   async getDefinedValueByGuid(Guid) {
     const Guids = `${Guid}`.split(",");
     const globalId = createGlobalId(`${Guid}`, "RockDefinedValueGuid");
-    return this.cache.get(globalId, () => DefinedValueModel.find({
+    return this.cache.get(globalId, () => DefinedValueModel
+      .find({
         where: { Guid: { $in: Guids } },
         include: [
-          { model: DefinedTypeModel.model, include: [{ model: FieldTypeModel.model }] },
+          {
+            model: DefinedTypeModel.model,
+            include: [{ model: FieldTypeModel.model }],
+          },
         ],
       })
-        .then(this.processDefinedValues)
-    );
+      .then(this.processDefinedValues));
   }
 
   async getAttributeValuesFromId(id, context) {
-
-    return this.cache.get(`${id}:getAttributeValuesFromId`, () => AttributeValueModel.findOne({
-      where: { Id: id },
-      include: [{ model: AttributeModel.model, include: [{ model: FieldTypeModel.model }] }],
-    })
-      .then(this.processAttributeValue.bind(context))
+    return this.cache.get(
+      `${id}:getAttributeValuesFromId`,
+      () => AttributeValueModel
+        .findOne({
+          where: { Id: id },
+          include: [
+            {
+              model: AttributeModel.model,
+              include: [{ model: FieldTypeModel.model }],
+            },
+          ],
+        })
+        .then(this.processAttributeValue.bind(context)),
     );
   }
 
   async sendEmail(title, people = [], data = {}) {
     if (!title) throw new Error("No email passed");
-    const email = await SystemEmailTable.findOne({ where: { Title: title }});
+    const email = await SystemEmailTable.findOne({ where: { Title: title } });
 
     if (!email || !email.Body || !email.Subject) return null;
 
@@ -148,7 +160,7 @@ export class Rock extends Heighliner {
     });
 
     return Promise.all(
-      people.map((PersonAliasId) => {
+      people.map(PersonAliasId => {
         const CommunicationRecipient = {
           PersonAliasId,
           CommunicationId: Communication.Id,
@@ -162,33 +174,35 @@ export class Rock extends Heighliner {
   }
 
   async getAttributesFromId(id) {
-    return this.cache.get(`${id}:getAttributeValues`, () => AttributeModel.findOne({
-      where: { Id: id },
-      include: [
-        { model: FieldTypeModel.model },
-        { model: AttributeQualifierModel.model },
-      ],
-    })
+    return this.cache.get(`${id}:getAttributeValues`, () => AttributeModel
+      .findOne({
+        where: { Id: id },
+        include: [
+          { model: FieldTypeModel.model },
+          { model: AttributeQualifierModel.model },
+        ],
+      })
       .then(x => {
         if (!x) return null;
         const { FieldType } = x;
         // 70
         if (FieldType.Class !== "Rock.Field.Types.DefinedValueFieldType") {
-          return [{
-            Id: x.Id,
-            Value: x.Name,
-            Description: x.Description,
-          }];
+          return [
+            {
+              Id: x.Id,
+              Value: x.Name,
+              Description: x.Description,
+            },
+          ];
         }
-        const definedTypeId = x.AttributeQualifiers
-          .filter(y => y.Key === "definedtype");
+        const definedTypeId = x.AttributeQualifiers.filter(
+          y => y.Key === "definedtype",
+        );
 
         return this.getDefinedValuesByTypeId(definedTypeId[0].Value);
       })
-      .then(flatten)
-    );
+      .then(flatten));
   }
-
 }
 
 export default {
