@@ -360,7 +360,6 @@ export default class TransactionJobs extends Rock {
           .then(x => x && x.Campus || {});
 
         // ERROR IF THIS IS MISSING
-        console.log("FamilyCampus", FamilyCampus);
         if (!FamilyCampus || !FamilyCampus.Id) {
           if(!FamilyCampus) report({ data }, new Error("FamilyCampus missing when creating transaction details"));
           else report({ data }, new Error("FamilyCampus.Id missing when creating transaction details"));
