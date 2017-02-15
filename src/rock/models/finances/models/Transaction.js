@@ -8,11 +8,11 @@ import { parseString } from "xml2js";
 import { createGlobalId } from "../../../../util";
 import { createCache } from "../../../../util/cache";
 
-
 import translateFromNMI from "../util/translate-nmi";
 import formatTransaction from "../util/formatTransaction";
 import nmi from "../util/nmi";
 import submitTransaction from "../util/submit-transaction";
+import report from "../util/logError";
 
 import {
   Transaction as TransactionTable,
@@ -420,9 +420,14 @@ export default class Transaction extends Rock {
 
       delete orderData.savedAccount;
       delete orderData.savedAccountName;
+
       if (accountDetails && accountDetails.ReferenceNumber) {
         delete orderData["customer-id"];
         orderData["customer-vault-id"] = accountDetails.ReferenceNumber;
+      } else {
+        // ERROR IF ACCOUNT DETAILS OR REFERENCE NUMBER IS MISSING
+        if (!accountDetails) report({ data }, new Error("Account details lookup failed"));
+        else report({ data }, new Error("Account Details doesn't have a reference number"));
       }
     }
 
@@ -452,11 +457,36 @@ export default class Transaction extends Rock {
       },
     };
 
+    if (order && order[method]) {
+      if(method === "add-subscription"){
+        if (!order[method]["merchant-defined-field-1"]) {
+          report({ data }, new Error("merchant-defined-field-1 missing from subscription order information"));
+        }
+      }
+      if (!order[method]["merchant-defined-field-2"]) {
+        report({ data }, new Error("merchant-defined-field-2 missing from order information"));
+      }
+    } else {
+      report({ data }, new Error("missing order or order method"));
+    }
+
     return nmi(order, gateway)
       .then((data) => {
         if (!instant) return data;
         const scheduleId = id;
         const response = formatTransaction({ scheduleId, response: data, person, origin }, gateway);
+
+        if (!response || !response.Campus || !response.Campus.Id) {
+          report({ data }, new Error("missing response campus id"));
+        }
+        if (response && Array.isArray(response.TransactionDetails)) {
+          response.TransactionDetails.map((detail) => {
+            if (!detail || !detail.AccountId) {
+              report({ data }, new Error("A TransactionDetail object is missing accountId"));
+            }
+          });
+        }
+
         this.TransactionJob.add(response);
         return data;
       })

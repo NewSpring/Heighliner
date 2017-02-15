@@ -2,7 +2,6 @@
 import uuid from "node-uuid";
 import { assign, isNumber } from "lodash";
 import queue from "bull";
-import Raven, { parsers } from "raven";
 import fetch from "node-fetch";
 
 import {
@@ -39,6 +38,7 @@ import {
 } from "../../groups/tables";
 
 import { Rock } from "../../system";
+import report from "../util/logError";
 
 // XXX move to util
 export const readIdsFromFrequencies = (plan, frequencies) => {
@@ -78,10 +78,6 @@ export default class TransactionJobs extends Rock {
     this.FinancialBatch = new FinancialBatch({ cache });
     this.queue = TRANSACTION_QUEUE;
 
-    if (process.env.SENTRY) {
-      this.sentry = new Raven.Client(process.env.SENTRY)
-    }
-
     this.queue.process(({ data }) =>  Promise.resolve(data)
       .then(this.getOrCreatePerson)
       .then(this.createPaymentDetail)
@@ -93,40 +89,6 @@ export default class TransactionJobs extends Rock {
       .then(this.updateBatchControlAmount)
       .then(this.sendGivingEmail),
     );
-
-    const report = ({ data, attemptsMade }, error) => {
-      if (!this.sentry) {
-        console.error("ERROR", error);
-        return;
-      }
-
-      // don't log to sentry or slack on every attempt
-      // only log of the first event if possible
-      if (!attemptsMade || attemptsMade !== 1) return;
-
-      if (data && data.Person) {
-        this.sentry.setUserContext({ id: data.Person.Id });
-        if (data.Person.Email) this.sentry.setUserContext({ email: data.Person.Email });
-      }
-
-      this.sentry.captureException(error, { extra: { data, attemptsMade } });
-
-      // only log to slack the first time an error has happened
-      if (process.env.SLACK) {
-        const message = {
-          username: "Heighliner",
-          icon_emoji: ":feelsbulbman:",
-          text: `ATTENTION: there has been an error processing a transasction. The transaction reference number is ${data.Transaction.ReferenceNumber} The error is ${error.message}`,
-          channel: "systems",
-        }
-
-        fetch(process.env.SLACK, {
-          method: "POST",
-          body: JSON.stringify(message),
-        });
-
-      }
-    }
 
     // XXX rewrite mock to support events
     if (!this.queue.on) return;
@@ -396,6 +358,12 @@ export default class TransactionJobs extends Rock {
           ],
         })
           .then(x => x && x.Campus || {});
+
+        // ERROR IF THIS IS MISSING
+        if (!FamilyCampus || !FamilyCampus.Id) {
+          if(!FamilyCampus) report({ data }, new Error("FamilyCampus missing when creating transaction details"));
+          else report({ data }, new Error("FamilyCampus.Id missing when creating transaction details"));
+        }
 
         AccountId = await FinancialAccount.findOne({
           where: {
