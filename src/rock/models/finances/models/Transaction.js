@@ -335,7 +335,7 @@ export default class Transaction extends Rock {
     this.gateway = assign(
       gateways,
       attributes,
-      { SecurityKey: "2F822Rw39fx762MaV7Yy86jXGTC7sCDy" }
+      // { SecurityKey: "2F822Rw39fx762MaV7Yy86jXGTC7sCDy" }
     );
     return this.gateway;
   }
@@ -472,11 +472,13 @@ export default class Transaction extends Rock {
         if (!response || !response.Campus || !response.Campus.Id) {
           report({ data }, new Error("missing response campus id"));
         }
-        reponse.TransactionDetails.map((detail) => {
-          if (!detail || !detail.AccountId) {
-            report({ data }, new Error("A TransactionDetail object is missing accountId"));
-          }
-        });
+        if (response && Array.isArray(response.TransactionDetails)) {
+          response.TransactionDetails.map((detail) => {
+            if (!detail || !detail.AccountId) {
+              report({ data }, new Error("A TransactionDetail object is missing accountId"));
+            }
+          });
+        }
 
         this.TransactionJob.add(response);
         return data;
