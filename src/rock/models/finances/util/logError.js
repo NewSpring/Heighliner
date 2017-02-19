@@ -29,7 +29,7 @@ const report = ({ data, attemptsMade = 1 }, error) => {
     const message = {
       username: "Heighliner",
       icon_emoji: ":feelsbulbman:",
-      text: `ATTENTION: there has been an error processing a transasction. The transaction reference number is ${data.Transaction.ReferenceNumber} The error is ${error.message}`,
+      text: `ATTENTION: ${error.message}`,
       channel: "systems",
     }
 
