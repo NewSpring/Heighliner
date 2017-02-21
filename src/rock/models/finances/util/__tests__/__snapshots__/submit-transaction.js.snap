@@ -1,4 +1,6 @@
-exports[`test logs an error if missing a schedule in Rock 1`] = `
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`logs an error if missing a schedule in Rock 1`] = `
 Array [
   "
         Scheduled Transaction is missing for person 1 with

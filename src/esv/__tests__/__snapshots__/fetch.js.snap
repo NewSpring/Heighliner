@@ -1,1 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
 exports[`ESV \`ESVFetchConnector\` should format the query 1`] = `"http://www.esvapi.org/v2/rest/passageQuery?key=test-key&passage=john 3:16&include-headings=false&include-passage-references=false&include-footnotes=false&include-audio-link=false&include-short-copyright=false"`;

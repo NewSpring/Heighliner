@@ -1,13 +1,15 @@
-exports[`test should match expected codes 1`] = `
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should match expected codes 1`] = `
 Object {
   "100": "Transaction approved",
-  "200": "We\'re sorry, your transaction was declined by our payment processer",
+  "200": "We're sorry, your transaction was declined by our payment processer",
   "201": "It looks like this may be a fraudlent charge. Please contact your paymenr provider",
-  "202": "We\'re sorry, your account has insufficient funds",
-  "203": "We\'re sorry, this transaction is over your account limit",
-  "204": "We\'re sorry, this transaction was not allowed",
+  "202": "We're sorry, your account has insufficient funds",
+  "203": "We're sorry, this transaction is over your account limit",
+  "204": "We're sorry, this transaction was not allowed",
   "220": "It looks like your payment information is incorrect",
-  "221": "We couldn\'t find your dard issuer",
+  "221": "We couldn't find your dard issuer",
   "222": "Your card number is invalid",
   "223": "Your card has expired",
   "224": "Your expiration date is invalid",

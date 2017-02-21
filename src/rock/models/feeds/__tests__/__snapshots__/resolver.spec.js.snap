@@ -1,3 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
 exports[`Feed Query should return a list of user's likes with correct filter 1`] = `
 Array [
   Object {

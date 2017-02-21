@@ -19,7 +19,7 @@
       "js",
       "json"
     ],
-    "testPathDirs": [
+    "roots": [
       "./src"
     ],
     "collectCoverageFrom": [
@@ -86,7 +86,7 @@
     "eslint-plugin-import": "^2.2.0",
     "ghooks": "^1.2.3",
     "graphql-tester": "0.0.4",
-    "jest": "^17.0.0",
+    "jest": "^19.0.0",
     "npm-install-webpack-plugin": "^4.0.4",
     "react-test-renderer": "^15.4.1",
     "redis-mock": "^0.16.0",
