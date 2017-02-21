@@ -1,4 +1,6 @@
-exports[`test should contain mutations 1`] = `
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should contain mutations 1`] = `
 Array [
   "requestGroupInfo(
     groupId: ID!,

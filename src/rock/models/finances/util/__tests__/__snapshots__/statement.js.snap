@@ -1,3 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
 exports[`Statement should render with data 1`] = `
 <html>
   <head>
@@ -27,14 +29,14 @@ exports[`Statement should render with data 1`] = `
               }
       
               .pre-text {
-                font-family: \"Courier New\";
+                font-family: "Courier New";
                 font-size: 12px;
                 line-height: 1.4em;
               }
       
               .print-subheader {
                 color: black;
-                font-family: \"Helvetica\";
+                font-family: "Helvetica";
               }
       
               #logo-img {
@@ -65,14 +67,14 @@ exports[`Statement should render with data 1`] = `
       
                 border-bottom: 1px solid #ddd;
       
-                font-family: \"Helvetica\";
+                font-family: "Helvetica";
                 font-weight: 700;
               }
       
               table {
                 text-align: left;
       
-                font-family: \"Courier New\";
+                font-family: "Courier New";
                 font-size: 12px;
               }
       
@@ -87,7 +89,7 @@ exports[`Statement should render with data 1`] = `
               .total {
                 color: black;
       
-                font-family: \"Helvetica\";
+                font-family: "Helvetica";
                 font-size: 18px;
                 font-weight: 800;
               }
@@ -137,7 +139,8 @@ exports[`Statement should render with data 1`] = `
   </head>
   <body>
     <div
-      className="container">
+      className="container"
+    >
       <p>
         <br />
         <br />
@@ -145,20 +148,24 @@ exports[`Statement should render with data 1`] = `
       </p>
       <img
         id="logo-img"
-        src="https://s3.amazonaws.com/ns.images/newspring/icons/newspring-church-logo-black.png" />
+        src="https://s3.amazonaws.com/ns.images/newspring/icons/newspring-church-logo-black.png"
+      />
       <h2
         className="print-subheader soft-sides soft-half-bottom"
         style={
           Object {
             "fontFamily": "Helvetica",
           }
-        }>
+        }
+      >
         Contribution Statement
       </h2>
       <div
-        className="soft pre-text">
+        className="soft pre-text"
+      >
         <p
-          id="church-address">
+          id="church-address"
+        >
           NewSpring Church  
           <br />
           EIN# 26-4189337 
@@ -182,8 +189,9 @@ exports[`Statement should render with data 1`] = `
           45220
         </p>
         <p
-          id="verse">
-          Malachi 3:10 \"Bring the whole tithe into the storehouse, that there may be food in my house. Test me in this,\' says the LORD Almighty, \'and see if I will not throw open the floodgates of heaven and pour out so much blessing that you will not have room enough for it.\"
+          id="verse"
+        >
+          Malachi 3:10 "Bring the whole tithe into the storehouse, that there may be food in my house. Test me in this,' says the LORD Almighty, 'and see if I will not throw open the floodgates of heaven and pour out so much blessing that you will not have room enough for it."
         </p>
       </div>
       <table
@@ -193,7 +201,8 @@ exports[`Statement should render with data 1`] = `
           Object {
             "width": "100%",
           }
-        }>
+        }
+      >
         <tbody>
           <tr>
             <th
@@ -203,7 +212,8 @@ exports[`Statement should render with data 1`] = `
                   "fontFamily": "Helvetica",
                   "fontWeight": 700,
                 }
-              }>
+              }
+            >
               Account
             </th>
             <th
@@ -212,7 +222,8 @@ exports[`Statement should render with data 1`] = `
                   "fontFamily": "Helvetica",
                   "fontWeight": 700,
                 }
-              }>
+              }
+            >
               Date
             </th>
             <th
@@ -221,7 +232,8 @@ exports[`Statement should render with data 1`] = `
                   "fontFamily": "Helvetica",
                   "fontWeight": 700,
                 }
-              }>
+              }
+            >
               Amount
             </th>
           </tr>
@@ -253,14 +265,16 @@ exports[`Statement should render with data 1`] = `
               Object {
                 "width": "100%",
               }
-            }>
+            }
+          >
             <td
               className="soft-ends"
               style={
                 Object {
                   "fontFamily": "Helvetica",
                 }
-              }>
+              }
+            >
               Total
             </td>
             <td />
@@ -270,14 +284,16 @@ exports[`Statement should render with data 1`] = `
                 Object {
                   "fontFamily": "Helvetica",
                 }
-              }>
+              }
+            >
               $30.00
             </td>
           </tr>
         </tbody>
       </table>
       <p
-        className="footer-text soft">
+        className="footer-text soft"
+      >
         Thank you for your continued support. Please note that for taxation purposes, no goods or services were received in return for these contributions. If you have any questions or concerns, please contact us at giving@newspring.cc or 864-965-9990.
       </p>
     </div>
