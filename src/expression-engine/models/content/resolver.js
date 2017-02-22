@@ -207,6 +207,10 @@ export default {
     id: ({ entry_id }, _, $, { parentType }) => createGlobalId(entry_id, parentType.name),
     channel: ({ channel_id }) => createGlobalId(channel_id, "Channel"),
     channelName: ({ exp_channel }) => exp_channel.channel_name,
+    campus: ({ campus }, _, { models }) => {
+      // campus is playa formatted like "[id] [clemson] Clemson"
+      return campus ? models.Campus.find({ Name: campus.split(" ")[2] }).then(x => x.shift()) : null
+    },
     title: ({ exp_channel_title }) => exp_channel_title.title,
     status: ({ exp_channel_title }) => exp_channel_title.status,
     parent: ({ entry_id }, _, { models }) => models.Content.findByChildId(entry_id),
