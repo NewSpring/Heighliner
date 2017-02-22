@@ -51,7 +51,16 @@ const sampleData = {
       "images": [ { "url": "//drhztd8q3iayu.cloudfront.net/newspring/editorial/articles/newspring.blog.hero.monasterypews.large.jpg", "label": "2:1" } ]
     },
     __type: "Content"
-  }
+  },
+  campus: {
+    id: "12345",
+    guid: "314-1324-5321-5432",
+    name: "harambe",
+  },
+  news: {
+    __type: "Content",
+    title: "hello world",
+  },
 };
 
 describe("Feed Query", () => {
@@ -64,6 +73,9 @@ describe("Feed Query", () => {
     },
     Like: {
       getLikedContent: jest.fn(),
+    },
+    Content: {
+      find: jest.fn(),
     },
     Node: {
 
@@ -137,5 +149,26 @@ describe("Feed Query", () => {
     expect(mockModels.Like.getLikedContent).toHaveBeenCalledWith("1234", {});
     expect(results).toMatchSnapshot();
     expect(results[0].__type).toEqual("Content");
+  });
+
+  it("should lookup news with news filter", async () => {
+    const { Query } = Resolver;
+
+    mockModels.Content.find.mockReturnValueOnce([sampleData.news]);
+
+    const results = await Query.userFeed( //eslint-disable-line
+      null,
+      { filters: ["NEWS"] },
+      { models: mockModels, person: null, user: { _id: "1234" } },
+    );
+
+    expect(mockModels.Content.find).toHaveBeenCalledWith({
+      channel_name: "news",
+      offset: undefined,
+      limit: undefined,
+      status: undefined,
+    }, undefined);
+    expect(results[0].__type).toEqual("Content");
+    expect(results[0].title).toEqual("hello world");
   });
 });

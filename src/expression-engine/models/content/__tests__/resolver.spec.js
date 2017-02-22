@@ -1190,6 +1190,32 @@ it("`Content` channelName should return channel name", () => {
   expect(channelName).toEqual(mockData.exp_channel.channel_name);
 });
 
+it("`Content` campus should call campus.find", async () => {
+  const { Content } = Resolver;
+  const mockData = { campus: "[1234] [harambe] Clemson" };
+  const mockModels = { models:
+    { Campus: { find: jest.fn(() => Promise.resolve([])) } }
+  };
+
+  const campus = await Content.campus(mockData, null, mockModels);
+  expect(mockModels.models.Campus.find).toHaveBeenCalledWith({ Name: "Clemson" });
+});
+
+it("`Content` campus should return the correct campus", async () => {
+  const { Content } = Resolver;
+  const mockData = { campus: "[1234] [harambe] Clemson" };
+  const mockModels = {
+    models: {
+      Campus: {
+        find: jest.fn(() => Promise.resolve(["cincinnati", "zoo"])),
+      },
+    },
+  };
+
+  const campus = await Content.campus(mockData, null, mockModels);
+  expect(campus).toEqual("cincinnati");
+});
+
 it("`Content` title should return title", () => {
   const { Content } = Resolver;
   const mockData = {
@@ -1402,7 +1428,7 @@ it("`Content` related should call findByTags if tags", () => {
   Content.related(mockData, mockInput, { models });
 });
 
-it("`Contnet` seriesId should return global id", () => {
+it("`Content` seriesId should return global id", () => {
   const { Content } = Resolver;
   const mockData = {
     series_id: "2",
