@@ -62,6 +62,11 @@ const sampleData = {
     title: "hello world",
     campus: { guid: "harambe"},
   },
+  globalNews: {
+    __type: "Content",
+    title: "hello world",
+    campus: null,
+  },
   userCampus: {
     Guid: "something-different",
   },
@@ -230,5 +235,24 @@ describe("Feed Query", () => {
     }, undefined);
 
     expect(results.length).toEqual(1);
+  });
+
+  it("should only show global news to logged out users", async () => {
+    const { Query } = Resolver;
+
+    mockModels.Content.find.mockReturnValueOnce([sampleData.news, sampleData.globalNews]);
+    mockModels.Person.getCampusFromId.mockReturnValueOnce(sampleData.sameCampus);
+
+    const results = await Query.userFeed( //eslint-disable-line
+      null,
+      {
+        filters: ["CONTENT"],
+        options: "{\"content\":{\"channels\":[\"news\",\"series\",\"sermons\",\"stories\",\"studies\"]}}",
+      },
+      { models: mockModels, person: null, person: null },
+    );
+
+    expect(results.length).toEqual(1);
+    expect(results[0].campus).toEqual(null); // global news
   });
 });

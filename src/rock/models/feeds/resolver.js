@@ -36,10 +36,11 @@ export default {
           channel_name: { $or: channels }, offset: skip, limit, status,
         }, cache);
 
-        // if no campus OR if campus is the same as user, show it
-        content = content.filter((entry) => {
-          return !entry.campus || !userCampus || (userCampus.Guid === entry.campus.guid);
-        });
+        // logged out only see global news
+        // logged in only see news that is global, or their campus
+        content = content.filter(
+          (x) => !userCampus ? !x.campus : (!x.campus || (userCampus.Guid === x.campus.guid))
+        );
 
         // add filtered items to the list
         filterQueries.push(content);
