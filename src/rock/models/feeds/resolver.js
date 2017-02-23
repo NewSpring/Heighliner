@@ -4,12 +4,13 @@ import { flatten } from "lodash";
 export default {
 
   Query: {
-    userFeed: (_, { filters, limit, skip, status, cache, options = "{}" }, { models, person, user }) => {
+    userFeed: async (_, { filters, limit, skip, status, cache, options = "{}" }, { models, person, user }) => {
       if (!filters) return null;
 
       const opts = JSON.parse(options);
       const filterQueries = [];
 
+      // Home feed query
       if (filters.includes("CONTENT")) {
         let { channels } = opts.content;
 
@@ -24,9 +25,24 @@ export default {
           })
           .map(flatten);
 
-        filterQueries.push(models.Content.find({
+        //get user's campus to filter news by
+        let userCampus;
+        if (person && flatten(channels).includes("news")) {
+          userCampus = await models.Person.getCampusFromId(person.Id, { cache });
+        }
+
+        // TODO: filter other campuses by lookup query here
+        let content = await models.Content.find({
           channel_name: { $or: channels }, offset: skip, limit, status,
-        }, cache));
+        }, cache);
+
+        // if no campus OR if campus is the same as user, show it
+        content = content.filter((entry) => {
+          return !entry.campus || !userCampus || (userCampus.Guid === entry.campus.guid);
+        });
+
+        // add filtered items to the list
+        filterQueries.push(content);
       }
 
       if (filters.includes("GIVING_DASHBOARD") && person) {
@@ -41,6 +57,13 @@ export default {
 
       if (filters.includes("LIKES") && user) {
         filterQueries.push(models.Like.getLikedContent(user._id, models.Node));
+      }
+
+      //for news section in app -- all news
+      if (filters.includes("NEWS")) {
+        filterQueries.push(models.Content.find({
+          channel_name: "news", offset: skip, limit, status,
+        }, cache));
       }
 
       if (!filterQueries.length) return null;
