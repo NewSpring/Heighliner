@@ -1,6 +1,19 @@
 
 import { flatten } from "lodash";
 
+// for filtering news. allows logged out users to see gloabl news only,
+// and logged in users to see global and their campus
+/*
+  userCampus: { Guid: "" }
+  entryCampus: { Guid: "" }
+  => truthy/falsy
+*/
+export const shouldShowEntry = (userCampus, entryCampus) => {
+  return !userCampus
+    ? !entryCampus
+    : Boolean(!entryCampus || (userCampus.Guid === entryCampus.Guid))
+}
+
 export default {
 
   Query: {
@@ -25,11 +38,12 @@ export default {
           })
           .map(flatten);
 
+        const showsNews = flatten(channels).includes("news");
+
         //get user's campus to filter news by
-        let userCampus;
-        if (person && flatten(channels).includes("news")) {
-          userCampus = await models.Person.getCampusFromId(person.Id, { cache });
-        }
+        let userCampus = (person && showsNews)
+          ? await models.Person.getCampusFromId(person.Id, { cache })
+          : null;
 
         // TODO: filter other campuses by lookup query here
         let content = await models.Content.find({
@@ -38,9 +52,21 @@ export default {
 
         // logged out only see global news
         // logged in only see news that is global, or their campus
-        content = content.filter(
-          (x) => !userCampus ? !x.campus : (!x.campus || (userCampus.Guid === x.campus.guid))
-        );
+        if (showsNews) {
+          /*
+            XXX since you can't filter on an async filter function, I have to iterate over
+            the array of entries and add a shouldBeShown key than I can use to filter on after
+          */
+          for (let i=0; i < content.length; i++) {
+            const entryCampus = await content[i].campus
+              ? await models.Campus.find({ Name: content[i].campus.split(" ")[2] }).then(x => x.shift())
+              : null;
+            content[i] = { ...content[i], shouldBeShown: shouldShowEntry(userCampus, entryCampus) };
+          }
+
+          content = content.filter( x => x.shouldBeShown );
+
+        }
 
         // add filtered items to the list
         filterQueries.push(content);
