@@ -1,5 +1,5 @@
 
-import Resolver from "../resolver";
+import Resolver, { shouldShowEntry as filterLogic } from "../resolver";
 
 const sampleData = {
   Transaction: {
@@ -51,7 +51,28 @@ const sampleData = {
       "images": [ { "url": "//drhztd8q3iayu.cloudfront.net/newspring/editorial/articles/newspring.blog.hero.monasterypews.large.jpg", "label": "2:1" } ]
     },
     __type: "Content"
-  }
+  },
+  campus: {
+    id: "12345",
+    guid: "314-1324-5321-5432",
+    name: "harambe",
+  },
+  news: {
+    __type: "Content",
+    title: "hello world",
+    campus: "harambe",
+  },
+  globalNews: {
+    __type: "Content",
+    title: "hello world",
+    campus: null,
+  },
+  userCampus: {
+    Guid: "something-different",
+  },
+  sameCampus: {
+    Guid: "harambe",
+  },
 };
 
 describe("Feed Query", () => {
@@ -65,6 +86,15 @@ describe("Feed Query", () => {
     Like: {
       getLikedContent: jest.fn(),
     },
+    Content: {
+      find: jest.fn(),
+    },
+    Person: {
+      getCampusFromId: jest.fn(),
+    },
+    Campus: {
+      find: jest.fn(),
+    },
     Node: {
 
     }
@@ -75,18 +105,18 @@ describe("Feed Query", () => {
     mockModels.SavedPayment.findByPersonAlias.mockReset();
   });
 
-  it("should return null with no person", () => {
+  it("should return null with no person", async () => {
     const { Query } = Resolver;
 
-    const results = Query.userFeed(null, {}, { models: null, person: null });
+    const results = await Query.userFeed(null, {}, { models: null, person: null });
     expect(results).toEqual(null);
   });
 
-  it("should return null with no valid filters", () => {
+  it("should return null with no valid filters", async () => {
     const { Query } = Resolver;
 
-    const results = Query.userFeed(null, {}, { models: null, person: sampleData.person });
-    const resultsWithFilter = Query.userFeed(null, { filters: ["INVALID"] }, { models: null, person: sampleData.person });
+    const results = await Query.userFeed(null, {}, { models: null, person: sampleData.person });
+    const resultsWithFilter = await Query.userFeed(null, { filters: ["INVALID"] }, { models: null, person: sampleData.person });
     expect(results).toEqual(null);
     expect(resultsWithFilter).toEqual(null);
   });
@@ -137,5 +167,116 @@ describe("Feed Query", () => {
     expect(mockModels.Like.getLikedContent).toHaveBeenCalledWith("1234", {});
     expect(results).toMatchSnapshot();
     expect(results[0].__type).toEqual("Content");
+  });
+
+  it("should lookup news with news filter", async () => {
+    const { Query } = Resolver;
+
+    mockModels.Content.find.mockReturnValueOnce([sampleData.news]);
+
+    const results = await Query.userFeed( //eslint-disable-line
+      null,
+      { filters: ["NEWS"] },
+      { models: mockModels, person: null, user: { _id: "1234" } },
+    );
+
+    expect(mockModels.Content.find).toHaveBeenCalledWith({
+      channel_name: "news",
+      offset: undefined,
+      limit: undefined,
+      status: undefined,
+    }, undefined);
+    expect(results[0].__type).toEqual("Content");
+    expect(results[0].title).toEqual("hello world");
+  });
+
+  it("should have correct filterLogic", () => {
+    const userCampus = { Guid: "12345" };
+    const entryCampus = { same: { Guid: "12345" }, diff: { Guid: "abcde" }};
+
+    // no user, no campus: TRUE
+    expect(filterLogic(null, null)).toBeTruthy();
+    // no user, with campus: FALSE
+    expect(filterLogic(null, entryCampus.same)).toBeFalsy();
+    // with user, no campus: TRUE
+    expect(filterLogic(userCampus, null)).toBeTruthy();
+    // with user, different campus: FALSE
+    expect(filterLogic(userCampus, entryCampus.diff)).toBeFalsy();
+    // with user, same campus: TRUE
+    expect(filterLogic(userCampus, entryCampus.same)).toBeTruthy();
+  });
+
+  it("should not return news of other campuses from home feed query", async () => {
+    const { Query } = Resolver;
+
+    mockModels.Content.find.mockReturnValueOnce([sampleData.news]);
+    mockModels.Person.getCampusFromId.mockReturnValueOnce(sampleData.userCampus);
+    mockModels.Campus.find.mockReturnValueOnce(Promise.resolve([{ Guid: "harambe" }]));
+
+    const results = await Query.userFeed( //eslint-disable-line
+      null,
+      {
+        filters: ["CONTENT"],
+        options: "{\"content\":{\"channels\":[\"news\"]}}",
+      },
+      { models: mockModels, person: { Id: "1234" } },
+    );
+
+    expect(mockModels.Content.find).toHaveBeenCalledWith({
+      "channel_name": {"$or": [["news"]]},
+      "limit": undefined,
+      "offset": undefined,
+      "status": undefined},
+      undefined
+    );
+
+    expect(results.length).toEqual(0);
+  });
+
+  it("should return news of person's campus from home feed query", async () => {
+    const { Query } = Resolver;
+
+    mockModels.Content.find.mockReturnValueOnce([sampleData.news]);
+    mockModels.Person.getCampusFromId.mockReturnValueOnce(sampleData.sameCampus);
+    mockModels.Campus.find.mockReturnValueOnce(Promise.resolve([{ Guid: "harambe" }]));
+
+    const results = await Query.userFeed( //eslint-disable-line
+      null,
+      {
+        filters: ["CONTENT"],
+        options: "{\"content\":{\"channels\":[\"news\"]}}",
+      },
+      { models: mockModels, person: null, person: { Id: "1234" } },
+    );
+
+    expect(mockModels.Content.find).toHaveBeenCalledWith({
+      "channel_name": {"$or": [["news"]]},
+      "limit": undefined,
+      "offset": undefined,
+      "status": undefined},
+      undefined
+    );
+
+    expect(results.length).toEqual(1);
+  });
+
+  it("should only show global news to logged out users", async () => {
+    const { Query } = Resolver;
+
+    mockModels.Content.find.mockReturnValueOnce([sampleData.news, sampleData.globalNews]);
+    mockModels.Person.getCampusFromId.mockReturnValueOnce(sampleData.sameCampus);
+    mockModels.Campus.find.mockReturnValueOnce(Promise.resolve([{ Guid: "harambe" }]));
+
+    const results = await Query.userFeed( //eslint-disable-line
+      null,
+      {
+        filters: ["CONTENT"],
+        options: "{\"content\":{\"channels\":[\"news\",\"series\",\"sermons\",\"stories\",\"studies\"]}}",
+      },
+      { models: mockModels, person: null, person: null },
+    );
+
+    expect(results.length).toEqual(1);
+    expect(results[0].campus).toEqual(null); // global news
   });
 });

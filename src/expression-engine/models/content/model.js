@@ -111,13 +111,11 @@ export class Content extends EE {
   }
 
   async getFromPublishedId(id, guid) {
-    console.log(id)
     if (!id) return Promise.resolve();
     const fields = await this.cache.get(`fields:${id}`, () => ChannelData.find({
       where: { entry_id: Number(id) },
       include: [ { model: Channels.model,  include: [ { model: ChannelFields.model } ] } ],
     })
-      .then(this.debug)
       .then(x => flatten(x.map(y => y.exp_channel.exp_channel_field)))
       .then(x => this.createFieldNames(x, true))
     );
