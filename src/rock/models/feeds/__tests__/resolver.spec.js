@@ -60,6 +60,13 @@ const sampleData = {
   news: {
     __type: "Content",
     title: "hello world",
+    campus: { guid: "harambe"},
+  },
+  userCampus: {
+    Guid: "something-different",
+  },
+  sameCampus: {
+    Guid: "harambe",
   },
 };
 
@@ -77,6 +84,9 @@ describe("Feed Query", () => {
     Content: {
       find: jest.fn(),
     },
+    Person: {
+      getCampusFromId: jest.fn(),
+    },
     Node: {
 
     }
@@ -87,18 +97,18 @@ describe("Feed Query", () => {
     mockModels.SavedPayment.findByPersonAlias.mockReset();
   });
 
-  it("should return null with no person", () => {
+  it("should return null with no person", async () => {
     const { Query } = Resolver;
 
-    const results = Query.userFeed(null, {}, { models: null, person: null });
+    const results = await Query.userFeed(null, {}, { models: null, person: null });
     expect(results).toEqual(null);
   });
 
-  it("should return null with no valid filters", () => {
+  it("should return null with no valid filters", async () => {
     const { Query } = Resolver;
 
-    const results = Query.userFeed(null, {}, { models: null, person: sampleData.person });
-    const resultsWithFilter = Query.userFeed(null, { filters: ["INVALID"] }, { models: null, person: sampleData.person });
+    const results = await Query.userFeed(null, {}, { models: null, person: sampleData.person });
+    const resultsWithFilter = await Query.userFeed(null, { filters: ["INVALID"] }, { models: null, person: sampleData.person });
     expect(results).toEqual(null);
     expect(resultsWithFilter).toEqual(null);
   });
@@ -170,5 +180,55 @@ describe("Feed Query", () => {
     }, undefined);
     expect(results[0].__type).toEqual("Content");
     expect(results[0].title).toEqual("hello world");
+  });
+
+  it("should not return news of other campuses from home feed query", async () => {
+    const { Query } = Resolver;
+
+    mockModels.Content.find.mockReturnValueOnce([sampleData.news]);
+    mockModels.Person.getCampusFromId.mockReturnValueOnce(sampleData.userCampus);
+
+    const results = await Query.userFeed( //eslint-disable-line
+      null,
+      {
+        filters: ["CONTENT"],
+        options: "{\"content\":{\"channels\":[\"news\",\"series\",\"sermons\",\"stories\",\"studies\"]}}",
+      },
+      { models: mockModels, person: null, person: { Id: "1234" } },
+    );
+
+    expect(mockModels.Content.find).toHaveBeenCalledWith({
+      channel_name: "news",
+      offset: undefined,
+      limit: undefined,
+      status: undefined,
+    }, undefined);
+
+    expect(results.length).toEqual(0);
+  });
+
+  it("should return news of person's campus from home feed query", async () => {
+    const { Query } = Resolver;
+
+    mockModels.Content.find.mockReturnValueOnce([sampleData.news]);
+    mockModels.Person.getCampusFromId.mockReturnValueOnce(sampleData.sameCampus);
+
+    const results = await Query.userFeed( //eslint-disable-line
+      null,
+      {
+        filters: ["CONTENT"],
+        options: "{\"content\":{\"channels\":[\"news\",\"series\",\"sermons\",\"stories\",\"studies\"]}}",
+      },
+      { models: mockModels, person: null, person: { Id: "1234" } },
+    );
+
+    expect(mockModels.Content.find).toHaveBeenCalledWith({
+      channel_name: "news",
+      offset: undefined,
+      limit: undefined,
+      status: undefined,
+    }, undefined);
+
+    expect(results.length).toEqual(1);
   });
 });
