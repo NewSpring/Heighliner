@@ -62,6 +62,7 @@ export default [`
     status: String!
     channel: ID!
     channelName: String
+    campus: Campus
     meta: ContentMeta
     content: ContentData
     authors: [String]
