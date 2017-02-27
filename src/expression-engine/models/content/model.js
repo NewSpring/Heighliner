@@ -8,7 +8,7 @@ import {
   Channels,
   channelSchema,
   ChannelFields,
-  // channelFieldSchema,
+  channelFieldSchema,
   ChannelTitles,
   channelTitleSchema,
   ChannelData,
@@ -427,6 +427,55 @@ export class Content extends EE {
     if(!results || !results.entry_id) return null;
     return createGlobalId(results.entry_id, this.__type);
   };
+
+  /*
+    campusName?: capitalized campus name "Anderson"
+    globals?: boolean | should show global entries (w/o a campus)
+  */
+  async findByCampusName(query = {}, campusName, globals, cache) {
+    const { limit, offset } = query; // true options
+
+    // channel data fields
+    const channelData = pick(query,  Object.keys(channelDataSchema));
+    const channel = pick(query, Object.keys(channelSchema));
+    const channelTitle = pick(query, Object.keys(channelTitleSchema));
+    // This gets reset every hour currently
+    channelTitle.entry_date = {
+      $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())"),
+    };
+    channelTitle.expiration_date = {
+      $or: [
+        { $eq: 0 },
+        { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
+      ],
+    };
+    // Filter by campus name. Show global content (null campus) if globals is true
+    if (campusName){
+      channelData.field_id_651 = globals
+        ? { $or: [{ $like: `%${campusName}`}, "", null ]}
+        : { $like: `%${campusName}`};
+    } else {
+      channelData.field_id_651 = { $or: ["", null] }
+    }
+    if (channelTitle.status === "open") channelTitle.status = { $or: ["open", "featured"] };
+
+    return await this.cache.get(this.cache.encode(query, this.__type), () => ChannelData.find({
+      where: channelData,
+      attributes: ["entry_id"],
+      order: [
+        [ChannelTitles.model, "entry_date", "DESC"],
+      ],
+      include: [
+        { model: Channels.model, where: channel },
+        { model: ChannelTitles.model, where: channelTitle },
+      ],
+      limit,
+      offset,
+    }), { ttl: 3600, cache: false })
+      .then(this.getFromPublishedIds)
+      .then((x) => x.filter(y => !!y))
+      ;
+  }
 
   async find(query = {}, cache) {
     const { limit, offset } = query; // true options

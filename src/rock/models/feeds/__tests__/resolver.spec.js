@@ -1,5 +1,5 @@
 
-import Resolver, { shouldShowEntry as filterLogic } from "../resolver";
+import Resolver from "../resolver";
 
 const sampleData = {
   Transaction: {
@@ -69,9 +69,11 @@ const sampleData = {
   },
   userCampus: {
     Guid: "something-different",
+    Name: "Harambe's Home",
   },
   sameCampus: {
     Guid: "harambe",
+    Name: "harambe",
   },
 };
 
@@ -88,6 +90,7 @@ describe("Feed Query", () => {
     },
     Content: {
       find: jest.fn(),
+      findByCampusName: jest.fn(),
     },
     Person: {
       getCampusFromId: jest.fn(),
@@ -190,28 +193,12 @@ describe("Feed Query", () => {
     expect(results[0].title).toEqual("hello world");
   });
 
-  it("should have correct filterLogic", () => {
-    const userCampus = { Guid: "12345" };
-    const entryCampus = { same: { Guid: "12345" }, diff: { Guid: "abcde" }};
-
-    // no user, no campus: TRUE
-    expect(filterLogic(null, null)).toBeTruthy();
-    // no user, with campus: FALSE
-    expect(filterLogic(null, entryCampus.same)).toBeFalsy();
-    // with user, no campus: TRUE
-    expect(filterLogic(userCampus, null)).toBeTruthy();
-    // with user, different campus: FALSE
-    expect(filterLogic(userCampus, entryCampus.diff)).toBeFalsy();
-    // with user, same campus: TRUE
-    expect(filterLogic(userCampus, entryCampus.same)).toBeTruthy();
-  });
-
-  it("should not return news of other campuses from home feed query", async () => {
+  it("should call findByCampusName with correct parameters", async () => {
     const { Query } = Resolver;
 
-    mockModels.Content.find.mockReturnValueOnce([sampleData.news]);
+    mockModels.Content.findByCampusName.mockReturnValueOnce([sampleData.news]);
     mockModels.Person.getCampusFromId.mockReturnValueOnce(sampleData.userCampus);
-    mockModels.Campus.find.mockReturnValueOnce(Promise.resolve([{ Guid: "harambe" }]));
+    // mockModels.Campus.find.mockReturnValueOnce(Promise.resolve([{ Guid: "harambe" }]));
 
     const results = await Query.userFeed( //eslint-disable-line
       null,
@@ -222,23 +209,23 @@ describe("Feed Query", () => {
       { models: mockModels, person: { Id: "1234" } },
     );
 
-    expect(mockModels.Content.find).toHaveBeenCalledWith({
-      "channel_name": {"$or": [["news"]]},
-      "limit": undefined,
-      "offset": undefined,
-      "status": undefined},
-      undefined
+    expect(mockModels.Content.findByCampusName).toHaveBeenCalledWith(
+      {
+        "channel_name": {"$or": [["news"]]},
+        "limit": undefined,
+        "offset": undefined,
+        "status": undefined
+      },
+      "Harambe's Home", // campus Name
+      true // global news
     );
-
-    expect(results.length).toEqual(0);
   });
 
-  it("should return news of person's campus from home feed query", async () => {
+  it("should only show global news to logged out users", async () => {
     const { Query } = Resolver;
 
-    mockModels.Content.find.mockReturnValueOnce([sampleData.news]);
-    mockModels.Person.getCampusFromId.mockReturnValueOnce(sampleData.sameCampus);
-    mockModels.Campus.find.mockReturnValueOnce(Promise.resolve([{ Guid: "harambe" }]));
+    mockModels.Content.findByCampusName.mockReset();
+    mockModels.Content.findByCampusName.mockReturnValueOnce([sampleData.news]);
 
     const results = await Query.userFeed( //eslint-disable-line
       null,
@@ -246,37 +233,18 @@ describe("Feed Query", () => {
         filters: ["CONTENT"],
         options: "{\"content\":{\"channels\":[\"news\"]}}",
       },
-      { models: mockModels, person: null, person: { Id: "1234" } },
+      { models: mockModels, person: { Id: "1234" } },
     );
 
-    expect(mockModels.Content.find).toHaveBeenCalledWith({
-      "channel_name": {"$or": [["news"]]},
-      "limit": undefined,
-      "offset": undefined,
-      "status": undefined},
-      undefined
-    );
-
-    expect(results.length).toEqual(1);
-  });
-
-  it("should only show global news to logged out users", async () => {
-    const { Query } = Resolver;
-
-    mockModels.Content.find.mockReturnValueOnce([sampleData.news, sampleData.globalNews]);
-    mockModels.Person.getCampusFromId.mockReturnValueOnce(sampleData.sameCampus);
-    mockModels.Campus.find.mockReturnValueOnce(Promise.resolve([{ Guid: "harambe" }]));
-
-    const results = await Query.userFeed( //eslint-disable-line
-      null,
+    expect(mockModels.Content.findByCampusName).toHaveBeenCalledWith(
       {
-        filters: ["CONTENT"],
-        options: "{\"content\":{\"channels\":[\"news\",\"series\",\"sermons\",\"stories\",\"studies\"]}}",
+        "channel_name": {"$or": [["news"]]},
+        "limit": undefined,
+        "offset": undefined,
+        "status": undefined
       },
-      { models: mockModels, person: null, person: null },
+      null, // no campus
+      true // global news
     );
-
-    expect(results.length).toEqual(1);
-    expect(results[0].campus).toEqual(null); // global news
   });
 });
