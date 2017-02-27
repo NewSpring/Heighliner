@@ -1,3 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
 exports[`createOrder adds a job to the queue if an schedule with saved payment 1`] = `undefined`;
 
 exports[`createOrder adds a persons PrimaryAliasId to an order 1`] = `

@@ -1,4 +1,6 @@
-exports[`test handles a schedule 1`] = `
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`handles a schedule 1`] = `
 Object {
   "Campus": Object {
     "Id": "3",
@@ -68,7 +70,7 @@ Object {
 }
 `;
 
-exports[`test handles a schedule with multipleTransactions 1`] = `
+exports[`handles a schedule with multipleTransactions 1`] = `
 Object {
   "Campus": Object {
     "Id": "3",
@@ -142,7 +144,7 @@ Object {
 }
 `;
 
-exports[`test handles adding a saved account 1`] = `
+exports[`handles adding a saved account 1`] = `
 Object {
   "Campus": Object {
     "Id": "3",
@@ -198,7 +200,7 @@ Object {
 }
 `;
 
-exports[`test handles an ACH transaction 1`] = `
+exports[`handles an ACH transaction 1`] = `
 Object {
   "Campus": Object {
     "Id": "3",
@@ -258,7 +260,7 @@ Object {
 }
 `;
 
-exports[`test handles an authenticated response 1`] = `
+exports[`handles an authenticated response 1`] = `
 Object {
   "Campus": Object {
     "Id": "3",
@@ -313,7 +315,7 @@ Object {
 }
 `;
 
-exports[`test handles multipleTransactions 1`] = `
+exports[`handles multipleTransactions 1`] = `
 Object {
   "Campus": Object {
     "Id": "3",
@@ -380,7 +382,7 @@ Object {
 }
 `;
 
-exports[`test handles standard response data 1`] = `
+exports[`handles standard response data 1`] = `
 Object {
   "Campus": Object {
     "Id": "3",
@@ -441,7 +443,7 @@ Object {
 }
 `;
 
-exports[`test maps the source type value 1`] = `
+exports[`maps the source type value 1`] = `
 Object {
   "Campus": Object {
     "Id": "3",
@@ -502,7 +504,7 @@ Object {
 }
 `;
 
-exports[`test sets the schedule Id to be recovered 1`] = `
+exports[`sets the schedule Id to be recovered 1`] = `
 Object {
   "Campus": Object {
     "Id": "3",
