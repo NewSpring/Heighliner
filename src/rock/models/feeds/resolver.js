@@ -4,12 +4,13 @@ import { flatten } from "lodash";
 export default {
 
   Query: {
-    userFeed: (_, { filters, limit, skip, status, cache, options = "{}" }, { models, person, user }) => {
+    userFeed: async (_, { filters, limit, skip, status, cache, options = "{}" }, { models, person, user }) => {
       if (!filters) return null;
 
       const opts = JSON.parse(options);
       const filterQueries = [];
 
+      // Home feed query
       if (filters.includes("CONTENT")) {
         let { channels } = opts.content;
 
@@ -24,9 +25,18 @@ export default {
           })
           .map(flatten);
 
-        filterQueries.push(models.Content.find({
+        const showsNews = flatten(channels).includes("news");
+
+        //get user's campus to filter news by
+        let userCampus = (person && showsNews)
+          ? await models.Person.getCampusFromId(person.Id, { cache })
+          : null;
+
+        let content = await models.Content.findByCampusName({
           channel_name: { $or: channels }, offset: skip, limit, status,
-        }, cache));
+        }, userCampus ? userCampus.Name : null, true);
+
+        filterQueries.push(content);
       }
 
       if (filters.includes("GIVING_DASHBOARD") && person) {

@@ -51,7 +51,30 @@ const sampleData = {
       "images": [ { "url": "//drhztd8q3iayu.cloudfront.net/newspring/editorial/articles/newspring.blog.hero.monasterypews.large.jpg", "label": "2:1" } ]
     },
     __type: "Content"
-  }
+  },
+  campus: {
+    id: "12345",
+    guid: "314-1324-5321-5432",
+    name: "harambe",
+  },
+  news: {
+    __type: "Content",
+    title: "hello world",
+    campus: "harambe",
+  },
+  globalNews: {
+    __type: "Content",
+    title: "hello world",
+    campus: null,
+  },
+  userCampus: {
+    Guid: "something-different",
+    Name: "Harambe's Home",
+  },
+  sameCampus: {
+    Guid: "harambe",
+    Name: "harambe",
+  },
 };
 
 describe("Feed Query", () => {
@@ -65,6 +88,16 @@ describe("Feed Query", () => {
     Like: {
       getLikedContent: jest.fn(),
     },
+    Content: {
+      find: jest.fn(),
+      findByCampusName: jest.fn(),
+    },
+    Person: {
+      getCampusFromId: jest.fn(),
+    },
+    Campus: {
+      find: jest.fn(),
+    },
     Node: {
 
     }
@@ -75,18 +108,18 @@ describe("Feed Query", () => {
     mockModels.SavedPayment.findByPersonAlias.mockReset();
   });
 
-  it("should return null with no person", () => {
+  it("should return null with no person", async () => {
     const { Query } = Resolver;
 
-    const results = Query.userFeed(null, {}, { models: null, person: null });
+    const results = await Query.userFeed(null, {}, { models: null, person: null });
     expect(results).toEqual(null);
   });
 
-  it("should return null with no valid filters", () => {
+  it("should return null with no valid filters", async () => {
     const { Query } = Resolver;
 
-    const results = Query.userFeed(null, {}, { models: null, person: sampleData.person });
-    const resultsWithFilter = Query.userFeed(null, { filters: ["INVALID"] }, { models: null, person: sampleData.person });
+    const results = await Query.userFeed(null, {}, { models: null, person: sampleData.person });
+    const resultsWithFilter = await Query.userFeed(null, { filters: ["INVALID"] }, { models: null, person: sampleData.person });
     expect(results).toEqual(null);
     expect(resultsWithFilter).toEqual(null);
   });
@@ -137,5 +170,60 @@ describe("Feed Query", () => {
     expect(mockModels.Like.getLikedContent).toHaveBeenCalledWith("1234", {});
     expect(results).toMatchSnapshot();
     expect(results[0].__type).toEqual("Content");
+  });
+
+  it("should call findByCampusName with correct parameters", async () => {
+    const { Query } = Resolver;
+
+    mockModels.Content.findByCampusName.mockReturnValueOnce([sampleData.news]);
+    mockModels.Person.getCampusFromId.mockReturnValueOnce(sampleData.userCampus);
+    // mockModels.Campus.find.mockReturnValueOnce(Promise.resolve([{ Guid: "harambe" }]));
+
+    const results = await Query.userFeed( //eslint-disable-line
+      null,
+      {
+        filters: ["CONTENT"],
+        options: "{\"content\":{\"channels\":[\"news\"]}}",
+      },
+      { models: mockModels, person: { Id: "1234" } },
+    );
+
+    expect(mockModels.Content.findByCampusName).toHaveBeenCalledWith(
+      {
+        "channel_name": {"$or": [["news"]]},
+        "limit": undefined,
+        "offset": undefined,
+        "status": undefined
+      },
+      "Harambe's Home", // campus Name
+      true // global news
+    );
+  });
+
+  it("should only show global news to logged out users", async () => {
+    const { Query } = Resolver;
+
+    mockModels.Content.findByCampusName.mockReset();
+    mockModels.Content.findByCampusName.mockReturnValueOnce([sampleData.news]);
+
+    const results = await Query.userFeed( //eslint-disable-line
+      null,
+      {
+        filters: ["CONTENT"],
+        options: "{\"content\":{\"channels\":[\"news\"]}}",
+      },
+      { models: mockModels, person: { Id: "1234" } },
+    );
+
+    expect(mockModels.Content.findByCampusName).toHaveBeenCalledWith(
+      {
+        "channel_name": {"$or": [["news"]]},
+        "limit": undefined,
+        "offset": undefined,
+        "status": undefined
+      },
+      null, // no campus
+      true // global news
+    );
   });
 });
