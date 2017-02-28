@@ -172,27 +172,6 @@ describe("Feed Query", () => {
     expect(results[0].__type).toEqual("Content");
   });
 
-  it("should lookup news with news filter", async () => {
-    const { Query } = Resolver;
-
-    mockModels.Content.find.mockReturnValueOnce([sampleData.news]);
-
-    const results = await Query.userFeed( //eslint-disable-line
-      null,
-      { filters: ["NEWS"] },
-      { models: mockModels, person: null, user: { _id: "1234" } },
-    );
-
-    expect(mockModels.Content.find).toHaveBeenCalledWith({
-      channel_name: "news",
-      offset: undefined,
-      limit: undefined,
-      status: undefined,
-    }, undefined);
-    expect(results[0].__type).toEqual("Content");
-    expect(results[0].title).toEqual("hello world");
-  });
-
   it("should call findByCampusName with correct parameters", async () => {
     const { Query } = Resolver;
 

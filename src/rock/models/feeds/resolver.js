@@ -53,13 +53,6 @@ export default {
         filterQueries.push(models.Like.getLikedContent(user._id, models.Node));
       }
 
-      //for news section in app -- all news
-      if (filters.includes("NEWS")) {
-        filterQueries.push(models.Content.find({
-          channel_name: "news", offset: skip, limit, status,
-        }, cache));
-      }
-
       if (!filterQueries.length) return null;
 
       return Promise.all(filterQueries)
