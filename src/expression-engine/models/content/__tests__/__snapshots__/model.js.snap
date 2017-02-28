@@ -1,3 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
 exports[`findByCampusName should pass correct value for channelTitles 1`] = `
 Object {
   "entry_date": Object {
