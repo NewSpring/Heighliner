@@ -3,6 +3,7 @@ import StripTags from "striptags";
 import Truncate from "truncate";
 import { addResizings } from "./images";
 import { createGlobalId } from "../../../util";
+import sortBy from "lodash/sortBy";
 
 export default {
 
@@ -221,7 +222,9 @@ export default {
       return authors ? authors.split(",") : null;
     },
     children: ({ entry_id }, { channels, showFutureEntries }, { models }) =>
-       models.Content.findByParentId(entry_id, channels, showFutureEntries),
+       models.Content
+        .findByParentId(entry_id, channels, showFutureEntries)
+        .then(x => sortBy(x, item => item.exp_channel_title.entry_date)),
     related: ({ tags }, { includeChannels, limit, skip, cache }, { models }) => {
       tags = models.Content.splitByNewLines(tags);
       if (!tags || !tags.length) return null;
