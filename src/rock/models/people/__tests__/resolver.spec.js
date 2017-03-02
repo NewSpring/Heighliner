@@ -106,3 +106,24 @@ describe("PhoneNumber Mutations", () => {
     }, "person");
   });
 });
+
+describe("DeviceRegistration Mutation", () => {
+  it("should return 401 with no person", async () => {
+    const { saveDeviceRegistrationId } = Resolver.Mutation;
+    const result = await saveDeviceRegistrationId(null, "(555) 555-5555", {});
+    expect(result).toEqual({
+      code: 401, error: "Must be logged in to make this request", success: false,
+    });
+  });
+
+  it("should call saveId properly if there is a person", async () => {
+    const models = { PersonalDevice: { saveId: jest.fn() } };
+    const { saveDeviceRegistrationId } = Resolver.Mutation;
+    await saveDeviceRegistrationId(null, {
+      registrationId: "harambe"
+    }, { models, person: "person" });
+    expect(models.PersonalDevice.saveId).toHaveBeenCalledWith(
+      "harambe", "person"
+    );
+  });
+});
