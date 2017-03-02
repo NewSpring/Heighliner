@@ -36,7 +36,7 @@ export default {
     },
     saveDeviceRegistrationId:  (_, { registrationId }, { models, person }) => {
       // return {code: 400, success: false, error: "testing for now"}
-      return models.DeviceRegistration.saveId(registrationId, person);
+      return models.PersonalDevice.saveId(registrationId, person);
     },
   },
 
