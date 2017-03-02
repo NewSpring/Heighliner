@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`findByCampusName should pass correct value for channelTitles 1`] = `
+Object {
+  "entry_date": Object {
+    "$lte": literal {
+      "val": "UNIX_TIMESTAMP(NOW())",
+    },
+  },
+  "expiration_date": Object {
+    "$or": Array [
+      Object {
+        "$eq": 0,
+      },
+      Object {
+        "$gt": literal {
+          "val": "UNIX_TIMESTAMP(NOW())",
+        },
+      },
+    ],
+  },
+}
+`;
