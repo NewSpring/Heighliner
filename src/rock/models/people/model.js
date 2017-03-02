@@ -235,7 +235,50 @@ export class Person extends Rock {
 
 }
 
+export class DeviceRegistration extends Rock {
+  __type = "DeviceRegistration";
+  cacheTypes = [
+    "Rock.Model.DeviceRegistration",
+  ];
+
+  constructor({ cache } = { cache: defaultCache }) {
+    super({ cache });
+    this.cache = cache;
+  }
+
+  saveId = async (registrationId, person) => {
+    // XXX Uncomment when we have a PersonalDeviceTable
+    // if (!registrationId){
+      return {
+        code: 400,
+        success: false,
+        error: "Insufficient information",
+      };
+    // }
+
+    // XXX We don't have this yet
+    const post = await PersonalDeviceTable.post({
+      "PersonAliasId": Person.PrimaryAliasId,
+      "DeviceRegistrationId": registrationId,
+      "PersonalDeviceTypeId": 671, // `mobile` device type
+      "NotificationsEnabled": 1
+    });
+
+    if (post && post.status >= 400) {
+      return {
+        code: post.status,
+        error: post.statusText,
+        success: false,
+      };
+    }
+
+    this.cache.del(createGlobalId(`${person.Id}:DeviceRegistration`));
+    return { code: 200, success: true };
+  }
+}
+
 export default {
   Person,
   PhoneNumber,
+  DeviceRegistration,
 };
