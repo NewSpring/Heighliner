@@ -6,6 +6,7 @@ import {
   Person as PersonTable,
   PersonAlias,
   PhoneNumber as PhoneNumberTable,
+  PersonalDevice as PersonalDeviceTable,
 } from "./tables";
 
 import {
@@ -235,10 +236,10 @@ export class Person extends Rock {
 
 }
 
-export class DeviceRegistration extends Rock {
-  __type = "DeviceRegistration";
+export class PersonalDevice extends Rock {
+  __type = "PersonalDevice";
   cacheTypes = [
-    "Rock.Model.DeviceRegistration",
+    "Rock.Model.PersonalDevice",
   ];
 
   constructor({ cache } = { cache: defaultCache }) {
@@ -247,18 +248,17 @@ export class DeviceRegistration extends Rock {
   }
 
   saveId = async (registrationId, person) => {
-    // XXX Uncomment when we have a PersonalDeviceTable
-    // if (!registrationId){
+    if (!registrationId || !person){
       return {
         code: 400,
         success: false,
         error: "Insufficient information",
       };
-    // }
+    }
 
     // XXX We don't have this yet
     const post = await PersonalDeviceTable.post({
-      "PersonAliasId": Person.PrimaryAliasId,
+      "PersonAliasId": person.PrimaryAliasId,
       "DeviceRegistrationId": registrationId,
       "PersonalDeviceTypeId": 671, // `mobile` device type
       "NotificationsEnabled": 1
@@ -272,7 +272,7 @@ export class DeviceRegistration extends Rock {
       };
     }
 
-    this.cache.del(createGlobalId(`${person.Id}:DeviceRegistration`));
+    this.cache.del(createGlobalId(`${person.Id}:PersonalDevice`));
     return { code: 200, success: true };
   }
 }
@@ -280,5 +280,5 @@ export class DeviceRegistration extends Rock {
 export default {
   Person,
   PhoneNumber,
-  DeviceRegistration,
+  PersonalDevice,
 };
