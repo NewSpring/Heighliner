@@ -1324,12 +1324,44 @@ it("`Content` children should call findByParentId", () => {
       findByParentId: (entry_id, channels) => {
         expect(entry_id).toEqual(mockData.entry_id);
         expect(channels).toEqual(mockInput.channels);
+        return Promise.resolve([]);
       },
     },
   };
 
   Content.children(mockData, mockInput, { models });
 });
+
+
+it("`Content` should sort children by entry date", async () => {
+  const { Content } = Resolver;
+  const mockData = {
+    entry_id: "1",
+  };
+  const mockInput = {
+    channels: ["channel1", "channel2"],
+  };
+  const mockResults = [
+    { title: "third", exp_channel_title: { entry_date: 3 } },
+    { title: "second", exp_channel_title: { entry_date: 2 } },
+    { title: "first", exp_channel_title: { entry_date: 1 } },
+  ];
+  const models = {
+    Content: {
+      findByParentId: (entry_id, channels) => {
+        expect(entry_id).toEqual(mockData.entry_id);
+        expect(channels).toEqual(mockInput.channels);
+        return Promise.resolve(mockResults);
+      },
+    },
+  };
+
+  const res = await Content.children(mockData, mockInput, { models });
+  expect(res[0].title).toEqual("first");
+  expect(res[1].title).toEqual("second");
+  expect(res[2].title).toEqual("third");
+});
+
 
 it("`Content` related call splitByNewLines", () => {
   const { Content } = Resolver;
