@@ -67,7 +67,8 @@ export class Like {
 
     const guid = createGlobalId(`${limit}:${skip}:${userId}`, this.__type);
     const entryIds = await this.cache.get(guid, async () => {
-      const ids = await this.model.distinct("entryId", query);
+      let ids = await this.model.distinct("entryId", query);
+      ids.reverse();
       return safeTrimArray(skip, limit, ids, null);
     });
 
