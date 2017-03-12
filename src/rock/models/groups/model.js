@@ -349,14 +349,6 @@ async findByAttributesAndQuery({ attributes, query, campuses, schedules }, { lim
         av.AttributeId IN (@typeAttributeId, @categoryAttributeId)
         AND g.GroupTypeId = @smallGroupTypeId AND g.IsActive = 1 AND g.IsPublic = 1;
     INSERT INTO #groupTags (GroupId, Tag, TagValue)
-    SELECT g.Id, s.WeeklyDayOfWeek, 2
-    FROM [Group] g
-      JOIN Schedule as s ON s.Id = g.ScheduleId
-    WHERE
-      s.WeeklyDayOfWeek is not null
-      AND s.WeeklyDayOfWeek IN (select Id from @daysOfWeek)
-      AND g.GroupTypeId = @smallGroupTypeId AND g.IsActive = 1 AND g.IsPublic = 1;
-    INSERT INTO #groupTags (GroupId, Tag, TagValue)
     SELECT g.Id, 'Childcare', 1
     FROM [Group] g JOIN AttributeValue av ON av.EntityId = g.Id
     WHERE
@@ -388,7 +380,7 @@ async findByAttributesAndQuery({ attributes, query, campuses, schedules }, { lim
         LEFT JOIN Schedule s ON g.ScheduleId = s.Id
     WHERE
         (LEN(@search) > 0 AND gt.Tag LIKE '%' + @search + '%')
-        OR gt.Tag IN (SELECT Id from @daysOfWeek)
+        ${schedules.length ? "AND s.WeeklyDayOfWeek IN (select Id from @daysOfWeek)" : ""}
         ${attributes.length ? "OR gt.Tag IN (" + attributes.map(x => `'${x}'`).join(", ") + ")" : ""}
         AND g.GroupTypeId = @smallGroupTypeId
         ${campuses.length ? "AND g.CampusId IN (" + campuses.join(", ") + ")" : ""}
