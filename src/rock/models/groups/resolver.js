@@ -62,7 +62,7 @@ export default {
 
   Query: {
     groups: async (
-      _, { campuses = [], offset, limit, attributes = [], query, clientIp }, { models, ip, person },
+      _, { campuses = [], schedules=[], offset, limit, attributes = [], query, clientIp }, { models, ip, person },
     ) => {
       if (campuses.length) {
         campuses = campuses.map(x => ({ Name: { $like: x } }));
@@ -154,7 +154,7 @@ export default {
       }
 
       return models.Group.findByAttributesAndQuery(
-        { query, attributes, campuses }, { limit, offset, geo },
+        { query, attributes, campuses, schedules }, { limit, offset, geo },
       );
     },
     groupAttributes: (_, $, { models }) => {

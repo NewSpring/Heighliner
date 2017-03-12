@@ -307,7 +307,7 @@ export class Group extends Rock {
     ;
 }
 
-async findByAttributesAndQuery({ attributes, query, campuses }, { limit, offset, geo }) {
+async findByAttributesAndQuery({ attributes, query, campuses, schedules }, { limit, offset, geo }) {
   let count = 0;
 
   // XXX prevent sql injection
@@ -316,6 +316,9 @@ async findByAttributesAndQuery({ attributes, query, campuses }, { limit, offset,
   if (!attributes.length && !query) query = "group"; // most inclusive thing I could think of for blank query
 
   let q = { attributes, query, geo, campuses };
+
+  let insertDays = `INSERT @daysOfWeek(Id) VALUES`
+  schedules.map((value, i) => insertDays = `${insertDays}('${value}')${i == schedules.length-1 ? ";" : ","}`);
 
   // tslint:disable
   // WILEYSORT
@@ -328,6 +331,8 @@ async findByAttributesAndQuery({ attributes, query, campuses }, { limit, offset,
     DECLARE @childcareAttributeId AS INT = 5406;
     DECLARE @typeAttributeId AS INT = 16814;
     DECLARE @categoryAttributeId AS INT = 1409;
+    DECLARE @daysOfWeek table (Id char);
+    ${schedules.length  ? insertDays : ""}
     IF OBJECT_ID('tempdb.dbo.#groupTags', 'U') IS NOT NULL DROP TABLE #groupTags;
     SELECT g.Id AS GroupId, CONVERT(NVARCHAR(MAX), dv.Value) AS Tag, 1 as TagValue
     INTO #groupTags
@@ -343,6 +348,14 @@ async findByAttributesAndQuery({ attributes, query, campuses }, { limit, offset,
     WHERE
         av.AttributeId IN (@typeAttributeId, @categoryAttributeId)
         AND g.GroupTypeId = @smallGroupTypeId AND g.IsActive = 1 AND g.IsPublic = 1;
+    INSERT INTO #groupTags (GroupId, Tag, TagValue)
+    SELECT g.Id, s.WeeklyDayOfWeek, 2
+    FROM [Group] g
+      JOIN Schedule as s ON s.Id = g.ScheduleId
+    WHERE
+      s.WeeklyDayOfWeek is not null
+      AND s.WeeklyDayOfWeek IN (select Id from @daysOfWeek)
+      AND g.GroupTypeId = @smallGroupTypeId AND g.IsActive = 1 AND g.IsPublic = 1;
     INSERT INTO #groupTags (GroupId, Tag, TagValue)
     SELECT g.Id, 'Childcare', 1
     FROM [Group] g JOIN AttributeValue av ON av.EntityId = g.Id
@@ -372,8 +385,10 @@ async findByAttributesAndQuery({ attributes, query, campuses }, { limit, offset,
         JOIN [Group] g ON g.Id = gt.GroupId
         LEFT JOIN [GroupLocation] gl ON gl.GroupId = g.Id
         LEFT JOIN Location l ON gl.LocationId = l.Id
+        LEFT JOIN Schedule s ON g.ScheduleId = s.Id
     WHERE
         (LEN(@search) > 0 AND gt.Tag LIKE '%' + @search + '%')
+        OR gt.Tag IN (SELECT Id from @daysOfWeek)
         ${attributes.length ? "OR gt.Tag IN (" + attributes.map(x => `'${x}'`).join(", ") + ")" : ""}
         AND g.GroupTypeId = @smallGroupTypeId
         ${campuses.length ? "AND g.CampusId IN (" + campuses.join(", ") + ")" : ""}
@@ -381,7 +396,8 @@ async findByAttributesAndQuery({ attributes, query, campuses }, { limit, offset,
     GROUP BY
         gt.GroupId,
         g.Name,
-        l.[GeoPoint].STDistance(geography::Point(${point}))
+        l.[GeoPoint].STDistance(geography::Point(${point})),
+        s.WeeklyDayOfWeek
     ORDER BY
         SUM(gt.TagValue) - ISNULL(CONVERT(INT, l.[GeoPoint].STDistance(geography::Point(${point})) / @metersPerMile / 15), 1000) DESC,
         l.[GeoPoint].STDistance(geography::Point(${point})) ASC;
