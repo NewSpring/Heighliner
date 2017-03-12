@@ -34,10 +34,4 @@ export default [`
     success: Boolean!
     code: Int
   }
-
-  type DeviceRegistrationMutationResponse implements MutationResponse {
-    error: String
-    success: Boolean!
-    code: Int
-  }
 `];

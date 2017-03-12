@@ -3,6 +3,5 @@
 exports[`should have all needed mutations 1`] = `
 Array [
   "setPhoneNumber(phoneNumber: String!): PhoneNumberMutationResponse",
-  "saveDeviceRegistrationId(registrationId: String!): DeviceRegistrationMutationResponse",
 ]
 `;
