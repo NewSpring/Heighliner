@@ -317,7 +317,7 @@ async findByAttributesAndQuery({ attributes, query, campuses, schedules }, { lim
 
   let q = { attributes, query, geo, campuses };
 
-  let insertDays = `INSERT @daysOfWeek(Id) VALUES`
+  let insertDays = `INSERT INTO @daysOfWeek(Id) VALUES`
   schedules.map((value, i) => insertDays = `${insertDays}('${value}')${i == schedules.length-1 ? ";" : ","}`);
 
   // tslint:disable
@@ -380,11 +380,11 @@ async findByAttributesAndQuery({ attributes, query, campuses, schedules }, { lim
         LEFT JOIN Schedule s ON g.ScheduleId = s.Id
     WHERE
         (LEN(@search) > 0 AND gt.Tag LIKE '%' + @search + '%')
-        ${schedules.length ? "AND s.WeeklyDayOfWeek IN (select Id from @daysOfWeek)" : ""}
         ${attributes.length ? "OR gt.Tag IN (" + attributes.map(x => `'${x}'`).join(", ") + ")" : ""}
         AND g.GroupTypeId = @smallGroupTypeId
         ${campuses.length ? "AND g.CampusId IN (" + campuses.join(", ") + ")" : ""}
         AND g.IsActive = 1 AND g.IsPublic = 1
+        ${schedules.length ? "AND s.WeeklyDayOfWeek IN (select Id from @daysOfWeek)" : ""}
     GROUP BY
         gt.GroupId,
         g.Name,

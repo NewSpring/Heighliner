@@ -8,6 +8,7 @@ export default [
     campus: String,
     campuses: [String],
     clientIp: String,
+    schedules: [Int],
   ): GroupSearch`,
 
   // XXX should this take a group type id?
