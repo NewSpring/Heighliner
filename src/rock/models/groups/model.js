@@ -315,7 +315,7 @@ async findByAttributesAndQuery({ attributes, query, campuses, schedules }, { lim
   let point = `${Number(geo.latitude)}, ${Number(geo.longitude)}, 4326`;
   if (!attributes.length && !query) query = "group"; // most inclusive thing I could think of for blank query
 
-  let q = { attributes, query, geo, campuses };
+  let q = { attributes, query, geo, campuses, schedules };
 
   let insertDays = `INSERT INTO @daysOfWeek(Id) VALUES`
   schedules.map((value, i) => insertDays = `${insertDays}('${value}')${i == schedules.length-1 ? ";" : ","}`);

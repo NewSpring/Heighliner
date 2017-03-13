@@ -70,6 +70,8 @@ export default {
         campuses = campuses.map(x => x.Id);
       }
 
+      if (schedules.length) schedules = schedules.filter((x) => x);
+
       let geo = { latitude: null, longitude: null };
       // XXX move to better location / cleanup
       if (clientIp && ip.match("204.116.47")) {
