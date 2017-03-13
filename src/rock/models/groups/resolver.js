@@ -62,13 +62,15 @@ export default {
 
   Query: {
     groups: async (
-      _, { campuses = [], offset, limit, attributes = [], query, clientIp }, { models, ip, person },
+      _, { campuses = [], schedules = [], offset, limit, attributes = [], query, clientIp }, { models, ip, person },
     ) => {
       if (campuses.length) {
         campuses = campuses.map(x => ({ Name: { $like: x } }));
         campuses = await models.Campus.find({ $or: campuses });
         campuses = campuses.map(x => x.Id);
       }
+
+      if (schedules.length) schedules = schedules.filter((x) => x || x === "0" || x === 0);
 
       let geo = { latitude: null, longitude: null };
       // XXX move to better location / cleanup
@@ -154,7 +156,7 @@ export default {
       }
 
       return models.Group.findByAttributesAndQuery(
-        { query, attributes, campuses }, { limit, offset, geo },
+        { query, attributes, campuses, schedules }, { limit, offset, geo },
       );
     },
     groupAttributes: (_, $, { models }) => {
