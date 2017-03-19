@@ -8,6 +8,7 @@ const sampleData = {
     NickName: "Johnny",
     PhotoId: "12345-ABCDE",
     BirthDate: "1970-1-1T00:00:00.000Z",
+    Guid: "ABSJFE-HARAMBE-235463-AFGF",
     BirthDay: "17",
     BirthYear: "1984",
     BirthMonth: "10",
@@ -42,7 +43,12 @@ describe("Person Tests", () => {
     const lastName = Person.lastName(sampleData.person);
     expect(lastName).toEqual(sampleData.person.LastName);
   });
+  it("`Person` should have a Guid", () => {
+    const { Person } = Resolver;
 
+    const guid = Person.guid(sampleData.person);
+    expect(guid).toEqual(sampleData.person.Guid);
+  });
   xit("Pullng phone numbers seems to be disabled at the moment.", () => { }); // tslint:disable-line
 
   it("`Person` has a photo.", () => {

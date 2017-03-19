@@ -13,6 +13,7 @@ export default [`
   type Person implements Node {
     id: ID!
     entityId: Int!
+    guid: String!
     firstName: String!
     lastName: String!
     nickName: String
