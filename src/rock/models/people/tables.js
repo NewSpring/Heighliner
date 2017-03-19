@@ -21,6 +21,7 @@ const personSchema = {
   Gender: { type: INTEGER },
   GivingGroupId: { type: INTEGER },
   GivingId: { type: INTEGER },
+  Guid: { type: STRING },
   IsDeceased: { type: BOOLEAN },
   LastName: { type: STRING },
   MaritalStatusValueId: { type: INTEGER },
