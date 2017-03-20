@@ -39,6 +39,7 @@ export default {
   Person: {
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     entityId: ({ Id }) => Id,
+    guid: ({ Guid }) => Guid,
     firstName: ({ FirstName }) => FirstName,
     lastName: ({ LastName }) => LastName,
     nickName: ({ NickName }) => NickName,
