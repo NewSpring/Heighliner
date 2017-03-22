@@ -47,7 +47,7 @@ export class Like {
 
   async getFromUserId(userId) {
     const guid = createGlobalId(userId);
-    return await this.cache.get(guid, () => this.model.find({ userId }).reverse());
+    return await this.cache.get(guid, () => this.model.find({ userId }));
   }
 
   async getLikedContent(userId, node) {
