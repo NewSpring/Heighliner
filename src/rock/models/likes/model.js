@@ -1,4 +1,3 @@
-
 import uuid from "node-uuid";
 import { Cache, defaultCache } from "../../../util/cache";
 import { MongoConnector } from "../../../apollos/mongo";
@@ -21,8 +20,8 @@ const Model = new MongoConnector("like", schema);
   emptyRet: any // what to return if array is empty at any point (null, [], {}, etc)
 */
 export const safeTrimArray = (skip, limit, arr, emptyRet) => {
-  if(!arr || !arr.length) return emptyRet;
-  if(skip && skip >= arr.length) return emptyRet; // skips more than we have
+  if (!arr || !arr.length) return emptyRet;
+  if (skip && skip >= arr.length) return emptyRet; // skips more than we have
 
   /*
   * first slice: trims the front of the array by "skip"
@@ -32,9 +31,9 @@ export const safeTrimArray = (skip, limit, arr, emptyRet) => {
   */
   const trimmed = arr
     .slice(skip ? skip : 0)
-    .slice(0, limit ? (limit > arr.length ? arr.length : limit): null);
+    .slice(0, limit ? limit > arr.length ? arr.length : limit : null);
 
-  if(!trimmed || !trimmed.length) return emptyRet;
+  if (!trimmed || !trimmed.length) return emptyRet;
   return trimmed;
 };
 
@@ -48,22 +47,18 @@ export class Like {
 
   async getFromUserId(userId) {
     const guid = createGlobalId(userId);
-    return await this.cache.get(guid, () => (
-      this.model.find({ userId })
-    ));
+    return await this.cache.get(guid, () => this.model.find({ userId }));
   }
 
   async getLikedContent(userId, node) {
     const likes = await this.getFromUserId(userId);
-    return await likes.map(async (like) => {
-      return await node.get(like.entryId);
-    });
+    return await likes.map(async like => await node.get(like.entryId));
   }
 
   async getRecentlyLiked({ limit, skip, cache }, userId, nodeModel) {
     const query = userId
       ? { userId: { $ne: userId } } // exlude user if there is one
-      : { };
+      : {};
 
     const guid = createGlobalId(`${limit}:${skip}:${userId}`, this.__type);
     const entryIds = await this.cache.get(guid, async () => {
@@ -72,13 +67,10 @@ export class Like {
       return safeTrimArray(skip, limit, ids, null);
     });
 
-    if(!entryIds || !entryIds.length) return null;
+    if (!entryIds || !entryIds.length) return null;
 
-    let promises = entryIds.map(x => nodeModel.get(x))
-    return Promise.all(promises)
-      .then(likes => {
-        return likes.filter(x => x);
-      });
+    let promises = entryIds.map(x => nodeModel.get(x));
+    return Promise.all(promises).then(likes => likes.filter(x => x));
   }
 
   async toggleLike(nodeId, userId, nodeModel) {
@@ -103,14 +95,13 @@ export class Like {
     const guid = createGlobalId(userId);
     await this.cache.del(guid);
 
-    return ({
+    return {
       like: nodeModel.get(nodeId),
       success: true,
       error: "",
       code: "",
-    });
+    };
   }
-
 }
 
 export default {

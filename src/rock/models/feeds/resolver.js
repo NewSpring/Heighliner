@@ -1,10 +1,12 @@
-
 import { flatten } from "lodash";
 
 export default {
-
   Query: {
-    userFeed: async (_, { filters, limit, skip, status, cache, options = "{}" }, { models, person, user }) => {
+    userFeed: async (
+      _,
+      { filters, limit, skip, status, cache, options = "{}" },
+      { models, person, user },
+    ) => {
       if (!filters) return null;
 
       const opts = JSON.parse(options);
@@ -27,36 +29,52 @@ export default {
 
         const showsNews = flatten(channels).includes("news");
 
-        //get user's campus to filter news by
-        let userCampus = (person && showsNews)
+        // get user's campus to filter news by
+        let userCampus = person && showsNews
           ? await models.Person.getCampusFromId(person.Id, { cache })
           : null;
 
-        let content = await models.Content.findByCampusName({
-          channel_name: { $or: channels }, offset: skip, limit, status,
-        }, userCampus ? userCampus.Name : null, true);
+        let content = await models.Content.findByCampusName(
+          {
+            channel_name: { $or: channels },
+            offset: skip,
+            limit,
+            status,
+          },
+          userCampus ? userCampus.Name : null,
+          true,
+        );
 
         filterQueries.push(content);
       }
 
       if (filters.includes("GIVING_DASHBOARD") && person) {
-        filterQueries.push(models.Transaction.findByPersonAlias(
-          person.aliases, { limit: 3, offset: 0 }, { cache: null },
-        ));
+        filterQueries.push(
+          models.Transaction.findByPersonAlias(
+            person.aliases,
+            { limit: 3, offset: 0 },
+            { cache: null },
+          ),
+        );
 
-        filterQueries.push(models.SavedPayment.findByPersonAlias(
-          person.aliases, { limit: 3, offset: 0 }, { cache: null },
-        ));
+        filterQueries.push(
+          models.SavedPayment.findByPersonAlias(
+            person.aliases,
+            { limit: 3, offset: 0 },
+            { cache: null },
+          ),
+        );
       }
 
       if (filters.includes("LIKES") && user) {
-        filterQueries.push(models.Like.getLikedContent(user._id, models.Node));
+        const likedContent = await models.Like.getLikedContent(user._id, models.Node);
+        const reversed = Array.isArray(likedContent) ? likedContent.reverse() : likedContent;
+        filterQueries.push(reversed);
       }
 
       if (!filterQueries.length) return null;
 
-      return Promise.all(filterQueries)
-        .then(flatten);
+      return Promise.all(filterQueries).then(flatten);
     },
   },
 };
