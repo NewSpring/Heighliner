@@ -203,10 +203,11 @@ export default {
   GroupSchedule: {
     day: ({ WeeklyDayOfWeek }) => WeeklyDayOfWeek,
     description: ({ WeeklyTimeOfDay, WeeklyDayOfWeek }) => {
-      if (!WeeklyTimeOfDay || !WeeklyDayOfWeek) return null;
-
+      // Rock passes in day of week as 0 if sunday. moment is 1-7
+      const TempWeeklyDayOfWeek = (!WeeklyDayOfWeek) ? "7" : WeeklyDayOfWeek;
+      if (!WeeklyTimeOfDay || !TempWeeklyDayOfWeek) return null;
       try {
-        const week = Moment(WeeklyDayOfWeek, "E").format("dddd");
+        const week = Moment(TempWeeklyDayOfWeek, "E").format("dddd");
         const time = Moment.utc(WeeklyTimeOfDay).format("h:mm A");
 
         return `${week} @ ${time}`;
