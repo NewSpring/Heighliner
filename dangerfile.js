@@ -14,7 +14,7 @@ const linkableFiles = paths => {
 };
 
 // ["1", "2", "3"] to "1, 2 and 3"
-const toSentence = (array: Array<string>): string => {
+const toSentence = (array) => {
   if (array.length === 1) {
     return array[0];
   }
@@ -22,14 +22,14 @@ const toSentence = (array: Array<string>): string => {
 };
 
 // ("/href/thing", "name") to "<a href="/href/thing">name</a>"
-const createLink = (href: string, text: string): string =>
+const createLink = (href, text) =>
   `<a href='${href}'>${text}</a>`;
 
 // Raise about missing code inside files
 const raiseIssueAboutPaths = (
-  type: Function,
-  paths: string[],
-  codeToInclude: string,
+  type,
+  paths,
+  codeToInclude,
 ) => {
   if (paths.length > 0) {
     const files = linkableFiles(paths);
