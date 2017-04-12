@@ -11,7 +11,8 @@
     "lint": "eslint ./src",
     "start": "NODE_ENV=development webpack --watch & supervisor -q -w ./lib/server.js ./lib/server.js",
     "build": "NODE_ENV=development webpack",
-    "build:production": "NODE_ENV=production webpack"
+    "build:production": "NODE_ENV=production webpack",
+    "danger": "danger run --verbose"
   },
   "author": "jbaxleyiii",
   "jest": {
@@ -57,6 +58,7 @@
     "phantomjs-prebuilt": "^2.1.14",
     "php-unserialize": "0.0.1",
     "promise-timeout": "^1.0.0",
+    "ramda": "^0.23.0",
     "raven": "^0.12.1",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
@@ -80,6 +82,7 @@
     "casual": "1.5.3",
     "commitizen": "^2.8.5",
     "coveralls": "^2.11.9",
+    "danger": "^0.15.0",
     "eslint": "^3.9.1",
     "eslint-config-airbnb-base": "^10.0.1",
     "eslint-plugin-babel": "^4.0.0",
