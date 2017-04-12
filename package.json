@@ -58,6 +58,7 @@
     "phantomjs-prebuilt": "^2.1.14",
     "php-unserialize": "0.0.1",
     "promise-timeout": "^1.0.0",
+    "ramda": "^0.23.0",
     "raven": "^0.12.1",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
