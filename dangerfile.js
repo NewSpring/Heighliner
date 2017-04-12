@@ -14,7 +14,7 @@ const linkableFiles = paths => {
 };
 
 // ["1", "2", "3"] to "1, 2 and 3"
-const toSentence = (array) => {
+const toSentence = array => {
   if (array.length === 1) {
     return array[0];
   }
@@ -22,15 +22,10 @@ const toSentence = (array) => {
 };
 
 // ("/href/thing", "name") to "<a href="/href/thing">name</a>"
-const createLink = (href, text) =>
-  `<a href='${href}'>${text}</a>`;
+const createLink = (href, text) => `<a href='${href}'>${text}</a>`;
 
 // Raise about missing code inside files
-const raiseIssueAboutPaths = (
-  type,
-  paths,
-  codeToInclude,
-) => {
+const raiseIssueAboutPaths = (type, paths, codeToInclude) => {
   if (paths.length > 0) {
     const files = linkableFiles(paths);
     const strict = "<code>" + codeToInclude + "</code>";
@@ -122,4 +117,22 @@ if (packageChanged && !lockfileChanged) {
   const message = "Changes were made to package.json, but not to yarn.lock";
   const idea = "Perhaps you need to run `yarn install`?";
   warn(`${message} - <i>${idea}</i>`);
+}
+
+// show release QA checklist if it be a release
+const checklist = `
+---\n\n
+### QA Checklist\n\n
+- [ ] do a thing\n
+- [ ] probably do another thing\n
+`;
+
+const hasReleaseLabel = danger.github &&
+  danger.github.issue &&
+  danger.github.issue.labels &&
+  danger.github.issue.labels.find(x => x.name && x.name === "Release");
+
+if (hasReleaseLabel) {
+  console.log("THIS PR IS A RELEASE CANDIDATE");
+  markdown(checklist);
 }
