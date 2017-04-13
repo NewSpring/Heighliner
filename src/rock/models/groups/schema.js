@@ -1,5 +1,5 @@
-
-export default [`
+export default [
+  `
   type GroupMember implements Node {
     id: ID!
     role: String
@@ -20,6 +20,7 @@ export default [`
     end: String
     day: String
     time: String
+    iCal: String
   }
 
   type Group implements Node {
@@ -52,4 +53,5 @@ export default [`
     code: Int
   }
 
-`];
+`,
+];
