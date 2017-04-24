@@ -1,11 +1,6 @@
 /* tslint:disable:no-shadowed-variable */
 
-import {
-  INTEGER,
-  STRING,
-  BOOLEAN,
-  DATE,
-} from "sequelize";
+import { INTEGER, STRING, BOOLEAN, DATE } from "sequelize";
 
 import { MSSQLConnector } from "../../mssql";
 
@@ -64,6 +59,7 @@ const scheduleSchema = {
   WeeklyTimeOfDay: { type: INTEGER },
   EffectiveEndDate: { type: DATE },
   EffectiveStartDate: { type: DATE },
+  iCalendarContent: { type: STRING },
 };
 
 let Group;
@@ -77,19 +73,14 @@ let Schedule;
 export {
   Group,
   groupSchema,
-
   GroupType,
   groupTypeSchema,
-
   GroupTypeRole,
   groupTypeRoleSchema,
-
   GroupMember,
   groupMemberSchema,
-
   GroupLocation,
   groupLocationSchema,
-
   // XXX abstract
   Schedule,
   scheduleSchema,
@@ -114,35 +105,61 @@ export function connect() {
   };
 }
 
-export function bind({
-  Group,
-  GroupType,
-  GroupTypeRole,
-  GroupMember,
-  Campus,
-  AttributeValue,
-  GroupLocation,
-  Location,
-  Person,
-}) {
+export function bind(
+  {
+    Group,
+    GroupType,
+    GroupTypeRole,
+    GroupMember,
+    Campus,
+    AttributeValue,
+    GroupLocation,
+    Location,
+    Person,
+  },
+) {
   Group.model.hasMany(GroupMember.model, { foreignKey: "GroupId" });
-  Group.model.belongsTo(Campus.model, { foreignKey: "CampusId", targetKey: "Id" });
+  Group.model.belongsTo(Campus.model, {
+    foreignKey: "CampusId",
+    targetKey: "Id",
+  });
   Group.model.hasMany(GroupLocation.model, { foreignKey: "GroupId" });
 
-  GroupMember.model.belongsTo(Group.model, { foreignKey: "GroupId", targetKey: "Id" });
-  GroupLocation.model.belongsTo(Group.model, { foreignKey: "GroupId", targetKey: "Id" });
+  GroupMember.model.belongsTo(Group.model, {
+    foreignKey: "GroupId",
+    targetKey: "Id",
+  });
+  GroupLocation.model.belongsTo(Group.model, {
+    foreignKey: "GroupId",
+    targetKey: "Id",
+  });
 
-  GroupMember.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
+  GroupMember.model.belongsTo(Person.model, {
+    foreignKey: "PersonId",
+    targetKey: "Id",
+  });
   Person.model.hasMany(GroupMember.model, { foreignKey: "PersonId" });
 
-  GroupLocation.model.belongsTo(Location.model, { foreignKey: "LocationId", targetKey: "Id" });
+  GroupLocation.model.belongsTo(Location.model, {
+    foreignKey: "LocationId",
+    targetKey: "Id",
+  });
 
-  Group.model.belongsTo(GroupType.model, { foreignKey: "GroupTypeId", targetKey: "Id" });
-  AttributeValue.model.belongsTo(Group.model, { foreignKey: "EntityId", targetKey: "Id" });
+  Group.model.belongsTo(GroupType.model, {
+    foreignKey: "GroupTypeId",
+    targetKey: "Id",
+  });
+  AttributeValue.model.belongsTo(Group.model, {
+    foreignKey: "EntityId",
+    targetKey: "Id",
+  });
 
   Group.model.hasMany(AttributeValue.model, { foreignKey: "EntityId" });
 
-  GroupMember.model.belongsTo(GroupTypeRole.model, { foreignKey: "GroupRoleId", targetKey: "Id" });
+  GroupMember.model.belongsTo(GroupTypeRole.model, {
+    foreignKey: "GroupRoleId",
+    targetKey: "Id",
+  });
 }
 
 export default {
