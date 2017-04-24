@@ -190,7 +190,7 @@ describe("Mutation", () => {
         ip: "ip address",
         requestUrl: "https://example.com/give/now",
         origin: "https://example.com/",
-      }, { Id: 1 });
+      }, { Id: 1 }, models);
     });
   });
   describe("validate", () => {
