@@ -91,7 +91,7 @@ export default {
         ip,
         requestUrl,
         origin,
-      }, person);
+      }, person, models).catch(console.error);
     },
     validate: async (_, { token, gateway }, { models }) => {
       if (!token) return null;
