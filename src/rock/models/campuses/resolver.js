@@ -1,6 +1,10 @@
 import { geography } from "mssql-geoparser";
 import { createGlobalId } from "../../../util";
 
+// const delay = (x, num = 5000) => new Promise((r, rej) => {
+//   return setTimeout(() => r(x), num);
+// });
+
 export default {
 
   Query: {

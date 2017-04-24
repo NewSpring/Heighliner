@@ -140,7 +140,7 @@ export class Person extends Rock {
   // async getGroupsFromId(...args) {
   //   return PersonTable.model.getGroups.apply(PersonTable.model, args);
   // }
-  async getCampusFromId(id, { cache }) {
+  async getCampusFromId(id, { cache } = { cache: true }) {
     return await this.cache.get(`${id}:PersonCampus`, () => Group.findOne({
         where: { GroupTypeId: 10 }, // family
         include: [
