@@ -172,6 +172,20 @@ describe("Feed Query", () => {
     expect(results[0].__type).toEqual("Content");
   });
 
+  it("should filter out empty content results", async () => {
+    const { Query } = Resolver;
+
+    mockModels.Like.getLikedContent.mockReturnValueOnce([sampleData.like, null, null]);
+
+    const results = await Query.userFeed( //eslint-disable-line
+      null,
+      { filters: ["LIKES"] },
+      { models: mockModels, person: null, user: { _id: "1234" } },
+    );
+
+    expect(results).toHaveLength(1);
+  });
+
   it("should call findByCampusName with correct parameters", async () => {
     const { Query } = Resolver;
 
