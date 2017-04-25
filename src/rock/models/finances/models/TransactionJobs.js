@@ -219,6 +219,8 @@ export default class TransactionJobs extends Rock {
       Person,
       SourceTypeValue,
       Transaction,
+      platform,
+      version,
     } = data;
     if (!Transaction.TransactionCode) return data;
     if (Transaction.Id) return data;
@@ -231,6 +233,17 @@ export default class TransactionJobs extends Rock {
     if (Existing.length) {
       Transaction.Id = Existing[0].Id;
       return data;
+    }
+
+    switch(platform){
+      case "Web":
+        Transaction.SourceTypeValueId = 798; // my.newspring.cc
+        break;
+      case "Native":
+        Transaction.SourceTypeValueId = 884; // native.newspring.cc
+        break;
+      default:
+        break;
     }
 
     if (!Transaction.SourceTypeValueId && SourceTypeValue.Url) {
@@ -249,6 +262,7 @@ export default class TransactionJobs extends Rock {
     });
     if (Batch && Batch.Id) Transaction.BatchId = Batch.Id;
     Transaction.FinancialPaymentDetailId = FinancialPaymentDetail.Id;
+    Transaction.ForeignKey = version ? `v${version}` : null;
 
     Transaction.Id = await TransactionTable.post(Transaction);
 

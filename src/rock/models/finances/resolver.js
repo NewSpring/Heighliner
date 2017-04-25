@@ -142,6 +142,8 @@ export default {
     ) => {
       if (!token) return null;
       const origin = req.headers.origin;
+      const platform = req.headers.platform;
+      const version = req.headers.version;
 
       // right now scheduleId could also be a meteor userId. This is bad and legacy
       // and should be properally fixed but old builds will still need to support the
@@ -161,7 +163,7 @@ export default {
       }
 
       return models.Transaction
-        .completeOrder({ token, accountName, person, origin, scheduleId })
+        .completeOrder({ token, accountName, person, origin, scheduleId, platform, version })
         .catch(e => ({ error: e.message, code: e.code, success: false }));
     },
     savePayment: async (
