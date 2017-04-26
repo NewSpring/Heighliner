@@ -342,7 +342,7 @@ export default class Transaction extends Rock {
     this.gateway = assign(
       gateways,
       attributes,
-      { SecurityKey: "2F822Rw39fx762MaV7Yy86jXGTC7sCDy" }
+      // { SecurityKey: "2F822Rw39fx762MaV7Yy86jXGTC7sCDy" }
     );
     return this.gateway;
   }
@@ -487,7 +487,7 @@ export default class Transaction extends Rock {
           });
         }
 
-        // this.TransactionJob.add(response);
+        this.TransactionJob.add(response);
         return data;
       })
       .then(data => ({
@@ -507,7 +507,7 @@ export default class Transaction extends Rock {
         scheduleId, response, person, accountName, origin,
       }, gatewayDetails))
       .then((data) => {
-        // this.TransactionJob.add(data);
+        this.TransactionJob.add(data);
         return data;
       })
       .catch(({ message, code }) =>

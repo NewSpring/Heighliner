@@ -19,13 +19,11 @@ describe("getCardType", () => {
   it("correctly identifies a visa", () => {
     const cards = ["4111111111111111", "4012888888881881", "4222222222222"];
     cards.map(x => expect(getCardType(x)).toBe(7));
-    // expect(getCardType("4111111111111111")).toBe(7);
   });
 
   it("correctly identifies a mastercard", () => {
     const cards = ["5555555555554444", "5105105105105100", "5431111111111111"];
     cards.map(x => expect(getCardType(x)).toBe(8));
-    // expect(getCardType("5431111111111111")).toBe(8);
   });
 
   it("correctly identifies an American Express", () => {
@@ -36,7 +34,6 @@ describe("getCardType", () => {
   it("correctly identifieds a discover card", () => {
     const cards = ["6011111111111117", "6011000990139424", "6011601160116611"];
     cards.map(x => expect(getCardType(x)).toBe(160));
-    // expect(getCardType("")).toBe(160);
   });
 
   it("returns a falsy if no valid card is found", () => {
