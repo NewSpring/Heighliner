@@ -389,7 +389,7 @@ export default class Transaction extends Rock {
     return nmi(complete, gatewayDetails);
   }
 
-  async createOrder({ data, instant, id, ip, requestUrl, origin }, person) {
+  async createOrder({ data, instant, id, ip, requestUrl, origin }, person, models) {
     if (!data) return Promise.reject(new Error("No data provided"));
 
     const gateway = await this.loadGatewayDetails("NMI Gateway");
@@ -403,6 +403,10 @@ export default class Transaction extends Rock {
     if (typeof orderData.amount === "undefined") method = "add-customer";
     if (orderData["start-date"]) method = "add-subscription";
 
+    if (orderData.product && orderData.product.length) {
+      orderData.product = orderData.product
+        .map((x) => ({ ...x, "unit-cost": x["total-amount"]}));
+    }
 
     if (
       method !== "add-subscription" &&
@@ -464,6 +468,10 @@ export default class Transaction extends Rock {
         }
       }
       if (!order[method]["merchant-defined-field-2"]) {
+        if (person && models) {
+          const missingCampus = await models.Person.getCampusFromId(person.Id);
+          order[method]["merchant-defined-field-2"] = missingCampus ? missingCampus.Id : 20;
+        }
         report({ data }, new Error("merchant-defined-field-2 missing from order information"));
       }
     } else {

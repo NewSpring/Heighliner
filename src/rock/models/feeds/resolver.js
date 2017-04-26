@@ -74,7 +74,7 @@ export default {
 
       if (!filterQueries.length) return null;
 
-      return Promise.all(filterQueries).then(flatten);
+      return Promise.all(filterQueries).then(flatten).then(x => x.filter(y => Boolean(y)));
     },
   },
 };
