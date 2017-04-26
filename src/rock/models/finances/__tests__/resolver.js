@@ -254,17 +254,14 @@ describe("Mutation", () => {
           models,
         },
       );
-      expect(models.Transaction.createOrder).toBeCalledWith(
-        {
-          data: { foo: true },
-          instant: true,
-          id: 1,
-          ip: "ip address",
-          requestUrl: "https://example.com/give/now",
-          origin: "https://example.com/",
-        },
-        { Id: 1 },
-      );
+      expect(models.Transaction.createOrder).toBeCalledWith({
+        data: { foo: true },
+        instant: true,
+        id: 1,
+        ip: "ip address",
+        requestUrl: "https://example.com/give/now",
+        origin: "https://example.com/",
+      }, { Id: 1 }, models);
     });
   });
   describe("validate", () => {

@@ -534,6 +534,48 @@ describe("createOrder", () => {
     delete data.url["add-customer"]["order-id"];
     expect(jobAdd.mock.calls[0]).toMatchSnapshot();
   });
+
+  it("should lookup person's campus if not passed in", async () => {
+    nmi.mockImplementationOnce((order => Promise.resolve({
+      result: 1,
+      "result-code": 100,
+      "form-url": order,
+      "transaction-id": 1,
+    })));
+    formatTransaction.mockReturnValueOnce({});
+    Local.TransactionJob = {
+      add: jest.fn(),
+    };
+    const data = await Local.createOrder({
+      data: {},
+      instant: true,
+      requestUrl: "https://my.newspring.cc/give/now",
+      ip: "1",
+    }, { PrimaryAliasId: 10, Id: 123 }, { Person: { getCampusFromId: () => { Id: 123 } } });
+
+    expect(data.url["add-customer"]["merchant-defined-field-2"]).toEqual(20);
+  });
+
+  it("should default to web campus if lookup fails", async () => {
+    nmi.mockImplementationOnce((order => Promise.resolve({
+      result: 1,
+      "result-code": 100,
+      "form-url": order,
+      "transaction-id": 1,
+    })));
+    formatTransaction.mockReturnValueOnce({});
+    Local.TransactionJob = {
+      add: jest.fn(),
+    };
+    const data = await Local.createOrder({
+      data: {},
+      instant: true,
+      requestUrl: "https://my.newspring.cc/give/now",
+      ip: "1",
+    }, { PrimaryAliasId: 10 }, { Person: { getCampusFromId: () => null } });
+
+    expect(data.url["add-customer"]["merchant-defined-field-2"]).toEqual(20);
+  });
 });
 
 describe("charging NMI", () => {

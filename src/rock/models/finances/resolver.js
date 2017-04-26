@@ -116,17 +116,14 @@ export default {
       const requestUrl = req.headers.referer;
       const origin = req.headers.origin;
       const parsedData = JSON.parse(data);
-      return models.Transaction.createOrder(
-        {
-          data: parsedData,
-          instant,
-          id,
-          ip,
-          requestUrl,
-          origin,
-        },
-        person,
-      );
+      return models.Transaction.createOrder({
+        data: parsedData,
+        instant,
+        id,
+        ip,
+        requestUrl,
+        origin,
+      }, person, models).catch(console.error);
     },
     validate: async (_, { token, gateway }, { models }) => {
       if (!token) return null;
