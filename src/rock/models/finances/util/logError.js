@@ -9,7 +9,7 @@ if (process.env.SENTRY) {
 
 const report = ({ data, attemptsMade = 1 }, error) => {
   if (!sentry) {
-    console.error("ERROR", error);
+    if (!process.env.CI) console.error("ERROR", error);
     return;
   }
 

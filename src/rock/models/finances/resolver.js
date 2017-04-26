@@ -142,6 +142,7 @@ export default {
     ) => {
       if (!token) return null;
       const origin = req.headers.origin;
+      // XXX this is temporary until new heighliner supports this for everything
       const platform = req.headers.platform;
       const version = req.headers.version;
 

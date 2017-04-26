@@ -362,6 +362,8 @@ describe("Mutation", () => {
           req: {
             headers: {
               origin: "https://example.com",
+              platform: "Native",
+              version: "over 9000"
             },
           },
         },
@@ -373,6 +375,8 @@ describe("Mutation", () => {
         person: { Id: 1 },
         origin: "https://example.com",
         scheduleId: 1,
+        platform: "Native",
+        version: "over 9000"
       });
     });
     it("passes args and context to the method", async () => {
