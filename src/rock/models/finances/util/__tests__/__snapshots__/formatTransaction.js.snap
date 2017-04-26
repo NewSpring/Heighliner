@@ -155,7 +155,7 @@ Object {
     "CurrencyTypeValueId": 156,
     "Guid": "guid",
   },
-  "FinancialPaymentValue": "Credit Card",
+  "FinancialPaymentValue": "Discover",
   "FinancialPersonSavedAccount": Object {
     "FinancialGatewayId": 3,
     "Guid": "guid",
@@ -271,7 +271,7 @@ Object {
     "CurrencyTypeValueId": 156,
     "Guid": "guid",
   },
-  "FinancialPaymentValue": "Credit Card",
+  "FinancialPaymentValue": "Discover",
   "FinancialPersonSavedAccount": Object {
     "FinancialGatewayId": 3,
     "Guid": "guid",
@@ -326,7 +326,7 @@ Object {
     "CurrencyTypeValueId": 156,
     "Guid": "guid",
   },
-  "FinancialPaymentValue": "Credit Card",
+  "FinancialPaymentValue": "Discover",
   "FinancialPersonSavedAccount": Object {
     "FinancialGatewayId": 3,
     "Guid": "guid",
@@ -393,7 +393,7 @@ Object {
     "CurrencyTypeValueId": 156,
     "Guid": "guid",
   },
-  "FinancialPaymentValue": "Credit Card",
+  "FinancialPaymentValue": "Discover",
   "FinancialPersonSavedAccount": Object {
     "FinancialGatewayId": 3,
     "Guid": "guid",
@@ -454,7 +454,7 @@ Object {
     "CurrencyTypeValueId": 156,
     "Guid": "guid",
   },
-  "FinancialPaymentValue": "Credit Card",
+  "FinancialPaymentValue": "Discover",
   "FinancialPersonSavedAccount": Object {
     "FinancialGatewayId": 3,
     "Guid": "guid",
@@ -515,7 +515,7 @@ Object {
     "CurrencyTypeValueId": 156,
     "Guid": "guid",
   },
-  "FinancialPaymentValue": "Credit Card",
+  "FinancialPaymentValue": "Discover",
   "FinancialPersonSavedAccount": Object {
     "FinancialGatewayId": 3,
     "Guid": "guid",

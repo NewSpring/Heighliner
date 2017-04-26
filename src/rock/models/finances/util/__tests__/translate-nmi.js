@@ -13,23 +13,30 @@ jest.mock("moment", () => date => ({ toISOString: () => `Mocked ISODate: ${date}
 
 describe("getCardType", () => {
   it("correctly identifies a visa with hashes", () => {
-    expect(getCardType("4***********1111")).toBe(7);
+    expect(getCardType("4111********1111")).toBe(7);
   });
 
   it("correctly identifies a visa", () => {
-    expect(getCardType("4111111111111111")).toBe(7);
+    const cards = ["4111111111111111", "4012888888881881", "4222222222222"];
+    cards.map(x => expect(getCardType(x)).toBe(7));
+    // expect(getCardType("4111111111111111")).toBe(7);
   });
 
   it("correctly identifies a mastercard", () => {
-    expect(getCardType("5431111111111111")).toBe(8);
+    const cards = ["5555555555554444", "5105105105105100", "5431111111111111"];
+    cards.map(x => expect(getCardType(x)).toBe(8));
+    // expect(getCardType("5431111111111111")).toBe(8);
   });
 
   it("correctly identifies an American Express", () => {
-    expect(getCardType("341111111111111")).toBe(159);
+    const cards = ["378282246310005", "371449635398431", "341111111111111"]
+    cards.map(x => expect(getCardType(x)).toBe(159));
   });
 
   it("correctly identifieds a discover card", () => {
-    expect(getCardType("6011601160116611")).toBe(160);
+    const cards = ["6011111111111117", "6011000990139424", "6011601160116611"];
+    cards.map(x => expect(getCardType(x)).toBe(160));
+    // expect(getCardType("")).toBe(160);
   });
 
   it("returns a falsy if no valid card is found", () => {
