@@ -507,7 +507,7 @@ export default class Transaction extends Rock {
       .catch(e => ({ error: e.message, code: e.code }));
   }
 
-  async completeOrder({ scheduleId, token, person, accountName, origin }) {
+  async completeOrder({ scheduleId, token, person, accountName, origin, platform, version }) {
     const gatewayDetails = await this.loadGatewayDetails("NMI Gateway");
 
     return this.charge(token, gatewayDetails)
@@ -515,7 +515,7 @@ export default class Transaction extends Rock {
         scheduleId, response, person, accountName, origin,
       }, gatewayDetails))
       .then((data) => {
-        this.TransactionJob.add(data);
+        this.TransactionJob.add({...data, platform, version});
         return data;
       })
       .catch(({ message, code }) =>

@@ -1,32 +1,29 @@
 import uuid from "node-uuid";
 import { isArray, find, assign } from "lodash";
 import Moment from "moment";
+import creditCardType, { types } from "credit-card-type";
 
-const d = /^6$|^6[05]$|^601[1]?$|^65[0-9][0-9]?$|^6(?:011|5[0-9]{2})[0-9\*]{0,12}$/gmi;
-
-export const defaultCardRegex = {
-  Visa: /^4[0-9\*]{0,15}$/gmi,
-  MasterCard: /^5$|^5[1-5][0-9\*]{0,14}$/gmi,
-  "American Express": /^3$|^3[47][0-9\*]{0,13}$/gmi,
-  Discover: d,
-};
+const { AMERICAN_EXPRESS, DISCOVER, VISA, MASTERCARD } = types;
 
 export const getCardName = (card) => {
-  for (const regex in defaultCardRegex) {
-    if (defaultCardRegex[regex].test(card)) return regex;
+  if (!card) return "Credit Card";
+  const parsed = creditCardType(card.slice(0, 4));
+  const type = parsed && parsed[0] && parsed[0].type;
+  switch(type){
+    case AMERICAN_EXPRESS:
+      return "American Express"; break;
+    case DISCOVER:
+      return "Discover"; break;
+    case VISA:
+      return "Visa"; break;
+    case MASTERCARD:
+      return "MasterCard"; break;
+    default:
+      return "Credit Card";
   }
-  return "Credit Card";
 };
 
 export const getCardType = (card) => {
-  // XXX refering to the default was failing the tests?
-  // I have not idea why
-  const cards = {
-    Visa: /^4[0-9\*]{0,15}$/gmi,
-    MasterCard: /^5$|^5[1-5][0-9\*]{0,14}$/gmi,
-    "American Express": /^3$|^3[47][0-9\*]{0,13}$/gmi,
-    Discover: d,
-  };
   const definedTypeMapping = {
     Visa: 7,
     MasterCard: 8,
@@ -34,13 +31,8 @@ export const getCardType = (card) => {
     Discover: 160,
     "American Express": 159,
   };
-
-  for (const regex in cards) {
-    const isFound = cards[regex].test(card);
-    if (isFound) return definedTypeMapping[regex];
-  }
-
-  return null;
+  const type = definedTypeMapping[getCardName(card)];
+  return type ? type : null;
 };
 
 export default (response, gateway, person) => {
