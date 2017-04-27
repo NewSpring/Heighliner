@@ -470,6 +470,8 @@ describe("createPaymentDetail", () => {
 });
 
 describe("findOrCreateTransaction", () => {
+  const NATIVE_SOURCE_TYPE = 884;
+  const WEB_SOURCE_TYPE = 798;
   let Local;
   beforeEach(() => {
     Local = new TransactionJobs({ cache: mockedCache });
@@ -502,7 +504,7 @@ describe("findOrCreateTransaction", () => {
     expect(data).toEqual({ Transaction: { Id: 10, TransactionCode: "code" } });
   });
 
-  it("searches for sourcetype values, creates a batch, and creates a transaction", async () => {
+  it("creates a batch and creates a transaction", async () => {
     Local.FinancialBatch.findOrCreate = jest.fn();
 
     const Transaction = {
@@ -522,7 +524,6 @@ describe("findOrCreateTransaction", () => {
     const FinancialPaymentValue = "Visa";
 
     TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
-    DefinedValue.findOne.mockReturnValueOnce(Promise.resolve({ Id: 100 }));
     Local.FinancialBatch.findOrCreate.mockReturnValueOnce(Promise.resolve({ Id: 30 }));
     TransactionTable.post.mockReturnValueOnce(Promise.resolve(20));
 
@@ -534,9 +535,6 @@ describe("findOrCreateTransaction", () => {
       FinancialPaymentDetail,
     });
 
-    expect(DefinedValue.findOne).toBeCalledWith({
-      where: { Value: SourceTypeValue.Url, DefinedTypeId: 12 },
-    });
     expect(Local.FinancialBatch.findOrCreate).toBeCalledWith({
       currencyType: FinancialPaymentValue,
       date: Transaction.TransactionDateTime,
@@ -552,8 +550,9 @@ describe("findOrCreateTransaction", () => {
       CreatedByPersonAliasId: 10,
       ModifiedByPersonAliasId: 10,
       BatchId: 30,
-      SourceTypeValueId: 100,
+      SourceTypeValueId: WEB_SOURCE_TYPE,
       FinancialPaymentDetailId: 45,
+      ForeignKey: null,
     });
     expect(data).toEqual({
       Transaction: capturedMock,
@@ -564,7 +563,7 @@ describe("findOrCreateTransaction", () => {
     });
   });
 
-  it("searches for uses a default sourcetypevalue", async () => {
+  it("sourcetypevalue switches for native", async () => {
     Local.FinancialBatch.findOrCreate = jest.fn();
 
     const Transaction = {
@@ -584,7 +583,6 @@ describe("findOrCreateTransaction", () => {
     const FinancialPaymentValue = "Visa";
 
     TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
-    DefinedValue.findOne.mockReturnValueOnce(Promise.resolve());
     Local.FinancialBatch.findOrCreate.mockReturnValueOnce(Promise.resolve({ Id: 30 }));
     TransactionTable.post.mockReturnValueOnce(Promise.resolve(20));
     TransactionTable.post.mockClear();
@@ -595,11 +593,9 @@ describe("findOrCreateTransaction", () => {
       Person,
       FinancialPaymentValue,
       FinancialPaymentDetail,
+      platform: "Native",
     });
 
-    expect(DefinedValue.findOne).toBeCalledWith({
-      where: { Value: SourceTypeValue.Url, DefinedTypeId: 12 },
-    });
     expect(Local.FinancialBatch.findOrCreate).toBeCalledWith({
       currencyType: FinancialPaymentValue,
       date: Transaction.TransactionDateTime,
@@ -615,8 +611,9 @@ describe("findOrCreateTransaction", () => {
       CreatedByPersonAliasId: 10,
       ModifiedByPersonAliasId: 10,
       BatchId: 30,
-      SourceTypeValueId: 10,
+      SourceTypeValueId: NATIVE_SOURCE_TYPE,
       FinancialPaymentDetailId: 45,
+      ForeignKey: null,
     });
     expect(data).toEqual({
       Transaction: capturedMock,
@@ -624,6 +621,7 @@ describe("findOrCreateTransaction", () => {
       Person,
       FinancialPaymentValue,
       FinancialPaymentDetail,
+      platform: "Native",
     });
   });
 
@@ -647,7 +645,6 @@ describe("findOrCreateTransaction", () => {
     const FinancialPaymentValue = "Visa";
 
     TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
-    DefinedValue.findOne.mockReturnValueOnce(Promise.resolve());
     Local.FinancialBatch.findOrCreate.mockReturnValueOnce(Promise.resolve());
     TransactionTable.post.mockReturnValueOnce(Promise.resolve(20));
     TransactionTable.post.mockClear();
@@ -660,9 +657,6 @@ describe("findOrCreateTransaction", () => {
       FinancialPaymentDetail,
     });
 
-    expect(DefinedValue.findOne).toBeCalledWith({
-      where: { Value: SourceTypeValue.Url, DefinedTypeId: 12 },
-    });
     expect(Local.FinancialBatch.findOrCreate).toBeCalledWith({
       currencyType: FinancialPaymentValue,
       date: Transaction.TransactionDateTime,
@@ -677,8 +671,9 @@ describe("findOrCreateTransaction", () => {
       AuthorizedPersonAliasId: 10,
       CreatedByPersonAliasId: 10,
       ModifiedByPersonAliasId: 10,
-      SourceTypeValueId: 10,
+      SourceTypeValueId: WEB_SOURCE_TYPE,
       FinancialPaymentDetailId: 45,
+      ForeignKey: null,
     });
     expect(data).toEqual({
       Transaction: capturedMock,
@@ -686,6 +681,69 @@ describe("findOrCreateTransaction", () => {
       Person,
       FinancialPaymentValue,
       FinancialPaymentDetail,
+    });
+  });
+  it("should pass version to foreign key on new job", async () => {
+    Local.FinancialBatch.findOrCreate = jest.fn();
+
+    const Transaction = {
+      TransactionCode: "code",
+      TransactionDateTime: "now",
+    };
+    const SourceTypeValue = {
+      Url: "example.com",
+    };
+    const Person = {
+      PrimaryAliasId: 10,
+      Id: 1,
+    };
+    const FinancialPaymentDetail = {
+      Id: 45,
+    };
+    const FinancialPaymentValue = "Visa";
+
+    TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
+    Local.FinancialBatch.findOrCreate.mockReturnValueOnce(Promise.resolve({ Id: 30 }));
+    TransactionTable.post.mockReturnValueOnce(Promise.resolve(20));
+    TransactionTable.post.mockClear();
+
+    const data = await Local.findOrCreateTransaction({
+      Transaction,
+      SourceTypeValue,
+      Person,
+      FinancialPaymentValue,
+      FinancialPaymentDetail,
+      platform: "Native",
+      version: "9001",
+    });
+
+    expect(Local.FinancialBatch.findOrCreate).toBeCalledWith({
+      currencyType: FinancialPaymentValue,
+      date: Transaction.TransactionDateTime,
+    });
+
+    // XXX for some reason, post methods are including the Id when mocked?
+    const capturedMock = TransactionTable.post.mock.calls[0][0];
+    delete capturedMock.Id;
+    expect(capturedMock).toEqual({
+      TransactionCode: "code",
+      TransactionDateTime: "now",
+      AuthorizedPersonAliasId: 10,
+      CreatedByPersonAliasId: 10,
+      ModifiedByPersonAliasId: 10,
+      BatchId: 30,
+      SourceTypeValueId: NATIVE_SOURCE_TYPE,
+      FinancialPaymentDetailId: 45,
+      ForeignKey: "v9001",
+    });
+    expect(data).toEqual({
+      Transaction: capturedMock,
+      SourceTypeValue,
+      Person,
+      FinancialPaymentValue,
+      FinancialPaymentDetail,
+      platform: "Native",
+      version: "9001"
     });
   });
 });
@@ -1512,4 +1570,3 @@ describe("sendGivingEmail", () => {
     });
   });
 });
-

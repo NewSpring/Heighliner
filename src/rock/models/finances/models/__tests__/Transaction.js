@@ -631,7 +631,7 @@ describe("completeOrder", () => {
   it("calls to charge NMI and creates a job", async () => {
     nmi.mockImplementationOnce(() => Promise.resolve({ success: true }));
     formatTransaction.mockClear();
-    formatTransaction.mockReturnValueOnce({});
+    formatTransaction.mockReturnValueOnce({someStuff: "harambe"});
     Local.TransactionJob = {
       add: jest.fn(),
     };
@@ -642,6 +642,8 @@ describe("completeOrder", () => {
       person: { FirstName: "James" },
       accountName: "Visa",
       origin: "http://example.com",
+      version: "over 9000",
+      platform: "Native"
     });
 
     expect(formatTransaction).toBeCalledWith({
@@ -651,7 +653,12 @@ describe("completeOrder", () => {
       origin: "http://example.com",
       response: { success: true },
     }, Local.gateway);
-    expect(Local.TransactionJob.add).toBeCalled();
+
+    expect(Local.TransactionJob.add).toBeCalledWith({
+      platform: "Native",
+      version: "over 9000",
+      someStuff: "harambe",
+    });
   });
 
   it("gracefully handles errors", async () => {

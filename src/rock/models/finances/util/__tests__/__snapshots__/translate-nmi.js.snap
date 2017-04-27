@@ -13,7 +13,7 @@ Object {
   },
   "PaymentDetail": Object {
     "AccountNumberMasked": "4***********1111",
-    "CreditCardTypeValueId": 7,
+    "CreditCardTypeValueId": null,
     "CurrencyTypeValueId": 156,
     "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
   },
@@ -55,7 +55,7 @@ Object {
   },
   "PaymentDetail": Object {
     "AccountNumberMasked": "4***********1111",
-    "CreditCardTypeValueId": 7,
+    "CreditCardTypeValueId": null,
     "CurrencyTypeValueId": 156,
     "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
   },
@@ -97,7 +97,7 @@ Object {
   },
   "PaymentDetail": Object {
     "AccountNumberMasked": "4***********1111",
-    "CreditCardTypeValueId": 7,
+    "CreditCardTypeValueId": null,
     "CurrencyTypeValueId": 156,
     "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
   },
@@ -180,7 +180,7 @@ Object {
   },
   "PaymentDetail": Object {
     "AccountNumberMasked": "4***********1111",
-    "CreditCardTypeValueId": 7,
+    "CreditCardTypeValueId": null,
     "CurrencyTypeValueId": 156,
     "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
   },
@@ -224,7 +224,7 @@ Object {
   },
   "PaymentDetail": Object {
     "AccountNumberMasked": "4***********1111",
-    "CreditCardTypeValueId": 7,
+    "CreditCardTypeValueId": null,
     "CurrencyTypeValueId": 156,
     "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
   },
@@ -267,7 +267,7 @@ Object {
   },
   "PaymentDetail": Object {
     "AccountNumberMasked": "4***********1111",
-    "CreditCardTypeValueId": 7,
+    "CreditCardTypeValueId": null,
     "CurrencyTypeValueId": 156,
     "Guid": "a31044f3-d721-47b2-a91d-e58ac41832ad",
   },

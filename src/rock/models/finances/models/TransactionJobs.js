@@ -219,6 +219,8 @@ export default class TransactionJobs extends Rock {
       Person,
       SourceTypeValue,
       Transaction,
+      platform,
+      version,
     } = data;
     if (!Transaction.TransactionCode) return data;
     if (Transaction.Id) return data;
@@ -233,12 +235,8 @@ export default class TransactionJobs extends Rock {
       return data;
     }
 
-    if (!Transaction.SourceTypeValueId && SourceTypeValue.Url) {
-      Transaction.SourceTypeValueId = await DefinedValue.findOne({
-        where: { Value: SourceTypeValue.Url, DefinedTypeId: 12 },
-      })
-        .then(x => x && x.Id || 10);
-    }
+    // 884 source type: (native.ns.cc), default 798: (my.ns.cc)
+    Transaction.SourceTypeValueId = platform === "Native" ? 884 : 798;
 
     Transaction.AuthorizedPersonAliasId = Person.PrimaryAliasId;
     Transaction.CreatedByPersonAliasId = Person.PrimaryAliasId;
@@ -249,6 +247,7 @@ export default class TransactionJobs extends Rock {
     });
     if (Batch && Batch.Id) Transaction.BatchId = Batch.Id;
     Transaction.FinancialPaymentDetailId = FinancialPaymentDetail.Id;
+    Transaction.ForeignKey = version ? `v${version}` : null;
 
     Transaction.Id = await TransactionTable.post(Transaction);
 
