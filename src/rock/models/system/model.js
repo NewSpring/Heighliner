@@ -123,7 +123,6 @@ export class Rock extends Heighliner {
   async getAttributeValuesFromAttributeId(id, context, EntityId) {
     const where = { AttributeId: id };
     if (EntityId) where.EntityId = EntityId;
-    console.log(where)
     return this.cache.get(`${id}:${EntityId}:getAttributeValuesFromAttributeId`, () => AttributeValueModel.find({
       where,
       include: [{ model: AttributeModel.model, include: [{ model: FieldTypeModel.model }] }],
@@ -189,13 +188,13 @@ export class Rock extends Heighliner {
     const where = { EntityTypeId };
     if (key) where.Key = key;
     return this.cache.get(`${id}:${key}:getAttributesFromEntity`, () => AttributeModel.find({
-      where, 
+      where,
       include: [
         { model: FieldTypeModel.model },
         { model: AttributeQualifierModel.model },
       ],
-    })) 
-      .then(y => y.map(x => {
+    }))
+      .then(y => Promise.all(y.map(async x => {
         if (!x) return null;
         const { FieldType } = x;
         // 70
@@ -210,11 +209,11 @@ export class Rock extends Heighliner {
         const definedTypeId = x.AttributeQualifiers
           .filter(y => y.Key === "definedtype");
 
-        return this.getDefinedValuesByTypeId(definedTypeId[0].Value).then(x => ({
+        return await this.getDefinedValuesByTypeId(definedTypeId[0].Value).then(x => ({
           ...x,
           EntityId: id
         }));
-      }))
+      })))
       .then(flatten)
 
   }
