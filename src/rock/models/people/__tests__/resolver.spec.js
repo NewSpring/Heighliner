@@ -73,6 +73,14 @@ describe("Person Tests", () => {
     expect(placeHolderPhoto === noPhotoAvailable).toBeTruthy();
   });
 
+  it("`Person` has attributes", async () => {
+    const models = { Rock: {getAttributesFromEntity: jest.fn()}};
+    const { Person } = Resolver;
+
+    await Person.attributes({Id: 123}, {key: "ThugLyfe"}, {models});
+    expect(models.Rock.getAttributesFromEntity).toHaveBeenCalledWith(123, "ThugLyfe", 15);
+  });
+
   // it("`Person` has an approximate age.", () => {
   //   const { Person } = Resolver;
 
