@@ -19,4 +19,19 @@ export default {
     description: ({ Description }) => Description,
   },
 
+  Attribute: {
+    id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    key: ({ Key }) => Key,
+    description: ({ Description }) => Description,
+    order: ({ Order }) => Order,
+    values: ({ Id, EntityId }, _, { models, ...rest }) =>
+      models.Rock.getAttributeValuesFromAttributeId(Id, { models, ...rest }, EntityId)
+  },
+
+  AttributeValue: {
+    attribute: ({ AttributeId }, _, { model }) => models.Rock.getAttributeFromId(id),
+    id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    value: ({ Value }) => Value,
+  }
+
 };

@@ -1,4 +1,4 @@
-
+import sequelize from "sequelize"
 import { pick, sortBy, flatten } from "lodash";
 import { createGlobalId, Heighliner } from "../../../util";
 
@@ -114,6 +114,30 @@ export class Rock extends Heighliner {
     );
   }
 
+  async getAttributeFromId(id) {
+    return this.cache.get(`${id}:getAttributeFromId`, () => AttributeModel.findOne({
+      where: { Id: id },
+    }))
+  }
+
+  async getAttributeValuesFromAttributeId(id, context, EntityId) {
+    const where = { AttributeId: id };
+    if (EntityId) where.EntityId = EntityId;
+    console.log(where)
+    return this.cache.get(`${id}:${EntityId}:getAttributeValuesFromAttributeId`, () => AttributeValueModel.find({
+      where,
+      include: [{ model: AttributeModel.model, include: [{ model: FieldTypeModel.model }] }],
+    })
+      .then(x => Promise.all(x.map(async (y) => {
+        const value = await this.processAttributeValue.call(context, y);
+        return {
+          ...y,
+          Value: value,
+        };
+      })))
+    );
+  }
+
   async getAttributeValuesFromId(id, context) {
 
     return this.cache.get(`${id}:getAttributeValuesFromId`, () => AttributeValueModel.findOne({
@@ -161,6 +185,40 @@ export class Rock extends Heighliner {
     );
   }
 
+  async getAttributesFromEntity(id, key, EntityTypeId) {
+    const where = { EntityTypeId };
+    if (key) where.Key = key;
+    return this.cache.get(`${id}:${key}:getAttributesFromEntity`, () => AttributeModel.find({
+      where, 
+      include: [
+        { model: FieldTypeModel.model },
+        { model: AttributeQualifierModel.model },
+      ],
+    })) 
+      .then(y => y.map(x => {
+        if (!x) return null;
+        const { FieldType } = x;
+        // 70
+        if (FieldType.Class !== "Rock.Field.Types.DefinedValueFieldType") {
+          return [{
+            Id: x.Id,
+            Value: x.Name,
+            Description: x.Description,
+            EntityId: id,
+          }];
+        }
+        const definedTypeId = x.AttributeQualifiers
+          .filter(y => y.Key === "definedtype");
+
+        return this.getDefinedValuesByTypeId(definedTypeId[0].Value).then(x => ({
+          ...x,
+          EntityId: id
+        }));
+      }))
+      .then(flatten)
+
+  }
+
   async getAttributesFromId(id) {
     return this.cache.get(`${id}:getAttributeValues`, () => AttributeModel.findOne({
       where: { Id: id },
@@ -189,7 +247,56 @@ export class Rock extends Heighliner {
     );
   }
 
+  async getAttributeValueFromMatrix(key, knownKey, knownValue, desiredKey){
+    return this.cache.get(
+      `${key}:${knownKey}:${knownValue}:${desiredKey}:MatrixValue`,
+      () => CommunicationTable.db.query(`
+        SELECT
+            desiredValue.*
+        FROM
+            [Attribute] a
+        JOIN [AttributeValue] v
+            ON a.Id = v.AttributeId
+        JOIN [AttributeMatrix] m
+            ON v.Value = m.Guid
+        JOIN [AttributeMatrixItem] mi
+            ON m.Id = mi.AttributeMatrixId
+        JOIN [Attribute] knownColumn
+            ON knownColumn.EntityTypeId = 508 AND knownColumn.EntityTypeQualifierValue = mi.Id
+        JOIN [AttributeValue] knownColumnValue
+            ON knownColumnValue.AttributeId = knownColumn.Id
+        JOIN [AttributeValue] desiredValue
+            ON knownColumnValue.EntityId = desiredValue.EntityId
+        JOIN [Attribute] desiredColumn
+            ON desiredColumn.Id = desiredValue.AttributeId
+        WHERE
+            knownColumn.[Key] = :knownKey
+            AND knownColumnValue.Value = :knownValue
+            AND desiredColumn.[Key] = :desiredKey
+            AND a.[Key] = :key
+
+
+      `,
+        {
+          replacements: { key, knownKey, knownValue, desiredKey },
+          type: sequelize.QueryTypes.SELECT
+        }
+      ).then(([x]) => x)
+    )
+      .then(this.debug)
+    // XXX see what kind of value this returns
+      // .then(x => Promise.all(x.map(async (y) => {
+      //   const value = await this.processAttributeValue.call(context, y);
+      //   return {
+      //     ...y,
+      //     Value: value,
+      //   };
+      // })))
+
+  }
+
 }
+
 
 export default {
   Rock,
