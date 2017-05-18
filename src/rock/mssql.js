@@ -111,7 +111,6 @@ export class MSSQLConnector {
     let url = `${ROCK_URL}api/${this.route}`;
     if (route) url = `${url}/${route}`;
 
-    console.log(url);
     return fetch(url, {
       headers, method, body: JSON.stringify(body),
     })

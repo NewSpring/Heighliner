@@ -1,6 +1,7 @@
-import { PhoneNumber } from "../model";
+import { PhoneNumber, Person } from "../model";
 import {
   PhoneNumber as PhoneNumberTable,
+  Person as PersonTable,
 } from "../tables";
 
 jest.mock("../tables", () => ({
@@ -10,6 +11,9 @@ jest.mock("../tables", () => ({
     cache: {
       del: jest.fn(() => {}),
     },
+  },
+  Person: {
+    fetch: jest.fn(),
   },
 }));
 
@@ -73,5 +77,25 @@ describe("setPhoneNumber", () => {
     const result = await setPhoneNumber(mockArgs, { Id: 9999999999 });
     // the bare minimum for mutation responses
     expect(Object.keys(result)).toEqual(["code", "success"]);
+  });
+});
+
+
+describe("Person", () => {
+  let personModel;
+
+  beforeEach(() => {
+    personModel = new Person();
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  describe("getIP", () => {
+    it("should lookup on getIP", async () => {
+      await personModel.getIP(123);
+      expect(PersonTable.fetch).toHaveBeenCalledWith("GET", "GetSearchDetails/123");
+    });
   });
 });
