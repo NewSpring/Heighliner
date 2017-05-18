@@ -159,6 +159,10 @@ export class Person extends Rock {
     );
   }
 
+  async getIP(id) {
+    return PersonTable.fetch("GET", `GetSearchDetails/${id}`); 
+  }
+
   async getHomesFromId(id, { cache } = { cache: true }) {
     return await this.cache.get(`${id}:PersonHomes`, () => GroupLocation.find({
         where: { GroupLocationTypeValueId: 19 }, // Home
