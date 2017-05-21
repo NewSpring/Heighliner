@@ -40,6 +40,7 @@ export default [
     schedule: GroupSchedule
     members: [GroupMember]
     locations: [GroupLocation]
+    isPrivate: Boolean
   }
 
   type GroupSearch {
