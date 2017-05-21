@@ -7,6 +7,7 @@ const MutationReponseResolver = {
   success: ({ success, error }) => success || !error,
   code: ({ code }) => code,
 };
+// models.Rock.getAttributeValueFromMatrix('SiteVersion', 'Sites', 10, 'Version')
 
 export default {
 
@@ -14,6 +15,7 @@ export default {
     people: (_, { email }, { models }) => models.Person.findByEmail(email),
     person: (_, { guid }, { models }) => {
       if (!guid) return null;
+
       return models.Person.findOne({ guid });
     },
     currentPerson: (_, { cache }, { person, models, user }) => {
@@ -34,6 +36,10 @@ export default {
       if (!person) return { code: 401, success: false, error: "Must be logged in to make this request" };
       return models.PhoneNumber.setPhoneNumber({ phoneNumber }, person);
     },
+    saveDeviceRegistrationId:  (_, { registrationId }, { models, person }) => {
+      if (!person) return { code: 401, success: false, error: "Must be logged in to make this request" };
+      return models.PersonalDevice.saveId(registrationId, person);
+    },
   },
 
   Person: {
@@ -43,6 +49,10 @@ export default {
     firstName: ({ FirstName }) => FirstName,
     lastName: ({ LastName }) => LastName,
     nickName: ({ NickName }) => NickName,
+    impersonationParameter: ({ Id }, _, { models, person }) => {
+      if (!person || !person.Id) return null;
+      return models.Person.getIP(Id);
+    },
     phoneNumbers: ({ Id }, _, { models }) =>  // tslint:disable-line
       models.Person.getPhoneNumbersFromId(Id),
 
@@ -65,6 +75,7 @@ export default {
       .then(x => x[0]), // only return the first home for now,
     roles: ({ Id }, { cache = true }, { models }) =>
       models.Person.getSecurityRoles(Id),
+    attributes: ({ Id }, { key }, { models, ...rest }) => models.Rock.getAttributesFromEntity(Id, key, 15 /* Person Entity Type */)
   },
 
   PhoneNumber: {
@@ -78,6 +89,10 @@ export default {
   },
 
   PhoneNumberMutationResponse: {
+    ...MutationReponseResolver,
+  },
+
+  DeviceRegistrationMutationResponse: {
     ...MutationReponseResolver,
   },
 };

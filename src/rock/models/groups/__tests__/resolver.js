@@ -21,7 +21,7 @@ describe("requestGroupInfo", () => {
       {
         communicationPreference: "banana",
         groupId: 1234,
-        message: "i miss harambe",
+        message: "i<br />miss<br />harambe", // should strip the br
       },
       { models, person: "person" },
     );
@@ -29,7 +29,7 @@ describe("requestGroupInfo", () => {
       {
         communicationPreference: "banana",
         groupId: 1234,
-        message: "i miss harambe",
+        message: "i\nmiss\nharambe",
       },
       "person",
     );

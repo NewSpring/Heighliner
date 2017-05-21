@@ -49,9 +49,18 @@ const phoneNumberSchema = {
   PersonId: { type: INTEGER },
 };
 
+const personalDeviceSchema = {
+  Id: { type: INTEGER, primaryKey: true },
+  PersonAliasId: { type: INTEGER },
+  DeviceRegistrationId: { type: STRING },
+  PersonalDeviceTypeId: { type: INTEGER },
+  NotificationsEnabled: { type: BOOLEAN },
+};
+
 let Person;
 let PersonAlias;
 let PhoneNumber;
+let PersonalDevice;
 export {
   Person,
   personSchema,
@@ -61,17 +70,21 @@ export {
 
   PhoneNumber,
   phoneNumberSchema,
+
+  PersonalDevice,
 };
 
 export function connect() {
   Person = new MSSQLConnector("Person", personSchema, {}, "People");
   PersonAlias = new MSSQLConnector("PersonAlias", aliasSchema);
   PhoneNumber = new MSSQLConnector("PhoneNumber", phoneNumberSchema);
+  PersonalDevice = new MSSQLConnector("PersonalDevice", personalDeviceSchema);
 
   return {
     Person,
     PersonAlias,
     PhoneNumber,
+    PersonalDevice,
   };
 }
 
@@ -79,12 +92,14 @@ export function bind({
   Person,
   PersonAlias,
   PhoneNumber,
+  PersonalDevice,
   Group,
 }) {
   PersonAlias.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
   Person.model.hasOne(PersonAlias.model, { foreignKey: "PersonId" });
 
   PhoneNumber.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
+  PersonalDevice.model.belongsTo(PersonAlias.model, { foreignKey: "PrimaryAliasId", targetKey: "Id" });
 
   Person.model.belongsToMany(Group.model, {
     as: "Groups",

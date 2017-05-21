@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Attribute has id 1`] = `"6e705ae05557e2a6d5121b432daf07ab"`;
+
+exports[`AttributeValue has id 1`] = `"6e705ae05557e2a6d5121b432daf07ab"`;
