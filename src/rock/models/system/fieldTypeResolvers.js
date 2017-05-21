@@ -1,4 +1,5 @@
 // import { pick } from "lodash";
+import moment from "moment";
 function castToBoolean(val) {
   if (val.toLowerCase() === "true") return true;
   return false;
@@ -7,6 +8,14 @@ function castToBoolean(val) {
 // XXX there are currently 97 of class types we need to model
 export default {
   "Rock.Field.Types.TextFieldType": function (value, defaultValue) {
+    if (!value && defaultValue) return defaultValue;
+    return value;
+  },
+  "Rock.Field.Types.DateFieldType": function (value, defaultValue){
+    if (!value && defaultValue) return defaultValue;
+    return moment(value).toString()
+  },
+  "Rock.Field.Types.SelectSingleFieldType": function (value, defaultValue) {
     if (!value && defaultValue) return defaultValue;
     return value;
   },
