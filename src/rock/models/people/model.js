@@ -222,12 +222,15 @@ export class Person extends Rock {
     }));
   }
 
-  async getSecurityRoles(id) {
-    return this.cache.get(`${id}:GroupMemberId`, () => Group.find({
-        attributes: [ "Name", "Id" ],
-        where: { GroupTypeId: 1 },
+  // personId: int, groupTypes: int | [int]
+  async getGroups(personId, groupTypes) {
+    const groupTypeIds = !Array.isArray(groupTypes) ? [groupTypes] : groupTypes;
+    const where = groupTypeIds[0] ? { GroupTypeId: { $or: groupTypeIds }} : null;
+
+    return this.cache.get(`${personId}:GroupMemberId:${groupTypeIds}:GroupTypes`, () => Group.find({
+        where,
         include: [
-          { model: GroupMember.model, where: { PersonId: `${id}` }, attributes: [] },
+          { model: GroupMember.model, where: { PersonId: `${personId}` }, attributes: [] },
         ],
       })
     );
