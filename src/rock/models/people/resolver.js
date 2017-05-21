@@ -34,6 +34,10 @@ export default {
       if (!person) return { code: 401, success: false, error: "Must be logged in to make this request" };
       return models.PhoneNumber.setPhoneNumber({ phoneNumber }, person);
     },
+    saveDeviceRegistrationId:  (_, { registrationId }, { models, person }) => {
+      if (!person) return { code: 401, success: false, error: "Must be logged in to make this request" };
+      return models.PersonalDevice.saveId(registrationId, person);
+    },
   },
 
   Person: {
@@ -82,6 +86,10 @@ export default {
   },
 
   PhoneNumberMutationResponse: {
+    ...MutationReponseResolver,
+  },
+
+  DeviceRegistrationMutationResponse: {
     ...MutationReponseResolver,
   },
 };

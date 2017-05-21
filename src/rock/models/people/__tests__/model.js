@@ -1,7 +1,8 @@
-import { PhoneNumber, Person } from "../model";
+import { PhoneNumber, Person, PersonalDevice } from "../model";
 import {
   PhoneNumber as PhoneNumberTable,
   Person as PersonTable,
+  PersonalDevice as PersonalDeviceTable,
 } from "../tables";
 
 jest.mock("../tables", () => ({
@@ -14,6 +15,12 @@ jest.mock("../tables", () => ({
   },
   Person: {
     fetch: jest.fn(),
+  PersonalDevice: {
+    post: jest.fn(),
+    findOne: jest.fn(),
+    cache: {
+      del: jest.fn(() => {}),
+    },
   },
 }));
 
@@ -80,17 +87,13 @@ describe("setPhoneNumber", () => {
   });
 });
 
-
 describe("Person", () => {
   let personModel;
+  let personalDeviceModel;
 
   beforeEach(() => {
     personModel = new Person();
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
+    personalDeviceModel = new PersonalDevice();
 
   describe("getIP", () => {
     it("should lookup on getIP", async () => {
@@ -98,4 +101,44 @@ describe("Person", () => {
       expect(PersonTable.fetch).toHaveBeenCalledWith("GET", "GetSearchDetails/123");
     });
   });
+    
+  describe("personalDevice", () => {
+    it("saveId returns 400 with no registration Id", async () => {
+      const { saveId } = personalDeviceModel;
+      const res = await saveId(null, "harambe");
+      expect(res).toEqual({ code: 400, success: false, error: "Insufficient information" });
+    });
+
+    it("saveId returns 400 with no registration Id", async () => {
+      const { saveId } = personalDeviceModel;
+      const res = await saveId("123456");
+      expect(res).toEqual({ code: 400, success: false, error: "Insufficient information" });
+    });
+
+    it("posts with correct info", async () => {
+      const { saveId } = personalDeviceModel;
+      const res = await saveId("123456", { PrimaryAliasId: "harambe" });
+      expect(PersonalDeviceTable.post).toBeCalledWith({
+        "PersonAliasId": "harambe",
+        "DeviceRegistrationId": "123456",
+        "PersonalDeviceTypeId": 671, // `mobile` device type
+        "NotificationsEnabled": 1
+      });
+      expect(res).toEqual({ code: 200, success: true });
+    });
+
+    it("returns with 200 if post doesn't fail", async () => {
+      const { saveId } = personalDeviceModel;
+      const res = await saveId("123456", { PrimaryAliasId: "harambe" });
+      expect(res).toEqual({ code: 200, success: true });
+    });
+
+    it("returns error if post fails", async () => {
+      const { saveId } = personalDeviceModel;
+      PersonalDeviceTable.post.mockReturnValueOnce({ status: 9999, statusText: "bruh no" });
+      const res = await saveId("123456", { PrimaryAliasId: "harambe" });
+      expect(res).toEqual({ code: 9999, success: false, error: "bruh no" });
+    });
+  });
+
 });
