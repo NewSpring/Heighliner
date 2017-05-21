@@ -73,6 +73,14 @@ describe("Person Tests", () => {
     expect(placeHolderPhoto === noPhotoAvailable).toBeTruthy();
   });
 
+  it("`Person` has attributes", async () => {
+    const models = { Rock: {getAttributesFromEntity: jest.fn()}};
+    const { Person } = Resolver;
+
+    await Person.attributes({Id: 123}, {key: "ThugLyfe"}, {models});
+    expect(models.Rock.getAttributesFromEntity).toHaveBeenCalledWith(123, "ThugLyfe", 15);
+  });
+
   // it("`Person` has an approximate age.", () => {
   //   const { Person } = Resolver;
 
@@ -104,5 +112,54 @@ describe("PhoneNumber Mutations", () => {
     expect(models.PhoneNumber.setPhoneNumber).toHaveBeenCalledWith({
       phoneNumber: "(555) 555-5555",
     }, "person");
+  });
+
+  it("should have an impersonation parameter", async () => {
+    const models = { Person: { getIP: jest.fn() }};
+    const person = { Id: 1234 };
+    const { impersonationParameter } = Resolver.Person;
+
+    await impersonationParameter(
+      person,
+      null,
+      { models, person }
+    );
+
+    expect(models.Person.getIP).toHaveBeenCalledWith(1234);
+  });
+
+  it("should not return an ip if person not logged in", async () => {
+    const models = { Person: { getIP: jest.fn() }};
+    const { impersonationParameter } = Resolver.Person;
+
+    const res = await impersonationParameter(
+      1234,
+      null,
+      { models, null }
+    );
+
+    expect(models.Person.getIP).not.toBeCalled();
+    expect(res).toEqual(null);
+  });
+});
+
+describe("DeviceRegistration Mutation", () => {
+  it("should return 401 with no person", async () => {
+    const { saveDeviceRegistrationId } = Resolver.Mutation;
+    const result = await saveDeviceRegistrationId(null, "(555) 555-5555", {});
+    expect(result).toEqual({
+      code: 401, error: "Must be logged in to make this request", success: false,
+    });
+  });
+
+  it("should call saveId properly if there is a person", async () => {
+    const models = { PersonalDevice: { saveId: jest.fn() } };
+    const { saveDeviceRegistrationId } = Resolver.Mutation;
+    await saveDeviceRegistrationId(null, {
+      registrationId: "harambe"
+    }, { models, person: "person" });
+    expect(models.PersonalDevice.saveId).toHaveBeenCalledWith(
+      "harambe", "person"
+    );
   });
 });
