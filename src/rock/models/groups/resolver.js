@@ -344,6 +344,7 @@ export default {
       return [];
     }),
     type: resolveAttribute(16814, x => x && x.length && x[0].Value),
+    isPrivate: ({ GroupTypeId }) => GroupTypeId === 60, //fuse group
   },
 
   GroupSearch: {
