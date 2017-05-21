@@ -47,6 +47,10 @@ export default {
     firstName: ({ FirstName }) => FirstName,
     lastName: ({ LastName }) => LastName,
     nickName: ({ NickName }) => NickName,
+    impersonationParameter: ({ Id }, _, { models, person }) => {
+      if (!person || !person.Id) return null;
+      return models.Person.getIP(Id);
+    },
     phoneNumbers: ({ Id }, _, { models }) =>  // tslint:disable-line
       models.Person.getPhoneNumbersFromId(Id),
 

@@ -105,6 +105,34 @@ describe("PhoneNumber Mutations", () => {
       phoneNumber: "(555) 555-5555",
     }, "person");
   });
+
+  it("should have an impersonation parameter", async () => {
+    const models = { Person: { getIP: jest.fn() }};
+    const person = { Id: 1234 };
+    const { impersonationParameter } = Resolver.Person;
+
+    await impersonationParameter(
+      person,
+      null,
+      { models, person }
+    );
+
+    expect(models.Person.getIP).toHaveBeenCalledWith(1234);
+  });
+
+  it("should not return an ip if person not logged in", async () => {
+    const models = { Person: { getIP: jest.fn() }};
+    const { impersonationParameter } = Resolver.Person;
+
+    const res = await impersonationParameter(
+      1234,
+      null,
+      { models, null }
+    );
+
+    expect(models.Person.getIP).not.toBeCalled();
+    expect(res).toEqual(null);
+  });
 });
 
 describe("DeviceRegistration Mutation", () => {
