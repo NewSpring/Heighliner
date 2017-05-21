@@ -60,7 +60,7 @@ const personalDeviceSchema = {
 let Person;
 let PersonAlias;
 let PhoneNumber;
-let PersonalDevice; 
+let PersonalDevice;
 export {
   Person,
   personSchema,
@@ -70,6 +70,8 @@ export {
 
   PhoneNumber,
   phoneNumberSchema,
+
+  PersonalDevice,
 };
 
 export function connect() {
@@ -82,6 +84,7 @@ export function connect() {
     Person,
     PersonAlias,
     PhoneNumber,
+    PersonalDevice,
   };
 }
 
@@ -89,6 +92,7 @@ export function bind({
   Person,
   PersonAlias,
   PhoneNumber,
+  PersonalDevice,
   Group,
 }) {
   PersonAlias.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
