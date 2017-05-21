@@ -30,6 +30,7 @@ export default [
     home(cache: Boolean = true): Location
     roles(cache: Boolean = true): [Group]
     attributes(key: String): [Attribute]
+    groups(cache: Boolean = true): [Group]
   }
 
   type PhoneNumberMutationResponse implements MutationResponse {
@@ -49,5 +50,5 @@ export default [
     success: Boolean!
     code: Int
   }
-`,
+`
 ];
