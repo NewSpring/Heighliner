@@ -25,12 +25,19 @@ export default [`
     birthMonth: Int
     birthYear: Int
     email: String
+    impersonationParameter: String
     campus(cache: Boolean = true): Campus
     home(cache: Boolean = true): Location
     roles(cache: Boolean = true): [Group]
   }
 
   type PhoneNumberMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+  }
+
+  type DeviceRegistrationMutationResponse implements MutationResponse {
     error: String
     success: Boolean!
     code: Int

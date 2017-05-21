@@ -6,6 +6,7 @@ import {
   Person as PersonTable,
   PersonAlias,
   PhoneNumber as PhoneNumberTable,
+  PersonalDevice as PersonalDeviceTable,
 } from "./tables";
 
 import {
@@ -159,6 +160,10 @@ export class Person extends Rock {
     );
   }
 
+  async getIP(id) {
+    return PersonTable.fetch("GET", `GetSearchDetails/${id}`); 
+  }
+
   async getHomesFromId(id, { cache } = { cache: true }) {
     return await this.cache.get(`${id}:PersonHomes`, () => GroupLocation.find({
         where: { GroupLocationTypeValueId: 19 }, // Home
@@ -235,7 +240,49 @@ export class Person extends Rock {
 
 }
 
+export class PersonalDevice extends Rock {
+  __type = "PersonalDevice";
+  cacheTypes = [
+    "Rock.Model.PersonalDevice",
+  ];
+
+  constructor({ cache } = { cache: defaultCache }) {
+    super({ cache });
+    this.cache = cache;
+  }
+
+  saveId = async (registrationId, person) => {
+    if (!registrationId || !person){
+      return {
+        code: 400,
+        success: false,
+        error: "Insufficient information",
+      };
+    }
+
+    // XXX We don't have this yet
+    const post = await PersonalDeviceTable.post({
+      "PersonAliasId": person.PrimaryAliasId,
+      "DeviceRegistrationId": registrationId,
+      "PersonalDeviceTypeId": 671, // `mobile` device type
+      "NotificationsEnabled": 1
+    });
+
+    if (post && post.status >= 400) {
+      return {
+        code: post.status,
+        error: post.statusText,
+        success: false,
+      };
+    }
+
+    this.cache.del(createGlobalId(`${person.Id}:PersonalDevice`));
+    return { code: 200, success: true };
+  }
+}
+
 export default {
   Person,
   PhoneNumber,
+  PersonalDevice,
 };

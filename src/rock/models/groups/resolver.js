@@ -1,3 +1,4 @@
+import striptags from "striptags";
 import { flatten } from "lodash";
 import { allData } from "geo-from-ip";
 import { geocode } from "google-geocoding";
@@ -207,7 +208,11 @@ export default {
           error: "Must be logged in to make this request",
         };
       return await models.Group.requestGroupInfo(
-        { groupId, message, communicationPreference },
+        {
+          groupId,
+          message: striptags(message, ["<br/>"], ["\n"]),
+          communicationPreference
+        },
         person,
       );
     },
