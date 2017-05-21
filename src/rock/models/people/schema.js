@@ -1,5 +1,5 @@
-
-export default [`
+export default [
+  `
   type PhoneNumber implements Node {
     id: ID!
     countryCode: String
@@ -43,4 +43,11 @@ export default [`
     success: Boolean!
     code: Int
   }
-`];
+
+  type AttributeValueMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+  }
+`,
+];

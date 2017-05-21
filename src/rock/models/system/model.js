@@ -117,12 +117,22 @@ export class Rock extends Heighliner {
   async getAttributeFromId(id) {
     return this.cache.get(`${id}:getAttributeFromId`, () => AttributeModel.findOne({
       where: { Id: id },
-    }))
+    }));
+  }
+
+  async getAttributeFromKey(key, EntityId) {
+    const where = { Key: key };
+    if (EntityId) where.EntityTypeId = EntityId;
+
+    return this.cache.get(`${key}:${EntityId}:getAttributeFromKey`, () => AttributeModel.findOne({
+      where,
+    }));
   }
 
   async getAttributeValuesFromAttributeId(id, context, EntityId) {
     const where = { AttributeId: id };
     if (EntityId) where.EntityId = EntityId;
+
     return this.cache.get(`${id}:${EntityId}:getAttributeValuesFromAttributeId`, () => AttributeValueModel.find({
       where,
       include: [{ model: AttributeModel.model, include: [{ model: FieldTypeModel.model }] }],
@@ -138,7 +148,6 @@ export class Rock extends Heighliner {
   }
 
   async getAttributeValuesFromId(id, context) {
-
     return this.cache.get(`${id}:getAttributeValuesFromId`, () => AttributeValueModel.findOne({
       where: { Id: id },
       include: [{ model: AttributeModel.model, include: [{ model: FieldTypeModel.model }] }],

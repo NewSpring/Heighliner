@@ -134,8 +134,10 @@ export class RedisCache {
 
   del(id) {
     // try to nest information based on global id
-    let { __type } = parseGlobalId(id);
-    id = `${__type}:${id}`;
+    try {
+      let { __type } = parseGlobalId(id);
+      id = `${__type}:${id}`;
+    } catch (e) {}
     db.del(id); // clear redis
     this.idLoader.clear(id); // clear dataloader
   }

@@ -29,7 +29,7 @@ export default {
   },
 
   AttributeValue: {
-    attribute: ({ AttributeId }, _, { models }) => models.Rock.getAttributeFromId( AttributeId ),
+    attribute: ({ AttributeId }, _, { models }) => models.Rock.getAttributeFromId(AttributeId),
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     value: ({ Value }) => Value,
   }
