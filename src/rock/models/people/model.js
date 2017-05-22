@@ -358,7 +358,7 @@ export class PersonalDevice extends Rock {
     } catch (e) {
       return {
         code: 504,
-        error: error.message,
+        error: e.message,
         success: false,
       };
     }

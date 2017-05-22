@@ -19,10 +19,15 @@ jest.mock("../tables", () => ({
   PersonalDevice: {
     post: jest.fn(),
     findOne: jest.fn(),
+    find: jest.fn(),
     cache: {
       del: jest.fn(() => {})
     }
   }
+}));
+
+jest.mock("node-uuid", () => ({
+  v4: () => "guid",
 }));
 
 const mockArgs = { phoneNumber: "(555) 555-5555" };
@@ -95,6 +100,7 @@ describe("Person", () => {
   beforeEach(() => {
     personModel = new Person();
     personalDeviceModel = new PersonalDevice();
+    PersonalDeviceTable.find.mockReturnValue([]);
   });
 
   describe("getIP", () => {
@@ -110,7 +116,7 @@ describe("Person", () => {
   describe("personalDevice", () => {
     it("saveId returns 400 with no registration Id", async () => {
       const { saveId } = personalDeviceModel;
-      const res = await saveId(null, "harambe");
+      const res = await saveId(null, "harambe", {});
       expect(res).toEqual({
         code: 400,
         success: false,
@@ -118,9 +124,19 @@ describe("Person", () => {
       });
     });
 
-    it("saveId returns 400 with no registration Id", async () => {
+    it("saveId returns 400 with no person", async () => {
       const { saveId } = personalDeviceModel;
-      const res = await saveId("123456");
+      const res = await saveId("123456", "chrome");
+      expect(res).toEqual({
+        code: 400,
+        success: false,
+        error: "Insufficient information"
+      });
+    });
+
+    it("saveId returns 400 with no uuid", async () => {
+      const { saveId } = personalDeviceModel;
+      const res = await saveId("123456", null, {});
       expect(res).toEqual({
         code: 400,
         success: false,
@@ -130,19 +146,21 @@ describe("Person", () => {
 
     it("posts with correct info", async () => {
       const { saveId } = personalDeviceModel;
-      const res = await saveId("123456", { PrimaryAliasId: "harambe" });
+      const res = await saveId("123456", "chrome", { PrimaryAliasId: "harambe" });
       expect(PersonalDeviceTable.post).toBeCalledWith({
         PersonAliasId: "harambe",
         DeviceRegistrationId: "123456",
         PersonalDeviceTypeId: 671, // `mobile` device type
-        NotificationsEnabled: 1
+        NotificationsEnabled: 1,
+        ForeignKey: "chrome",
+        Guid: "guid",
       });
       expect(res).toEqual({ code: 200, success: true });
     });
 
     it("returns with 200 if post doesn't fail", async () => {
       const { saveId } = personalDeviceModel;
-      const res = await saveId("123456", { PrimaryAliasId: "harambe" });
+      const res = await saveId("123456", "chrome", { PrimaryAliasId: "harambe" });
       expect(res).toEqual({ code: 200, success: true });
     });
 
@@ -152,7 +170,7 @@ describe("Person", () => {
         status: 9999,
         statusText: "bruh no"
       });
-      const res = await saveId("123456", { PrimaryAliasId: "harambe" });
+      const res = await saveId("123456", "chrome", { PrimaryAliasId: "harambe" });
       expect(res).toEqual({ code: 9999, success: false, error: "bruh no" });
     });
   });
