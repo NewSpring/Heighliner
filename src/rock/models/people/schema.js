@@ -28,6 +28,7 @@ export default [`
     campus(cache: Boolean = true): Campus
     home(cache: Boolean = true): Location
     roles(cache: Boolean = true): [Group]
+    groups(cache: Boolean = true): [Group]
   }
 
   type PhoneNumberMutationResponse implements MutationResponse {

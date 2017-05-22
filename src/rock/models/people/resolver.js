@@ -64,7 +64,9 @@ export default {
       models.Person.getHomesFromId(Id, { cache })
       .then(x => x[0]), // only return the first home for now,
     roles: ({ Id }, { cache = true }, { models }) =>
-      models.Person.getSecurityRoles(Id),
+      models.Person.getGroups(Id, 1), // 1: security groups
+    groups: ({ Id }, { cache = true }, { models }) =>
+      models.Person.getGroups(Id), // all groups
   },
 
   PhoneNumber: {
