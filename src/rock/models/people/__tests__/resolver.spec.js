@@ -156,10 +156,11 @@ describe("DeviceRegistration Mutation", () => {
     const models = { PersonalDevice: { saveId: jest.fn() } };
     const { saveDeviceRegistrationId } = Resolver.Mutation;
     await saveDeviceRegistrationId(null, {
-      registrationId: "harambe"
+      registrationId: "harambe",
+      uuid: "chrome",
     }, { models, person: "person" });
     expect(models.PersonalDevice.saveId).toHaveBeenCalledWith(
-      "harambe", "person"
+      "harambe", "chrome", "person"
     );
   });
 });
