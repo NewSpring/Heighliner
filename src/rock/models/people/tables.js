@@ -99,7 +99,7 @@ export function bind({
   Person.model.hasOne(PersonAlias.model, { foreignKey: "PersonId" });
 
   PhoneNumber.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
-  PersonalDevice.model.belongsTo(PersonAlias.model, { foreignKey: "PrimaryAliasId", targetKey: "Id" });
+  PersonalDevice.model.belongsTo(PersonAlias.model, { foreignKey: "PersonAliasId", targetKey: "Id" });
 
   Person.model.belongsToMany(Group.model, {
     as: "Groups",

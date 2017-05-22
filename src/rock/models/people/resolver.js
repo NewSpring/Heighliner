@@ -35,9 +35,9 @@ export default {
       }
       return models.PhoneNumber.setPhoneNumber({ phoneNumber }, person);
     },
-    saveDeviceRegistrationId:  (_, { registrationId }, { models, person }) => {
+    saveDeviceRegistrationId:  (_, { registrationId, uuid}, { models, person }) => {
       if (!person) return { code: 401, success: false, error: "Must be logged in to make this request" };
-      return models.PersonalDevice.saveId(registrationId, person);
+      return models.PersonalDevice.saveId(registrationId, uuid, person);
     },
     setPersonAttribute: (_, { value, key }, { models, person, ...rest }) => {
       if (!person) {

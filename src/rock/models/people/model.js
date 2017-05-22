@@ -319,8 +319,8 @@ export class PersonalDevice extends Rock {
     this.cache = cache;
   }
 
-  saveId = async (registrationId, person) => {
-    if (!registrationId || !person) {
+  saveId = async (registrationId, deviceId, person) => {
+    if (!registrationId || !person || !deviceId) {
       return {
         code: 400,
         success: false,
@@ -328,24 +328,40 @@ export class PersonalDevice extends Rock {
       };
     }
 
-    // XXX We don't have this yet
-    const post = await PersonalDeviceTable.post({
-      "PersonAliasId": person.PrimaryAliasId,
-      "DeviceRegistrationId": registrationId,
-      "PersonalDeviceTypeId": 671, // `mobile` device type
-      "NotificationsEnabled": 1
-    });
+    try {
+      const existing = await PersonalDeviceTable.find({
+        where: { ForeignKey: deviceId },
+      });
 
-    if (post && post.status >= 400) {
+      // remove all current ids for this device
+      await Promise.all(existing.map(x => PersonalDeviceTable.delete(x.Id)));
+
+      const post = await PersonalDeviceTable.post({
+        PersonAliasId: person.PrimaryAliasId,
+        DeviceRegistrationId: registrationId,
+        PersonalDeviceTypeId: 671, // `mobile` device type
+        NotificationsEnabled: 1,
+        ForeignKey: deviceId,
+        Guid: uuid.v4(),
+      });
+
+      if (post && post.status >= 400) {
+        return {
+          code: post.status,
+          error: post.statusText,
+          success: false,
+        };
+      }
+
+      this.cache.del(createGlobalId(`${person.Id}:PersonalDevice`));
+      return { code: 200, success: true };
+    } catch (e) {
       return {
-        code: post.status,
-        error: post.statusText,
+        code: 504,
+        error: error.message,
         success: false,
       };
     }
-
-    this.cache.del(createGlobalId(`${person.Id}:PersonalDevice`));
-    return { code: 200, success: true };
   }
 }
 
