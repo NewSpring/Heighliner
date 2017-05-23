@@ -107,8 +107,8 @@ export default {
       models.Rock.getAttributesFromEntity(Id, key, 15 /* Person Entity Type */),
     roles: ({ Id }, { cache = true }, { models }) =>
       models.Person.getGroups(Id, 1), // 1: security groups
-    groups: ({ Id }, { cache = true }, { models }) =>
-      models.Person.getGroups(Id) // all groups
+    groups: ({ Id }, { cache = true, groupTypeIds = [] }, { models }) =>
+      models.Person.getGroups(Id, groupTypeIds)
   },
 
   PhoneNumber: {
