@@ -23,6 +23,8 @@ import {
 
 import { Campus, Location } from "../campuses/tables";
 
+import { Attribute, AttributeValue } from "../system/tables";
+
 import { Rock } from "../system";
 
 export class PhoneNumber extends Rock {
@@ -340,6 +342,25 @@ export class PersonalDevice extends Rock {
   constructor({ cache } = { cache: defaultCache }) {
     super({ cache });
     this.cache = cache;
+
+    return this.cache.get(
+      `${personId}:GroupMemberId:${groupTypeIds}:GroupTypes`,
+      () =>
+        Group.find({
+          where,
+          include: [
+            {
+              model: GroupMember.model,
+              where: { PersonId: `${personId}` },
+              attributes: []
+            },
+            {
+              model: AttributeValue.model,
+              include: [{ model: Attribute.model }]
+            }
+          ]
+        })
+    );
   }
 
   saveId = async (registrationId, deviceId, person) => {
