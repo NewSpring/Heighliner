@@ -23,6 +23,8 @@ import {
 
 import { Campus, Location } from "../campuses/tables";
 
+import { Attribute, AttributeValue } from "../system/tables";
+
 import { Rock } from "../system";
 
 export class PhoneNumber extends Rock {
@@ -259,6 +261,10 @@ export class Person extends Rock {
               model: GroupMember.model,
               where: { PersonId: `${personId}` },
               attributes: []
+            },
+            {
+              model: AttributeValue.model,
+              include: [{ model: Attribute.model }]
             }
           ]
         })
