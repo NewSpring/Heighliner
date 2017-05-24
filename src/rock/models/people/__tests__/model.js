@@ -5,6 +5,16 @@ import {
   PersonalDevice as PersonalDeviceTable
 } from "../tables";
 
+import { AttributeValue, Attribute } from "../../system/tables";
+
+import {
+  Group,
+  GroupMember,
+  GroupLocation
+  // GroupTypeRole,
+  // GroupType,
+} from "../../groups/tables";
+
 jest.mock("../tables", () => ({
   PhoneNumber: {
     post: jest.fn(),
@@ -26,8 +36,26 @@ jest.mock("../tables", () => ({
   }
 }));
 
+jest.mock("../../groups/tables", () => ({
+  Group: {
+    find: jest.fn()
+  },
+  GroupMember: {
+    model: "GroupMember"
+  }
+}));
+
+jest.mock("../../system/tables", () => ({
+  Attribute: {
+    model: "AttributeModel"
+  },
+  AttributeValue: {
+    model: "AttributeValueModel"
+  }
+}));
+
 jest.mock("node-uuid", () => ({
-  v4: () => "guid",
+  v4: () => "guid"
 }));
 
 const mockArgs = { phoneNumber: "(555) 555-5555" };
@@ -96,11 +124,41 @@ describe("setPhoneNumber", () => {
 describe("Person", () => {
   let personModel;
   let personalDeviceModel;
+  const mockedCache = {
+    get: jest.fn((id, lookup) => Promise.resolve().then(lookup))
+  };
 
   beforeEach(() => {
-    personModel = new Person();
+    personModel = new Person({ cache: mockedCache });
     personalDeviceModel = new PersonalDevice();
     PersonalDeviceTable.find.mockReturnValue([]);
+  });
+
+  it("calls getGroup with correct info", async () => {
+    mockedCache.get.mockImplementationOnce((a, b) => b());
+    await personModel.getGroups(12, 34);
+    expect(Group.find).toBeCalledWith({
+      where: { GroupTypeId: { $or: [34] } },
+      include: [
+        {
+          model: GroupMember.model,
+          where: { PersonId: "12" },
+          attributes: []
+        },
+        {
+          model: AttributeValue.model,
+          include: [{ model: Attribute.model }]
+        }
+      ]
+    });
+  });
+
+  it("gets person groups from cache lookup", async () => {
+    await personModel.getGroups(12, 34);
+    expect(mockedCache.get.mock.calls[0][0]).toEqual(
+      "12:GroupMemberId:34:GroupTypes"
+    );
+    expect(typeof mockedCache.get.mock.calls[0][1]).toEqual("function");
   });
 
   describe("getIP", () => {
@@ -146,21 +204,25 @@ describe("Person", () => {
 
     it("posts with correct info", async () => {
       const { saveId } = personalDeviceModel;
-      const res = await saveId("123456", "chrome", { PrimaryAliasId: "harambe" });
+      const res = await saveId("123456", "chrome", {
+        PrimaryAliasId: "harambe"
+      });
       expect(PersonalDeviceTable.post).toBeCalledWith({
         PersonAliasId: "harambe",
         DeviceRegistrationId: "123456",
         PersonalDeviceTypeId: 671, // `mobile` device type
         NotificationsEnabled: 1,
         ForeignKey: "chrome",
-        Guid: "guid",
+        Guid: "guid"
       });
       expect(res).toEqual({ code: 200, success: true });
     });
 
     it("returns with 200 if post doesn't fail", async () => {
       const { saveId } = personalDeviceModel;
-      const res = await saveId("123456", "chrome", { PrimaryAliasId: "harambe" });
+      const res = await saveId("123456", "chrome", {
+        PrimaryAliasId: "harambe"
+      });
       expect(res).toEqual({ code: 200, success: true });
     });
 
@@ -170,7 +232,9 @@ describe("Person", () => {
         status: 9999,
         statusText: "bruh no"
       });
-      const res = await saveId("123456", "chrome", { PrimaryAliasId: "harambe" });
+      const res = await saveId("123456", "chrome", {
+        PrimaryAliasId: "harambe"
+      });
       expect(res).toEqual({ code: 9999, success: false, error: "bruh no" });
     });
   });
