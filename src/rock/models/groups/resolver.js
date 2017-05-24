@@ -50,9 +50,13 @@ function resolveAttribute(id, resolver) {
   return (data, args, context) => {
     const { AttributeValues } = data;
     const { models } = context;
-    const chunk = AttributeValues.filter(
-      x => x.Attribute && x.Attribute.Id === id,
-    )[0];
+    let chunk;
+
+    if (Array.isArray(AttributeValues)){
+      chunk = AttributeValues.filter(
+        x => x.Attribute && x.Attribute.Id === id,
+      )[0];
+    }
     if (!chunk) {
       return Promise.resolve(null).then(x => resolver(x, data, args, context));
     }
@@ -344,6 +348,7 @@ export default {
       return [];
     }),
     type: resolveAttribute(16814, x => x && x.length && x[0].Value),
+    groupType: ({ GroupTypeId }) => GroupTypeId,
   },
 
   GroupSearch: {

@@ -66,7 +66,7 @@ export class Group extends Rock {
     return this.cache.get(globalId, () => GroupTable.findOne({
       where: { Id: id },
       include: [
-        { model: GroupType.model, where: { Id: 25 }, attributes: [] },
+        { model: GroupType.model, attributes: [] },
         { model: AttributeValue.model, include: [{ model: Attribute.model }] },
       ],
     }));

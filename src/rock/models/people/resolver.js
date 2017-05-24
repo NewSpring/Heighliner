@@ -4,7 +4,7 @@ import { createGlobalId } from "../../../util";
 const MutationReponseResolver = {
   error: ({ error }) => error,
   success: ({ success, error }) => success || !error,
-  code: ({ code }) => code,
+  code: ({ code }) => code
 };
 // models.Rock.getAttributeValueFromMatrix('SiteVersion', 'Sites', 10, 'Version')
 
@@ -19,32 +19,55 @@ export default {
     currentPerson: (_, { cache }, { person, models, user }) => {
       if (cache && person) return person;
       if (user && user.services && user.services.rock) {
-        return models.Person.getFromAliasId(user.services.rock.PrimaryAliasId, { cache });
+        return models.Person.getFromAliasId(user.services.rock.PrimaryAliasId, {
+          cache
+        });
       }
     },
     currentFamily: (_, args, { models, person }) => {
       if (!person) return null;
       return models.Person.getFamilyFromId(person.Id);
-    },
+    }
   },
 
   Mutation: {
     setPhoneNumber: (_, { phoneNumber }, { models, person }) => {
       if (!person) {
-        return { code: 401, success: false, error: "Must be logged in to make this request" };
+        return {
+          code: 401,
+          success: false,
+          error: "Must be logged in to make this request"
+        };
       }
       return models.PhoneNumber.setPhoneNumber({ phoneNumber }, person);
     },
-    saveDeviceRegistrationId:  (_, { registrationId, uuid}, { models, person }) => {
-      if (!person) return { code: 401, success: false, error: "Must be logged in to make this request" };
+    saveDeviceRegistrationId: (
+      _,
+      { registrationId, uuid },
+      { models, person }
+    ) => {
+      if (!person)
+        return {
+          code: 401,
+          success: false,
+          error: "Must be logged in to make this request"
+        };
       return models.PersonalDevice.saveId(registrationId, uuid, person);
     },
     setPersonAttribute: (_, { value, key }, { models, person, ...rest }) => {
       if (!person) {
-        return { code: 401, success: false, error: "Must be logged in to make this request" };
+        return {
+          code: 401,
+          success: false,
+          error: "Must be logged in to make this request"
+        };
       }
-      return models.Person.setPersonAttribute({ key, value }, person, { models, person, ...rest });
-    },
+      return models.Person.setPersonAttribute({ key, value }, person, {
+        models,
+        person,
+        ...rest
+      });
+    }
   },
 
   Person: {
@@ -61,7 +84,7 @@ export default {
     phoneNumbers: (
       { Id },
       _,
-      { models }, // tslint:disable-line
+      { models } // tslint:disable-line
     ) => models.Person.getPhoneNumbersFromId(Id),
     photo: ({ PhotoId }, _, { models }) => {
       if (!PhotoId) {
@@ -76,12 +99,16 @@ export default {
     birthMonth: ({ BirthMonth }) => BirthMonth,
     birthYear: ({ BirthYear }) => BirthYear,
     email: ({ Email }) => Email,
-    campus: ({ Id }, { cache = true }, { models }) => models.Person.getCampusFromId(Id, { cache }),
+    campus: ({ Id }, { cache = true }, { models }) =>
+      models.Person.getCampusFromId(Id, { cache }),
     home: ({ Id }, { cache = true }, { models }) =>
       models.Person.getHomesFromId(Id, { cache }).then(x => x[0]), // only return the first home for now,
-    roles: ({ Id }, { cache = true }, { models }) => models.Person.getSecurityRoles(Id),
     attributes: ({ Id }, { key }, { models }) =>
       models.Rock.getAttributesFromEntity(Id, key, 15 /* Person Entity Type */),
+    roles: ({ Id }, { cache = true }, { models }) =>
+      models.Person.getGroups(Id, 1), // 1: security groups
+    groups: ({ Id }, { cache = true, groupTypeIds = [] }, { models }) =>
+      models.Person.getGroups(Id, groupTypeIds)
   },
 
   PhoneNumber: {
@@ -91,20 +118,20 @@ export default {
     canText: ({ IsMessagingEnabled }) => IsMessagingEnabled,
     rawNumber: ({ Number }) => Number,
     number: ({ NumberFormatted, Number }) => NumberFormatted || Number,
-    person: ({ PersonId }, _, { models }) => models.Person.getFromId(PersonId),
+    person: ({ PersonId }, _, { models }) => models.Person.getFromId(PersonId)
   },
 
   PhoneNumberMutationResponse: {
-    ...MutationReponseResolver,
+    ...MutationReponseResolver
   },
 
   DeviceRegistrationMutationResponse: {
-    ...MutationReponseResolver,
+    ...MutationReponseResolver
   },
 
   AttributeValueMutationResponse: {
-    ...MutationReponseResolver,
-  },
+    ...MutationReponseResolver
+  }
 };
 
 // # home: [Location]

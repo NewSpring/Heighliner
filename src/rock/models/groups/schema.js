@@ -37,6 +37,7 @@ export default [
     photo: String
     tags: [DefinedValue]
     type: String
+    groupType: Int
     schedule: GroupSchedule
     members: [GroupMember]
     locations: [GroupLocation]
