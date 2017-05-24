@@ -8,18 +8,15 @@ import {
   Person as PersonTable,
   PersonAlias,
   PhoneNumber as PhoneNumberTable,
-  PersonalDevice as PersonalDeviceTable,
+  PersonalDevice as PersonalDeviceTable
 } from "./tables";
 
-import {
-  AttributeValue,
-  Attribute,
-} from "../system/tables";
+import { AttributeValue, Attribute } from "../system/tables";
 
 import {
   Group,
   GroupMember,
-  GroupLocation,
+  GroupLocation
   // GroupTypeRole,
   // GroupType,
 } from "../groups/tables";
@@ -42,7 +39,7 @@ export class PhoneNumber extends Rock {
       return {
         code: 400,
         success: false,
-        error: "Insufficient information",
+        error: "Insufficient information"
       };
     }
 
@@ -52,8 +49,8 @@ export class PhoneNumber extends Rock {
     const hasPhoneNumber = await PhoneNumberTable.findOne({
       where: {
         PersonId: person.Id,
-        Number: nonFormattedPhoneNumber,
-      },
+        Number: nonFormattedPhoneNumber
+      }
     });
     if (hasPhoneNumber) return { code: 204, success: true };
 
@@ -63,14 +60,14 @@ export class PhoneNumber extends Rock {
       Number: nonFormattedPhoneNumber,
       NumberFormatted: phoneNumber,
       NumberTypeValueId: 12,
-      PersonId: person.Id,
+      PersonId: person.Id
     });
 
     if (post && post.status >= 400) {
       return {
         code: post.status,
         error: post.statusText,
-        success: false,
+        success: false
       };
     }
 
@@ -98,7 +95,7 @@ export class Person extends Rock {
 
   async clearCacheFromRequest({ body }) {
     const { id, type, action } = body;
-    return Promise.resolve().then((x) => {
+    return Promise.resolve().then(x => {
       if (type === "Rock.Model.Person") {
         return this.clearCacheFromId(id, null, action);
       }
@@ -111,7 +108,7 @@ export class Person extends Rock {
   async clearCacheFromId(id, globalId, action) {
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
     // delete the cache entry
-    return Promise.resolve().then(x => this.cache.del(globalId)).then((x) => {
+    return Promise.resolve().then(x => this.cache.del(globalId)).then(x => {
       if (action && action === "delete") return;
       return this.getFromId(id, globalId);
     });
@@ -120,7 +117,7 @@ export class Person extends Rock {
   async clearCacheFromPersoAliasId(id, globalId, action) {
     globalId = globalId ? globalId : this.createGlobalAliasId(id);
     // delete the cache entry
-    return Promise.resolve().then(x => this.cache.del(globalId)).then((x) => {
+    return Promise.resolve().then(x => this.cache.del(globalId)).then(x => {
       if (action && action === "delete") return;
       return this.getFromAliasId(id);
     });
@@ -128,7 +125,9 @@ export class Person extends Rock {
 
   async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
-    return this.cache.get(globalId, () => PersonTable.findOne({ where: { Id: id } }));
+    return this.cache.get(globalId, () =>
+      PersonTable.findOne({ where: { Id: id } })
+    );
   }
 
   // async getGroupsFromId(...args) {
@@ -142,18 +141,20 @@ export class Person extends Rock {
           where: { GroupTypeId: 10 }, // family
           include: [
             { model: GroupMember.model, where: { PersonId: `${id}` } },
-            { model: Campus.model },
-          ],
+            { model: Campus.model }
+          ]
         }).then(x => x.Campus),
-      { cache },
+      { cache }
     );
   }
 
   async getPhoneNumbersFromId(id) {
-    return await this.cache.get(createGlobalId(`${id}:PersonPhoneNumbers`), () =>
-      PhoneNumberTable.find({
-        where: { PersonId: `${id}` },
-      }),
+    return await this.cache.get(
+      createGlobalId(`${id}:PersonPhoneNumbers`),
+      () =>
+        PhoneNumberTable.find({
+          where: { PersonId: `${id}` }
+        })
     );
   }
 
@@ -174,11 +175,17 @@ export class Person extends Rock {
               model: Group.model,
               attributes: [],
               where: { GroupTypeId: 10 }, // Family
-              include: [{ model: GroupMember.model, where: { PersonId: `${id}` }, attributes: [] }],
-            },
-          ],
+              include: [
+                {
+                  model: GroupMember.model,
+                  where: { PersonId: `${id}` },
+                  attributes: []
+                }
+              ]
+            }
+          ]
         }).then(x => x.map(y => y.Location)),
-      { cache },
+      { cache }
     );
   }
 
@@ -194,9 +201,9 @@ export class Person extends Rock {
         LEFT JOIN [Group] g ON gm.[GroupId] = g.[Id]
         LEFT JOIN [GroupMember] GroupMember ON GroupMember.GroupId = g.Id
         WHERE gm.[PersonId] = ${id} AND g.[GroupTypeId] = 10
-      `,
+      `
           )
-          .then(([members]) => members),
+          .then(([members]) => members)
       )
       .then(reverse);
   }
@@ -211,66 +218,87 @@ export class Person extends Rock {
       () =>
         PersonAlias.findOne({
           where: { Id: id },
-          include: { model: PersonTable.model },
+          include: { model: PersonTable.model }
         })
           .then(x => x.Person)
           .then(data =>
             // XXX make this faster
-             PersonAlias.find({ where: { PersonId: data.Id } })
+            PersonAlias.find({ where: { PersonId: data.Id } })
               .then(x => x.map(y => y.Id))
-              .then((x) => {
+              .then(x => {
                 data.aliases = x;
                 return data;
-              })),
-      { cache },
+              })
+          ),
+      { cache }
     );
   }
 
   async findOne({ guid }) {
     return this.cache.get(this.createGlobalGuidId(guid), () =>
       PersonTable.findOne({
-        where: { Guid: guid },
-      }),
+        where: { Guid: guid }
+      })
     );
   }
 
-  async getSecurityRoles(id) {
-    return this.cache.get(`${id}:GroupMemberId`, () =>
-      Group.find({
-        attributes: ["Name", "Id"],
-        where: { GroupTypeId: 1 },
-        include: [{ model: GroupMember.model, where: { PersonId: `${id}` }, attributes: [] }],
-      }),
+  // personId: int, groupTypes: int | [int]
+  async getGroups(personId, groupTypes) {
+    const groupTypeIds = !Array.isArray(groupTypes) ? [groupTypes] : groupTypes;
+    const where = groupTypeIds.length
+      ? { GroupTypeId: { $or: groupTypeIds } }
+      : null;
+
+    return this.cache.get(
+      `${personId}:GroupMemberId:${groupTypeIds}:GroupTypes`,
+      () =>
+        Group.find({
+          where,
+          include: [
+            {
+              model: GroupMember.model,
+              where: { PersonId: `${personId}` },
+              attributes: []
+            },
+            {
+              model: AttributeValue.model,
+              include: [{ model: Attribute.model }]
+            }
+          ]
+        })
     );
   }
 
   async setPersonAttribute({ key, value }, person, context) {
-
     if (!key || !value) {
       return {
         code: 400,
         success: false,
-        error: "Insufficient information",
+        error: "Insufficient information"
       };
     }
 
     const success = {
       code: 200,
       error: null,
-      success: true,
+      success: true
     };
 
     const attr = await this.getAttributeFromKey(key, 15 /* person entity id */);
 
     // this should only be one thing right? can you have multiple attrs on an entity?
-    const existings = await this.getAttributeValuesFromAttributeId(attr.Id, context, person.Id);
+    const existings = await this.getAttributeValuesFromAttributeId(
+      attr.Id,
+      context,
+      person.Id
+    );
 
     // If they have an attribute value, set it to the new one.
     if (existings && existings.length > 0) {
       const currentValue = {
         Value: value,
         AttributeId: existings[0].AttributeId,
-        EntityId: person.Id,
+        EntityId: person.Id
       };
 
       const result = await AttributeValue.patch(existings[0].Id, currentValue);
@@ -278,10 +306,11 @@ export class Person extends Rock {
         return {
           code: result.status,
           error: result.statusText,
-          success: false,
+          success: false
         };
       }
-      this.cache.del(`${attr.Id}:${person.Id}:getAttributeValuesFromAttributeId`);
+      this.cache
+        .del(`${attr.Id}:${person.Id}:getAttributeValuesFromAttributeId`);
       return success;
     }
 
@@ -291,7 +320,7 @@ export class Person extends Rock {
       EntityId: person.Id,
       Value: value,
       Guid: uuid.v4(),
-      IsSystem: false,
+      IsSystem: false
     });
 
     this.cache.del(`${attr.Id}:${person.Id}:getAttributeValuesFromAttributeId`);
@@ -300,7 +329,7 @@ export class Person extends Rock {
       return {
         code: post.status,
         error: post.statusText,
-        success: false,
+        success: false
       };
     }
 
@@ -310,9 +339,7 @@ export class Person extends Rock {
 
 export class PersonalDevice extends Rock {
   __type = "PersonalDevice";
-  cacheTypes = [
-    "Rock.Model.PersonalDevice",
-  ];
+  cacheTypes = ["Rock.Model.PersonalDevice"];
 
   constructor({ cache } = { cache: defaultCache }) {
     super({ cache });
@@ -324,13 +351,13 @@ export class PersonalDevice extends Rock {
       return {
         code: 400,
         success: false,
-        error: "Insufficient information",
+        error: "Insufficient information"
       };
     }
 
     try {
       const existing = await PersonalDeviceTable.find({
-        where: { ForeignKey: deviceId },
+        where: { ForeignKey: deviceId }
       });
 
       // remove all current ids for this device
@@ -342,14 +369,14 @@ export class PersonalDevice extends Rock {
         PersonalDeviceTypeId: 671, // `mobile` device type
         NotificationsEnabled: 1,
         ForeignKey: deviceId,
-        Guid: uuid.v4(),
+        Guid: uuid.v4()
       });
 
       if (post && post.status >= 400) {
         return {
           code: post.status,
           error: post.statusText,
-          success: false,
+          success: false
         };
       }
 
@@ -359,14 +386,14 @@ export class PersonalDevice extends Rock {
       return {
         code: 504,
         error: e.message,
-        success: false,
+        success: false
       };
     }
-  }
+  };
 }
 
 export default {
   Person,
   PhoneNumber,
-  PersonalDevice,
+  PersonalDevice
 };
