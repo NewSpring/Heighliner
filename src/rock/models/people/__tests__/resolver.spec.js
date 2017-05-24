@@ -12,15 +12,15 @@ const sampleData = {
     BirthDay: "17",
     BirthYear: "1984",
     BirthMonth: "10",
-    Email: "email@example.com",
+    Email: "email@example.com"
   },
   phone: {
     CountryCode: "1",
     Description: "Home",
     IsMessagingEnabled: "true",
     Number: "8648675309",
-    PersonId: "12345-ABCDE",
-  },
+    PersonId: "12345-ABCDE"
+  }
 };
 
 describe("Person Tests", () => {
@@ -49,12 +49,13 @@ describe("Person Tests", () => {
     const guid = Person.guid(sampleData.person);
     expect(guid).toEqual(sampleData.person.Guid);
   });
-  xit("Pullng phone numbers seems to be disabled at the moment.", () => { }); // tslint:disable-line
+  xit("Pullng phone numbers seems to be disabled at the moment.", () => {}); // tslint:disable-line
 
   it("`Person` has a photo.", () => {
     const { Person } = Resolver;
 
-    const placeHolderPhoto = "//dg0ddngxdz549.cloudfront.net/images/cached/images/remote/http_s3.amazonaws.com/ns.images/all/member_images/members.nophoto_1000_1000_90_c1.jpg"; // tslint:disable-line
+    const placeHolderPhoto =
+      "//dg0ddngxdz549.cloudfront.net/images/cached/images/remote/http_s3.amazonaws.com/ns.images/all/member_images/members.nophoto_1000_1000_90_c1.jpg"; // tslint:disable-line
 
     const samplePhotoId = 100;
     const models = {
@@ -62,8 +63,8 @@ describe("Person Tests", () => {
         getFromId(id) {
           expect(id).toEqual(samplePhotoId);
           return Promise.resolve({ Path: placeHolderPhoto });
-        },
-      },
+        }
+      }
     };
 
     Person.photo({ PhotoId: samplePhotoId }, null, { models });
@@ -74,11 +75,15 @@ describe("Person Tests", () => {
   });
 
   it("`Person` has attributes", async () => {
-    const models = { Rock: {getAttributesFromEntity: jest.fn()}};
+    const models = { Rock: { getAttributesFromEntity: jest.fn() } };
     const { Person } = Resolver;
 
-    await Person.attributes({Id: 123}, {key: "ThugLyfe"}, {models});
-    expect(models.Rock.getAttributesFromEntity).toHaveBeenCalledWith(123, "ThugLyfe", 15);
+    await Person.attributes({ Id: 123 }, { key: "ThugLyfe" }, { models });
+    expect(models.Rock.getAttributesFromEntity).toHaveBeenCalledWith(
+      123,
+      "ThugLyfe",
+      15
+    );
   });
 
   // it("`Person` has an approximate age.", () => {
@@ -87,7 +92,6 @@ describe("Person Tests", () => {
   //   const age = Person.age(sampleData.person);
   //   t.deepEqual(age, `${Moment().diff(Moment(sampleData.person.BirthDate), "years")}`);
   // });
-
 
   // it("`PhoneNumber` returns details about a persons phone number", () => {
   //   t.pass();
@@ -99,44 +103,45 @@ describe("PhoneNumber Mutations", () => {
     const { setPhoneNumber } = Resolver.Mutation;
     const result = await setPhoneNumber(null, "(555) 555-5555", {});
     expect(result).toEqual({
-      code: 401, error: "Must be logged in to make this request", success: false,
+      code: 401,
+      error: "Must be logged in to make this request",
+      success: false
     });
   });
 
   it("should call the setPhoneNumber function properly if there is a person", async () => {
     const models = { PhoneNumber: { setPhoneNumber: jest.fn() } };
     const { setPhoneNumber } = Resolver.Mutation;
-    await setPhoneNumber(null, {
-      phoneNumber: "(555) 555-5555",
-    }, { models, person: "person" });
-    expect(models.PhoneNumber.setPhoneNumber).toHaveBeenCalledWith({
-      phoneNumber: "(555) 555-5555",
-    }, "person");
+    await setPhoneNumber(
+      null,
+      {
+        phoneNumber: "(555) 555-5555"
+      },
+      { models, person: "person" }
+    );
+    expect(models.PhoneNumber.setPhoneNumber).toHaveBeenCalledWith(
+      {
+        phoneNumber: "(555) 555-5555"
+      },
+      "person"
+    );
   });
 
   it("should have an impersonation parameter", async () => {
-    const models = { Person: { getIP: jest.fn() }};
+    const models = { Person: { getIP: jest.fn() } };
     const person = { Id: 1234 };
     const { impersonationParameter } = Resolver.Person;
 
-    await impersonationParameter(
-      person,
-      null,
-      { models, person }
-    );
+    await impersonationParameter(person, null, { models, person });
 
     expect(models.Person.getIP).toHaveBeenCalledWith(1234);
   });
 
   it("should not return an ip if person not logged in", async () => {
-    const models = { Person: { getIP: jest.fn() }};
+    const models = { Person: { getIP: jest.fn() } };
     const { impersonationParameter } = Resolver.Person;
 
-    const res = await impersonationParameter(
-      1234,
-      null,
-      { models, null }
-    );
+    const res = await impersonationParameter(1234, null, { models });
 
     expect(models.Person.getIP).not.toBeCalled();
     expect(res).toEqual(null);
@@ -148,19 +153,27 @@ describe("DeviceRegistration Mutation", () => {
     const { saveDeviceRegistrationId } = Resolver.Mutation;
     const result = await saveDeviceRegistrationId(null, "(555) 555-5555", {});
     expect(result).toEqual({
-      code: 401, error: "Must be logged in to make this request", success: false,
+      code: 401,
+      error: "Must be logged in to make this request",
+      success: false
     });
   });
 
   it("should call saveId properly if there is a person", async () => {
     const models = { PersonalDevice: { saveId: jest.fn() } };
     const { saveDeviceRegistrationId } = Resolver.Mutation;
-    await saveDeviceRegistrationId(null, {
-      registrationId: "harambe",
-      uuid: "chrome",
-    }, { models, person: "person" });
+    await saveDeviceRegistrationId(
+      null,
+      {
+        registrationId: "harambe",
+        uuid: "chrome"
+      },
+      { models, person: "person" }
+    );
     expect(models.PersonalDevice.saveId).toHaveBeenCalledWith(
-      "harambe", "chrome", "person"
+      "harambe",
+      "chrome",
+      "person"
     );
   });
 });

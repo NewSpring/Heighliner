@@ -23,8 +23,6 @@ import {
 
 import { Campus, Location } from "../campuses/tables";
 
-import { Attribute, AttributeValue } from "../system/tables";
-
 import { Rock } from "../system";
 
 export class PhoneNumber extends Rock {
