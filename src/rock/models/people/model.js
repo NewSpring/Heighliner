@@ -246,8 +246,8 @@ export class Person extends Rock {
   async getGroups(personId, groupTypes) {
     const groupTypeIds = !Array.isArray(groupTypes) ? [groupTypes] : groupTypes;
     const where = groupTypeIds.length
-      ? { GroupTypeId: { $or: groupTypeIds } }
-      : null;
+      ? { GroupTypeId: { $or: groupTypeIds }, IsActive: true }
+      : { IsActive: true };
 
     return this.cache.get(
       `${personId}:GroupMemberId:${groupTypeIds}:GroupTypes`,
