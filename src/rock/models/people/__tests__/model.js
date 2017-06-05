@@ -138,7 +138,7 @@ describe("Person", () => {
     mockedCache.get.mockImplementationOnce((a, b) => b());
     await personModel.getGroups(12, 34);
     expect(Group.find).toBeCalledWith({
-      where: { GroupTypeId: { $or: [34] } },
+      where: { GroupTypeId: { $or: [34] }, IsActive: true },
       include: [
         {
           model: GroupMember.model,
