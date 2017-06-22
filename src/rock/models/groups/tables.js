@@ -6,6 +6,7 @@ import { MSSQLConnector } from "../../mssql";
 
 const groupSchema = {
   Id: { type: INTEGER, primaryKey: true },
+  Guid: { type: STRING },
   CampusId: { type: INTEGER },
   Description: { type: STRING },
   GroupTypeId: { type: INTEGER },
