@@ -32,6 +32,7 @@ export default [
     distance: Float
     entityId: Int
     id: ID!
+    guid: String
     kidFriendly: Boolean
     name: String
     photo: String
