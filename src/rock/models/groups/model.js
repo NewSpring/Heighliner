@@ -413,7 +413,7 @@ async findByAttributesAndQuery({ attributes, query, campuses, schedules }, { lim
     query = merge({ IsActive: true }, query);
     return this.cache.get(this.cache.encode(query), () => GroupTable.find({
       where: query,
-      attributes: ["Id"],
+//      attributes: ["Id"],
     })
       .then(this.getFromIds.bind(this))
     );
