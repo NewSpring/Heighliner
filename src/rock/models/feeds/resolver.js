@@ -34,7 +34,7 @@ export default {
           ? await models.Person.getCampusFromId(person.Id, { cache })
           : null;
 
-        let content = await models.Content.findByCampusName(
+        let eeContent = await models.Content.findByCampusName(
           {
             channel_name: { $or: channels },
             offset: skip,
@@ -45,7 +45,13 @@ export default {
           true,
         );
 
-        filterQueries.push(content);
+        let RockContent = await models.RockContent.findByCampusId(
+          {
+            //what do we need to search with?
+          }
+        )
+
+        filterQueries.push(EEcontent);
       }
 
       if (filters.includes("GIVING_DASHBOARD") && person) {

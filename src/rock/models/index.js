@@ -5,6 +5,7 @@ import finances from "./finances/tables";
 import system from "./system/tables";
 import campuses from "./campuses/tables";
 import groups from "./groups/tables";
+import content from "./content/tables";
 import binaryFiles from "./binary-files/tables";
 
 const tables = {
@@ -13,6 +14,7 @@ const tables = {
   system,
   campuses,
   groups,
+  content,
   binaryFiles,
 };
 
@@ -22,7 +24,9 @@ export function createTables() {
   for (const table in tables) {
     try {
       createdTables = merge(createdTables, tables[table].connect());
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   for (const table in tables) {
