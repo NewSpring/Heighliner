@@ -30,11 +30,10 @@ export default {
         const showsNews = flatten(channels).includes("news");
 
         // get user's campus to filter news by
-        let userCampus = person && showsNews
-          ? await models.Person.getCampusFromId(person.Id, { cache })
-          : null;
+        const userCampus =
+          person && showsNews ? await models.Person.getCampusFromId(person.Id, { cache }) : null;
 
-        let eeContent = await models.Content.findByCampusName(
+        const EEContent = await models.Content.findByCampusName(
           {
             channel_name: { $or: channels },
             offset: skip,
@@ -45,13 +44,18 @@ export default {
           true,
         );
 
-        let RockContent = await models.RockContent.findByCampusId(
+        const RKContent = await models.RockContent.find(
           {
-            //what do we need to search with?
-          }
-        )
+            channel: "All Staff News",
+            offset: skip,
+            limit,
+          },
+          cache,
+        );
 
-        filterQueries.push(EEcontent);
+        // console.log("RKCONTENT: ", RKContent);
+
+        filterQueries.push(EEContent, RKContent);
       }
 
       if (filters.includes("GIVING_DASHBOARD") && person) {

@@ -36,15 +36,33 @@ export { ContentChannel, contentChannelSchema, ContentChannelItem, contentChanne
 export function connect() {
   ContentChannel = new MSSQLConnector("ContentChannel", contentChannelSchema);
   ContentChannelItem = new MSSQLConnector("ContentChannelItem", contentChannelItemSchema);
+
+  return {
+    ContentChannel,
+    ContentChannelItem,
+  };
 }
 
 export function bind({ ContentChannel, ContentChannelItem, AttributeValue }) {
+  ContentChannelItem.model.belongsTo(ContentChannel.model, {
+    foreignKey: "ContentChannelId",
+    targetKey: "Id",
+  });
+
   ContentChannel.model.hasMany(ContentChannelItem.model, {
     foreignKey: "ContentChannelId",
     targetKey: "Id",
   });
 
-  ContentChannelItem.model.hasMany(AttributeValue.model, { foreignKey: "EntityId" });
+  AttributeValue.model.belongsTo(ContentChannelItem.model, {
+    foreignKey: "EntityId",
+    targetKey: "ContentChannelId",
+  });
+
+  ContentChannelItem.model.hasMany(AttributeValue.model, {
+    foreignKey: "EntityId",
+    targetKey: "Id",
+  });
 }
 
 export default {
