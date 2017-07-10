@@ -81,8 +81,8 @@ export class RockContent extends Rock {
           item.__type = this.__type;
           return item;
         }),
-      )
-      .then(this.debug);
+      );
+    // .then(this.debug);
   }
 }
 export default {

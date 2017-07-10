@@ -53,9 +53,7 @@ export default {
           cache,
         );
 
-        // console.log("RKCONTENT: ", RKContent);
-
-        filterQueries.push(EEContent, RKContent);
+        filterQueries.push(RKContent);
       }
 
       if (filters.includes("GIVING_DASHBOARD") && person) {
@@ -84,7 +82,27 @@ export default {
 
       if (!filterQueries.length) return null;
 
-      return Promise.all(filterQueries).then(flatten).then(x => x.filter(y => Boolean(y)));
+      return Promise.all(filterQueries).then(flatten).then(x => x.filter(y => Boolean(y))).then(z =>
+        z.sort((a, b) => {
+          let aDate;
+          let bDate;
+          if (a.__type === "Content") {
+            aDate = `${a.exp_channel_title.year}-${a.exp_channel_title.month}-${a.exp_channel_title
+              .day}`;
+          } else {
+            aDate = a.StartDateTime.slice(0, 10);
+          }
+          if (b.__type === "Content") {
+            bDate = `${b.exp_channel_title.year}-${b.exp_channel_title.month}-${b.exp_channel_title
+              .day}`;
+          } else {
+            bDate = b.StartDateTime.slice(0, 10);
+          }
+          aDate = new Date(aDate);
+          bDate = new Date(bDate);
+          return aDate > bDate ? -1 : aDate < bDate ? 1 : 0;
+        }),
+      );
     },
   },
 };

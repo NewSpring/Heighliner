@@ -8,6 +8,10 @@ export default [
     description: String
   }
 
+  type RockMeta {
+    date: String
+  }
+
   type RockContent implements Node{
     id: ID!
     entityId: Int
@@ -19,6 +23,8 @@ export default [
     ooyalaId: String
     audioUrl: String
     channel: RockContentChannel
+    channelName: String
+    meta: RockMeta
   }
 `,
 ];

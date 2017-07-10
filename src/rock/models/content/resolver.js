@@ -24,6 +24,9 @@ export default {
     typeId: ({ ContentChannelTypeId }) => ContentChannelTypeId,
     description: ({ Description }) => Description,
   },
+  RockMeta: {
+    date: ({ StartDateTime }) => StartDateTime,
+  },
   RockContent: {
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     entityId: ({ Id }) => Id,
@@ -35,5 +38,7 @@ export default {
     ooyalaId: ({ Id }, _, { models }) => models.RockContent.getAttributeFromId("Video ID", Id),
     audioUrl: ({ Id }, _, { models }) => models.RockContent.getAttributeFromId("Audio URL", Id),
     channel: ({ ContentChannel }) => ContentChannel,
+    channelName: ({ ContentChannel }) => ContentChannel.Name,
+    meta: data => data,
   },
 };
