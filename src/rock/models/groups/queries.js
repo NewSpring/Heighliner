@@ -1,4 +1,3 @@
-
 export default [
   `groups(
     attributes: [String],
@@ -8,6 +7,8 @@ export default [
     campus: String,
     campuses: [String],
     clientIp: String,
+    latitude: Float,
+    longitude: Float,
     schedules: [Int],
   ): GroupSearch`,
 
