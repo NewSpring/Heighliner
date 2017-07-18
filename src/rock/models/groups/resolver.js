@@ -306,6 +306,7 @@ export default {
     }, // convert to miles
     entityId: ({ Id }) => Id,
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
+    guid: ({ Guid }) => Guid,
     kidFriendly: resolveAttribute(5406),
     locations: ({ Id }, _, { models }) => models.Group.getLocationsById(Id),
     members: ({ Id }, _, { models }) => models.Group.getMembersById(Id),
