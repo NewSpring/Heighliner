@@ -14,7 +14,6 @@ const groupSchema = {
   IsPublic: { type: BOOLEAN },
   IsSecurityRole: { type: BOOLEAN },
   IsSystem: { type: BOOLEAN },
-  MustMeetRequirementsToAddMember: { type: BOOLEAN },
   Name: { type: STRING },
   ParentGroupId: { type: INTEGER },
   ScheduleId: { type: INTEGER },
@@ -106,19 +105,17 @@ export function connect() {
   };
 }
 
-export function bind(
-  {
-    Group,
-    GroupType,
-    GroupTypeRole,
-    GroupMember,
-    Campus,
-    AttributeValue,
-    GroupLocation,
-    Location,
-    Person,
-  },
-) {
+export function bind({
+  Group,
+  GroupType,
+  GroupTypeRole,
+  GroupMember,
+  Campus,
+  AttributeValue,
+  GroupLocation,
+  Location,
+  Person,
+}) {
   Group.model.hasMany(GroupMember.model, { foreignKey: "GroupId" });
   Group.model.belongsTo(Campus.model, {
     foreignKey: "CampusId",
