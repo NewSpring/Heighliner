@@ -128,17 +128,17 @@ export default {
         geo.latitude = latitude;
         geo.longitude = longitude;
       } else if (person && person.Id) {
-        const { latitude, longitude } = await models.Person
+        const { lat, lon } = await models.Person
           .getHomesFromId(person.Id)
           .then(([x]) => {
             if (!x) return {};
             if (!x.GeoPoint) return x;
             return models.Group.getLocationFromLocationId(x.Id);
           });
-        if (latitude && longitude) {
+        if (lat && lon) {
           // Passed in directly from geolocation services
-          geo.longitude = longitude;
-          geo.latitude = latitude;
+          geo.longitude = lon;
+          geo.latitude = lat;
         } else {
           const geoData = allData(ip);
           geo.latitude = geoData.location.latitude;
