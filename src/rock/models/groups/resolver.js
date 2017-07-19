@@ -52,10 +52,8 @@ function resolveAttribute(id, resolver) {
     const { models } = context;
     let chunk;
 
-    if (Array.isArray(AttributeValues)){
-      chunk = AttributeValues.filter(
-        x => x.Attribute && x.Attribute.Id === id,
-      )[0];
+    if (Array.isArray(AttributeValues)) {
+      chunk = AttributeValues.filter(x => x.Attribute && x.Attribute.Id === id)[0];
     }
     if (!chunk) {
       return Promise.resolve(null).then(x => resolver(x, data, args, context));
@@ -79,6 +77,8 @@ export default {
         attributes = [],
         query,
         clientIp,
+        latitude,
+        longitude,
       },
       { models, ip, person },
     ) => {
@@ -88,15 +88,14 @@ export default {
         campuses = campuses.map(x => x.Id);
       }
 
-      if (schedules.length)
-        schedules = schedules.filter(x => x || x === "0" || x === 0);
+      if (schedules.length) schedules = schedules.filter(x => x || x === "0" || x === 0);
 
       let geo = { latitude: null, longitude: null };
       // XXX move to better location / cleanup
-      if (clientIp && ip.match("204.116.47")) {
+      if (clientIp && ip.match("204.116.47") && (!latitude || !longitude)) {
         // newspring ip match
         const campusIpMap = {
-          10.7: { latitude: 34.933124, longitude: -81.994480 },
+          10.7: { latitude: 34.933124, longitude: -81.99448 },
           10.6: { latitude: 32.915373, longitude: -80.100173 },
           10.5: { latitude: 34.030287, longitude: -81.098588 },
           10.4: { latitude: 35.065126, longitude: -82.007086 },
@@ -125,17 +124,21 @@ export default {
             break;
           }
         }
+      } else if (latitude && longitude) {
+        geo.latitude = latitude;
+        geo.longitude = longitude;
       } else if (person && person.Id) {
-        const { latitude, longitude } = await models.Person
+        const { lat, lon } = await models.Person
           .getHomesFromId(person.Id)
           .then(([x]) => {
             if (!x) return {};
             if (!x.GeoPoint) return x;
             return models.Group.getLocationFromLocationId(x.Id);
           });
-        if (latitude && longitude) {
-          geo.longitude = longitude;
-          geo.latitude = latitude;
+        if (lat && lon) {
+          // Passed in directly from geolocation services
+          geo.longitude = lon;
+          geo.latitude = lat;
         } else {
           const geoData = allData(ip);
           geo.latitude = geoData.location.latitude;
@@ -186,16 +189,16 @@ export default {
         16815, // tags
         16814, // type
       ];
-      const queries = ids.map(id =>
-        models.Rock.getAttributesFromId(id, { models }));
+      const queries = ids.map(id => models.Rock.getAttributesFromId(id, { models }));
       return Promise.all(queries)
         .then(flatten)
         .then(x => x.filter(y => y.Value !== "Interests"))
         .then(x =>
-          x.map(y => {
+          x.map((y) => {
             y.Value = y.Value === "Childcare" ? "kid friendly" : y.Value;
             return y;
-          }));
+          }),
+        );
     },
   },
 
@@ -205,17 +208,18 @@ export default {
       { groupId, message, communicationPreference },
       { models, person },
     ) => {
-      if (!person)
+      if (!person) {
         return {
           code: 401,
           success: false,
           error: "Must be logged in to make this request",
         };
+      }
       return await models.Group.requestGroupInfo(
         {
           groupId,
           message: striptags(message, ["<br/>"], ["\n"]),
-          communicationPreference
+          communicationPreference,
         },
         person,
       );
@@ -246,9 +250,7 @@ export default {
         if (TempWeeklyDayOfWeek) {
           // try the schedule fields if available
           const week = Moment(TempWeeklyDayOfWeek, "E").format("dddd");
-          const time = WeeklyTimeOfDay
-            ? Moment.utc(WeeklyTimeOfDay).format("h:mm A")
-            : null;
+          const time = WeeklyTimeOfDay ? Moment.utc(WeeklyTimeOfDay).format("h:mm A") : null;
           return time ? `${week} @ ${time}` : `${week}`;
         } else {
           // try parsing the ical string
@@ -283,8 +285,7 @@ export default {
     active: ({ IsActive }) => IsActive,
     ageRange: resolveAttribute(691, (x = []) => {
       // don't consider [0,0] an age range
-      const hasAgeRange = x.length &&
-        x.reduce((start, finish) => start && finish);
+      const hasAgeRange = x.length && x.reduce((start, finish) => start && finish);
       if (!hasAgeRange) return null;
       return x;
     }),
@@ -300,9 +301,7 @@ export default {
       geo.latitude = geoData.location.latitude;
       geo.longitude = geoData.location.longitude;
 
-      return models.Group
-        .getDistanceFromLatLng(Id, geo)
-        .then(x => x && x * 0.000621371);
+      return models.Group.getDistanceFromLatLng(Id, geo).then(x => x && x * 0.000621371);
     }, // convert to miles
     entityId: ({ Id }) => Id,
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
@@ -311,40 +310,40 @@ export default {
     locations: ({ Id }, _, { models }) => models.Group.getLocationsById(Id),
     members: ({ Id }, _, { models }) => models.Group.getMembersById(Id),
     name: ({ Name }) => Name,
-    photo: resolveAttribute(2569, async (photo, { AttributeValues }, _, {
-      models,
-    }) => {
+    photo: resolveAttribute(2569, async (photo, { AttributeValues }, _, { models }) => {
       if (photo && photo.Path) return photo.Path;
 
       // check for tags first
-      const firstTag = await resolveAttribute(
-        16815,
-        x => x && x.length && x[0].Value,
-      )({ AttributeValues }, _, { models });
+      const firstTag = await resolveAttribute(16815, x => x && x.length && x[0].Value)(
+        { AttributeValues },
+        _,
+        { models },
+      );
 
       if (firstTag) return getPhotoFromTag(firstTag);
 
       // photo from demographic
-      const demographic = await resolveAttribute(
-        1409,
-        x => x && x.length && x[0].Value,
-      )({ AttributeValues }, _, { models });
+      const demographic = await resolveAttribute(1409, x => x && x.length && x[0].Value)(
+        { AttributeValues },
+        _,
+        { models },
+      );
 
       if (demographic) return getPhotoFromDemo(demographic);
 
       // type goes last since its required
-      const type = await resolveAttribute(
-        16814,
-        x => x && x.length && x[0].Value,
-      )({ AttributeValues }, _, { models });
+      const type = await resolveAttribute(16814, x => x && x.length && x[0].Value)(
+        { AttributeValues },
+        _,
+        { models },
+      );
 
       if (type) return getPhotoFromType(type);
 
       return null;
     }),
-    schedule: ({ ScheduleId }, _, { models }) =>
-      models.Group.getScheduleFromScheduleId(ScheduleId),
-    tags: resolveAttribute(16815, x => {
+    schedule: ({ ScheduleId }, _, { models }) => models.Group.getScheduleFromScheduleId(ScheduleId),
+    tags: resolveAttribute(16815, (x) => {
       if (x && x.length) return x;
       return [];
     }),
