@@ -92,7 +92,7 @@ export default {
 
       let geo = { latitude: null, longitude: null };
       // XXX move to better location / cleanup
-      if (clientIp && ip.match("204.116.47")) {
+      if (clientIp && ip.match("204.116.47") && (!latitude || !longitude)) {
         // newspring ip match
         const campusIpMap = {
           10.7: { latitude: 34.933124, longitude: -81.99448 },
