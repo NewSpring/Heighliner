@@ -30,11 +30,10 @@ export default {
         const showsNews = flatten(channels).includes("news");
 
         // get user's campus to filter news by
-        let userCampus = person && showsNews
-          ? await models.Person.getCampusFromId(person.Id, { cache })
-          : null;
+        const userCampus =
+          person && showsNews ? await models.Person.getCampusFromId(person.Id, { cache }) : null;
 
-        let content = await models.Content.findByCampusName(
+        const EEContent = await models.Content.findByCampusName(
           {
             channel_name: { $or: channels },
             offset: skip,
@@ -45,7 +44,16 @@ export default {
           true,
         );
 
-        filterQueries.push(content);
+        const RKContent = await models.RockContent.find(
+          {
+            channel: "All Staff News",
+            offset: skip,
+            limit,
+          },
+          cache,
+        );
+
+        filterQueries.push(RKContent);
       }
 
       if (filters.includes("GIVING_DASHBOARD") && person) {
@@ -74,7 +82,27 @@ export default {
 
       if (!filterQueries.length) return null;
 
-      return Promise.all(filterQueries).then(flatten).then(x => x.filter(y => Boolean(y)));
+      return Promise.all(filterQueries).then(flatten).then(x => x.filter(y => Boolean(y))).then(z =>
+        z.sort((a, b) => {
+          let aDate;
+          let bDate;
+          if (a.__type === "Content") {
+            aDate = `${a.exp_channel_title.year}-${a.exp_channel_title.month}-${a.exp_channel_title
+              .day}`;
+          } else {
+            aDate = a.StartDateTime.slice(0, 10);
+          }
+          if (b.__type === "Content") {
+            bDate = `${b.exp_channel_title.year}-${b.exp_channel_title.month}-${b.exp_channel_title
+              .day}`;
+          } else {
+            bDate = b.StartDateTime.slice(0, 10);
+          }
+          aDate = new Date(aDate);
+          bDate = new Date(bDate);
+          return aDate > bDate ? -1 : aDate < bDate ? 1 : 0;
+        }),
+      );
     },
   },
 };
