@@ -1,7 +1,7 @@
 import striptags from "striptags";
 import { flatten } from "lodash";
-import { allData } from "geo-from-ip";
 import { geocode } from "google-geocoding";
+import { geography } from "mssql-geoparser";
 import Moment from "moment";
 import ical from "ical";
 import { createGlobalId } from "../../../util";
@@ -70,84 +70,67 @@ export default {
     groups: async (
       _,
       {
-        campuses = [],
+        campus,
+        campuses = [], // Deprecated
         schedules = [],
         offset,
         limit,
         attributes = [],
         query,
-        clientIp,
         latitude,
         longitude,
+        zip,
       },
       { models, ip, person },
     ) => {
+
+      let geo = { latitude: null, longitude: null };
+
+      // XXX this is to maintain backwards compat
       if (campuses.length) {
-        campuses = campuses.map(x => ({ Name: { $like: x } }));
-        campuses = await models.Campus.find({ $or: campuses });
-        campuses = campuses.map(x => x.Id);
+        campus = campuses.shift();
+      }
+
+      if (campus) {
+        // This is the new section
+        const geoCampus = await models.Campus
+          .find({ Name: campus })
+          .then(x => x.map(y => ({
+            Id: y.Id,
+            LocationId: y.LocationId,
+          })))
+          .then(x => x.shift());
+
+        const geoCampusData = await models.Group.getLocationFromLocationId(geoCampus.LocationId);
+
+        if (geoCampusData.latitude && geoCampusData.longitude) {
+          // Passed in directly from geolocation services
+          geo.longitude = geoCampusData.longitude;
+          geo.latitude = geoCampusData.latitude;
+        }
+
+        campuses = [geoCampus.Id];
       }
 
       if (schedules.length) schedules = schedules.filter(x => x || x === "0" || x === 0);
 
-      let geo = { latitude: null, longitude: null };
       // XXX move to better location / cleanup
-      if (clientIp && ip.match("204.116.47") && (!latitude || !longitude)) {
-        // newspring ip match
-        const campusIpMap = {
-          10.7: { latitude: 34.933124, longitude: -81.99448 },
-          10.6: { latitude: 32.915373, longitude: -80.100173 },
-          10.5: { latitude: 34.030287, longitude: -81.098588 },
-          10.4: { latitude: 35.065126, longitude: -82.007086 },
-          10.31: { latitude: 33.934511, longitude: -80.363124 },
-          "10.30": { latitude: 34.951512, longitude: -81.087497 },
-          10.3: { latitude: 34.800165, longitude: -82.488371 },
-          10.29: { latitude: 32.271941, longitude: -80.943806 },
-          10.28: { latitude: 33.572048, longitude: -81.774888 },
-          10.27: { latitude: 34.111041, longitude: -80.882638 },
-          10.25: { latitude: 34.685131, longitude: -82.895683 },
-          10.24: { latitude: 33.715901, longitude: -78.925047 },
-          10.23: { latitude: 34.212175, longitude: -79.797055 },
-          10.22: { latitude: 34.852042, longitude: -82.354571 },
-          "10.20": { latitude: 34.800165, longitude: -82.488371 },
-          10.16: { latitude: 34.778159, longitude: -82.487048 }, // NH
-          10.14: { latitude: 34.194508, longitude: -82.193192 },
-          10.13: { latitude: 33.979398, longitude: -81.307923 },
-          10.1: { latitude: 34.595434, longitude: -82.622224 },
-          "10.0": { latitude: 34.595434, longitude: -82.622224 },
-        };
-        // get first two values
-        const matcher = clientIp.split(".").slice(0, 2).join(".").trim();
-        for (const cpId in campusIpMap) {
-          if (matcher === cpId) {
-            geo = campusIpMap[cpId];
-            break;
-          }
-        }
-      } else if (latitude && longitude) {
+      if (latitude && longitude) {
         geo.latitude = latitude;
         geo.longitude = longitude;
       } else if (person && person.Id) {
-        const { lat, lon } = await models.Person
+        const geoLocation = await models.Person
           .getHomesFromId(person.Id)
           .then(([x]) => {
             if (!x) return {};
             if (!x.GeoPoint) return x;
             return models.Group.getLocationFromLocationId(x.Id);
           });
-        if (lat && lon) {
+        if (geoLocation.latitude && geoLocation.longitude) {
           // Passed in directly from geolocation services
-          geo.longitude = lon;
-          geo.latitude = lat;
-        } else {
-          const geoData = allData(ip);
-          geo.latitude = geoData.location.latitude;
-          geo.longitude = geoData.location.longitude;
+          geo.longitude = geoLocation.longitude;
+          geo.latitude = geoLocation.latitude;
         }
-      } else {
-        const geoData = allData(ip);
-        geo.latitude = geoData.location.latitude;
-        geo.longitude = geoData.location.longitude;
       }
 
       attributes = attributes.filter(x => x); // only truthy values
@@ -157,12 +140,7 @@ export default {
       const zipRegex = /(\d{5}$)|(^\d{5}-\d{4}$)/;
 
       // parse query for zipcodes
-      if (query && query.match(zipRegex)) {
-        const zip = query.match(zipRegex)[0];
-
-        // remove zipcode data
-        query = query.replace(zipRegex, "").trim();
-
+      if (zip && zip.match(zipRegex)) {
         // find by zipcode
         const googleGeoData = await new Promise((resolve, reject) => {
           geocode(zip, (err, result) => {
@@ -294,14 +272,15 @@ export default {
     description: ({ Description }) => Description,
     distance: ({ Id, Distance }, _, { models, ip }) => {
       if (Distance) return Distance * 0.000621371;
+      return 0;
+      // we're not passing ip address anymore
+      // const geo = { latitude: null, longitude: null };
+      // // XXX lookup users lat and long from ip
+      // const geoData = allData(ip);
+      // geo.latitude = geoData.location.latitude;
+      // geo.longitude = geoData.location.longitude;
 
-      const geo = { latitude: null, longitude: null };
-      // XXX lookup users lat and long from ip
-      const geoData = allData(ip);
-      geo.latitude = geoData.location.latitude;
-      geo.longitude = geoData.location.longitude;
-
-      return models.Group.getDistanceFromLatLng(Id, geo).then(x => x && x * 0.000621371);
+      // return models.Group.getDistanceFromLatLng(Id, geo).then(x => x && x * 0.000621371);
     }, // convert to miles
     entityId: ({ Id }) => Id,
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
