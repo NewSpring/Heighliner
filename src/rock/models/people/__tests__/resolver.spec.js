@@ -127,7 +127,7 @@ describe("PhoneNumber Mutations", () => {
     );
   });
 
-  it("should have an impersonation parameter", async () => {
+  xit("should have an impersonation parameter", async () => {
     const models = { Person: { getIP: jest.fn() } };
     const person = { Id: 1234 };
     const { impersonationParameter } = Resolver.Person;
