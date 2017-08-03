@@ -78,8 +78,9 @@ export default {
     lastName: ({ LastName }) => LastName,
     nickName: ({ NickName }) => NickName,
     impersonationParameter: ({ Id }, _, { models, person }) => {
-      if (!person || !person.Id) return null;
-      return models.Person.getIP(Id);
+      return null;
+      // if (!person || !person.Id) return null;
+      // return models.Person.getIP(Id);
     },
     phoneNumbers: (
       { Id },
