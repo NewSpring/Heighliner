@@ -18,9 +18,11 @@ function getPhotoFromTag(tag) {
     gaming: "//s3.amazonaws.com/ns.assets/apollos/groups/group-games.jpg",
     hobbies: "//s3.amazonaws.com/ns.assets/apollos/groups/group-hobbies.jpg",
     moms: "//s3.amazonaws.com/ns.assets/apollos/groups/group-moms.jpg",
-    motorsports: "//s3.amazonaws.com/ns.assets/apollos/groups/group-motorsports.jpg", // tslint:disable-line
+    motorsports:
+      "//s3.amazonaws.com/ns.assets/apollos/groups/group-motorsports.jpg", // tslint:disable-line
     outdoor: "//s3.amazonaws.com/ns.assets/apollos/groups/group-outdoors.jpg",
-    "sports/fitness": "//s3.amazonaws.com/ns.assets/apollos/groups/group-sports.jpg", // tslint:disable-line
+    "sports/fitness":
+      "//s3.amazonaws.com/ns.assets/apollos/groups/group-sports.jpg", // tslint:disable-line
   };
   return photos[tag.toLowerCase()] || null;
 }
@@ -38,7 +40,8 @@ function getPhotoFromDemo(demo) {
 function getPhotoFromType(type) {
   const photos = {
     care: "//s3.amazonaws.com/ns.assets/apollos/groups/group-care.jpg",
-    interests: "//s3.amazonaws.com/ns.assets/apollos/groups/group-interests.jpg", // tslint:disable-line
+    interests:
+      "//s3.amazonaws.com/ns.assets/apollos/groups/group-interests.jpg", // tslint:disable-line
     study: "//s3.amazonaws.com/ns.assets/apollos/groups/group-study.jpg",
   };
   return photos[type.toLowerCase()] || null;
@@ -53,7 +56,9 @@ function resolveAttribute(id, resolver) {
     let chunk;
 
     if (Array.isArray(AttributeValues)) {
-      chunk = AttributeValues.filter(x => x.Attribute && x.Attribute.Id === id)[0];
+      chunk = AttributeValues.filter(
+        x => x.Attribute && x.Attribute.Id === id,
+      )[0];
     }
     if (!chunk) {
       return Promise.resolve(null).then(x => resolver(x, data, args, context));
@@ -83,8 +88,9 @@ export default {
       },
       { models, ip, person },
     ) => {
-
       let geo = { latitude: null, longitude: null };
+
+      console.log("campus: ", campus, campuses);
 
       // XXX this is to maintain backwards compat
       if (campuses.length) {
@@ -95,13 +101,17 @@ export default {
         // This is the new section
         const geoCampus = await models.Campus
           .find({ Name: campus })
-          .then(x => x.map(y => ({
-            Id: y.Id,
-            LocationId: y.LocationId,
-          })))
+          .then(x =>
+            x.map(y => ({
+              Id: y.Id,
+              LocationId: y.LocationId,
+            })),
+          )
           .then(x => x.shift());
 
-        const geoCampusData = await models.Group.getLocationFromLocationId(geoCampus.LocationId);
+        const geoCampusData = await models.Group.getLocationFromLocationId(
+          geoCampus.LocationId,
+        );
 
         if (geoCampusData.latitude && geoCampusData.longitude) {
           // Passed in directly from geolocation services
@@ -112,7 +122,8 @@ export default {
         campuses = [geoCampus.Id];
       }
 
-      if (schedules.length) schedules = schedules.filter(x => x || x === "0" || x === 0);
+      if (schedules.length)
+        schedules = schedules.filter(x => x || x === "0" || x === 0);
 
       // XXX move to better location / cleanup
       if (latitude && longitude) {
@@ -167,12 +178,14 @@ export default {
         16815, // tags
         16814, // type
       ];
-      const queries = ids.map(id => models.Rock.getAttributesFromId(id, { models }));
+      const queries = ids.map(id =>
+        models.Rock.getAttributesFromId(id, { models }),
+      );
       return Promise.all(queries)
         .then(flatten)
         .then(x => x.filter(y => y.Value !== "Interests"))
         .then(x =>
-          x.map((y) => {
+          x.map(y => {
             y.Value = y.Value === "Childcare" ? "kid friendly" : y.Value;
             return y;
           }),
@@ -228,7 +241,9 @@ export default {
         if (TempWeeklyDayOfWeek) {
           // try the schedule fields if available
           const week = Moment(TempWeeklyDayOfWeek, "E").format("dddd");
-          const time = WeeklyTimeOfDay ? Moment.utc(WeeklyTimeOfDay).format("h:mm A") : null;
+          const time = WeeklyTimeOfDay
+            ? Moment.utc(WeeklyTimeOfDay).format("h:mm A")
+            : null;
           return time ? `${week} @ ${time}` : `${week}`;
         } else {
           // try parsing the ical string
@@ -242,7 +257,8 @@ export default {
             })
             .join("");
           const parsedTime = Moment(
-            `${parsed.rrule.options.byhour[0]}:${parsed.rrule.options.byminute[0]}`,
+            `${parsed.rrule.options.byhour[0]}:${parsed.rrule.options
+              .byminute[0]}`,
             "hh:mm",
           ).format("h:mm A");
           return `${parsedDays} @ ${parsedTime}`;
@@ -263,24 +279,17 @@ export default {
     active: ({ IsActive }) => IsActive,
     ageRange: resolveAttribute(691, (x = []) => {
       // don't consider [0,0] an age range
-      const hasAgeRange = x.length && x.reduce((start, finish) => start && finish);
+      const hasAgeRange =
+        x.length && x.reduce((start, finish) => start && finish);
       if (!hasAgeRange) return null;
       return x;
     }),
     campus: ({ CampusId }, _, { models }) => models.Campus.getFromId(CampusId),
     demographic: resolveAttribute(1409, x => x && x.length && x[0].Value),
     description: ({ Description }) => Description,
-    distance: ({ Id, Distance }, _, { models, ip }) => {
+    distance: ({ Distance }) => {
       if (Distance) return Distance * 0.000621371;
-      return 0;
-      // we're not passing ip address anymore
-      // const geo = { latitude: null, longitude: null };
-      // // XXX lookup users lat and long from ip
-      // const geoData = allData(ip);
-      // geo.latitude = geoData.location.latitude;
-      // geo.longitude = geoData.location.longitude;
-
-      // return models.Group.getDistanceFromLatLng(Id, geo).then(x => x && x * 0.000621371);
+      return 1 * 0.000621371;
     }, // convert to miles
     entityId: ({ Id }) => Id,
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
@@ -289,40 +298,41 @@ export default {
     locations: ({ Id }, _, { models }) => models.Group.getLocationsById(Id),
     members: ({ Id }, _, { models }) => models.Group.getMembersById(Id),
     name: ({ Name }) => Name,
-    photo: resolveAttribute(2569, async (photo, { AttributeValues }, _, { models }) => {
-      if (photo && photo.Path) return photo.Path;
+    photo: resolveAttribute(
+      2569,
+      async (photo, { AttributeValues }, _, { models }) => {
+        if (photo && photo.Path) return photo.Path;
 
-      // check for tags first
-      const firstTag = await resolveAttribute(16815, x => x && x.length && x[0].Value)(
-        { AttributeValues },
-        _,
-        { models },
-      );
+        // check for tags first
+        const firstTag = await resolveAttribute(
+          16815,
+          x => x && x.length && x[0].Value,
+        )({ AttributeValues }, _, { models });
 
-      if (firstTag) return getPhotoFromTag(firstTag);
+        if (firstTag) return getPhotoFromTag(firstTag);
 
-      // photo from demographic
-      const demographic = await resolveAttribute(1409, x => x && x.length && x[0].Value)(
-        { AttributeValues },
-        _,
-        { models },
-      );
+        // photo from demographic
+        const demographic = await resolveAttribute(
+          1409,
+          x => x && x.length && x[0].Value,
+        )({ AttributeValues }, _, { models });
 
-      if (demographic) return getPhotoFromDemo(demographic);
+        if (demographic) return getPhotoFromDemo(demographic);
 
-      // type goes last since its required
-      const type = await resolveAttribute(16814, x => x && x.length && x[0].Value)(
-        { AttributeValues },
-        _,
-        { models },
-      );
+        // type goes last since its required
+        const type = await resolveAttribute(
+          16814,
+          x => x && x.length && x[0].Value,
+        )({ AttributeValues }, _, { models });
 
-      if (type) return getPhotoFromType(type);
+        if (type) return getPhotoFromType(type);
 
-      return null;
-    }),
-    schedule: ({ ScheduleId }, _, { models }) => models.Group.getScheduleFromScheduleId(ScheduleId),
-    tags: resolveAttribute(16815, (x) => {
+        return null;
+      },
+    ),
+    schedule: ({ ScheduleId }, _, { models }) =>
+      models.Group.getScheduleFromScheduleId(ScheduleId),
+    tags: resolveAttribute(16815, x => {
       if (x && x.length) return x;
       return [];
     }),
