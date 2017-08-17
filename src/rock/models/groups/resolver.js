@@ -186,7 +186,8 @@ export default {
         .then(x => x.filter(y => y.Value !== "Interests"))
         .then(x =>
           x.map(y => {
-            y.Value = y.Value === "Childcare" ? "kid friendly" : y.Value;
+            y.Value =
+              y.Value === "Childcare" ? "kid friendly" : y.Value.toLowerCase();
             return y;
           }),
         );
