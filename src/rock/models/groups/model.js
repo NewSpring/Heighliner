@@ -310,6 +310,7 @@ export class Group extends Rock {
 async findByAttributesAndQuery({ attributes, query, campuses, schedules }, { limit, offset, geo }) {
   let count = 0;
 
+  // const campuses = [campus];
   // XXX prevent sql injection
 
   let point = `${Number(geo.latitude)}, ${Number(geo.longitude)}, 4326`;
