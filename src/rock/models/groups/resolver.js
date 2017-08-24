@@ -290,7 +290,7 @@ export default {
     description: ({ Description }) => Description,
     distance: ({ Distance }) => {
       if (Distance) return Distance * 0.000621371;
-      return 1 * 0.000621371;
+      return null;
     }, // convert to miles
     entityId: ({ Id }) => Id,
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
