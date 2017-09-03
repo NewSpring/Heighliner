@@ -56,7 +56,7 @@
     "mysql": "^2.10.2",
     "node-mssql": "0.0.1",
     "node-uuid": "^1.4.7",
-    "optics-agent": "0.0.30",
+    "optics-agent": "^1.1.6",
     "phantomjs-prebuilt": "^2.1.14",
     "php-unserialize": "0.0.1",
     "promise-timeout": "^1.0.0",
