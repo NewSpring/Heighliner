@@ -88,7 +88,7 @@ export default {
       },
       { models, ip, person },
     ) => {
-      let geo = { latitude: null, longitude: null };
+      const geo = { latitude: null, longitude: null };
 
       console.log("campus: ", campus, campuses);
 
@@ -122,8 +122,9 @@ export default {
         campuses = [geoCampus.Id];
       }
 
-      if (schedules.length)
+      if (schedules.length) {
         schedules = schedules.filter(x => x || x === "0" || x === 0);
+      }
 
       // XXX move to better location / cleanup
       if (latitude && longitude) {
@@ -151,7 +152,12 @@ export default {
       const zipRegex = /(\d{5}$)|(^\d{5}-\d{4}$)/;
 
       // parse query for zipcodes
-      if (zip && zip.match(zipRegex)) {
+      if (zip || (query && query.match(zipRegex))) {
+        if (!zip) {
+          zip = query.match(zipRegex)[0];
+        }
+        // remove zipcode data
+        query = query.replace(zipRegex, "").trim();
         // find by zipcode
         const googleGeoData = await new Promise((resolve, reject) => {
           geocode(zip, (err, result) => {
@@ -185,7 +191,7 @@ export default {
         .then(flatten)
         .then(x => x.filter(y => y.Value !== "Interests"))
         .then(x =>
-          x.map(y => {
+          x.map((y) => {
             y.Value =
               y.Value === "Childcare" ? "kid friendly" : y.Value.toLowerCase();
             return y;
@@ -333,7 +339,7 @@ export default {
     ),
     schedule: ({ ScheduleId }, _, { models }) =>
       models.Group.getScheduleFromScheduleId(ScheduleId),
-    tags: resolveAttribute(16815, x => {
+    tags: resolveAttribute(16815, (x) => {
       if (x && x.length) return x;
       return [];
     }),
