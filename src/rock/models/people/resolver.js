@@ -4,7 +4,7 @@ import { createGlobalId } from "../../../util";
 const MutationReponseResolver = {
   error: ({ error }) => error,
   success: ({ success, error }) => success || !error,
-  code: ({ code }) => code
+  code: ({ code }) => code,
 };
 // models.Rock.getAttributeValueFromMatrix('SiteVersion', 'Sites', 10, 'Version')
 
@@ -20,14 +20,14 @@ export default {
       if (cache && person) return person;
       if (user && user.services && user.services.rock) {
         return models.Person.getFromAliasId(user.services.rock.PrimaryAliasId, {
-          cache
+          cache,
         });
       }
     },
     currentFamily: (_, args, { models, person }) => {
       if (!person) return null;
       return models.Person.getFamilyFromId(person.Id);
-    }
+    },
   },
 
   Mutation: {
@@ -36,7 +36,7 @@ export default {
         return {
           code: 401,
           success: false,
-          error: "Must be logged in to make this request"
+          error: "Must be logged in to make this request",
         };
       }
       return models.PhoneNumber.setPhoneNumber({ phoneNumber }, person);
@@ -44,14 +44,15 @@ export default {
     saveDeviceRegistrationId: (
       _,
       { registrationId, uuid },
-      { models, person }
+      { models, person },
     ) => {
-      if (!person)
+      if (!person) {
         return {
           code: 401,
           success: false,
-          error: "Must be logged in to make this request"
+          error: "Must be logged in to make this request",
         };
+      }
       return models.PersonalDevice.saveId(registrationId, uuid, person);
     },
     setPersonAttribute: (_, { value, key }, { models, person, ...rest }) => {
@@ -59,15 +60,15 @@ export default {
         return {
           code: 401,
           success: false,
-          error: "Must be logged in to make this request"
+          error: "Must be logged in to make this request",
         };
       }
       return models.Person.setPersonAttribute({ key, value }, person, {
         models,
         person,
-        ...rest
+        ...rest,
       });
-    }
+    },
   },
 
   Person: {
@@ -77,14 +78,14 @@ export default {
     firstName: ({ FirstName }) => FirstName,
     lastName: ({ LastName }) => LastName,
     nickName: ({ NickName }) => NickName,
-    impersonationParameter: ({ Id }, _, { models, person }) => {
+    impersonationParameter: ({ Id }, args, { models, person }) => {
       if (!person || !person.Id) return null;
-      return models.Person.getIP(Id);
+      return models.Person.getIP(Id, args);
     },
     phoneNumbers: (
       { Id },
       _,
-      { models } // tslint:disable-line
+      { models }, // tslint:disable-line
     ) => models.Person.getPhoneNumbersFromId(Id),
     photo: ({ PhotoId }, _, { models }) => {
       if (!PhotoId) {
@@ -108,7 +109,7 @@ export default {
     roles: ({ Id }, { cache = true }, { models }) =>
       models.Person.getGroups(Id, 1), // 1: security groups
     groups: ({ Id }, { cache = true, groupTypeIds = [] }, { models }) =>
-      models.Person.getGroups(Id, groupTypeIds)
+      models.Person.getGroups(Id, groupTypeIds),
   },
 
   PhoneNumber: {
@@ -118,20 +119,20 @@ export default {
     canText: ({ IsMessagingEnabled }) => IsMessagingEnabled,
     rawNumber: ({ Number }) => Number,
     number: ({ NumberFormatted, Number }) => NumberFormatted || Number,
-    person: ({ PersonId }, _, { models }) => models.Person.getFromId(PersonId)
+    person: ({ PersonId }, _, { models }) => models.Person.getFromId(PersonId),
   },
 
   PhoneNumberMutationResponse: {
-    ...MutationReponseResolver
+    ...MutationReponseResolver,
   },
 
   DeviceRegistrationMutationResponse: {
-    ...MutationReponseResolver
+    ...MutationReponseResolver,
   },
 
   AttributeValueMutationResponse: {
-    ...MutationReponseResolver
-  }
+    ...MutationReponseResolver,
+  },
 };
 
 // # home: [Location]
