@@ -155,9 +155,9 @@ export default {
       if (zip || (query && query.match(zipRegex))) {
         if (!zip) {
           zip = query.match(zipRegex)[0];
+          query = query.replace(zipRegex, "").trim();
         }
         // remove zipcode data
-        query = query.replace(zipRegex, "").trim();
         // find by zipcode
         const googleGeoData = await new Promise((resolve, reject) => {
           geocode(zip, (err, result) => {
