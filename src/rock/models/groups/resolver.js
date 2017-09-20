@@ -193,7 +193,7 @@ export default {
         .then(x =>
           x.map((y) => {
             y.Value =
-              y.Value === "Childcare" ? "kid friendly" : y.Value.toLowerCase();
+              y.Value === "Childcare" ? "Kid Friendly" : y.Value;
             return y;
           }),
         );

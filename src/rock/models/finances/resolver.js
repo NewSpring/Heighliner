@@ -67,8 +67,8 @@ export default {
       _,
       { name, isActive, isPublic, isTaxDeductible, allFunds },
       { models },
-    ) => {
-      return models.FinancialAccount.find(
+    ) =>
+      models.FinancialAccount.find(
         {
           Name: name,
           IsActive: isActive,
@@ -76,15 +76,14 @@ export default {
           IsTaxDeductible: isTaxDeductible,
         },
         { all: allFunds },
-      );
-    },
+      ),
     accountFromCashTag: (_, { cashTag }, { models }) =>
       models.FinancialAccount
         .find({
           IsActive: true,
           IsPublic: true,
         })
-        .then(x => {
+        .then((x) => {
           let correctAccount = null;
           for (const account of x) {
             const cashTagName = account.PublicName
@@ -116,14 +115,20 @@ export default {
       const requestUrl = req.headers.referer;
       const origin = req.headers.origin;
       const parsedData = JSON.parse(data);
-      return models.Transaction.createOrder({
-        data: parsedData,
-        instant,
-        id,
-        ip,
-        requestUrl,
-        origin,
-      }, person, models).catch(console.error);
+      return models.Transaction
+        .createOrder(
+        {
+          data: parsedData,
+          instant,
+          id,
+          ip,
+          requestUrl,
+          origin,
+        },
+          person,
+          models,
+        )
+        .catch(console.error);
     },
     validate: async (_, { token, gateway }, { models }) => {
       if (!token) return null;
@@ -161,7 +166,15 @@ export default {
       }
 
       return models.Transaction
-        .completeOrder({ token, accountName, person, origin, scheduleId, platform, version })
+        .completeOrder({
+          token,
+          accountName,
+          person,
+          origin,
+          scheduleId,
+          platform,
+          version,
+        })
         .catch(e => ({ error: e.message, code: e.code, success: false }));
     },
     savePayment: async (
@@ -290,8 +303,9 @@ export default {
     numberOfPayments: ({ NumberOfPayments }) => NumberOfPayments,
     date: ({ CreatedDate, ModifiedDate }) => ModifiedDate || CreatedDate,
     details: ({ Id, FinancialScheduledTransactionDetails }, _, { models }) => {
-      if (FinancialScheduledTransactionDetails)
+      if (FinancialScheduledTransactionDetails) {
         return FinancialScheduledTransactionDetails;
+      }
 
       return models.ScheduledTransaction.getDetailsByScheduleId(Id);
     },
@@ -398,24 +412,24 @@ export default {
       if (person && person.aliases && !people.length) include = person.aliases;
       return models.Transaction
         .findByAccountType(
-          {
-            id: Id,
-            personId: person.GivingGroupId,
-            include,
-            start,
-            end,
-            parentId: ParentAccountId,
-          },
+        {
+          id: Id,
+          personId: person.GivingGroupId,
+          include,
+          start,
+          end,
+          parentId: ParentAccountId,
+        },
           { limit, offset: skip },
           { cache },
         )
-        .then(transactions => {
+        .then((transactions) => {
           if (!transactions) return null;
 
           return transactions
             .map(x => x.FinancialTransactionDetails)
             .map(flatten)
-            .map(x => x[0].Amount)
+            .map(x => x[0].Amount.toFixed())
             .reduce((x, y) => x + y, 0);
         });
     },
@@ -452,16 +466,18 @@ export default {
       _,
       { models },
     ) => {
-      if (CreditCardTypeValueId && CreditCardTypeValue)
+      if (CreditCardTypeValueId && CreditCardTypeValue) {
         return CreditCardTypeValue.Value;
+      }
       if (CreditCardTypeValueId) {
         return models.Transaction
           .getDefinedValueId(CreditCardTypeValueId)
           .then(x => x.Value);
       }
 
-      if (CurrencyTypeValueId && CurrencyTypeValue)
+      if (CurrencyTypeValueId && CurrencyTypeValue) {
         return CurrencyTypeValue.Value;
+      }
       return models.Transaction
         .getDefinedValueId(CurrencyTypeValueId)
         .then(x => x.Value);
