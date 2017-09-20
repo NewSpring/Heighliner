@@ -347,6 +347,11 @@ export default class TransactionJobs extends Rock {
       })
         .then(x => x && x.Id || null);
 
+      // Error if campus is lex, bsp, or sumter
+      if (AccountId && (Campus.Id === 4 || Campus.Id === 13 || Campus.Id === 19)) {
+        report({ data }, new Error("Creating Transaction with Incorrect Details"));
+      }
+
       if (!AccountId) {
         // if no account is found, use the person's campus for the account
         const FamilyCampus = await Group.findOne({
@@ -371,6 +376,11 @@ export default class TransactionJobs extends Rock {
           },
         })
           .then(x => x && x.Id || null);
+
+        // Error if campus is lex, bsp, or sumter
+        if (AccountId && (FamilyCampus.Id === 4 || FamilyCampus.Id === 13 || FamilyCampus.Id === 19)) {
+          report({ data }, new Error("Creating Transaction with Incorrect Details"));
+        }
       }
 
       const detail = assign(x, {
@@ -378,6 +388,7 @@ export default class TransactionJobs extends Rock {
         ModifiedByPersonAliasId: Person.PrimaryAliasId,
         AccountId,
       });
+
 
       if (Schedule.Id && !Transaction.Id) {
         detail.ScheduledTransactionId = Schedule.Id;
