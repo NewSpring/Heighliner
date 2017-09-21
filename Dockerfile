@@ -1,13 +1,13 @@
 # FROM mhart/alpine-node:base
 # FROM mhart/alpine-node:base-0.10
-FROM mhart/alpine-node:6
+FROM node:8-alpine
 
 WORKDIR /src
 ADD . .
 
 # If you have native dependencies, you'll need extra tools
 # Install required APKs needed for building, install node modules, fix phantom, then cleanup.
-RUN apk add --update git python build-base curl bash && \
+RUN apk add --update git python build-base curl bash ca-certificates && \
   echo "Fixing PhantomJS" && \
   curl -Ls "https://github.com/dustinblackman/phantomized/releases/download/2.1.1/dockerized-phantomjs.tar.gz" | tar xz -C / && \
   echo "Installing node modules" && \
