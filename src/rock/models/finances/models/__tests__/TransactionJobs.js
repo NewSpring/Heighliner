@@ -1,4 +1,3 @@
-
 import queue from "bull";
 
 import TransactionJobs, { readIdsFromFrequencies } from "../TransactionJobs";
@@ -14,25 +13,16 @@ import {
   FinancialBatch as FinancialBatchTable,
 } from "../../tables";
 
-import {
-  DefinedValue,
-} from "../../../system/tables";
+import { DefinedValue } from "../../../system/tables";
 
-import {
-  Person as PersonTable,
-  PersonAlias,
-} from "../../../people/tables";
+import { Person as PersonTable, PersonAlias } from "../../../people/tables";
 
 import {
   Campus as CampusTable,
   Location as LocationTable,
 } from "../../../campuses/tables";
 
-import {
-  Group,
-  GroupLocation,
-  GroupMember,
-} from "../../../groups/tables";
+import { Group, GroupLocation, GroupMember } from "../../../groups/tables";
 
 // import { createGlobalId } from "../../../../../util/node";
 
@@ -259,11 +249,14 @@ describe("add", () => {
     };
 
     Local.add({ test: "TEST" });
-    expect(Local.queue.add).toBeCalledWith({ test: "TEST" }, {
-      removeOnComplete: true,
-      attempts: 288,
-      backoff: { type: "fixed", delay: 60000 * 5 },
-    });
+    expect(Local.queue.add).toBeCalledWith(
+      { test: "TEST" },
+      {
+        removeOnComplete: true,
+        attempts: 288,
+        backoff: { type: "fixed", delay: 60000 * 5 },
+      },
+    );
   });
 });
 
@@ -289,9 +282,11 @@ describe("getOrCreatePerson", () => {
       Guid: "guid",
     };
 
-    PersonTable.findOne.mockReturnValueOnce(Promise.resolve({
-      FirstName: "James",
-    }));
+    PersonTable.findOne.mockReturnValueOnce(
+      Promise.resolve({
+        FirstName: "James",
+      }),
+    );
 
     const data = await Local.getOrCreatePerson({ Person });
     expect(PersonTable.findOne).toBeCalledWith({ where: { Guid: "guid" } });
@@ -305,17 +300,22 @@ describe("getOrCreatePerson", () => {
     };
     PersonTable.findOne.mockReturnValueOnce(Promise.resolve());
     PersonTable.post.mockReturnValueOnce(1);
-    PersonTable.findOne.mockReturnValueOnce(Promise.resolve({
-      FirstName: "James",
-      Guid: "guid",
-      PersonAlias: {
-        Id: 2,
-      },
-    }));
+    PersonTable.findOne.mockReturnValueOnce(
+      Promise.resolve({
+        FirstName: "James",
+        Guid: "guid",
+        PersonAlias: {
+          Id: 2,
+        },
+      }),
+    );
     const data = await Local.getOrCreatePerson({ Person });
 
     expect(PersonTable.findOne).toBeCalledWith({ where: { Guid: "guid" } });
-    expect(PersonTable.post).toBeCalledWith({ FirstName: "James", Guid: "guid" });
+    expect(PersonTable.post).toBeCalledWith({
+      FirstName: "James",
+      Guid: "guid",
+    });
     expect(PersonTable.findOne).toBeCalledWith({
       where: { Id: 1 },
       include: [{ model: PersonAlias.model }],
@@ -524,7 +524,9 @@ describe("findOrCreateTransaction", () => {
     const FinancialPaymentValue = "Visa";
 
     TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
-    Local.FinancialBatch.findOrCreate.mockReturnValueOnce(Promise.resolve({ Id: 30 }));
+    Local.FinancialBatch.findOrCreate.mockReturnValueOnce(
+      Promise.resolve({ Id: 30 }),
+    );
     TransactionTable.post.mockReturnValueOnce(Promise.resolve(20));
 
     const data = await Local.findOrCreateTransaction({
@@ -583,7 +585,9 @@ describe("findOrCreateTransaction", () => {
     const FinancialPaymentValue = "Visa";
 
     TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
-    Local.FinancialBatch.findOrCreate.mockReturnValueOnce(Promise.resolve({ Id: 30 }));
+    Local.FinancialBatch.findOrCreate.mockReturnValueOnce(
+      Promise.resolve({ Id: 30 }),
+    );
     TransactionTable.post.mockReturnValueOnce(Promise.resolve(20));
     TransactionTable.post.mockClear();
 
@@ -703,7 +707,9 @@ describe("findOrCreateTransaction", () => {
     const FinancialPaymentValue = "Visa";
 
     TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
-    Local.FinancialBatch.findOrCreate.mockReturnValueOnce(Promise.resolve({ Id: 30 }));
+    Local.FinancialBatch.findOrCreate.mockReturnValueOnce(
+      Promise.resolve({ Id: 30 }),
+    );
     TransactionTable.post.mockReturnValueOnce(Promise.resolve(20));
     TransactionTable.post.mockClear();
 
@@ -743,7 +749,7 @@ describe("findOrCreateTransaction", () => {
       FinancialPaymentValue,
       FinancialPaymentDetail,
       platform: "Native",
-      version: "9001"
+      version: "9001",
     });
   });
 });
@@ -804,10 +810,14 @@ describe("findOrCreateSchedule", () => {
     };
 
     ScheduledTransaction.find.mockReturnValueOnce(Promise.resolve([]));
-    DefinedValue.find.mockReturnValueOnce(Promise.resolve([{
-      Value: "Weekly",
-      Id: 7,
-    }]));
+    DefinedValue.find.mockReturnValueOnce(
+      Promise.resolve([
+        {
+          Value: "Weekly",
+          Id: 7,
+        },
+      ]),
+    );
     ScheduledTransaction.post.mockReturnValueOnce(Promise.resolve(2));
     const data = await Local.findOrCreateSchedule({
       Schedule,
@@ -866,13 +876,19 @@ describe("findOrCreateSchedule", () => {
     };
 
     ScheduledTransaction.find.mockReturnValueOnce(Promise.resolve([]));
-    DefinedValue.find.mockReturnValueOnce(Promise.resolve([{
-      Value: "Weekly",
-      Id: 7,
-    }]));
-    DefinedValue.findOne.mockReturnValueOnce(Promise.resolve({
-      Id: 100,
-    }));
+    DefinedValue.find.mockReturnValueOnce(
+      Promise.resolve([
+        {
+          Value: "Weekly",
+          Id: 7,
+        },
+      ]),
+    );
+    DefinedValue.findOne.mockReturnValueOnce(
+      Promise.resolve({
+        Id: 100,
+      }),
+    );
     ScheduledTransaction.post.mockReturnValueOnce(Promise.resolve(2));
     const data = await Local.findOrCreateSchedule({
       Schedule,
@@ -934,10 +950,14 @@ describe("findOrCreateSchedule", () => {
     };
 
     ScheduledTransaction.find.mockReturnValueOnce(Promise.resolve([]));
-    DefinedValue.find.mockReturnValueOnce(Promise.resolve([{
-      Value: "Weekly",
-      Id: 7,
-    }]));
+    DefinedValue.find.mockReturnValueOnce(
+      Promise.resolve([
+        {
+          Value: "Weekly",
+          Id: 7,
+        },
+      ]),
+    );
     DefinedValue.findOne.mockReturnValueOnce(Promise.resolve());
     ScheduledTransaction.post.mockReturnValueOnce(Promise.resolve(2));
     const data = await Local.findOrCreateSchedule({
@@ -1000,10 +1020,12 @@ describe("findOrCreateSchedule", () => {
 
     ScheduledTransaction.find.mockReturnValueOnce(Promise.resolve([]));
     ScheduledTransaction.patch.mockReturnValueOnce(Promise.resolve(true));
-    ScheduledTransactionDetail.find.mockReturnValueOnce(Promise.resolve([
-      { Id: 1 },
-    ]));
-    ScheduledTransactionDetail.delete.mockReturnValueOnce(Promise.resolve(true));
+    ScheduledTransactionDetail.find.mockReturnValueOnce(
+      Promise.resolve([{ Id: 1 }]),
+    );
+    ScheduledTransactionDetail.delete.mockReturnValueOnce(
+      Promise.resolve(true),
+    );
 
     const data = await Local.findOrCreateSchedule({
       Schedule,
@@ -1092,17 +1114,41 @@ describe("createTransactionDetails", () => {
       Transaction,
       Schedule,
       Person,
-      TransactionDetails: [{
-        AccountId: 6,
-        CreatedByPersonAliasId: Person.PrimaryAliasId,
-        ModifiedByPersonAliasId: Person.PrimaryAliasId,
-        Amount: 4,
-        TransactionId: 1,
-        Id: 7, // XXX bug in Jest
-      }],
+      TransactionDetails: [
+        {
+          AccountId: 6,
+          CreatedByPersonAliasId: Person.PrimaryAliasId,
+          ModifiedByPersonAliasId: Person.PrimaryAliasId,
+          Amount: 4,
+          TransactionId: 1,
+          Id: 7, // XXX bug in Jest
+        },
+      ],
       Campus,
     });
   });
+
+  it("throws an error if an invalid campus is being used", () => {
+    const Transaction = { Id: 1 };
+    const Schedule = {};
+    const Person = { Id: 2, PrimaryAliasId: 3 };
+    const TransactionDetails = [{ AccountId: 4, Amount: 4 }];
+    const Campus = { Id: 13 };
+
+    FinancialAccount.findOne.mockReturnValueOnce(Promise.resolve({ Id: 6 }));
+    TransactionDetail.post.mockReturnValueOnce(Promise.resolve(7));
+
+    expect(
+      Local.createTransactionDetails({
+        Transaction,
+        Schedule,
+        Person,
+        TransactionDetails,
+        Campus,
+      }),
+    ).toThrow();
+  });
+
   it("if no account is found, it looks up the person's family campus and tries again", async () => {
     const Transaction = { Id: 1 };
     const Schedule = {};
@@ -1150,61 +1196,68 @@ describe("createTransactionDetails", () => {
       Transaction,
       Schedule,
       Person,
-      TransactionDetails: [{
-        AccountId: 7,
-        CreatedByPersonAliasId: Person.PrimaryAliasId,
-        ModifiedByPersonAliasId: Person.PrimaryAliasId,
-        Amount: 4,
-        TransactionId: 1,
-        Id: 8, // XXX bug in Jest
-      }],
+      TransactionDetails: [
+        {
+          AccountId: 7,
+          CreatedByPersonAliasId: Person.PrimaryAliasId,
+          ModifiedByPersonAliasId: Person.PrimaryAliasId,
+          Amount: 4,
+          TransactionId: 1,
+          Id: 8, // XXX bug in Jest
+        },
+      ],
       Campus,
     });
   });
-  xit("if it is a schedule, it creates ScheduleTransactionDetails", async () => {
-    const Transaction = {};
-    const Schedule = { Id: 1 };
-    const Person = { Id: 2, PrimaryAliasId: 3 };
-    const TransactionDetails = [{ AccountId: 4, Amount: 4 }];
-    const Campus = { Id: 5 };
+  xit(
+    "if it is a schedule, it creates ScheduleTransactionDetails",
+    async () => {
+      const Transaction = {};
+      const Schedule = { Id: 1 };
+      const Person = { Id: 2, PrimaryAliasId: 3 };
+      const TransactionDetails = [{ AccountId: 4, Amount: 4 }];
+      const Campus = { Id: 5 };
 
-    FinancialAccount.findOne.mockReturnValueOnce(Promise.resolve({ Id: 6 }));
-    TransactionDetail.post.mockReturnValueOnce(Promise.resolve(7));
+      FinancialAccount.findOne.mockReturnValueOnce(Promise.resolve({ Id: 6 }));
+      TransactionDetail.post.mockReturnValueOnce(Promise.resolve(7));
 
-    const data = await Local.createTransactionDetails({
-      Transaction,
-      Schedule,
-      Person,
-      TransactionDetails,
-      Campus,
-    });
+      const data = await Local.createTransactionDetails({
+        Transaction,
+        Schedule,
+        Person,
+        TransactionDetails,
+        Campus,
+      });
 
-    expect(FinancialAccount.findOne).toBeCalledWith({
-      where: { CampusId: 5, ParentAccountId: 4 },
-    });
-    expect(ScheduledTransactionDetail.post).toBeCalledWith({
-      AccountId: 6,
-      CreatedByPersonAliasId: Person.PrimaryAliasId,
-      ModifiedByPersonAliasId: Person.PrimaryAliasId,
-      Amount: 4,
-      ScheduledTransactionDetailId: 1,
-      Id: 7, // XXX bug in Jest
-    });
-    expect(data).toEqual({
-      Transaction,
-      Schedule,
-      Person,
-      TransactionDetails: [{
+      expect(FinancialAccount.findOne).toBeCalledWith({
+        where: { CampusId: 5, ParentAccountId: 4 },
+      });
+      expect(ScheduledTransactionDetail.post).toBeCalledWith({
         AccountId: 6,
         CreatedByPersonAliasId: Person.PrimaryAliasId,
         ModifiedByPersonAliasId: Person.PrimaryAliasId,
         Amount: 4,
-        TransactionId: 1,
+        ScheduledTransactionDetailId: 1,
         Id: 7, // XXX bug in Jest
-      }],
-      Campus,
-    });
-  });
+      });
+      expect(data).toEqual({
+        Transaction,
+        Schedule,
+        Person,
+        TransactionDetails: [
+          {
+            AccountId: 6,
+            CreatedByPersonAliasId: Person.PrimaryAliasId,
+            ModifiedByPersonAliasId: Person.PrimaryAliasId,
+            Amount: 4,
+            TransactionId: 1,
+            Id: 7, // XXX bug in Jest
+          },
+        ],
+        Campus,
+      });
+    },
+  );
 });
 
 describe("createSavedPayment", () => {
@@ -1217,25 +1270,38 @@ describe("createSavedPayment", () => {
   });
 
   it("keeps going if a there is a saved account id already", async () => {
-    const FinancialPersonSavedAccount = { Id: 1, Name: "foo", ReferenceNumber: "10" };
-    const data = await Local.createSavedPayment({ FinancialPersonSavedAccount });
+    const FinancialPersonSavedAccount = {
+      Id: 1,
+      Name: "foo",
+      ReferenceNumber: "10",
+    };
+    const data = await Local.createSavedPayment({
+      FinancialPersonSavedAccount,
+    });
     expect(data).toEqual({ FinancialPersonSavedAccount });
   });
 
   it("keeps going if a there isn't a saved account name", async () => {
     const FinancialPersonSavedAccount = { ReferenceNumber: "10" };
-    const data = await Local.createSavedPayment({ FinancialPersonSavedAccount });
+    const data = await Local.createSavedPayment({
+      FinancialPersonSavedAccount,
+    });
     expect(data).toEqual({ FinancialPersonSavedAccount });
   });
 
   it("keeps going if a there isn't a saved account ReferenceNumber", async () => {
     const FinancialPersonSavedAccount = { Name: "Test" };
-    const data = await Local.createSavedPayment({ FinancialPersonSavedAccount });
+    const data = await Local.createSavedPayment({
+      FinancialPersonSavedAccount,
+    });
     expect(data).toEqual({ FinancialPersonSavedAccount });
   });
 
   it("creates a new savedPaymentDeatail and creates the saved payment", async () => {
-    const FinancialPersonSavedAccount = { Name: "Test", ReferenceNumber: "100" };
+    const FinancialPersonSavedAccount = {
+      Name: "Test",
+      ReferenceNumber: "100",
+    };
     const Person = { PrimaryAliasId: 12 };
     const FinancialPaymentDetail = { Id: 10 };
 
@@ -1351,7 +1417,9 @@ describe("updateBatchControlAmount", () => {
   it("updates the control amount and sets a finished flag", async () => {
     const Transaction = { BatchId: 1, Id: 5 };
     const TransactionDetails = [{ Amount: 2 }, { Amount: 3 }];
-    FinancialBatchTable.findOne.mockReturnValueOnce(Promise.resolve({ Id: 5, ControlAmount: 1 }));
+    FinancialBatchTable.findOne.mockReturnValueOnce(
+      Promise.resolve({ Id: 5, ControlAmount: 1 }),
+    );
     FinancialBatchTable.patch.mockReturnValueOnce(Promise.resolve(true));
     const data = await Local.updateBatchControlAmount({
       Transaction,
@@ -1392,21 +1460,27 @@ describe("sendGivingEmail", () => {
 
   it("looks up a person, then calls sendEmail with the needed data", async () => {
     const Person = { Id: 1, PrimaryAliasId: 2 };
-    const TransactionDetails = [{
-      Amount: 1, AccountName: "Name", AccountId: 3,
-    }];
+    const TransactionDetails = [
+      {
+        Amount: 1,
+        AccountName: "Name",
+        AccountId: 3,
+      },
+    ];
     const Transaction = { TransactionCode: "code" };
     const FinancialPaymentDetail = {
       AccountNumberMasked: "4xxxxxxxxxxx1111",
     };
     const Schedule = {};
 
-    PersonTable.findOne.mockReturnValueOnce(Promise.resolve({
-      Id: 1,
-      FirstName: "James",
-      Email: "james.baxley@newspring.cc",
-      LastName: "Baxley",
-    }));
+    PersonTable.findOne.mockReturnValueOnce(
+      Promise.resolve({
+        Id: 1,
+        FirstName: "James",
+        Email: "james.baxley@newspring.cc",
+        LastName: "Baxley",
+      }),
+    );
 
     Local.sendEmail = jest.fn();
     Local.sendEmail.mockReturnValueOnce(Promise.resolve());
@@ -1461,12 +1535,14 @@ describe("sendGivingEmail", () => {
     };
     const Schedule = {};
 
-    PersonTable.findOne.mockReturnValueOnce(Promise.resolve({
-      Id: 1,
-      FirstName: "James",
-      Email: "james.baxley@newspring.cc",
-      LastName: "Baxley",
-    }));
+    PersonTable.findOne.mockReturnValueOnce(
+      Promise.resolve({
+        Id: 1,
+        FirstName: "James",
+        Email: "james.baxley@newspring.cc",
+        LastName: "Baxley",
+      }),
+    );
 
     Local.sendEmail = jest.fn();
     Local.sendEmail.mockReturnValueOnce(Promise.resolve());
@@ -1521,13 +1597,15 @@ describe("sendGivingEmail", () => {
     };
     const Schedule = {};
 
-    PersonTable.findOne.mockReturnValueOnce(Promise.resolve({
-      Id: 1,
-      FirstName: "James",
-      NickName: "Jimmy",
-      Email: "james.baxley@newspring.cc",
-      LastName: "Baxley",
-    }));
+    PersonTable.findOne.mockReturnValueOnce(
+      Promise.resolve({
+        Id: 1,
+        FirstName: "James",
+        NickName: "Jimmy",
+        Email: "james.baxley@newspring.cc",
+        LastName: "Baxley",
+      }),
+    );
 
     Local.sendEmail = jest.fn();
     Local.sendEmail.mockReturnValueOnce(Promise.resolve());

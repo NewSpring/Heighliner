@@ -12,15 +12,15 @@ const sampleData = {
     BirthDay: "17",
     BirthYear: "1984",
     BirthMonth: "10",
-    Email: "email@example.com"
+    Email: "email@example.com",
   },
   phone: {
     CountryCode: "1",
     Description: "Home",
     IsMessagingEnabled: "true",
     Number: "8648675309",
-    PersonId: "12345-ABCDE"
-  }
+    PersonId: "12345-ABCDE",
+  },
 };
 
 describe("Person Tests", () => {
@@ -63,8 +63,8 @@ describe("Person Tests", () => {
         getFromId(id) {
           expect(id).toEqual(samplePhotoId);
           return Promise.resolve({ Path: placeHolderPhoto });
-        }
-      }
+        },
+      },
     };
 
     Person.photo({ PhotoId: samplePhotoId }, null, { models });
@@ -82,7 +82,7 @@ describe("Person Tests", () => {
     expect(models.Rock.getAttributesFromEntity).toHaveBeenCalledWith(
       123,
       "ThugLyfe",
-      15
+      15,
     );
   });
 
@@ -105,7 +105,7 @@ describe("PhoneNumber Mutations", () => {
     expect(result).toEqual({
       code: 401,
       error: "Must be logged in to make this request",
-      success: false
+      success: false,
     });
   });
 
@@ -115,26 +115,32 @@ describe("PhoneNumber Mutations", () => {
     await setPhoneNumber(
       null,
       {
-        phoneNumber: "(555) 555-5555"
+        phoneNumber: "(555) 555-5555",
       },
-      { models, person: "person" }
+      { models, person: "person" },
     );
     expect(models.PhoneNumber.setPhoneNumber).toHaveBeenCalledWith(
       {
-        phoneNumber: "(555) 555-5555"
+        phoneNumber: "(555) 555-5555",
       },
-      "person"
+      "person",
     );
   });
 
   it("should have an impersonation parameter", async () => {
     const models = { Person: { getIP: jest.fn() } };
     const person = { Id: 1234 };
+    const ipArgs = {
+      expireDateTime: "2037-09-03T17:56:26-04:00",
+      usageLimit: 1,
+      pageId: 100,
+    };
+
     const { impersonationParameter } = Resolver.Person;
 
-    await impersonationParameter(person, null, { models, person });
+    await impersonationParameter(person, ipArgs, { models, person });
 
-    expect(models.Person.getIP).toHaveBeenCalledWith(1234);
+    expect(models.Person.getIP).toHaveBeenCalledWith(1234, ipArgs);
   });
 
   it("should not return an ip if person not logged in", async () => {
@@ -155,7 +161,7 @@ describe("DeviceRegistration Mutation", () => {
     expect(result).toEqual({
       code: 401,
       error: "Must be logged in to make this request",
-      success: false
+      success: false,
     });
   });
 
@@ -166,14 +172,14 @@ describe("DeviceRegistration Mutation", () => {
       null,
       {
         registrationId: "harambe",
-        uuid: "chrome"
+        uuid: "chrome",
       },
-      { models, person: "person" }
+      { models, person: "person" },
     );
     expect(models.PersonalDevice.saveId).toHaveBeenCalledWith(
       "harambe",
       "chrome",
-      "person"
+      "person",
     );
   });
 });
