@@ -216,7 +216,7 @@ export default {
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     role: ({ GroupTypeRole }) => GroupTypeRole && GroupTypeRole.Name, // XXX should we expand this?
     person: ({ PersonId }, _, { models }) => models.Person.getFromId(PersonId),
-    status: ({ GroupMemberStatus }) => (GroupMemberStatus === 1 ? true : false),
+    status: ({ GroupMemberStatus }) => GroupMemberStatus,
   },
 
   GroupLocation: {
