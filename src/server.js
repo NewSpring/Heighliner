@@ -10,13 +10,13 @@ import cacheUtils from "./routes/cache";
 
 const app = express();
 
+engine(app);
 util(app);
 graphiql(app);
 sentry(app);
 const datadog = setupDatadog(app);
 cacheUtils(app, { datadog });
 createApp(app, { datadog });
-engine(app);
 errors(app);
 
 // Listen for incoming HTTP requests
