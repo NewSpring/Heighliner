@@ -1,7 +1,8 @@
 import express from "express";
 
 import util from "./routes/util";
-import engine from "./routes/engine";
+// import engine from "./routes/engine";
+import optics from "./routes/optics";
 import graphiql from "./routes/graphiql";
 import sentry, { errors } from "./routes/errors";
 import setupDatadog from "./routes/datadog";
@@ -10,8 +11,9 @@ import cacheUtils from "./routes/cache";
 
 const app = express();
 
-engine(app);
+// engine(app);
 util(app);
+optics(app);
 graphiql(app);
 sentry(app);
 const datadog = setupDatadog(app);
