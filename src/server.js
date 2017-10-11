@@ -1,7 +1,7 @@
-
 import express from "express";
 
 import util from "./routes/util";
+import engine from "./routes/engine";
 import optics from "./routes/optics";
 import graphiql from "./routes/graphiql";
 import sentry, { errors } from "./routes/errors";
@@ -11,8 +11,9 @@ import cacheUtils from "./routes/cache";
 
 const app = express();
 
+if (process.env.GQL_TRACING_TOOL === "engine") engine(app);
 util(app);
-optics(app);
+if (process.env.GQL_TRACING_TOOL === "optics") optics(app);
 graphiql(app);
 sentry(app);
 const datadog = setupDatadog(app);
@@ -26,7 +27,5 @@ const listener = app.listen(process.env.PORT || 80, () => {
   if (host === "::") host = "localhost";
   const port = listener.address().port;
   // eslint-disable-next-line
-  console.log(
-    "Listening at http://%s%s", host, port === 80 ? "" : `:${port}`,
-  );
+  console.log("Listening at http://%s%s", host, port === 80 ? "" : `:${port}`);
 });
