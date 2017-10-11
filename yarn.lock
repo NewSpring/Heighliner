@@ -147,12 +147,28 @@ anymatch@^1.3.0:
     arrify "^1.0.0"
     micromatch "^2.1.5"
 
-"apollo-engine@https://s3.us-east-2.amazonaws.com/apollo-engine-deploy/apollo-engine-0.3.7.tgz":
-  version "0.3.7"
-  resolved "https://s3.us-east-2.amazonaws.com/apollo-engine-deploy/apollo-engine-0.3.7.tgz#b52d3a56848acacd7d01571fc16ffa6e8281ef0b"
+apollo-engine-binary-darwin@^0.2017.10-19-gdc8304d2:
+  version "0.2017.10-19-gdc8304d2"
+  resolved "https://registry.yarnpkg.com/apollo-engine-binary-darwin/-/apollo-engine-binary-darwin-0.2017.10-19-gdc8304d2.tgz#06471be1296d82264575212d98012e92a4f82d1a"
+
+apollo-engine-binary-linux@^0.2017.10-19-gdc8304d2:
+  version "0.2017.10-19-gdc8304d2"
+  resolved "https://registry.yarnpkg.com/apollo-engine-binary-linux/-/apollo-engine-binary-linux-0.2017.10-19-gdc8304d2.tgz#a6033c43f067b320190f43d823cae1972562638a"
+
+apollo-engine-binary-windows@^0.2017.10-19-gdc8304d2:
+  version "0.2017.10-19-gdc8304d2"
+  resolved "https://registry.yarnpkg.com/apollo-engine-binary-windows/-/apollo-engine-binary-windows-0.2017.10-19-gdc8304d2.tgz#c3785e2fffc05e3bff66ef81061a75e983a8338f"
+
+apollo-engine@^0.4.7:
+  version "0.4.7"
+  resolved "https://registry.yarnpkg.com/apollo-engine/-/apollo-engine-0.4.7.tgz#4ad04a423cf7481e755b540452cb8bfdd16d9e69"
   dependencies:
     request "^2.81.0"
     stream-line-wrapper "^0.1.1"
+  optionalDependencies:
+    apollo-engine-binary-darwin "^0.2017.10-19-gdc8304d2"
+    apollo-engine-binary-linux "^0.2017.10-19-gdc8304d2"
+    apollo-engine-binary-windows "^0.2017.10-19-gdc8304d2"
 
 apollo-link@^0.7.0:
   version "0.7.0"
@@ -6448,7 +6464,7 @@ webpack-config-utils@^2.3.0:
   dependencies:
     webpack-combine-loaders "2.0.0"
 
-webpack-dashboard@^1.0.0:
+webpack-dashboard@^1.0.0-7:
   version "1.0.0-7"
   resolved "https://registry.yarnpkg.com/webpack-dashboard/-/webpack-dashboard-1.0.0-7.tgz#2fcc663a929e04f3091aa0ceda0c4171a9e9042f"
   dependencies:
