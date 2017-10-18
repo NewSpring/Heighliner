@@ -1,5 +1,4 @@
-
-import { graphiqlExpress } from "apollo-server";
+import { graphiqlExpress } from "apollo-server-express";
 
 export default (app) => {
   if (process.env.SENTRY_ENVIRONMENT !== "production") {
