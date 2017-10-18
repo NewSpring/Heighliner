@@ -4,6 +4,7 @@ export default [
     id: ID!
     role: String
     person: Person
+    status: Int
   }
 
   type GroupLocation implements Node {
