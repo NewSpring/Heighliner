@@ -63,7 +63,9 @@ const executabledSchema = makeExecutableSchema({
   allowUndefinedInResolve: true, // required for resolvers
 });
 
-if (process.env.OPTICS_API_KEY && process.env.GQL_TRACING_TOOL === "optics") OpticsAgent.instrumentSchema(executabledSchema);
+if (process.env.OPTICS_API_KEY && process.env.GQL_TRACING_TOOL === "optics") {
+  OpticsAgent.instrumentSchema(executabledSchema);
+}
 
 export function createModels({ cache }) {
   // create all of the models on app start up
