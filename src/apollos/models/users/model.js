@@ -1,4 +1,6 @@
 import crypto from "crypto";
+import Bcrypt from "bcrypt";
+import Random from "meteor-random";
 
 import { MongoConnector } from "../../mongo";
 import { defaultCache } from "../../../util/cache";
@@ -19,6 +21,20 @@ const schema = {
 
 const Model = new MongoConnector("user", schema);
 
+function hashToken(token) {
+  return crypto.createHash("sha256")
+    .update(token)
+    .digest("base64");
+}
+
+// METEOR's default token expiration function
+function tokenExpiration(when) {
+  // We pass when through the Date constructor for backwards compatibility;
+  // `when` used to be a number.
+  const LOGIN_EXPIRATION_DAYS = 90;
+  return new Date((new Date(when)).getTime() + (LOGIN_EXPIRATION_DAYS * 24 * 60 * 60 * 1000));
+}
+
 export class User {
 
   constructor({ cache } = { cache: defaultCache }) {
@@ -35,9 +51,7 @@ export class User {
     const rawToken = token;
 
     // allow for client or server side auth calls
-    token = crypto.createHash("sha256")
-      .update(token)
-      .digest("base64");
+    token = hashToken(token);
 
     return await this.cache.get(`hashedToken:${token}`, () => this.model.findOne({
       $or: [
@@ -45,6 +59,45 @@ export class User {
         { "services.resume.loginTokens.hashedToken": rawToken },
       ],
     }));
+  }
+
+  async authorizeUser(email, hashedPassword) {
+    const user = await this.model.findOne({
+      email,
+    });
+    if (!user) throw new Error("user not found");
+
+    // METEOR's _checkPassword
+    const isValidPassword = Bcrypt.compare(hashedPassword, user.services.password.bcrypt);
+    if (!isValidPassword) throw new Error("invalid password");
+
+    // METEOR's _generateStampedLoginToken
+    const loginStamp = {
+      token: Random.secret(),
+      when: new Date(),
+    };
+
+    // METEOR's _insertLoginToken
+    const hashedLoginStamp = {
+      hashedToken: hashToken(loginStamp.token),
+      when: loginStamp.when,
+    };
+
+    await this.model.update({ _id: user._id }, {
+      $addToSet: {
+        "services.resume.loginTokens": hashedLoginStamp,
+      },
+    });
+
+    return {
+      id: user.id,
+      token: loginStamp.token,
+      tokenExpires: tokenExpiration(loginStamp.when),
+    };
+  }
+
+  async deauthorizeUser(token) {
+
   }
 }
 
