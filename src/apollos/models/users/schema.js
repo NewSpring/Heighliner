@@ -31,4 +31,18 @@ export default [`
     services: UserService
     emails: [UserEmail]
   }
+
+  type AuthorizeUserMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+    id: String
+    token: String
+  }
+
+  type DeauthorizeUserMutationResponse implements MutationResponse {
+    error: String
+    success: Boolean!
+    code: Int
+  }
 `];
