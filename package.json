@@ -46,6 +46,7 @@
     "geo-from-ip": "^1.0.6",
     "google-geocoding": "^0.1.7",
     "graphql": "^0.11.3",
+    "graphql-date": "^1.0.3",
     "graphql-tools": "^2.3.0",
     "html-pdf": "^2.1.0",
     "ical": "^0.5.0",
