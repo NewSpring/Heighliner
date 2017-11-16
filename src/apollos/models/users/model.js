@@ -96,8 +96,19 @@ export class User {
     };
   }
 
-  async deauthorizeUser(token) {
-
+  async deauthorizeUser(userId, token) {
+    this.cache.del(`hashedToken:${token}`); // Not too sure if this works
+    await this.model.update({ _id: userId }, {
+      $pull: {
+        "services.resume.loginTokens": {
+          $or: [
+            { hashedToken: token },
+            { token },
+          ],
+        },
+      },
+    });
+    return {};
   }
 }
 
