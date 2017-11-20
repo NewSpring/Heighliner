@@ -29,20 +29,12 @@ export default {
   },
 
   Mutation: {
-    authorizeUser(_, { email, password }, { models }) {
-      return models.User.authorizeUser(email, password);
-    },
-    deauthorizeUser(_, $, { models, hashedToken, user }) {
-      return models.User.deauthorizeUser(user._id, hashedToken);
+    loginUser(_, $, { models, user }) {
+      return models.User.loginUser(user);
     },
   },
 
-  AuthorizeUserMutationResponse: {
-    id: ({ id }) => id,
-    token: ({ token }) => token,
-    tokenExpires: ({ tokenExpires }) => tokenExpires,
+  LoginUserMutationResponse: {
+    id: ({ Id }) => Id,
   },
-
-  DeauthorizeUserMutationResponse: {},
-
 };
