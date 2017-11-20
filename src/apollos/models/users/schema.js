@@ -32,11 +32,7 @@ export default [`
     emails: [UserEmail]
   }
 
-  type AuthorizeUserMutationResponse {
+  type LoginUserMutationResponse {
     id: String
-    token: String
-    tokenExpires: Date
   }
-
-  type DeauthorizeUserMutationResponse {}
 `];

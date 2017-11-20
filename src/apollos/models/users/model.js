@@ -1,114 +1,119 @@
-import crypto from "crypto";
-import Bcrypt from "bcrypt";
-import Random from "meteor-random";
-
-import { MongoConnector } from "../../mongo";
-import { defaultCache } from "../../../util/cache";
-
-const schema = {
-  _id: String,
-  createdAt: { type: Date, default: Date.now },
-  services: {
-    password: { bcrypt: String },
-    rock: { PersonId: Number, PrimaryAliasId: Number },
-    resume: {
-      loginTokens: [{ when: Date, hashedToken: String }],
-    },
-  },
-  emails: [{ address: String, verified: Boolean }],
-  profile: { lastLogin: Date },
-};
-
-const Model = new MongoConnector("user", schema);
-
-function hashToken(token) {
-  return crypto.createHash("sha256")
-    .update(token)
-    .digest("base64");
-}
-
-// METEOR's default token expiration function
-function tokenExpiration(when) {
-  // We pass when through the Date constructor for backwards compatibility;
-  // `when` used to be a number.
-  const LOGIN_EXPIRATION_DAYS = 90;
-  return new Date((new Date(when)).getTime() + (LOGIN_EXPIRATION_DAYS * 24 * 60 * 60 * 1000));
-}
+import moment from "moment";
+import api from "./rockAPI";
 
 export class User {
+  async getByBasicAuth(userPasswordString = "") {
+    // Client needs to encode user and password and join by ':'
+    // for all user requests including login
+    try {
+      const userPasswordTuple = userPasswordString.split(":");
+      const username = decodeURIComponent(userPasswordTuple[0]);
+      const password = decodeURIComponent(userPasswordTuple[1]);
 
-  constructor({ cache } = { cache: defaultCache }) {
-    this.cache = cache;
-    this.model = Model;
+      const isAuthorized = await this.checkUserCredentials(username, password);
+      if (!isAuthorized) throw new Error("User not authorized");
+
+      const [user] = await api.get(`UserLogins?$filter=UserName eq '${username}'`);
+      return user;
+    } catch (err) {
+      throw err;
+    }
   }
 
-  async getFromId(_id, globalId) {
-    // try a cache lookup
-    return await this.cache.get(globalId, () => this.model.findOne({ _id }));
+  async checkUserCredentials(Username, Password) {
+    try {
+      const isAuthorized = await api.post("Auth/login", {
+        Username,
+        Password,
+      });
+      return isAuthorized && !isAuthorized.statusText;
+    } catch (err) {
+      throw err;
+    }
   }
 
-  async getByHashedToken(token) {
-    const rawToken = token;
+  async loginUser(user = {}) {
+    try {
+      if (!user.IsConfirmed) {
+        api.post(`UserLogins/${user.Id}`, {
+          IsConfirmed: true,
+        });
+      }
 
-    // allow for client or server side auth calls
-    token = hashToken(token);
+      api.patch(`UserLogins/${user.Id}`, {
+        LastLoginDateTime: `${moment().toISOString()}`,
+      });
 
-    return await this.cache.get(`hashedToken:${token}`, () => this.model.findOne({
-      $or: [
-        { "services.resume.loginTokens.hashedToken": token },
-        { "services.resume.loginTokens.hashedToken": rawToken },
-      ],
-    }));
+      return user;
+    } catch (err) {
+      throw err;
+    }
   }
 
-  async authorizeUser(email, hashedPassword) {
-    const user = await this.model.findOne({
+  createUserProfile(props = {}) {
+    const {
       email,
+      firstName,
+      lastName,
+    } = props;
+
+    return api.post("People", {
+      Email: email,
+      Guid: makeNewGuid(),
+      FirstName: stripTags(firstName),
+      LastName: stripTags(lastName),
+      IsSystem: false,
+      Gender: 0,
+      RecordTypeValueId: 1,
+      ConnectionStatusValueId: 67, // Web Prospect
+      SystemNote: "Created from NewSpring Apollos",
     });
-    if (!user) throw new Error("user not found");
-
-    // METEOR's _checkPassword
-    const isValidPassword = Bcrypt.compare(hashedPassword, user.services.password.bcrypt);
-    if (!isValidPassword) throw new Error("invalid password");
-
-    // METEOR's _generateStampedLoginToken
-    const loginStamp = {
-      token: Random.secret(),
-      when: new Date(),
-    };
-
-    // METEOR's _insertLoginToken
-    const hashedLoginStamp = {
-      hashedToken: hashToken(loginStamp.token),
-      when: loginStamp.when,
-    };
-
-    await this.model.update({ _id: user._id }, {
-      $addToSet: {
-        "services.resume.loginTokens": hashedLoginStamp,
-      },
-    });
-
-    return {
-      id: user.id,
-      token: loginStamp.token,
-      tokenExpires: tokenExpiration(loginStamp.when),
-    };
   }
 
-  async deauthorizeUser(userId, token) {
-    this.cache.del(`hashedToken:${token}`); // Not too sure if this works
-    await this.model.update({ _id: userId }, {
-      $pull: {
-        "services.resume.loginTokens": {
-          $or: [
-            { hashedToken: token },
-            { token },
-          ],
-        },
-      },
+  createUser(props = {}) {
+    const {
+      email,
+      password,
+      personId,
+    } = props;
+
+    return api.post("UserLogins", {
+      PersonId: personId,
+      EntityTypeId: 27,
+      UserName: email,
+      IsConfirmed: true,
+      PlainTextPassword: password,
+      LastLoginDateTime: `${moment().toISOString()}`,
     });
-    return {};
+  }
+
+  async registerUser(props = {}) {
+    const {
+      email,
+      firstName,
+      lastName,
+      password,
+    } = props;
+
+    const personId = await this.createUserProfile({
+      email,
+      firstName,
+      lastName,
+    });
+
+    const userId = await this.createUser({
+      email,
+      password,
+      personId,
+    });
+
+    const user = await api.get(`UserLogins/${userId}`);
+    const person = await api.get(`People/${personId}`);
+    // const [systemEmail] = await api.get("SystemEmails?$filter=Title eq 'Account Created'");
+    // const Email = await api.get(`SystemEmails/${systemEmail.Id}`);
+    // console.log('send confirmation email');
+
+    return userId;
   }
 }
 
