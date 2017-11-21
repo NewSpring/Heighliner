@@ -4,7 +4,7 @@ import moment from "moment";
 import Liquid from "liquid-node";
 import _ from "lodash";
 
-import api from "./rockAPI";
+import api from "./api";
 import makeNewGuid from "./makeNewGuid";
 
 // @TODO abstract
@@ -116,13 +116,15 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
     ]);
 
     const CommunicationId = await api.post("Communications", {
-      SenderPersonAliasId: null,
-      Status: 3,
-      IsBulkCommunication: false,
-      Guid: makeNewGuid(),
-      Subject: subject,
-      MediumData: {
-        HtmlMessage: body,
+      data: {
+        SenderPersonAliasId: null,
+        Status: 3,
+        IsBulkCommunication: false,
+        Guid: makeNewGuid(),
+        Subject: subject,
+        MediumData: {
+          HtmlMessage: body,
+        },
       },
     });
 
@@ -131,7 +133,9 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
     // this is a bug in core right now. We can't set Mandrill on the initial
     // post because it locks everything up, we can however, patch it
     await api.patch(`Communications/${CommunicationId}`, {
-      MediumEntityTypeId: 37, // Mandrill
+      data: {
+        MediumEntityTypeId: 37, // Mandrill
+      },
     });
 
     if (typeof PersonAliasId === "number") {
@@ -140,17 +144,14 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
 
     const ids = [];
     for (const id of PersonAliasId) {
-      const CommunicationRecipient = {
-        PersonAliasId: id,
-        CommunicationId,
-        Status: 0, // Pending
-        Guid: makeNewGuid(),
-      };
-
-      const CommunicationRecipientId = await api.post(
-        "CommunicationRecipients",
-        CommunicationRecipient,
-      );
+      const CommunicationRecipientId = await api.post("CommunicationRecipients", {
+        data: {
+          PersonAliasId: id,
+          CommunicationId,
+          Status: 0, // Pending
+          Guid: makeNewGuid(),
+        },
+      });
 
       ids.push(CommunicationRecipientId);
     }
