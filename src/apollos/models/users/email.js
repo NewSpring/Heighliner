@@ -2,9 +2,10 @@ import toPascalCase from "to-pascal-case";
 import toSnakeCase from "to-snake-case";
 import moment from "moment";
 import Liquid from "liquid-node";
+import _ from "lodash";
 
 import api from "./rockAPI";
-// import { makeNewGuid } from "../../../../util";
+import makeNewGuid from "./makeNewGuid";
 
 // @TODO abstract
 const Parser = new Liquid.Engine();
@@ -77,119 +78,93 @@ Parser.registerFilters({
   },
 });
 
-export default function sendEmail(emailId, PersonAliasId, merge) {
-  let mergeFields = merge;
-  check(emailId, Number);
-  // check(PersonAliasId, Number)
+export default async function sendEmail(emailId, PersonAliasId, merge) {
+  try {
+    let mergeFields = merge;
+    const Email = await api.get(`SystemEmails/${emailId}`);
 
-  const Email = api.get.sync(`SystemEmails/${emailId}`);
+    if (!Email.Body || !Email.Subject) throw new Error(`No email body or subject found for ${emailId}`);
 
-  if (!Email.Body || !Email.Subject) {
-    throw new Meteor.Error(`No email body or subject found for ${emailId}`);
-  }
+    /*
 
-  /*
+      Get global attributes from Rock and map to JSON
 
-    Get global attributes from Rock and map to JSON
+      @TODO depreciate for MergeFieldsJson
 
-    @TODO depreciate for MergeFieldsJson
+    */
+    const GlobalAttribute = {};
+    // eslint-disable-next-line max-len
+    const Globals = await api.get(
+      "AttributeValues?$filter=Attribute/EntityTypeId eq null&$expand=Attribute&$select=Attribute/Key,Value",
+    );
+    // eslint-disable-next-line max-len
+    const Defaults = await api.get(
+      "Attributes?$filter=EntityTypeId eq null&$select=DefaultValue,Key",
+    );
 
-  */
-  const GlobalAttribute = {};
-  // eslint-disable-next-line max-len
-  const Globals = api.get.sync(
-    "AttributeValues?$filter=Attribute/EntityTypeId eq null&$expand=Attribute&$select=Attribute/Key,Value",
-  );
-  // eslint-disable-next-line max-len
-  const Defaults = api.get.sync(
-    "Attributes?$filter=EntityTypeId eq null&$select=DefaultValue,Key",
-  );
+    for (const d of Defaults) {
+      GlobalAttribute[d.Key] = d.DefaultValue;
+    }
+    for (const g of Globals) {
+      GlobalAttribute[g.Attribute.Key] = g.Value;
+    }
+    mergeFields = { ...mergeFields, ...{ GlobalAttribute } };
 
-  for (const d of Defaults) {
-    GlobalAttribute[d.Key] = d.DefaultValue;
-  }
-  for (const g of Globals) {
-    GlobalAttribute[g.Attribute.Key] = g.Value;
-  }
-  mergeFields = { ...mergeFields, ...{ GlobalAttribute } };
+    const [subject, body] = await Promise.all([
+      Parser.parseAndRender(Email.Subject, mergeFields),
+      Parser.parseAndRender(Email.Body, mergeFields),
+    ]);
 
-  return Promise.all([
-    // Parser.parse(Email.Subject)
-    //   .then((template) => {
-    //     // console.log(template)
-    //     return template.render(mergeFields)
-    //   }),
-    // Parser.parse(Email.Body)
-    //   .then((template) => {
-    //     console.log(template.root.nodelist)
-    //     return template.render(mergeFields)
-    //   }),
-    Parser.parseAndRender(Email.Subject, mergeFields),
-    Parser.parseAndRender(Email.Body, mergeFields),
-  ])
-    .then(([subject, body]) => {
-      const Communication = {
-        SenderPersonAliasId: null,
-        Status: 3,
-        IsBulkCommunication: false,
-        // FutureSendDateTime: moment().add(30, "minutes").toISOString(),
+    const CommunicationId = await api.post("Communications", {
+      SenderPersonAliasId: null,
+      Status: 3,
+      IsBulkCommunication: false,
+      Guid: makeNewGuid(),
+      Subject: subject,
+      MediumData: {
+        HtmlMessage: body,
+      },
+    });
+
+    if (CommunicationId.statusText) throw new Error(CommunicationId);
+
+    // this is a bug in core right now. We can't set Mandrill on the initial
+    // post because it locks everything up, we can however, patch it
+    await api.patch(`Communications/${CommunicationId}`, {
+      MediumEntityTypeId: 37, // Mandrill
+    });
+
+    if (typeof PersonAliasId === "number") {
+      PersonAliasId = [PersonAliasId]; // eslint-disable-line
+    }
+
+    const ids = [];
+    for (const id of PersonAliasId) {
+      const CommunicationRecipient = {
+        PersonAliasId: id,
+        CommunicationId,
+        Status: 0, // Pending
         Guid: makeNewGuid(),
-        Subject: subject,
-        MediumData: {
-          HtmlMessage: body,
-        },
       };
 
-      return api.post("Communications", Communication);
-    })
-    .then(CommunicationId => {
-      if (CommunicationId.statusText) {
-        throw new Meteor.Error(CommunicationId);
+      const CommunicationRecipientId = await api.post(
+        "CommunicationRecipients",
+        CommunicationRecipient,
+      );
+
+      ids.push(CommunicationRecipientId);
+    }
+
+    await api.post(`Communications/Send/${CommunicationId}`);
+
+    for (const CommunicationRecipientId of ids) {
+      if (CommunicationRecipientId.statusText) {
+        throw new Error(CommunicationRecipientId);
       }
+    }
 
-      // this is a bug in core right now. We can't set Mandrill on the initial
-      // post because it locks everything up, we can however, patch it
-      api.patch.sync(`Communications/${CommunicationId}`, {
-        MediumEntityTypeId: 37, // Mandrill
-      });
-
-      if (typeof PersonAliasId === "number") {
-        PersonAliasId = [PersonAliasId]; // eslint-disable-line
-      }
-
-      const ids = [];
-      for (const id of PersonAliasId) {
-        const CommunicationRecipient = {
-          PersonAliasId: id,
-          CommunicationId,
-          Status: 0, // Pending
-          Guid: makeNewGuid(),
-        };
-
-        const CommunicationRecipientId = api.post.sync(
-          "CommunicationRecipients",
-          CommunicationRecipient,
-        );
-
-        ids.push(CommunicationRecipientId);
-      }
-
-      api.post.sync(`Communications/Send/${CommunicationId}`);
-
-      return ids;
-    })
-    .then(communications => {
-      for (const CommunicationRecipientId of communications) {
-        if (CommunicationRecipientId.statusText) {
-          throw new Meteor.Error(CommunicationRecipientId);
-        }
-      }
-
-      return communications;
-    })
-    .catch(e => {
-      // eslint-disable-next-line
-      console.log(e);
-      throw e;
-    });
+    return ids;
+  } catch (err) {
+    throw err;
+  }
 }
