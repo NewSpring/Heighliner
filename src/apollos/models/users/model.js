@@ -1,4 +1,7 @@
 import moment from "moment";
+import stripTags from "striptags";
+import makeNewGuid from "./makeNewGuid";
+import sendEmail from "./sendEmail";
 import api from "./rockAPI";
 
 export class User {
@@ -88,32 +91,47 @@ export class User {
   }
 
   async registerUser(props = {}) {
-    const {
-      email,
-      firstName,
-      lastName,
-      password,
-    } = props;
+    try {
+      const {
+        email,
+        firstName,
+        lastName,
+        password,
+      } = props;
 
-    const personId = await this.createUserProfile({
-      email,
-      firstName,
-      lastName,
-    });
+      const personId = await this.createUserProfile({
+        email,
+        firstName,
+        lastName,
+      });
 
-    const userId = await this.createUser({
-      email,
-      password,
-      personId,
-    });
+      const userId = await this.createUser({
+        email,
+        password,
+        personId,
+      });
 
-    const user = await api.get(`UserLogins/${userId}`);
-    const person = await api.get(`People/${personId}`);
-    // const [systemEmail] = await api.get("SystemEmails?$filter=Title eq 'Account Created'");
-    // const Email = await api.get(`SystemEmails/${systemEmail.Id}`);
-    // console.log('send confirmation email');
+      const user = await api.get(`UserLogins/${userId}`);
+      const person = await api.get(`People/${personId}`);
 
-    return userId;
+      // Removed saving it to a constant
+      // because we don't know if this ID could change
+      // from other sources (migrations, integrity checks, etc)
+      const [systemEmail] = await api.get("SystemEmails?$filter=Title eq 'Account Created'");
+
+      await sendEmail(
+        systemEmail.Id,
+        Number(person.PrimaryAliasId),
+        {
+          Person: person,
+          User: user,
+        },
+      );
+
+      return userId;
+    } catch (err) {
+      throw err;
+    }
   }
 }
 
