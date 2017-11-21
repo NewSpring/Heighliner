@@ -72,8 +72,10 @@
     "redis": "^2.4.2",
     "redis-commands": "github:newspring/redis-commands",
     "sequelize": "^3.24.0",
-    "striptags": "^3.0.1",
+    "striptags": "^3.1.0",
     "tedious": "^1.14.0",
+    "to-pascal-case": "^1.0.0",
+    "to-snake-case": "^1.0.0",
     "truncate": "^2.0.0",
     "xml2js": "^0.4.17"
   },
