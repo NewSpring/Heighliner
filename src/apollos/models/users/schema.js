@@ -35,4 +35,12 @@ export default [`
   type LoginUserMutationResponse {
     id: String
   }
+
+  type RegisterUserMutationResponse {
+    id: String
+  }
+
+  type ChangeUserPasswordMutationResponse {}
+  type ForgotUserMutationResponse {}
+  type ResetUserMutationResponse {}
 `];

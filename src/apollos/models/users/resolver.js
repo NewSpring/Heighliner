@@ -32,9 +32,41 @@ export default {
     loginUser(_, $, { models, user }) {
       return models.User.loginUser(user);
     },
+    registerUser(_, props, { models }) {
+      return models.User.registerUser(props);
+    },
+    forgotUserPassword(_, props, { models }) {
+      const {
+        username,
+        sourceURL,
+      } = props;
+      return models.User.forgotPassword(username, sourceURL);
+    },
+    resetUserPassword(_, props, { models }) {
+      const {
+        token,
+        newPassword,
+      } = props;
+      return models.User.resetPassword(token, newPassword);
+    },
+    changeUserPassword(_, props, { models, user }) {
+      const {
+        oldPassword,
+        newPassword,
+      } = props;
+      return models.User.changePassword(user, oldPassword, newPassword);
+    },
   },
 
   LoginUserMutationResponse: {
     id: ({ Id }) => Id,
   },
+
+  RegisterUserMutationResponse: {
+    id: ({ Id }) => Id,
+  },
+
+  ChangeUserPasswordMutationResponse: {},
+  ForgotUserMutationResponse: {},
+  ResetUserMutationResponse: {},
 };
