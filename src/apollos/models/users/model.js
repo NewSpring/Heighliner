@@ -1,6 +1,9 @@
 import crypto from "crypto";
 import moment from "moment";
 import stripTags from "striptags";
+import Random from "meteor-random";
+import omit from "lodash/omit";
+import isEmpty from "lodash/isEmpty";
 import makeNewGuid from "./makeNewGuid";
 import sendEmail from "./sendEmail";
 import api from "./api";
@@ -63,11 +66,20 @@ export class User {
       const isAuthorized = await this.checkUserCredentials(username, password);
       if (!isAuthorized) throw new Error("User not authorized");
 
-      const [user] = await api.get(`/UserLogins?$filter=UserName eq '${username}'`);
-      return user;
+      return this.getByUsername(username);
     } catch (err) {
       throw err;
     }
+  }
+
+  async getByUsername(username = "") {
+    const [user] = await api.get(`/UserLogins?$filter=UserName eq '${username}'`);
+    return user;
+  }
+
+  async getByToken(token = "") {
+    const [user] = await api.get(`/UserLogins?$filter=ResetPasswordToken eq '${token}'`);
+    return user;
   }
 
   async checkUserCredentials(Username, Password) {
@@ -177,6 +189,7 @@ export class User {
       // because we don't know if this ID could change
       // from other sources (migrations, integrity checks, etc)
       const [systemEmail] = await api.get("/SystemEmails?$filter=Title eq 'Account Created'");
+      if (!systemEmail) throw new Error("Account created email does not exist!");
 
       await sendEmail(
         systemEmail.Id,
@@ -188,6 +201,78 @@ export class User {
       );
 
       return userId;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async forgotPassword(username, sourceURL) {
+    try {
+      const user = await this.getByUsername(username);
+      if (!user) throw new Error("User does not exist!");
+
+      const person = await api.get(`People/${user.PersonId}`);
+      if (!person) throw new Error("User profile does not exist!");
+
+      const token = Random.secret();
+
+      // Not sure if I can do this (also can't expire this way until after use)
+      await api.put(`UserLogins/${user.Id}`, {
+        ...user,
+        ResetPasswordToken: token,
+      });
+
+      const [systemEmail] = await api.get("/SystemEmails?$filter=Title eq 'Reset Password'");
+      if (!systemEmail) throw new Error("Reset password email does not exist!");
+
+      await sendEmail(
+        systemEmail.Id,
+        Number(person.PrimaryAliasId),
+        {
+          Person: person,
+          ResetPasswordUrl: `${sourceURL}/reset-password/${token}`,
+        },
+      );
+      return true;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async resetPassword(token, newPassword) {
+    try {
+      const user = await this.getByToken(token);
+      if (!user) throw new Error("Token user not found!");
+      if (isEmpty(newPassword)) throw new Error("New password is required");
+
+      await api.put(`UserLogins/${user.Id}`, {
+        ...omit(user, "ResetPasswordToken"),
+        PlainTextPassword: newPassword,
+        IsConfirmed: true,
+        EntityTypeId: 27,
+      });
+      return true;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async changePassword(user, oldPassword, newPassword) {
+    try {
+      if (!user) throw new Error("User is not logged in!");
+      if (isEmpty(oldPassword)) throw new Error("Old password is required");
+      if (isEmpty(newPassword)) throw new Error("New password is required");
+
+      const isAuthorized = await this.checkUserCredentials(user.UserName, oldPassword);
+      if (!isAuthorized) throw new Error("User not authorized");
+
+      await api.put(`UserLogins/${user.Id}`, {
+        ...omit(user, "ResetPasswordToken"),
+        PlainTextPassword: newPassword,
+        IsConfirmed: true,
+        EntityTypeId: 27,
+      });
+      return true;
     } catch (err) {
       throw err;
     }
