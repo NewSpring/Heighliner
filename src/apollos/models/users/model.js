@@ -38,12 +38,10 @@ export class User {
   }
 
   // Deprecate
-  async getByHashedToken(_token) {
-    const rawToken = _token;
-
+  async getByHashedToken(rawToken) {
     // allow for client or server side auth calls
     const token = crypto.createHash("sha256")
-      .update(_token)
+      .update(rawToken)
       .digest("base64");
 
     return await this.cache.get(`hashedToken:${token}`, () => this.model.findOne({
