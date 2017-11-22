@@ -1,10 +1,59 @@
+import crypto from "crypto";
 import moment from "moment";
 import stripTags from "striptags";
 import makeNewGuid from "./makeNewGuid";
 import sendEmail from "./sendEmail";
 import api from "./api";
 
+import { MongoConnector } from "../../mongo";
+import { defaultCache } from "../../../util/cache";
+
+const schema = {
+  _id: String,
+  createdAt: { type: Date, default: Date.now },
+  services: {
+    password: { bcrypt: String },
+    rock: { PersonId: Number, PrimaryAliasId: Number },
+    resume: {
+      loginTokens: [{ when: Date, hashedToken: String }],
+    },
+  },
+  emails: [{ address: String, verified: Boolean }],
+  profile: { lastLogin: Date },
+};
+
+const Model = new MongoConnector("user", schema);
+
 export class User {
+  // Deprecate
+  constructor({ cache } = { cache: defaultCache }) {
+    this.cache = cache;
+    this.model = Model;
+  }
+
+  // Deprecate
+  async getFromId(_id, globalId) {
+    // try a cache lookup
+    return await this.cache.get(globalId, () => this.model.findOne({ _id }));
+  }
+
+  // Deprecate
+  async getByHashedToken(_token) {
+    const rawToken = _token;
+
+    // allow for client or server side auth calls
+    const token = crypto.createHash("sha256")
+      .update(_token)
+      .digest("base64");
+
+    return await this.cache.get(`hashedToken:${token}`, () => this.model.findOne({
+      $or: [
+        { "services.resume.loginTokens.hashedToken": token },
+        { "services.resume.loginTokens.hashedToken": rawToken },
+      ],
+    }));
+  }
+
   async getByBasicAuth(userPasswordString = "") {
     // Client needs to encode user and password and join by ':'
     // for all user requests including login
