@@ -113,7 +113,7 @@ export default function (app, monitor) {
     if (ip === "::1") ip = "2602:306:b81a:c420:ed84:6327:b58e:6a2d";
 
     const context = {
-      BasicAuth: request.headers.authorization,
+      authToken: request.headers.authorization,
       cache,
       ip,
       req: request,
@@ -122,13 +122,20 @@ export default function (app, monitor) {
     if (process.env.OPTICS_API_KEY && OpticsAgent) {
       context.opticsContext = OpticsAgent.context(request);
     }
-    if (context.BasicAuth) {
+    if (context.authToken) {
       if (datadog) datadog.increment("graphql.authenticated.request");
       // we instansiate the
       // bind the logged in user to the context overall
       let user;
       try {
-        user = await timeout(createdModels.User.getByBasicAuth(context.BasicAuth), 1000);
+        const tokenIsBasicAuth = context.authToken.indexOf(":") >= 0;
+        if (tokenIsBasicAuth) {
+          user = await timeout(createdModels.User.getByBasicAuth(context.authToken), 1000);
+        } else {
+          // Deprecate
+          user = await timeout(createdModels.User.getByHashedToken(context.authToken), 1000);
+        }
+
         context.user = user;
       } catch (e) { /* tslint:disable-line */ }
 
