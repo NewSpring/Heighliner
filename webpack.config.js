@@ -1,5 +1,3 @@
-
-const validate = require("webpack-validator");
 const nodeExternals = require("webpack-node-externals");
 const DotenvPlugin = require("webpack-dotenv-plugin");
 const NpmInstallPlugin = require("npm-install-webpack-plugin");
@@ -9,7 +7,7 @@ const path = require("path");
 
 const { ifProduction, ifNotProduction } = getIfUtils(process.env.NODE_ENV);
 
-module.exports = validate({
+module.exports = {
   entry: "./src/server.js",
   target: "node",
   output: {
@@ -27,7 +25,7 @@ module.exports = validate({
     })),
     ifNotProduction(new NpmInstallPlugin()),
     ifNotProduction(new webpack.HotModuleReplacementPlugin()),
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     ifNotProduction(ifNotProduction() && new DotenvPlugin({ sample: "./.env.example" })),
   ]),
   module: {
@@ -35,9 +33,9 @@ module.exports = validate({
       {
         test: /\.js$/,
         exclude: /(node_modules|bower_components)/,
-        loader: "babel",
+        loader: "babel-loader",
       },
     ],
   },
   externals: [nodeExternals()],
-});
+};

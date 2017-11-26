@@ -60,30 +60,6 @@ export default [`
     code: Int
   }
 
-  type OrderMutationResponse implements MutationResponse {
-    error: String
-    success: Boolean!
-    code: Int
-    url: String
-    transactionId: ID
-  }
-
-  type CompleteOrderMutationResponse implements MutationResponse {
-    error: String
-    success: Boolean!
-    code: Int
-    transaction: Transaction
-    schedule: ScheduledTransaction
-    person: Person
-    savedPayment: SavedPayment
-  }
-
-  type ValidateMutationResponse implements MutationResponse {
-    error: String
-    success: Boolean!
-    code: Int
-  }
-
   type FinancialAccount implements Node {
     id: ID!
     entityId: Int!
@@ -127,22 +103,6 @@ export default [`
     expirationMonth: String
     expirationYear: String
   }
-
-
-  type SavePaymentMutationResponse implements MutationResponse {
-    error: String
-    success: Boolean!
-    code: Int
-    savedPayment: SavedPayment
-  }
-
-  type ScheduledTransactionMutationResponse implements MutationResponse {
-    error: String
-    success: Boolean!
-    code: Int
-    schedule: ScheduledTransaction
-  }
-
 
   type SavePaymentMutationResponse implements MutationResponse {
     error: String
