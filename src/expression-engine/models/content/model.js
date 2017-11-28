@@ -37,6 +37,7 @@ import {
 } from "../ee/snippets";
 
 import { EE } from "../ee";
+import identifyCategory from './identifyCategory';
 
 export class Content extends EE {
   __type =  "Content";
@@ -513,6 +514,7 @@ export class Content extends EE {
     , { ttl: 3600, cache: false })
       .then(this.getFromPublishedIds)
       .then((x) => x.filter(y => !!y))
+      .then(x => x.map(identifyCategory))
       ;
   }
 
