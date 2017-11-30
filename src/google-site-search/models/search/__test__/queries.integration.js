@@ -1,5 +1,5 @@
 import express from "express";
-import { apolloExpress } from "apollo-server";
+import { apolloExpress } from "apollo-server-express";
 import { tester } from "graphql-tester";
 import { create } from "graphql-tester/lib/main/servers/express";
 import bodyParser from "body-parser";

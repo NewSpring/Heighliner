@@ -63,10 +63,6 @@ const executabledSchema = makeExecutableSchema({
   allowUndefinedInResolve: true, // required for resolvers
 });
 
-if (process.env.OPTICS_API_KEY && process.env.GQL_TRACING_TOOL === "optics") {
-  OpticsAgent.instrumentSchema(executabledSchema);
-}
-
 export function createModels({ cache }) {
   // create all of the models on app start up
   const createdModels = {};
@@ -118,10 +114,6 @@ export default function (app, monitor) {
       req: request,
     };
 
-    if (process.env.OPTICS_API_KEY && OpticsAgent && process.env.GQL_TRACING_TOOL === "optics") {
-      context.opticsContext = OpticsAgent.context(request);
-    }
-
     if (context.hashedToken) {
       if (datadog) datadog.increment("graphql.authenticated.request");
       // we instansiate the
@@ -170,7 +162,7 @@ export default function (app, monitor) {
         ...context,
         ...{ models: createdModels },
       },
-      tracing: (process.env.GQL_TRACING_TOOL === "engine"),
+      tracing: (process.env.NODE_ENV === "production"),
       schema: executabledSchema,
       formatError: (error) => {
         if (process.env.NODE_ENV === "production") {

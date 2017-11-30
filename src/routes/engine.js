@@ -7,10 +7,10 @@ const apolloEngine = new Engine({
   graphqlPort: process.env.PORT,
 });
 
-if (process.env.GQL_TRACING_TOOL === "engine") apolloEngine.start();
+if (process.env.NODE_ENV === "production") apolloEngine.start();
 
 export default (app) => {
-  if (process.env.GQL_TRACING_TOOL === "engine") {
+  if (process.env.NODE_ENV === "production") {
     app.use(apolloEngine.expressMiddleware());
   }
 };
