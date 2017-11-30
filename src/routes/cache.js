@@ -3,7 +3,7 @@ import { createModels } from "./graphql";
 import { createCache } from "../util/cache";
 
 export default (app, monitor) => {
-  app.post("/graphql/cache/flush", async (req, res) => {
+  app.post("/util/cache/flush", async (req, res) => {
     const cache = await createCache(monitor);
     cache.clearAll();
     res.end();

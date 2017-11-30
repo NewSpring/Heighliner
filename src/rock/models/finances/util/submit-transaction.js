@@ -1,5 +1,5 @@
-
 import { find, omitBy, isEmpty, flatten } from "lodash";
+import moment from "moment";
 
 import {
   Transaction as TransactionTable,
@@ -12,22 +12,15 @@ import {
   FinancialPaymentDetail,
 } from "../tables";
 
+import FinancialBatch from "../models/FinancialBatch";
+
 // import { AttributeValue, Attribute } from "../../system/tables";
 
-import {
-  Person as PersonTable,
-  PersonAlias,
-} from "../../people/tables";
+import { Person as PersonTable, PersonAlias } from "../../people/tables";
 
-import {
-  Group,
-  GroupLocation,
-  GroupMember,
-} from "../../groups/tables";
+import { Group, GroupLocation, GroupMember } from "../../groups/tables";
 
-import {
-  Location as LocationModel,
-} from "../../campuses/tables";
+import { Location as LocationModel } from "../../campuses/tables";
 
 export default async (transaction) => {
   if (!transaction) return Promise.resolve();
@@ -41,9 +34,11 @@ export default async (transaction) => {
     ScheduledTransaction,
   } = transaction;
 
-  const Existing = await TransactionTable.find({ where: {
-    TransactionCode: Transaction.TransactionCode,
-  } });
+  const Existing = await TransactionTable.find({
+    where: {
+      TransactionCode: Transaction.TransactionCode,
+    },
+  });
 
   const exists = Existing.length > 0;
   if (exists) return Promise.resolve();
@@ -85,10 +80,12 @@ export default async (transaction) => {
   // translate to child account based on campus
   if (CampusId) {
     for (const detail of TransactionDetails) {
-      detail.AccountId = await FinancialAccountTable.findOne({ where: {
-        CampusId, ParentAccountId: detail.AccountId,
-      } })
-        .then(x => x.Id);
+      detail.AccountId = await FinancialAccountTable.findOne({
+        where: {
+          CampusId,
+          ParentAccountId: detail.AccountId,
+        },
+      }).then(x => x.Id);
 
       detail.CreatedByPersonAliasId = PrimaryAliasId;
     }
@@ -102,11 +99,19 @@ export default async (transaction) => {
 
   Transaction.FinancialPaymentDetailId = FinancialPaymentDetailId;
 
+  // get the batch id and add it to the transaction.
+  const currencyType = PaymentDetail.CurrencyTypeValueId === 156 ? "Credit Card" : "ACH";
+  const newBatch = new FinancialBatch();
+  const batch = await newBatch.findOrCreate({
+    currencyType,
+    date: Transaction.TransactionDateTime,
+  });
+  if (batch && batch.Id) Transaction.BatchId = batch.Id;
+
   if (ScheduledTransaction.GatewayScheduleId) {
     const ScheduledTransactionId = await ScheduledTransactionTable.findOne({
       where: ScheduledTransaction,
-    })
-      .then(x => x && x.Id);
+    }).then(x => x && x.Id);
 
     if (ScheduledTransactionId) Transaction.ScheduledTransactionId = ScheduledTransactionId;
     if (!ScheduledTransactionId) {
