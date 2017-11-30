@@ -146,7 +146,7 @@ export class RedisCache {
     const cipher = Crypto.createHmac("sha256", this.secret);
     type = type ? type + ":" : "";
     user = user ? user + ":" : "";
-    const str = cipher.update(JSON.stringify(obj)).digest("hex");
+    const str = cipher.update(JSON.stringify(obj), "utf-8").digest("hex");
 
     return `query:${type}${user}${str}`;
   }

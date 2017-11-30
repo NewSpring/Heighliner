@@ -105,17 +105,18 @@ describe("sendEmail", () => {
     const result = await Local.sendEmail("test");
 
     expect(CommunicationTable.post).toBeCalledWith({
+      CommunicationType: 1,
+      Id: 10,
       SenderPersonAliasId: null,
       Status: 3,
       IsBulkCommunication: false,
       Guid: "guid",
       Subject: "foo",
-      MediumData: { HtmlMessage: "bar" },
-      Id: 10, // XXX bug in Jest
+      Message: "bar",
     });
-    expect(CommunicationTable.patch).toBeCalledWith(10, {
-      MediumEntityTypeId: 37, // Mandrill
-    });
+    // expect(CommunicationTable.patch).toBeCalledWith(10, {
+    //   MediumEntityTypeId: 37, // Mandrill
+    // });
     expect(result).toEqual([]);
   });
   it("it should create CommunicationRecipient for all people", async () => {
@@ -130,6 +131,7 @@ describe("sendEmail", () => {
     expect(CommunicationRecipientTable.post).toBeCalledWith({
       PersonAliasId: 1,
       CommunicationId: 10,
+      MediumEntityTypeId: 37, // Mandrill
       Status: 0, // Pending
       Guid: "guid",
       AdditionalMergeValuesJson: JSON.stringify({ foo: "bar" }),
