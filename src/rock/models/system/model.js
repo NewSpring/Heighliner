@@ -168,7 +168,7 @@ export class Rock extends Heighliner {
       IsBulkCommunication: false,
       Guid: uuid.v4(),
       Subject: email.Subject,
-      MediumData: { HtmlMessage: email.Body },
+      Message: email.Body,
     };
 
     Communication.Id = await CommunicationTable.post(Communication);
