@@ -37,7 +37,7 @@ export function connect(monitor) {
   return new Promise((cb) => {
     const opts = merge({}, RockSettings.opts, {
       dialect: "mssql",
-      logging: process.env.NODE_ENV !== "production" || process.env.DEBUG === "all" ? loud : noop, // tslint:disable-line
+      logging: process.env.LOG === "true" ? loud : noop,
       benchmark: process.env.NODE_ENV !== "production",
       dialectOptions: {
         readOnlyIntent: true,

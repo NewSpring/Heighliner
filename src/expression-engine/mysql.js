@@ -33,7 +33,7 @@ export function connect(monitor) {
   return new Promise((cb) => {
     const opts = merge({}, EESettings.opts, {
       dialect: "mysql",
-      logging: process.env.NODE_ENV !== "production" ? loud : noop, // tslint:disable-line
+      logging: process.env.LOG === "true" ? loud : noop, // tslint:disable-line
       benchmark: process.env.NODE_ENV !== "production",
       define: {
         timestamps: false,
