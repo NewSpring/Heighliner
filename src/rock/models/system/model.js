@@ -163,25 +163,27 @@ export class Rock extends Heighliner {
     if (!email || !email.Body || !email.Subject) return null;
 
     const Communication = {
+      CommunicationType: 1,
       SenderPersonAliasId: null,
       Status: 3,
       IsBulkCommunication: false,
       Guid: uuid.v4(),
       Subject: email.Subject,
-      MediumData: { HtmlMessage: email.Body },
+      Message: email.Body,
     };
 
     Communication.Id = await CommunicationTable.post(Communication);
 
     // this is a bug in Rock right now. We can't set Mandrill on the initial
     // post because it locks everything up, we can however, patch it
-    await CommunicationTable.patch(Communication.Id, {
-      MediumEntityTypeId: 37, // Mandrill
-    });
+    // await CommunicationTable.patch(Communication.Id, {
+    //   MediumEntityTypeId: 37, // Mandrill
+    // });
 
     return Promise.all(
       people.map((PersonAliasId) => {
         const CommunicationRecipient = {
+          MediumEntityTypeId: 37, // Mandrill
           PersonAliasId,
           CommunicationId: Communication.Id,
           Status: 0, // Pending
