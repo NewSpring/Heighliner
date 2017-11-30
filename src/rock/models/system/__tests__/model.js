@@ -106,13 +106,13 @@ describe("sendEmail", () => {
 
     expect(CommunicationTable.post).toBeCalledWith({
       CommunicationType: 1,
-      Id: 10,
       SenderPersonAliasId: null,
       Status: 3,
       IsBulkCommunication: false,
       Guid: "guid",
       Subject: "foo",
       Message: "bar",
+      Id: 10, // XXX bug in Jest
     });
     // expect(CommunicationTable.patch).toBeCalledWith(10, {
     //   MediumEntityTypeId: 37, // Mandrill
@@ -129,6 +129,7 @@ describe("sendEmail", () => {
     const result = await Local.sendEmail("test", [1], { foo: "bar" });
 
     expect(CommunicationRecipientTable.post).toBeCalledWith({
+      MediumEntityTypeId: 37, // Mandrill
       PersonAliasId: 1,
       CommunicationId: 10,
       MediumEntityTypeId: 37, // Mandrill
@@ -154,7 +155,7 @@ describe("getAttributeFromId", () => {
 
   it("it calls findone with correct info", async () => {
     await Local.getAttributeFromId(10);
-    expect(AttributeModel.findOne).toBeCalledWith({ where: {Id: 10}});
+    expect(AttributeModel.findOne).toBeCalledWith({ where: { Id: 10 } });
   });
 });
 
@@ -183,8 +184,8 @@ describe("getAttributeValuesFromAttributeId", () => {
     await Local.getAttributeValuesFromAttributeId(10, null, 123);
     await mockedCache.get.mock.calls[0][1]();
     expect(AttributeValueModel.find).toBeCalledWith({
-      where: {AttributeId: 10, EntityId: 123},
-      include: [{include: [{model: "hey"}], model: "hey"}],
+      where: { AttributeId: 10, EntityId: 123 },
+      include: [{ include: [{ model: "hey" }], model: "hey" }],
     });
   });
 
@@ -198,7 +199,7 @@ describe("getAttributeValuesFromAttributeId", () => {
 
   it("returns properly formatted data", async () => {
     Local.processAttributeValue = jest.fn(() => "VALUE");
-    AttributeValueModel.find.mockReturnValueOnce(Promise.resolve([{whatWasAnInsideJob: "harambe"}]));
+    AttributeValueModel.find.mockReturnValueOnce(Promise.resolve([{ whatWasAnInsideJob: "harambe" }]));
     await Local.getAttributeValuesFromAttributeId(10, null, 123);
     const res = await mockedCache.get.mock.calls[0][1]();
     expect(res).toEqual([{
@@ -236,12 +237,12 @@ describe("getAttributesFromEntity", () => {
     await Local.getAttributesFromEntity(10, "Harambe", 123);
     expect(mockedCache.get.mock.calls[0][0]).toEqual("10:Harambe:getAttributesFromEntity");
     await mockedCache.get.mock.calls[0][1]();
-    expect(AttributeModel.find).toBeCalledWith({include: [{model: "hey"}, {model: "boi"}], where: {EntityTypeId: 123, Key: "Harambe"}});
+    expect(AttributeModel.find).toBeCalledWith({ include: [{ model: "hey" }, { model: "boi" }], where: { EntityTypeId: 123, Key: "Harambe" } });
   });
 
   it("handles results that aren't defined values", async () => {
     const stuff = {
-      FieldType: {Class: "a"},
+      FieldType: { Class: "a" },
       Id: 1,
       Name: "banana",
       Description: "What he eats",
@@ -252,17 +253,17 @@ describe("getAttributesFromEntity", () => {
       Description: stuff.Description,
       EntityId: 10,
       Id: stuff.Id,
-      Value: stuff.Name
+      Value: stuff.Name,
     }]);
   });
 
   it("handles defined value results", async () => {
     const stuff = {
-      FieldType: {Class: "Rock.Field.Types.DefinedValueFieldType"},
-      AttributeQualifiers: [{Key: "definedtype", Value: "piggy"}],
+      FieldType: { Class: "Rock.Field.Types.DefinedValueFieldType" },
+      AttributeQualifiers: [{ Key: "definedtype", Value: "piggy" }],
     };
-    //mock defined value lookup
-    Local.getDefinedValuesByTypeId = jest.fn(() => Promise.resolve({wow: "boi"}));
+    // mock defined value lookup
+    Local.getDefinedValuesByTypeId = jest.fn(() => Promise.resolve({ wow: "boi" }));
     mockedCache.get.mockReturnValue(Promise.resolve([stuff]));
     const res = await Local.getAttributesFromEntity(10, "Harambe", 123);
     expect(Local.getDefinedValuesByTypeId).toBeCalledWith("piggy");
