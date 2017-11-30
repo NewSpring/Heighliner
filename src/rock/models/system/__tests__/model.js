@@ -132,6 +132,7 @@ describe("sendEmail", () => {
       MediumEntityTypeId: 37, // Mandrill
       PersonAliasId: 1,
       CommunicationId: 10,
+      MediumEntityTypeId: 37, // Mandrill
       Status: 0, // Pending
       Guid: "guid",
       AdditionalMergeValuesJson: JSON.stringify({ foo: "bar" }),

@@ -1,4 +1,4 @@
-import sequelize from "sequelize"
+import sequelize from "sequelize";
 import { pick, sortBy, flatten } from "lodash";
 import { createGlobalId, Heighliner } from "../../../util";
 
@@ -35,7 +35,7 @@ export class Rock extends Heighliner {
 
 
   processDefinedValues(values) {
-    const promises = values.map(x => {
+    const promises = values.map((x) => {
       if (FieldTypeResolvers.hasOwnProperty(x.DefinedType.FieldType.Class)) {
         return Promise.resolve()
           .then(() => {
@@ -73,31 +73,31 @@ export class Rock extends Heighliner {
   async getDefinedValuesByTypeId(id, { limit, offset } = {}) {
     const query = { limit, offset, id };
     return this.cache.get(this.cache.encode(query), () => DefinedValueModel.find({
-        include: [
-          {
-            model: DefinedTypeModel.model,
-            include: [{ model: FieldTypeModel.model }],
-            where: { Id: id },
-          },
-        ],
-        order: [["Order", "ASC"]],
-        limit,
-        offset,
-      })
-        .then(this.processDefinedValues)
+      include: [
+        {
+          model: DefinedTypeModel.model,
+          include: [{ model: FieldTypeModel.model }],
+          where: { Id: id },
+        },
+      ],
+      order: [["Order", "ASC"]],
+      limit,
+      offset,
+    })
+        .then(this.processDefinedValues),
     );
   }
 
   async getDefinedValueId(id) {
     const globalId = createGlobalId(`${id}`, "RockDefinedValue");
     return this.cache.get(globalId, () => DefinedValueModel.findOne({
-        where: { Id: id },
-        include: [
+      where: { Id: id },
+      include: [
           { model: DefinedTypeModel.model, include: [{ model: FieldTypeModel.model }] },
-        ],
-      })
+      ],
+    })
         .then(x => this.processDefinedValues([x]))
-        .then(x => x[0])
+        .then(x => x[0]),
     );
   }
 
@@ -105,12 +105,12 @@ export class Rock extends Heighliner {
     const Guids = `${Guid}`.split(",");
     const globalId = createGlobalId(`${Guid}`, "RockDefinedValueGuid");
     return this.cache.get(globalId, () => DefinedValueModel.find({
-        where: { Guid: { $in: Guids } },
-        include: [
+      where: { Guid: { $in: Guids } },
+      include: [
           { model: DefinedTypeModel.model, include: [{ model: FieldTypeModel.model }] },
-        ],
-      })
-        .then(this.processDefinedValues)
+      ],
+    })
+        .then(this.processDefinedValues),
     );
   }
 
@@ -143,7 +143,7 @@ export class Rock extends Heighliner {
           ...y,
           Value: value,
         };
-      })))
+      }))),
     );
   }
 
@@ -152,13 +152,13 @@ export class Rock extends Heighliner {
       where: { Id: id },
       include: [{ model: AttributeModel.model, include: [{ model: FieldTypeModel.model }] }],
     })
-      .then(this.processAttributeValue.bind(context))
+      .then(this.processAttributeValue.bind(context)),
     );
   }
 
   async sendEmail(title, people = [], data = {}) {
     if (!title) throw new Error("No email passed");
-    const email = await SystemEmailTable.findOne({ where: { Title: title }});
+    const email = await SystemEmailTable.findOne({ where: { Title: title } });
 
     if (!email || !email.Body || !email.Subject) return null;
 
@@ -205,7 +205,7 @@ export class Rock extends Heighliner {
         { model: AttributeQualifierModel.model },
       ],
     }))
-      .then(y => Promise.all(y.map(async x => {
+      .then(y => Promise.all(y.map(async (x) => {
         if (!x) return null;
         const { FieldType } = x;
         // 70
@@ -222,11 +222,10 @@ export class Rock extends Heighliner {
 
         return await this.getDefinedValuesByTypeId(definedTypeId[0].Value).then(x => ({
           ...x,
-          EntityId: id
+          EntityId: id,
         }));
       })))
-      .then(flatten)
-
+      .then(flatten);
   }
 
   async getAttributesFromId(id) {
@@ -237,7 +236,7 @@ export class Rock extends Heighliner {
         { model: AttributeQualifierModel.model },
       ],
     })
-      .then(x => {
+      .then((x) => {
         if (!x) return null;
         const { FieldType } = x;
         // 70
@@ -253,11 +252,11 @@ export class Rock extends Heighliner {
 
         return this.getDefinedValuesByTypeId(definedTypeId[0].Value);
       })
-      .then(flatten)
+      .then(flatten),
     );
   }
 
-  async getAttributeValueFromMatrix(key, knownKey, knownValue, desiredKey){
+  async getAttributeValueFromMatrix(key, knownKey, knownValue, desiredKey) {
     return this.cache.get(
       `${key}:${knownKey}:${knownValue}:${desiredKey}:MatrixValue`,
       () => CommunicationTable.db.query(`
@@ -289,11 +288,11 @@ export class Rock extends Heighliner {
       `,
         {
           replacements: { key, knownKey, knownValue, desiredKey },
-          type: sequelize.QueryTypes.SELECT
-        }
-      ).then(([x]) => x)
+          type: sequelize.QueryTypes.SELECT,
+        },
+      ).then(([x]) => x),
     )
-      .then(this.debug)
+      .then(this.debug);
     // XXX see what kind of value this returns
       // .then(x => Promise.all(x.map(async (y) => {
       //   const value = await this.processAttributeValue.call(context, y);
@@ -302,7 +301,6 @@ export class Rock extends Heighliner {
       //     Value: value,
       //   };
       // })))
-
   }
 
 }

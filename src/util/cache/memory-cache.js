@@ -54,7 +54,7 @@ export class InMemoryCache {
   encode(obj, prefix = "") {
     const cipher = Crypto.createHmac("sha256", this.secret);
     const str = `${prefix}${JSON.stringify(obj)}`;
-    return cipher.update(str).digest("hex");
+    return cipher.update(str, "utf-8").digest("hex");
   }
 
 }
