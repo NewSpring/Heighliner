@@ -11,7 +11,7 @@ import { createSchema, loadApplications, getIp } from "../util/heighliner";
 // Import Apollos
 import Apollos, {
   queries as ApollosQueries,
-  // mutations as ApollosMutations,
+  mutations as ApollosMutations,
 } from "../apollos";
 
 // Import Rock
@@ -51,7 +51,7 @@ schema = createSchema({
     ...ESVQueries,
   ],
   mutations: [
-    // ...ApollosMutations,
+    ...ApollosMutations,
     ...RockMutations,
   ],
   schema,
