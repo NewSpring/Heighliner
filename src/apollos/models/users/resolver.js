@@ -58,15 +58,7 @@ export default {
     },
   },
 
-  LoginUserMutationResponse: {
+  UserMutationResponse: {
     id: ({ Id }) => Id,
   },
-
-  RegisterUserMutationResponse: {
-    id: ({ Id }) => Id,
-  },
-
-  ChangeUserPasswordMutationResponse: {},
-  ForgotUserMutationResponse: {},
-  ResetUserMutationResponse: {},
 };

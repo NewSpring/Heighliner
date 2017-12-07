@@ -32,15 +32,7 @@ export default [`
     emails: [UserEmail]
   }
 
-  type LoginUserMutationResponse {
+  type UserMutationResponse {
     id: String
   }
-
-  type RegisterUserMutationResponse {
-    id: String
-  }
-
-  type ChangeUserPasswordMutationResponse {}
-  type ForgotUserMutationResponse {}
-  type ResetUserMutationResponse {}
 `];

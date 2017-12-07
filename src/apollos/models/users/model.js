@@ -200,7 +200,7 @@ export class User {
         },
       );
 
-      return userId;
+      return user;
     } catch (err) {
       throw err;
     }
@@ -233,7 +233,7 @@ export class User {
           ResetPasswordUrl: `${sourceURL}/reset-password/${token}`,
         },
       );
-      return true;
+      return user;
     } catch (err) {
       throw err;
     }
@@ -251,7 +251,7 @@ export class User {
         IsConfirmed: true,
         EntityTypeId: 27,
       });
-      return true;
+      return user;
     } catch (err) {
       throw err;
     }
@@ -272,7 +272,7 @@ export class User {
         IsConfirmed: true,
         EntityTypeId: 27,
       });
-      return true;
+      return user;
     } catch (err) {
       throw err;
     }
