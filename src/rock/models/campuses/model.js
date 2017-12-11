@@ -41,7 +41,6 @@ export class Campus extends Rock {
         attributes: ["Id"],
       })
     ,)
-      .then(this.debug)
       .then(this.getFromIds.bind(this))
       .then((x) => x.filter(y => y.Name !== "Central"))
       ;
