@@ -104,12 +104,9 @@ export default {
     description: ({ description }) => description,
     ooyalaId: ({ video }) => video,
     video: ({ video }) => {
-      // Todo: should these be stored as ENV vars?
       const pbid = 'ZmJmNTVlNDk1NjcwYTVkMzAzODkyMjg0&pcode=';
       const pcode = 'E1dWM6UGncxhent7MRATc3hmkzUD';
-
-      // Todo: this is hosted on a personal dropbox. Should be moved to S3 or something (needs CORs though)
-      const playerConfig = 'https%3A%2F%2Fdl.dropbox.com%2Fs%2Fsodcv1d9a4ezwm4%2Fskin.new.json%3Fdl%3D1';
+      const playerConfig = 'https%3A%2F%2Fd3n6tjerleuu41.cloudfront.net%2Fnewspring%2Fskin.new.json';
 
       const embedUrl = `https://player.ooyala.com/static/v4/production/latest/skin-plugin/iframe.html?ec=${video}&pbid=${pbid}&pcode=${pcode}&skin.config=${playerConfig}`;
 
