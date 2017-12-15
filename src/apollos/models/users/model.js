@@ -6,7 +6,7 @@ import omit from "lodash/omit";
 import isEmpty from "lodash/isEmpty";
 import makeNewGuid from "./makeNewGuid";
 import sendEmail from "./sendEmail";
-import api from "./api";
+import * as api from "./api";
 
 import { MongoConnector } from "../../mongo";
 import { defaultCache } from "../../../util/cache";
@@ -85,36 +85,30 @@ export class User {
   async checkUserCredentials(Username, Password) {
     try {
       const isAuthorized = await api.post("/Auth/login", {
-        data: {
-          Username,
-          Password,
-        },
+        Username,
+        Password,
       });
-      return isAuthorized && !isAuthorized.statusText;
+
+      return isAuthorized;
     } catch (err) {
-      throw err;
+      throw new Error("User not authorized");
     }
   }
 
   loginUser = async ({ email, password } = {}) => {
     try {
-      const isAuthorized = await this.checkUserCredentials(email, password);
-      if (!isAuthorized) throw new Error("User not authorized");
+      await this.checkUserCredentials(email, password);
 
       const user = await this.getByUsername(email);
 
       if (!user.IsConfirmed) {
         api.post(`/UserLogins/${user.Id}`, {
-          data: {
-            IsConfirmed: true,
-          },
+          IsConfirmed: true,
         });
       }
 
       api.patch(`/UserLogins/${user.Id}`, {
-        data: {
-          LastLoginDateTime: `${moment().toISOString()}`,
-        },
+        LastLoginDateTime: `${moment().toISOString()}`,
       });
 
       return user;
@@ -131,17 +125,15 @@ export class User {
     } = props;
 
     return api.post("/People", {
-      data: {
-        Email: email,
-        Guid: makeNewGuid(),
-        FirstName: stripTags(firstName),
-        LastName: stripTags(lastName),
-        IsSystem: false,
-        Gender: 0,
-        RecordTypeValueId: 1,
-        ConnectionStatusValueId: 67, // Web Prospect
-        SystemNote: "Created from NewSpring Apollos",
-      },
+      Email: email,
+      Guid: makeNewGuid(),
+      FirstName: stripTags(firstName),
+      LastName: stripTags(lastName),
+      IsSystem: false,
+      Gender: 0,
+      RecordTypeValueId: 1,
+      ConnectionStatusValueId: 67, // Web Prospect
+      SystemNote: "Created from NewSpring Apollos",
     });
   }
 
@@ -153,14 +145,12 @@ export class User {
     } = props;
 
     return api.post("/UserLogins", {
-      data: {
-        PersonId: personId,
-        EntityTypeId: 27,
-        UserName: email,
-        IsConfirmed: true,
-        PlainTextPassword: password,
-        LastLoginDateTime: `${moment().toISOString()}`,
-      },
+      PersonId: personId,
+      EntityTypeId: 27,
+      UserName: email,
+      IsConfirmed: true,
+      PlainTextPassword: password,
+      LastLoginDateTime: `${moment().toISOString()}`,
     });
   }
 

@@ -116,15 +116,13 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
     ]);
 
     const CommunicationId = await api.post("Communications", {
-      data: {
-        SenderPersonAliasId: null,
-        Status: 3,
-        IsBulkCommunication: false,
-        Guid: makeNewGuid(),
-        Subject: subject,
-        MediumData: {
-          HtmlMessage: body,
-        },
+      SenderPersonAliasId: null,
+      Status: 3,
+      IsBulkCommunication: false,
+      Guid: makeNewGuid(),
+      Subject: subject,
+      MediumData: {
+        HtmlMessage: body,
       },
     });
 
@@ -145,12 +143,10 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
     const ids = [];
     for (const id of PersonAliasId) {
       const CommunicationRecipientId = await api.post("CommunicationRecipients", {
-        data: {
-          PersonAliasId: id,
-          CommunicationId,
-          Status: 0, // Pending
-          Guid: makeNewGuid(),
-        },
+        PersonAliasId: id,
+        CommunicationId,
+        Status: 0, // Pending
+        Guid: makeNewGuid(),
       });
 
       ids.push(CommunicationRecipientId);
