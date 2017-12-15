@@ -96,8 +96,13 @@ export class User {
     }
   }
 
-  async loginUser(user = {}) {
+  loginUser = async ({ email, password } = {}) => {
     try {
+      const isAuthorized = await this.checkUserCredentials(email, password);
+      if (!isAuthorized) throw new Error("User not authorized");
+
+      const user = await this.getByUsername(email);
+
       if (!user.IsConfirmed) {
         api.post(`/UserLogins/${user.Id}`, {
           data: {
@@ -168,12 +173,13 @@ export class User {
         password,
       } = props;
 
+      // console.log('registerUser');
       const personId = await this.createUserProfile({
         email,
         firstName,
         lastName,
       });
-
+      // console.log({ personId });
       const userId = await this.createUser({
         email,
         password,

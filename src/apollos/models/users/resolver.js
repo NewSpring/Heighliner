@@ -29,8 +29,8 @@ export default {
   },
 
   Mutation: {
-    loginUser(_, $, { models, user }) {
-      return models.User.loginUser(user);
+    loginUser(_, props, { models }) {
+      return models.User.loginUser(props);
     },
     registerUser(_, props, { models }) {
       return models.User.registerUser(props);
