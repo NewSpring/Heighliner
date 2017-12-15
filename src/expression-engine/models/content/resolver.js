@@ -104,7 +104,8 @@ export default {
     description: ({ description }) => description,
     ooyalaId: ({ video }) => video,
     video: ({ video }) => {
-      const pbid = 'ZmJmNTVlNDk1NjcwYTVkMzAzODkyMjg0&pcode=';
+      if (!video) return null;
+      const pbid = 'ZmJmNTVlNDk1NjcwYTVkMzAzODkyMjg0';
       const pcode = 'E1dWM6UGncxhent7MRATc3hmkzUD';
       const playerConfig = 'https%3A%2F%2Fd3n6tjerleuu41.cloudfront.net%2Fnewspring%2Fskin.new.json';
 
