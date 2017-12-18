@@ -116,37 +116,32 @@ export default function (app, monitor) {
 
     if (context.authToken) {
       if (datadog) datadog.increment("graphql.authenticated.request");
-      // we instansiate the
       // bind the logged in user to the context overall
-      let user;
       try {
         const tokenIsBasicAuth = context.authToken.indexOf(":") >= 0;
         if (tokenIsBasicAuth) {
-          user = await timeout(createdModels.User.getByBasicAuth(context.authToken), 1000);
+          context.user = await timeout(createdModels.User.getByBasicAuth(context.authToken), 5000);
+          const person = await timeout(models.User.getUserProfile(context.user.PersonId), 5000);
+          context.person = await timeout(
+            createdModels.Person.getFromAliasId(
+              person.PrimaryAliasId,
+            ), 1000);
+          context.person.PrimaryAliasId = context.user.services.rock.PrimaryAliasId;
         } else {
           // Deprecate
-          user = await timeout(createdModels.User.getByHashedToken(context.authToken), 1000);
+          context.user = await timeout(
+            createdModels.User.getByHashedToken(context.authToken), 1000);
+
+          context.person = await timeout(
+            createdModels.Person.getFromAliasId(
+              context.user.services.rock.PrimaryAliasId,
+            ), 1000);
+
+          context.person.PrimaryAliasId = context.user.services.rock.PrimaryAliasId;
         }
-        context.user = user;
       } catch (e) {
         /* tslint:disable-line */
       }
-
-      let person;
-      if (user && user.services && user.services.rock) {
-        try {
-          person = await timeout(
-            createdModels.Person.getFromAliasId(
-              user.services.rock.PrimaryAliasId,
-            ),
-            1000,
-          );
-          person.PrimaryAliasId = user.services.rock.PrimaryAliasId;
-        } catch (e) {
-          /* tslint:disable-line */
-        }
-      }
-      context.person = person;
     }
 
     if (process.env.NODE_ENV === "production") {
