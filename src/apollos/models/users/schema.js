@@ -36,4 +36,9 @@ export default [`
   type UserMutationResponse {
     id: String
   }
+
+  type LoginMutationResponse {
+    id: String
+    token: String
+  }
 `];

@@ -7,6 +7,7 @@ import isEmpty from "lodash/isEmpty";
 import makeNewGuid from "./makeNewGuid";
 import sendEmail from "./sendEmail";
 import * as api from "./api";
+import { encrypt, decrypt } from "./securityUtils";
 
 import { MongoConnector } from "../../mongo";
 import { defaultCache } from "../../../util/cache";
@@ -61,8 +62,8 @@ export class User {
     // for all user requests including login
     try {
       const userPasswordTuple = userPasswordString.split(":");
-      const username = decodeURIComponent(userPasswordTuple[0]);
-      const password = decodeURIComponent(userPasswordTuple[1]);
+      const username = decrypt(decodeURIComponent(userPasswordTuple[0]));
+      const password = decrypt(decodeURIComponent(userPasswordTuple[1]));
 
       const isAuthorized = await this.checkUserCredentials(username, password);
       if (!isAuthorized) throw new Error("User not authorized");
@@ -119,7 +120,10 @@ export class User {
         LastLoginDateTime: `${moment().toISOString()}`,
       });
 
-      return user;
+      return {
+        id: user.Id,
+        token: `${encodeURIComponent(encrypt(email))}:${encodeURIComponent(encrypt(password))}`,
+      };
     } catch (err) {
       throw err;
     }
