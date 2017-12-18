@@ -25,6 +25,7 @@ const schema = {
   profile: { lastLogin: Date },
 };
 
+// Needs migration
 const Model = new MongoConnector("user", schema);
 
 export class User {
@@ -82,8 +83,15 @@ export class User {
     return user;
   }
 
+  getUserProfile(personId) {
+    return api.get(`/People/${personId}`);
+  }
+
   async checkUserCredentials(Username, Password) {
     try {
+      // NOTE: This endpoint returns a set-cookie header
+      // for cookie based authentication but I can't find
+      // an endpoint where we can use that cookie to identify the user
       const isAuthorized = await api.post("/Auth/login", {
         Username,
         Password,
@@ -163,13 +171,12 @@ export class User {
         password,
       } = props;
 
-      // console.log('registerUser');
       const personId = await this.createUserProfile({
         email,
         firstName,
         lastName,
       });
-      // console.log({ personId });
+
       const userId = await this.createUser({
         email,
         password,

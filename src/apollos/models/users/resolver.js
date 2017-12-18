@@ -1,5 +1,5 @@
 
-import { createGlobalId } from "../../../util";
+import get from "lodash/get";
 
 export default {
   Query: {
@@ -23,9 +23,33 @@ export default {
   },
 
   User: {
-    id: ({ _id }, _, $, { parentType }) => createGlobalId(_id, parentType.name),
+    id: (user) => {
+      const {
+        _id, // Deprecated Mongo User
+        Id, // Rock User
+      } = user;
+      return Id || _id;
+    },
+    createdAt: (user) => {
+      const {
+        createdAt, // Deprecated Mongo User
+        CreatedDateTime, // Rock User
+      } = user;
+      return CreatedDateTime || createdAt;
+    },
     services: ({ services }) => services,
     emails: ({ emails }) => emails,
+    email: async (user, _, { models }) => {
+      const email = get(user, "emails.0.address");
+      if (email) return email; // Deprecated Mongo User
+
+      // Rock Profile
+      const person = await models.User.getUserProfile(user.PersonId);
+      const {
+        Email,
+      } = person;
+      return Email;
+    },
   },
 
   Mutation: {

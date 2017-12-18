@@ -28,8 +28,9 @@ export default [`
     id: ID!
     # We should investigate how best to represent dates
     createdAt: String!
-    services: UserService
-    emails: [UserEmail]
+    services: UserService @deprecated(reason: "This is a private server-only field")
+    emails: [UserEmail] @deprecated(reason: "Use email instead")
+    email: String
   }
 
   type UserMutationResponse {
