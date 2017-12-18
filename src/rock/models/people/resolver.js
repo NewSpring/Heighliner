@@ -16,13 +16,22 @@ export default {
 
       return models.Person.findOne({ guid });
     },
-    currentPerson: (_, { cache }, { person, models, user }) => {
+    currentPerson: async (_, { cache }, { person, models, user }) => {
       if (cache && person) return person;
-      if (user && user.services && user.services.rock) {
+
+      // Will anything under this ever happen considering we're adding person to context?
+      if (user && user.services && user.services.rock) { // Deprecated Mongo User
         return models.Person.getFromAliasId(user.services.rock.PrimaryAliasId, {
           cache,
         });
       }
+      if (user && user.PersonId) {
+        const p = await models.User.getUserProfile(user.PersonId);
+        return models.Person.getFromAliasId(p.PrimaryAliasId, {
+          cache,
+        });
+      }
+      return null;
     },
     currentFamily: (_, args, { models, person }) => {
       if (!person) return null;
