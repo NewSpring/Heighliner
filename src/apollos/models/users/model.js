@@ -305,16 +305,19 @@ export class User {
       if (isEmpty(oldPassword)) throw new Error("Old password is required");
       if (isEmpty(newPassword)) throw new Error("New password is required");
 
-      const isAuthorized = await this.checkUserCredentials(user.UserName, oldPassword);
-      if (!isAuthorized) throw new Error("User not authorized");
+      await this.checkUserCredentials(user.UserName, oldPassword);
 
       await api.put(`/UserLogins/${user.Id}`, {
-        ...omit(user, "ResetPasswordToken"),
+        ...user,
         PlainTextPassword: newPassword,
         IsConfirmed: true,
         EntityTypeId: 27,
       });
-      return user;
+
+      return {
+        id: user.Id,
+        token: `${encodeURIComponent(encrypt(user.UserName))}:${encodeURIComponent(encrypt(newPassword))}`,
+      };
     } catch (err) {
       throw err;
     }
