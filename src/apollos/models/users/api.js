@@ -8,10 +8,16 @@ const CONFIG = {
   },
 };
 
-function statusResponseResolver(r = {}) {
+async function statusResponseResolver(r = {}) {
   if (r.status === 204) return true;
   if (r.status >= 200 && r.status < 300) {
-    return r.json();
+    try {
+      // return await to catch before returning
+      return await r.json();
+    } catch (err) {
+      // Response is not a JSON object
+      return r;
+    }
   }
   throw new Error(r.statusText);
 }
