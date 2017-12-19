@@ -2,7 +2,6 @@ import crypto from "crypto";
 import moment from "moment";
 import stripTags from "striptags";
 import Random from "meteor-random";
-import omit from "lodash/omit";
 import isEmpty from "lodash/isEmpty";
 import makeNewGuid from "./makeNewGuid";
 import sendEmail from "./sendEmail";
@@ -153,41 +152,49 @@ export class User {
     }
   }
 
-  createUserProfile(props = {}) {
-    const {
-      email,
-      firstName,
-      lastName,
-    } = props;
+  createUserProfile = async (props = {}) => {
+    try {
+      const {
+        email,
+        firstName,
+        lastName,
+      } = props;
 
-    return api.post("/People", {
-      Email: email,
-      Guid: makeNewGuid(),
-      FirstName: stripTags(firstName),
-      LastName: stripTags(lastName),
-      IsSystem: false,
-      Gender: 0,
-      RecordTypeValueId: 1,
-      ConnectionStatusValueId: 67, // Web Prospect
-      SystemNote: "Created from NewSpring Apollos",
-    });
+      return await api.post("/People", {
+        Email: email,
+        Guid: makeNewGuid(),
+        FirstName: stripTags(firstName),
+        LastName: stripTags(lastName),
+        IsSystem: false,
+        Gender: 0,
+        RecordTypeValueId: 1,
+        ConnectionStatusValueId: 67, // Web Prospect
+        SystemNote: "Created from NewSpring Apollos",
+      });
+    } catch (err) {
+      throw new Error("Unable to create profile!");
+    }
   }
 
-  createUserLogin(props = {}) {
-    const {
-      email,
-      password,
-      personId,
-    } = props;
+  createUserLogin = async (props = {}) => {
+    try {
+      const {
+        email,
+        password,
+        personId,
+      } = props;
 
-    return api.post("/UserLogins", {
-      PersonId: personId,
-      EntityTypeId: 27,
-      UserName: email,
-      IsConfirmed: true,
-      PlainTextPassword: password,
-      LastLoginDateTime: `${moment().toISOString()}`,
-    });
+      return await api.post("/UserLogins", {
+        PersonId: personId,
+        EntityTypeId: 27,
+        UserName: email,
+        IsConfirmed: true,
+        PlainTextPassword: password,
+        LastLoginDateTime: `${moment().toISOString()}`,
+      });
+    } catch (err) {
+      throw new Error("Unable to create user!");
+    }
   }
 
   async registerUser(props = {}) {
@@ -222,14 +229,14 @@ export class User {
       const [systemEmail] = await api.get("/SystemEmails?$filter=Title eq 'Account Created'");
       if (!systemEmail) throw new Error("Account created email does not exist!");
 
-      // await sendEmail(
-      //   systemEmail.Id,
-      //   Number(person.PrimaryAliasId),
-      //   {
-      //     Person: person,
-      //     User: user,
-      //   },
-      // );
+      sendEmail(
+        systemEmail.Id,
+        Number(person.PrimaryAliasId),
+        {
+          Person: person,
+          User: user,
+        },
+      );
 
       return this.loginUser({ email, password });
     } catch (err) {
@@ -257,17 +264,17 @@ export class User {
         type: "reset",
       });
 
-      // const [systemEmail] = await api.get("/SystemEmails?$filter=Title eq 'Reset Password'");
-      // if (!systemEmail) throw new Error("Reset password email does not exist!");
+      const [systemEmail] = await api.get("/SystemEmails?$filter=Title eq 'Reset Password'");
+      if (!systemEmail) throw new Error("Reset password email does not exist!");
 
-      // await sendEmail(
-      //   systemEmail.Id,
-      //   Number(person.PrimaryAliasId),
-      //   {
-      //     Person: person,
-      //     ResetPasswordUrl: `${sourceURL}/reset-password/${token}`,
-      //   },
-      // );
+      sendEmail(
+        systemEmail.Id,
+        Number(person.PrimaryAliasId),
+        {
+          Person: person,
+          ResetPasswordUrl: `${sourceURL}/reset-password/${token}`,
+        },
+      );
       return user;
     } catch (err) {
       throw err;
