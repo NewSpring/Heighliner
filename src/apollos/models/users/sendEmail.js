@@ -4,7 +4,7 @@ import moment from "moment";
 import Liquid from "liquid-node";
 import _ from "lodash";
 
-import api from "./api";
+import * as api from "./api";
 import makeNewGuid from "./makeNewGuid";
 
 // @TODO abstract
@@ -81,8 +81,8 @@ Parser.registerFilters({
 export default async function sendEmail(emailId, PersonAliasId, merge) {
   try {
     let mergeFields = merge;
-    const Email = await api.get(`/SystemEmails/${emailId}`);
 
+    const Email = await api.get(`/SystemEmails/${emailId}`);
     if (!Email.Body || !Email.Subject) throw new Error(`No email body or subject found for ${emailId}`);
 
     /*
@@ -93,10 +93,14 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
 
     */
     const GlobalAttribute = {};
+    // NOTE: Calls to AttributeValues are failing silently
+    // on https://alpha-rock.newspring.cc/
+
     // eslint-disable-next-line max-len
     const Globals = await api.get(
       "/AttributeValues?$filter=Attribute/EntityTypeId eq null&$expand=Attribute&$select=Attribute/Key,Value",
     );
+
     // eslint-disable-next-line max-len
     const Defaults = await api.get(
       "/Attributes?$filter=EntityTypeId eq null&$select=DefaultValue,Key",
@@ -116,6 +120,7 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
     ]);
 
     const CommunicationId = await api.post("/Communications", {
+      CommunicationType: 'email', // Not sure why Holtzman didn't have this
       SenderPersonAliasId: null,
       Status: 3,
       IsBulkCommunication: false,
@@ -126,16 +131,6 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
       },
     });
 
-    if (CommunicationId.statusText) throw new Error(CommunicationId);
-
-    // this is a bug in core right now. We can't set Mandrill on the initial
-    // post because it locks everything up, we can however, patch it
-    await api.patch(`/Communications/${CommunicationId}`, {
-      data: {
-        MediumEntityTypeId: 37, // Mandrill
-      },
-    });
-
     if (typeof PersonAliasId === "number") {
       PersonAliasId = [PersonAliasId]; // eslint-disable-line
     }
@@ -143,6 +138,7 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
     const ids = [];
     for (const id of PersonAliasId) {
       const CommunicationRecipientId = await api.post("/CommunicationRecipients", {
+        MediumEntityTypeId: 37, // Mandrill, added this here instead, it seems to be working :D
         PersonAliasId: id,
         CommunicationId,
         Status: 0, // Pending
