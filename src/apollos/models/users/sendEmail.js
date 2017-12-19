@@ -81,7 +81,7 @@ Parser.registerFilters({
 export default async function sendEmail(emailId, PersonAliasId, merge) {
   try {
     let mergeFields = merge;
-    const Email = await api.get(`SystemEmails/${emailId}`);
+    const Email = await api.get(`/SystemEmails/${emailId}`);
 
     if (!Email.Body || !Email.Subject) throw new Error(`No email body or subject found for ${emailId}`);
 
@@ -95,11 +95,11 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
     const GlobalAttribute = {};
     // eslint-disable-next-line max-len
     const Globals = await api.get(
-      "AttributeValues?$filter=Attribute/EntityTypeId eq null&$expand=Attribute&$select=Attribute/Key,Value",
+      "/AttributeValues?$filter=Attribute/EntityTypeId eq null&$expand=Attribute&$select=Attribute/Key,Value",
     );
     // eslint-disable-next-line max-len
     const Defaults = await api.get(
-      "Attributes?$filter=EntityTypeId eq null&$select=DefaultValue,Key",
+      "/Attributes?$filter=EntityTypeId eq null&$select=DefaultValue,Key",
     );
 
     for (const d of Defaults) {
@@ -115,7 +115,7 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
       Parser.parseAndRender(Email.Body, mergeFields),
     ]);
 
-    const CommunicationId = await api.post("Communications", {
+    const CommunicationId = await api.post("/Communications", {
       SenderPersonAliasId: null,
       Status: 3,
       IsBulkCommunication: false,
@@ -130,7 +130,7 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
 
     // this is a bug in core right now. We can't set Mandrill on the initial
     // post because it locks everything up, we can however, patch it
-    await api.patch(`Communications/${CommunicationId}`, {
+    await api.patch(`/Communications/${CommunicationId}`, {
       data: {
         MediumEntityTypeId: 37, // Mandrill
       },
@@ -142,7 +142,7 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
 
     const ids = [];
     for (const id of PersonAliasId) {
-      const CommunicationRecipientId = await api.post("CommunicationRecipients", {
+      const CommunicationRecipientId = await api.post("/CommunicationRecipients", {
         PersonAliasId: id,
         CommunicationId,
         Status: 0, // Pending
@@ -152,7 +152,7 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
       ids.push(CommunicationRecipientId);
     }
 
-    await api.post(`Communications/Send/${CommunicationId}`);
+    await api.post(`/Communications/Send/${CommunicationId}`);
 
     for (const CommunicationRecipientId of ids) {
       if (CommunicationRecipientId.statusText) {
