@@ -12,7 +12,8 @@ import { encrypt, decrypt } from "./securityUtils";
 import { MongoConnector } from "../../mongo";
 import { defaultCache } from "../../../util/cache";
 
-const schema = {
+// Needs migration
+const UserModel = new MongoConnector("user", {
   _id: String,
   createdAt: { type: Date, default: Date.now },
   services: {
@@ -24,16 +25,27 @@ const schema = {
   },
   emails: [{ address: String, verified: Boolean }],
   profile: { lastLogin: Date },
-};
+});
 
-// Needs migration
-const Model = new MongoConnector("user", schema);
+const UserTokensModel = new MongoConnector("user_tokens", {
+  _id: String,
+  token: String,
+  type: String,
+  userId: Number,
+  createdAt: { type: Date, default: Date.now },
+}, [
+  {
+    keys: { createdAt: 1 },
+    options: { expireAfterSeconds: 43200 }, // 1 day
+  },
+]);
 
 export class User {
   // Deprecate
   constructor({ cache } = { cache: defaultCache }) {
     this.cache = cache;
-    this.model = Model;
+    this.model = UserModel;
+    this.tokens = UserTokensModel;
   }
 
   // Deprecate
@@ -68,20 +80,32 @@ export class User {
       const isAuthorized = await this.checkUserCredentials(username, password);
       if (!isAuthorized) throw new Error("User not authorized");
 
-      return this.getByUsername(username);
+      return this.getLatestLoginByUsername(username);
     } catch (err) {
       throw err;
     }
   }
 
-  async getByUsername(username = "") {
-    const [user] = await api.get(`/UserLogins?$filter=UserName eq '${username}'`);
-    return user;
+  async getLatestLoginByUsername(username = "") {
+    const [login] = await api.get(`/UserLogins?$filter=UserName eq '${username}'`);
+    return login;
   }
 
-  async getByToken(token = "") {
-    const [user] = await api.get(`/UserLogins?$filter=ResetPasswordToken eq '${token}'`);
-    return user;
+  getLoginById(id) {
+    return api.get(`/UserLogins/${id}`);
+  }
+
+  getByToken = async ({ token, type = "reset" } = {}) => {
+    try {
+      const { userId } = await this.tokens.findOne({
+        token,
+        type,
+      });
+
+      return this.getLoginById(userId);
+    } catch (err) {
+      throw new Error("Token Expired!");
+    }
   }
 
   getUserProfile(personId) {
@@ -108,20 +132,20 @@ export class User {
     try {
       await this.checkUserCredentials(email, password);
 
-      const user = await this.getByUsername(email);
+      const login = await this.getLatestLoginByUsername(email);
 
-      if (!user.IsConfirmed) {
-        api.post(`/UserLogins/${user.Id}`, {
+      if (!login.IsConfirmed) {
+        api.post(`/UserLogins/${login.Id}`, {
           IsConfirmed: true,
         });
       }
 
-      api.patch(`/UserLogins/${user.Id}`, {
+      api.patch(`/UserLogins/${login.Id}`, {
         LastLoginDateTime: `${moment().toISOString()}`,
       });
 
       return {
-        id: user.Id,
+        id: login.Id,
         token: `${encodeURIComponent(encrypt(email))}:${encodeURIComponent(encrypt(password))}`,
       };
     } catch (err) {
@@ -149,7 +173,7 @@ export class User {
     });
   }
 
-  createUser(props = {}) {
+  createUserLogin(props = {}) {
     const {
       email,
       password,
@@ -181,14 +205,14 @@ export class User {
         lastName,
       });
 
-      const userId = await this.createUser({
+      const userLoginId = await this.createUserLogin({
         email,
         password,
         personId,
       });
 
       const [user, person] = await Promise.all([
-        api.get(`/UserLogins/${userId}`),
+        api.get(`/UserLogins/${userLoginId}`),
         api.get(`/People/${personId}`),
       ]);
 
@@ -198,67 +222,78 @@ export class User {
       const [systemEmail] = await api.get("/SystemEmails?$filter=Title eq 'Account Created'");
       if (!systemEmail) throw new Error("Account created email does not exist!");
 
-      await sendEmail(
-        systemEmail.Id,
-        Number(person.PrimaryAliasId),
-        {
-          Person: person,
-          User: user,
-        },
-      );
+      // await sendEmail(
+      //   systemEmail.Id,
+      //   Number(person.PrimaryAliasId),
+      //   {
+      //     Person: person,
+      //     User: user,
+      //   },
+      // );
 
-      return user;
+      return this.loginUser({ email, password });
     } catch (err) {
       throw err;
     }
   }
 
-  async forgotPassword(username, sourceURL) {
+  forgotPassword = async (username, sourceURL) => {
     try {
-      const user = await this.getByUsername(username);
+      const user = await this.getLatestLoginByUsername(username);
       if (!user) throw new Error("User does not exist!");
 
-      const person = await api.get(`People/${user.PersonId}`);
+      const person = await api.get(`/People/${user.PersonId}`);
       if (!person) throw new Error("User profile does not exist!");
 
       const token = Random.secret();
 
-      // Not sure if I can do this (also can't expire this way until after use)
-      await api.put(`UserLogins/${user.Id}`, {
-        ...user,
-        ResetPasswordToken: token,
+      // NOTE: I didn't want to have to use Mongo
+      // but I can't write directly to rock or have
+      // rock manage password reset tokens. This works fine for now ^_^
+      await this.tokens.create({
+        _id: Random.id(),
+        userId: user.Id,
+        token,
+        type: "reset",
       });
 
-      const [systemEmail] = await api.get("/SystemEmails?$filter=Title eq 'Reset Password'");
-      if (!systemEmail) throw new Error("Reset password email does not exist!");
+      // const [systemEmail] = await api.get("/SystemEmails?$filter=Title eq 'Reset Password'");
+      // if (!systemEmail) throw new Error("Reset password email does not exist!");
 
-      await sendEmail(
-        systemEmail.Id,
-        Number(person.PrimaryAliasId),
-        {
-          Person: person,
-          ResetPasswordUrl: `${sourceURL}/reset-password/${token}`,
-        },
-      );
+      // await sendEmail(
+      //   systemEmail.Id,
+      //   Number(person.PrimaryAliasId),
+      //   {
+      //     Person: person,
+      //     ResetPasswordUrl: `${sourceURL}/reset-password/${token}`,
+      //   },
+      // );
       return user;
     } catch (err) {
       throw err;
     }
   }
 
-  async resetPassword(token, newPassword) {
+  resetPassword = async (token, newPassword) => {
     try {
-      const user = await this.getByToken(token);
-      if (!user) throw new Error("Token user not found!");
+      const user = await this.getByToken({ token, type: "reset" });
+      if (!user) throw new Error("User does not exist!");
       if (isEmpty(newPassword)) throw new Error("New password is required");
 
-      await api.put(`UserLogins/${user.Id}`, {
-        ...omit(user, "ResetPasswordToken"),
+      await api.put(`/UserLogins/${user.Id}`, {
+        ...user,
         PlainTextPassword: newPassword,
         IsConfirmed: true,
         EntityTypeId: 27,
       });
-      return user;
+
+      this.tokens.remove({
+        userId: user.Id,
+        token,
+        type: "reset",
+      });
+
+      return this.loginUser({ email: user.UserName, password: newPassword });
     } catch (err) {
       throw err;
     }
@@ -273,7 +308,7 @@ export class User {
       const isAuthorized = await this.checkUserCredentials(user.UserName, oldPassword);
       if (!isAuthorized) throw new Error("User not authorized");
 
-      await api.put(`UserLogins/${user.Id}`, {
+      await api.put(`/UserLogins/${user.Id}`, {
         ...omit(user, "ResetPasswordToken"),
         PlainTextPassword: newPassword,
         IsConfirmed: true,

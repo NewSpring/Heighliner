@@ -61,10 +61,10 @@ export default {
     },
     forgotUserPassword(_, props, { models }) {
       const {
-        username,
+        email,
         sourceURL,
       } = props;
-      return models.User.forgotPassword(username, sourceURL);
+      return models.User.forgotPassword(email, sourceURL);
     },
     resetUserPassword(_, props, { models }) {
       const {
