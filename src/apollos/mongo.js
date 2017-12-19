@@ -1,6 +1,7 @@
 
 import mongoose, { Schema } from "mongoose";
 // import DataLoader from "dataloader";
+mongoose.Promise = global.Promise;
 
 let db = mongoose.connect(process.env.MONGO_URL, {
   server: { reconnectTries: Number.MAX_VALUE },
