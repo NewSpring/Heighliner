@@ -6,7 +6,6 @@ import isEmpty from "lodash/isEmpty";
 import makeNewGuid from "./makeNewGuid";
 import sendEmail from "./sendEmail";
 import * as api from "./api";
-import { encrypt, decrypt } from "./securityUtils";
 
 import { MongoConnector } from "../../mongo";
 import { defaultCache } from "../../../util/cache";
@@ -159,6 +158,16 @@ export class User {
     } catch (err) {
       throw err;
     }
+  }
+
+  logoutUser = async ({ token, userId } = {}) => {
+    await this.tokens.remove({
+      token,
+      userId,
+    });
+    return {
+      id: userId,
+    };
   }
 
   createUserProfile = async (props = {}) => {
@@ -333,7 +342,6 @@ export class User {
 
       return {
         id: user.Id,
-        token: `${encodeURIComponent(encrypt(user.UserName))}:${encodeURIComponent(encrypt(newPassword))}`,
       };
     } catch (err) {
       throw err;

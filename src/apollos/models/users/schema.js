@@ -34,11 +34,11 @@ export default [`
   }
 
   type UserMutationResponse {
-    id: String
+    id: Int
   }
 
   type LoginMutationResponse {
-    id: String
+    id: Int
     token: String
   }
 `];

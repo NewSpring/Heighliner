@@ -59,6 +59,12 @@ export default {
     registerUser(_, props, { models }) {
       return models.User.registerUser(props);
     },
+    logoutUser(_, props, { models, authToken, user }) {
+      return models.User.logoutUser({
+        token: authToken,
+        userId: user.Id,
+      });
+    },
     forgotUserPassword(_, props, { models }) {
       const {
         email,
