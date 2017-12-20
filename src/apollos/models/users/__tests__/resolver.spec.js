@@ -82,8 +82,7 @@ it("`UserService` should return the 'resume' object from the data", () => {
 
 it("`User` should return the 'id' value from the data", () => {
   const { User } = Resolver;
-  const parentType = { name: "User" };
-  const { id } = parseGlobalId(User.id(sampleData, null, null, { parentType }));
+  const id = User.id(sampleData);
   expect(id).toEqual(sampleData._id);
 });
 
