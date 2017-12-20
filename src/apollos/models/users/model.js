@@ -37,8 +37,7 @@ const UserTokensModel = new MongoConnector("user_tokens", {
   {
     keys: { expireCreatedAt: 1 },
     options: { // 1 day and only reset tokens
-      // expireAfterSeconds: 43200,
-      expireAfterSeconds: 3,
+      expireAfterSeconds: 43200,
       partialFilterExpression: { // Mongo 3.2+ only (we're on 3.0)
         type: { $eq: "reset" },
       },
@@ -289,6 +288,7 @@ export class User {
         expireCreatedAt: new Date(),
       });
 
+      console.log({ token });
       const [systemEmail] = await api.get("/SystemEmails?$filter=Title eq 'Reset Password'");
       if (!systemEmail) throw new Error("Reset password email does not exist!");
 
