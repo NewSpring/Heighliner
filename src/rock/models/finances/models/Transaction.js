@@ -221,8 +221,13 @@ export default class Transaction extends Rock {
   }
 
   async getStatement({ people, start, end, givingGroupId }) {
-    console.log("********* GET STATEMENT QUERY **********");
     const query = { people, start, end, givingGroupId };
+
+    console.log("********** GET STATEMENT **********");
+    console.log("people = ", people);
+    console.log("start = ", start);
+    console.log("end = ", end);
+    console.log("givingGroupId = ", givingGroupId);
 
     let TransactionDateTime;
     if (start || end) TransactionDateTime = {};
@@ -287,14 +292,16 @@ export default class Transaction extends Rock {
           details = [];
         } else {
           details = flatten(
-            transactions.map(({ TransactionDateTime, FinancialTransactionDetails }) => FinancialTransactionDetails.map((x) => {
-              total += x.Amount;
-              return {
-                Amount: x.Amount,
-                Date: Moment(TransactionDateTime).format("MMM D, YYYY"),
-                Name: getName(x),
-              };
-            })),
+            transactions.map(({ TransactionDateTime, FinancialTransactionDetails }) =>
+              FinancialTransactionDetails.map((x) => {
+                total += x.Amount;
+                return {
+                  Amount: x.Amount,
+                  Date: Moment(TransactionDateTime).format("MMM D, YYYY"),
+                  Name: getName(x),
+                };
+              }),
+            ),
           );
         }
 
