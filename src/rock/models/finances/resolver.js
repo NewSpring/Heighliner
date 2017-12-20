@@ -177,7 +177,6 @@ export default {
         givingGroupId: person.GivingGroupId,
       });
 
-      console.log("********** TRANSACTION STATEMENT **********");
       return Promise.all([homeLookup, transactionLookup])
         .then(([home, { transactions, total }]) => ({
           transactions,
