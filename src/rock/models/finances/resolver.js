@@ -162,10 +162,7 @@ export default {
       }));
     },
     transactionStatement: async (_, { people, start, end }, { models, person }) => {
-      console.log("********** TRANSACTION STATEMENT **********");
-      console.log("person = ", person);
       if (!person) return { success: false, error: "You must be logged in" };
-      console.log("let's continue");
 
       // XXX change to require a start date for YTD statements
       // default to start of current year if not passed
@@ -180,6 +177,7 @@ export default {
         givingGroupId: person.GivingGroupId,
       });
 
+      console.log("********** TRANSACTION STATEMENT **********");
       return Promise.all([homeLookup, transactionLookup])
         .then(([home, { transactions, total }]) => ({
           transactions,

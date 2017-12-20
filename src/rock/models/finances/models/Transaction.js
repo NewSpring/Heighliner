@@ -223,12 +223,6 @@ export default class Transaction extends Rock {
   async getStatement({ people, start, end, givingGroupId }) {
     const query = { people, start, end, givingGroupId };
 
-    console.log("********** GET STATEMENT **********");
-    console.log("people = ", people);
-    console.log("start = ", start);
-    console.log("end = ", end);
-    console.log("givingGroupId = ", givingGroupId);
-
     let TransactionDateTime;
     if (start || end) TransactionDateTime = {};
     if (start) TransactionDateTime.$gt = Moment(start);
@@ -286,8 +280,6 @@ export default class Transaction extends Rock {
         }),
       )
       .then((transactions) => {
-        console.log("***** TRANSACTIONS *****");
-        console.log("transactions = ", transactions);
         let total = 0;
         let details;
         if (!Array.isArray(transactions)) {
