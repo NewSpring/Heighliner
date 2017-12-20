@@ -166,11 +166,11 @@ exports[`Statement should render with data 1`] = `
         <p
           id="church-address"
         >
-          NewSpring Church  
+          NewSpring Church
           <br />
           EIN# 26-4189337 
           <br />
-          PO Box 1407  
+          PO Box 1407
           <br />
           Anderson, SC 29622 US
         </p>
