@@ -13,29 +13,31 @@ import uuid from "node-uuid";
 
 export const generatePDF = (component) => {
   const html = ReactDOMServer.renderToStaticMarkup(component);
+  console.log("component = ", component);
+  console.log("html = ", html);
   return new Promise((r, f) => {
     // XXX James says this isn't really worth mocking independent parts
     // of pdf.create. So instead we just verify it fails, or returns a base64 stringify
     // from a given react component
-    pdf.create(html, {
-      format: "letter",
-      border: {
-        top: "0.6in",
-        right: "0.6in",
-        bottom: "0.6in",
-        left: "0.6in",
-      },
-    }).toBuffer((err, buffer) => {
-      if (err) return f(err);
+    pdf
+      .create(html, {
+        format: "letter",
+        border: {
+          top: "0.6in",
+          right: "0.6in",
+          bottom: "0.6in",
+          left: "0.6in",
+        },
+      })
+      .toBuffer((err, buffer) => {
+        if (err) return f(err);
 
-      r(buffer.toString("base64"));
-    });
+        r(buffer.toString("base64"));
+      });
   });
 };
 
-export const formatMoney = (amount) => (
-  `$${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
-);
+export const formatMoney = amount => `$${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
 
 export const Statement = ({ transactions, person, home, total }) => (
   <html>
@@ -175,37 +177,50 @@ export const Statement = ({ transactions, person, home, total }) => (
     <body>
       <div className="container">
         <p>
-          <br/>
-          <br/>
-          <br/>
+          <br />
+          <br />
+          <br />
         </p>
         <img
-          id="logo-img" src="https://s3.amazonaws.com/ns.images/newspring/icons/newspring-church-logo-black.png"
+          id="logo-img"
+          src="https://s3.amazonaws.com/ns.images/newspring/icons/newspring-church-logo-black.png"
         />
         <h2
           style={{ fontFamily: "Helvetica" }}
           className="print-subheader soft-sides soft-half-bottom"
         >
-            Contribution Statement
+          Contribution Statement
         </h2>
 
         <div className="soft pre-text">
           <p id="church-address">
-            NewSpring Church  <br/>
-            EIN# 26-4189337 <br/>
-            PO Box 1407  <br/>
+            NewSpring Church
+            <br />
+            EIN# 26-4189337 <br />
+            PO Box 1407
+            <br />
             Anderson, SC 29622 US
           </p>
 
           <p>
-            {person.NickName || person.FirstName} {person.LastName}<br/>
-            {home.Street1}<br/>
-            {home.Street2 && (<span>{home.Street2}<br/></span>)}
+            {person.NickName || person.FirstName} {person.LastName}
+            <br />
+            {home.Street1}
+            <br />
+            {home.Street2 && (
+              <span>
+                {home.Street2}
+                <br />
+              </span>
+            )}
             {home.City} {home.State} {home.PostalCode}
           </p>
 
           <p id="verse">
-            Malachi 3:10 "Bring the whole tithe into the storehouse, that there may be food in my house. Test me in this,' says the LORD Almighty, 'and see if I will not throw open the floodgates of heaven and pour out so much blessing that you will not have room enough for it."
+            Malachi 3:10 "Bring the whole tithe into the storehouse, that there may be food in my
+            house. Test me in this,' says the LORD Almighty, 'and see if I will not throw open the
+            floodgates of heaven and pour out so much blessing that you will not have room enough
+            for it."
           </p>
         </div>
 
@@ -215,12 +230,8 @@ export const Statement = ({ transactions, person, home, total }) => (
               <th className="type" style={{ fontFamily: "Helvetica", fontWeight: 700 }}>
                 Account
               </th>
-              <th style={{ fontFamily: "Helvetica", fontWeight: 700 }}>
-                Date
-              </th>
-              <th style={{ fontFamily: "Helvetica", fontWeight: 700 }}>
-                Amount
-              </th>
+              <th style={{ fontFamily: "Helvetica", fontWeight: 700 }}>Date</th>
+              <th style={{ fontFamily: "Helvetica", fontWeight: 700 }}>Amount</th>
             </tr>
             {transactions.map((transaction, key) => (
               <tr key={key}>
@@ -230,7 +241,7 @@ export const Statement = ({ transactions, person, home, total }) => (
               </tr>
             ))}
             <tr className="total" style={{ width: "100%" }}>
-              <td className="soft-ends" style={{ fontFamily: "Helvetica" }} >
+              <td className="soft-ends" style={{ fontFamily: "Helvetica" }}>
                 Total
               </td>
               <td />
@@ -242,13 +253,13 @@ export const Statement = ({ transactions, person, home, total }) => (
         </table>
 
         <p className="footer-text soft">
-          Thank you for your continued support. Please note that for taxation purposes, no goods or services were received in return for these contributions. If you have any questions or concerns, please contact us at giving@newspring.cc or 864-965-9990.
+          Thank you for your continued support. Please note that for taxation purposes, no goods or
+          services were received in return for these contributions. If you have any questions or
+          concerns, please contact us at giving@newspring.cc or 864-965-9990.
         </p>
-
       </div>
     </body>
   </html>
 );
 
-
-export default (props) => generatePDF(<Statement {...props} />);
+export default props => generatePDF(<Statement {...props} />);
