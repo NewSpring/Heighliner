@@ -13,8 +13,8 @@ import uuid from "node-uuid";
 
 export const generatePDF = (component) => {
   const html = ReactDOMServer.renderToStaticMarkup(component);
-  console.log("component = ", component);
-  console.log("html = ", html);
+  // console.log("component = ", component);
+  // console.log("html = ", html);
   return new Promise((r, f) => {
     // XXX James says this isn't really worth mocking independent parts
     // of pdf.create. So instead we just verify it fails, or returns a base64 stringify
@@ -30,7 +30,9 @@ export const generatePDF = (component) => {
         },
       })
       .toBuffer((err, buffer) => {
+        console.log("********** GENERATE PDF **********");
         console.log("err = ", err);
+        console.log("buffer = ", buffer);
         if (err) return f(err);
 
         r(buffer.toString("base64"));
