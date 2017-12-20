@@ -30,6 +30,7 @@ export const generatePDF = (component) => {
         },
       })
       .toBuffer((err, buffer) => {
+        console.log("err = ", err);
         if (err) return f(err);
 
         r(buffer.toString("base64"));
