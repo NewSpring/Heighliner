@@ -62,7 +62,7 @@ export default {
     logoutUser(_, props, { models, authToken, user }) {
       return models.User.logoutUser({
         token: authToken,
-        userId: user.Id,
+        userId: user && user.Id,
       });
     },
     forgotUserPassword(_, props, { models }) {

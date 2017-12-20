@@ -3,6 +3,7 @@ import moment from "moment";
 import stripTags from "striptags";
 import Random from "meteor-random";
 import isEmpty from "lodash/isEmpty";
+import isNil from "lodash/isNil";
 import makeNewGuid from "./makeNewGuid";
 import sendEmail from "./sendEmail";
 import * as api from "./api";
@@ -161,13 +162,18 @@ export class User {
   }
 
   logoutUser = async ({ token, userId } = {}) => {
-    await this.tokens.remove({
-      token,
-      userId,
-    });
-    return {
-      id: userId,
-    };
+    try {
+      if (isNil(userId) || isEmpty(token)) throw new Error("User is not logged in!");
+      await this.tokens.remove({
+        token,
+        userId,
+      });
+      return {
+        id: userId,
+      };
+    } catch (err) {
+      throw err;
+    }
   }
 
   createUserProfile = async (props = {}) => {
