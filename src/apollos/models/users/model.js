@@ -32,10 +32,17 @@ const UserTokensModel = new MongoConnector("user_tokens", {
   type: String,
   userId: Number,
   createdAt: { type: Date, default: Date.now },
+  expireCreatedAt: { type: Date },
 }, [
   {
-    keys: { createdAt: 1 },
-    options: { expireAfterSeconds: 43200 }, // 1 day
+    keys: { expireCreatedAt: 1 },
+    options: { // 1 day and only reset tokens
+      // expireAfterSeconds: 43200,
+      expireAfterSeconds: 3,
+      partialFilterExpression: { // Mongo 3.2+ only (we're on 3.0)
+        type: { $eq: "reset" },
+      },
+    },
   },
 ]);
 
@@ -68,18 +75,11 @@ export class User {
     }));
   }
 
-  async getByBasicAuth(userPasswordString = "") {
+  async getByBasicAuth(token) {
     // Client needs to encode user and password and join by ':'
     // for all user requests including login
     try {
-      const userPasswordTuple = userPasswordString.split(":");
-      const username = decrypt(decodeURIComponent(userPasswordTuple[0]));
-      const password = decrypt(decodeURIComponent(userPasswordTuple[1]));
-
-      const isAuthorized = await this.checkUserCredentials(username, password);
-      if (!isAuthorized) throw new Error("User not authorized");
-
-      return this.getLatestLoginByUsername(username);
+      return this.getByToken({ token, type: "login" });
     } catch (err) {
       throw err;
     }
@@ -131,21 +131,30 @@ export class User {
     try {
       await this.checkUserCredentials(email, password);
 
-      const login = await this.getLatestLoginByUsername(email);
+      const user = await this.getLatestLoginByUsername(email);
 
-      if (!login.IsConfirmed) {
-        api.post(`/UserLogins/${login.Id}`, {
+      if (!user.IsConfirmed) {
+        api.post(`/UserLogins/${user.Id}`, {
           IsConfirmed: true,
         });
       }
 
-      api.patch(`/UserLogins/${login.Id}`, {
+      api.patch(`/UserLogins/${user.Id}`, {
         LastLoginDateTime: `${moment().toISOString()}`,
       });
 
+      const token = `::${Random.secret()}`;
+
+      await this.tokens.create({
+        _id: Random.id(),
+        userId: user.Id,
+        token,
+        type: "login",
+      });
+
       return {
-        id: login.Id,
-        token: `${encodeURIComponent(encrypt(email))}:${encodeURIComponent(encrypt(password))}`,
+        id: user.Id,
+        token,
       };
     } catch (err) {
       throw err;
@@ -262,6 +271,7 @@ export class User {
         userId: user.Id,
         token,
         type: "reset",
+        expireCreatedAt: new Date(),
       });
 
       const [systemEmail] = await api.get("/SystemEmails?$filter=Title eq 'Reset Password'");

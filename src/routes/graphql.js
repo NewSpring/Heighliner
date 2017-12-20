@@ -118,7 +118,7 @@ export default function (app, monitor) {
       if (datadog) datadog.increment("graphql.authenticated.request");
       // bind the logged in user to the context overall
       try {
-        const tokenIsBasicAuth = context.authToken.indexOf(":") >= 0;
+        const tokenIsBasicAuth = context.authToken.indexOf("::") >= 0;
         if (tokenIsBasicAuth) {
           context.user = await timeout(createdModels.User.getByBasicAuth(context.authToken), 5000);
           const person = await timeout(models.User.getUserProfile(context.user.PersonId), 5000);
