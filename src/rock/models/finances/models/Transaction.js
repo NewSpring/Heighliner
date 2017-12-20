@@ -286,6 +286,11 @@ export default class Transaction extends Rock {
         }),
       )
       .then((transactions) => {
+        console.log("***** TRANSACTIONS *****");
+        console.log("transactions = ", transactions);
+        return transactions;
+      })
+      .then((transactions) => {
         let total = 0;
         let details;
         if (!Array.isArray(transactions)) {
