@@ -1,10 +1,6 @@
 /* tslint:disable:no-shadowed-variable */
 
-import {
-  INTEGER,
-  STRING,
-  BOOLEAN,
-} from "sequelize";
+import { INTEGER, STRING, BOOLEAN } from "sequelize";
 
 import { MSSQLConnector } from "../../mssql";
 
@@ -53,7 +49,7 @@ const personalDeviceSchema = {
   Id: { type: INTEGER, primaryKey: true },
   PersonAliasId: { type: INTEGER },
   DeviceRegistrationId: { type: STRING },
-  PersonalDeviceTypeId: { type: INTEGER },
+  PersonalDeviceTypeValueId: { type: INTEGER },
   NotificationsEnabled: { type: BOOLEAN },
 };
 
@@ -64,13 +60,10 @@ let PersonalDevice;
 export {
   Person,
   personSchema,
-
   PersonAlias,
   aliasSchema,
-
   PhoneNumber,
   phoneNumberSchema,
-
   PersonalDevice,
 };
 
@@ -88,18 +81,15 @@ export function connect() {
   };
 }
 
-export function bind({
-  Person,
-  PersonAlias,
-  PhoneNumber,
-  PersonalDevice,
-  Group,
-}) {
+export function bind({ Person, PersonAlias, PhoneNumber, PersonalDevice, Group }) {
   PersonAlias.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
   Person.model.hasOne(PersonAlias.model, { foreignKey: "PersonId" });
 
   PhoneNumber.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
-  PersonalDevice.model.belongsTo(PersonAlias.model, { foreignKey: "PersonAliasId", targetKey: "Id" });
+  PersonalDevice.model.belongsTo(PersonAlias.model, {
+    foreignKey: "PersonAliasId",
+    targetKey: "Id",
+  });
 
   Person.model.belongsToMany(Group.model, {
     as: "Groups",
