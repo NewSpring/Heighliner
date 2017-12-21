@@ -179,7 +179,7 @@ export default {
       return Promise.all(getAllFiles)
         .then(data => flatten(data));
     },
-    hasLike({ entry_id }, $, { models, person }) {
+    hasLike({ entry_id }, $, { models, person = {} }) {
       return models.Like.hasUserLike(person.PrimaryAliasId, entry_id);
     },
   },

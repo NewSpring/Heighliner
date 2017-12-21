@@ -108,6 +108,7 @@ export class Like {
   }
 
   async hasUserLike(userId, entryId) {
+    if (!userId || !entryId) return false;
     return !!await this.model.findOne({
       entryId: createGlobalId(entryId, "Content"), // Why are IDs encrypted?
       userId,
