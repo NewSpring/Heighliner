@@ -1,5 +1,10 @@
 
 export default [`
+  type Backlot {
+    cursor: Int
+    assets: [Ooyala]
+  }
+
   type Ooyala {
     name: String
     description: String

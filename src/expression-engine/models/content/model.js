@@ -302,7 +302,7 @@ export class Content extends EE {
           {
             model: ChannelTitles.model,
             where: {
-              status: { $or: ["open", "featured" ]},
+              // status: { $or: ["open", "featured" ]},
               entry_date: { $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
               expiration_date: {
                 $or: [
@@ -379,7 +379,7 @@ export class Content extends EE {
           {
             model: ChannelTitles.model,
             where: {
-              status: { $or: ["open", "featured" ]},
+              // status: { $or: ["open", "featured" ]},
               entry_date: { $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
               expiration_date: {
                 $or: [
@@ -457,7 +457,7 @@ export class Content extends EE {
     } else {
       channelData.field_id_651 = { $or: ["", null] }
     }
-    if (channelTitle.status === "open") channelTitle.status = { $or: ["open", "featured"] };
+    // if (channelTitle.status === "open") channelTitle.status = { $or: ["open", "featured"] };
 
     return await this.cache.get(this.cache.encode(query, this.__type), () => ChannelData.find({
       where: channelData,
@@ -496,7 +496,7 @@ export class Content extends EE {
       ],
     };
 
-    if (channelTitle.status === "open") channelTitle.status = { $or: ["open", "featured"] };
+    // if (channelTitle.status === "open") channelTitle.status = { $or: ["open", "featured"] };
     return await this.cache.get(this.cache.encode(query, this.__type), () => ChannelData.find({
       where: channelData,
       attributes: ["entry_id"],

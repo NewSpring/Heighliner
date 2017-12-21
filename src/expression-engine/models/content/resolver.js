@@ -103,6 +103,7 @@ export default {
     body: ({ body, legacy_body }, _, { models }) => models.Content.cleanMarkup(body || legacy_body),
     description: ({ description }) => description,
     ooyalaId: ({ video }) => video,
+    originalVideo: ({ video }, _, { models }) => models.Ooyala.get(`/v2/assets/${video}/source_file_info`),
     tags: ({ tags }, _, { models }) => models.Content.splitByNewLines(tags),
     speaker: ({ speaker }) => speaker,
     hashtag: ({ hashtag }) => hashtag,

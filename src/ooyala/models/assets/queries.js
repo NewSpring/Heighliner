@@ -1,5 +1,5 @@
 
 export default [
-  "backlot: [Ooyala]",
+  "backlot(cursor: Int, limit: Int = 20): [Ooyala]",
   "asset(query: String!): Ooyala",
 ];
