@@ -30,7 +30,7 @@ const UserTokensModel = new MongoConnector("user_tokens", {
   _id: String,
   token: String,
   type: String,
-  userId: Number,
+  loginId: Number,
   createdAt: { type: Date, default: Date.now },
   expireCreatedAt: { type: Date },
 }, [
@@ -95,12 +95,12 @@ export class User {
 
   getByToken = async ({ token, type = "reset" } = {}) => {
     try {
-      const { userId } = await this.tokens.findOne({
+      const { loginId } = await this.tokens.findOne({
         token,
         type,
       });
 
-      return this.getLoginById(userId);
+      return this.getLoginById(loginId);
     } catch (err) {
       throw new Error("Token Expired!");
     }
@@ -130,29 +130,30 @@ export class User {
     try {
       await this.checkUserCredentials(email, password);
 
-      const user = await this.getLatestLoginByUsername(email);
+      const login = await this.getLatestLoginByUsername(email);
 
-      if (!user.IsConfirmed) {
-        api.post(`/UserLogins/${user.Id}`, {
+      if (!login.IsConfirmed) {
+        api.post(`/UserLogins/${login.Id}`, {
           IsConfirmed: true,
         });
       }
 
-      api.patch(`/UserLogins/${user.Id}`, {
+      api.patch(`/UserLogins/${login.Id}`, {
         LastLoginDateTime: `${moment().toISOString()}`,
       });
 
+      const person = await this.getUserProfile(login.PersonId);
       const token = `::${Random.secret()}`;
 
       await this.tokens.create({
         _id: Random.id(),
-        userId: user.Id,
+        loginId: login.Id,
         token,
         type: "login",
       });
 
       return {
-        id: user.Id,
+        id: person.PrimaryAliasId,
         token,
       };
     } catch (err) {
@@ -160,16 +161,14 @@ export class User {
     }
   }
 
-  logoutUser = async ({ token, userId } = {}) => {
+  logoutUser = async ({ token, loginId } = {}) => {
     try {
-      if (isNil(userId) || isEmpty(token)) throw new Error("User is not logged in!");
+      if (isNil(loginId) || isEmpty(token)) throw new Error("User is not logged in!");
       await this.tokens.remove({
         token,
-        userId,
+        loginId,
       });
-      return {
-        id: userId,
-      };
+      return true;
     } catch (err) {
       throw err;
     }
@@ -216,7 +215,7 @@ export class User {
         LastLoginDateTime: `${moment().toISOString()}`,
       });
     } catch (err) {
-      throw new Error("Unable to create user!");
+      throw new Error("Unable to create user login!");
     }
   }
 
@@ -235,14 +234,14 @@ export class User {
         lastName,
       });
 
-      const userLoginId = await this.createUserLogin({
+      const loginId = await this.createUserLogin({
         email,
         password,
         personId,
       });
 
       const [user, person] = await Promise.all([
-        api.get(`/UserLogins/${userLoginId}`),
+        api.get(`/UserLogins/${loginId}`),
         api.get(`/People/${personId}`),
       ]);
 
@@ -267,12 +266,12 @@ export class User {
     }
   }
 
-  forgotPassword = async (username, sourceURL) => {
+  forgotPassword = async (email, sourceURL) => {
     try {
-      const user = await this.getLatestLoginByUsername(username);
-      if (!user) throw new Error("User does not exist!");
+      const login = await this.getLatestLoginByUsername(email);
+      if (!login) throw new Error("User does not exist!");
 
-      const person = await api.get(`/People/${user.PersonId}`);
+      const person = await api.get(`/People/${login.PersonId}`);
       if (!person) throw new Error("User profile does not exist!");
 
       const token = Random.secret();
@@ -282,13 +281,12 @@ export class User {
       // rock manage password reset tokens. This works fine for now ^_^
       await this.tokens.create({
         _id: Random.id(),
-        userId: user.Id,
+        loginId: login.Id,
         token,
         type: "reset",
         expireCreatedAt: new Date(),
       });
 
-      console.log({ token });
       const [systemEmail] = await api.get("/SystemEmails?$filter=Title eq 'Reset Password'");
       if (!systemEmail) throw new Error("Reset password email does not exist!");
 
@@ -300,7 +298,7 @@ export class User {
           ResetPasswordUrl: `${sourceURL}/reset-password/${token}`,
         },
       );
-      return user;
+      return true;
     } catch (err) {
       throw err;
     }
@@ -320,7 +318,7 @@ export class User {
       });
 
       this.tokens.remove({
-        userId: user.Id,
+        loginId: user.Id,
         token,
         type: "reset",
       });
@@ -331,24 +329,22 @@ export class User {
     }
   }
 
-  async changePassword(user, oldPassword, newPassword) {
+  async changePassword(login, oldPassword, newPassword) {
     try {
-      if (!user) throw new Error("User is not logged in!");
+      if (!login) throw new Error("User is not logged in!");
       if (isEmpty(oldPassword)) throw new Error("Old password is required");
       if (isEmpty(newPassword)) throw new Error("New password is required");
 
-      await this.checkUserCredentials(user.UserName, oldPassword);
+      await this.checkUserCredentials(login.UserName, oldPassword);
 
-      await api.put(`/UserLogins/${user.Id}`, {
-        ...user,
+      await api.put(`/UserLogins/${login.Id}`, {
+        ...login,
         PlainTextPassword: newPassword,
         IsConfirmed: true,
         EntityTypeId: 27,
       });
 
-      return {
-        id: user.Id,
-      };
+      return true;
     } catch (err) {
       throw err;
     }

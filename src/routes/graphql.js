@@ -121,12 +121,14 @@ export default function (app, monitor) {
         const tokenIsBasicAuth = context.authToken.indexOf("::") >= 0;
         if (tokenIsBasicAuth) {
           context.user = await timeout(createdModels.User.getByBasicAuth(context.authToken), 5000);
-          const person = await timeout(models.User.getUserProfile(context.user.PersonId), 5000);
+          const person = await timeout(
+            createdModels.User.getUserProfile(context.user.PersonId), 5000);
+
           context.person = await timeout(
             createdModels.Person.getFromAliasId(
               person.PrimaryAliasId,
-            ), 1000);
-          context.person.PrimaryAliasId = context.user.services.rock.PrimaryAliasId;
+            ), 5000);
+          context.person.PrimaryAliasId = person.PrimaryAliasId;
         } else {
           // Deprecate
           context.user = await timeout(
