@@ -33,12 +33,8 @@ export default [`
     email: String
   }
 
-  type UserMutationResponse {
-    id: Int
-  }
-
   type LoginMutationResponse {
-    id: Int
+    id: ID!
     token: String
   }
 `];

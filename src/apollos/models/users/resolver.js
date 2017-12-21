@@ -3,8 +3,9 @@ import get from "lodash/get";
 
 export default {
   Query: {
-    currentUser(_, args, { user }) {
-      return user || null;
+    currentUser(_, args, { user, person }) {
+      if (!user || !person) return null;
+      return { user, person };
     },
   },
 
@@ -23,32 +24,26 @@ export default {
   },
 
   User: {
-    id: (user) => {
-      const {
-        _id, // Deprecated Mongo User
-        Id, // Rock User
-      } = user;
-      return Id || _id;
+    id: ({ user, person } = {}) => {
+      const mongoId = get(user, "_id"); // Deprecated
+      const rockId = get(person, "PrimaryAliasId");
+      return rockId || mongoId;
     },
-    createdAt: (user) => {
+    createdAt: ({ user } = {}) => {
       const {
         createdAt, // Deprecated Mongo User
         CreatedDateTime, // Rock User
       } = user;
       return CreatedDateTime || createdAt;
     },
-    services: ({ services }) => services,
-    emails: ({ emails }) => emails,
-    email: async (user, _, { models }) => {
+    services: (props = {}) => get(props, "user.services"), // Deprecated
+    emails: (props = {}) => get(props, "user.emails"), // Deprecated
+    email: async ({ user, person }) => {
       const email = get(user, "emails.0.address");
       if (email) return email; // Deprecated Mongo User
 
       // Rock Profile
-      const person = await models.User.getUserProfile(user.PersonId);
-      const {
-        Email,
-      } = person;
-      return Email;
+      return person.Email;
     },
   },
 
@@ -62,7 +57,7 @@ export default {
     logoutUser(_, props, { models, authToken, user }) {
       return models.User.logoutUser({
         token: authToken,
-        userId: user && user.Id,
+        loginId: user && user.Id,
       });
     },
     forgotUserPassword(_, props, { models }) {
@@ -86,9 +81,5 @@ export default {
       } = props;
       return models.User.changePassword(user, oldPassword, newPassword);
     },
-  },
-
-  UserMutationResponse: {
-    id: ({ Id }) => Id,
   },
 };
