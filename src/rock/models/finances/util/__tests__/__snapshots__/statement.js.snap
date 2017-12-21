@@ -125,7 +125,7 @@ exports[`Statement should render with data 1`] = `
       
               .footer-text {
       
-                width: 6in;
+                width: 5in;
                 margin-top: 40px;
                 margin-bottom: 100px;
       
@@ -166,11 +166,11 @@ exports[`Statement should render with data 1`] = `
         <p
           id="church-address"
         >
-          NewSpring Church  
+          NewSpring Church
           <br />
           EIN# 26-4189337 
           <br />
-          PO Box 1407  
+          PO Box 1407
           <br />
           Anderson, SC 29622 US
         </p>
@@ -294,7 +294,7 @@ exports[`Statement should render with data 1`] = `
       <p
         className="footer-text soft"
       >
-        Thank you for your continued support. Please note that for taxation purposes, no goods or services were received in return for these contributions. If you have any questions or concerns, please contact us at giving@newspring.cc or 864-965-9990.
+        Thank you for your continued support. No goods or services were received in return for these contributions. If you have any questions or concerns, please contact us at giving@newspring.cc or 864-965-9990.
       </p>
     </div>
   </body>
