@@ -6,9 +6,7 @@ import { createGlobalId } from "../../../util";
 import sortBy from "lodash/sortBy";
 
 export default {
-
   Query: {
-
     content(_, { channel, limit, skip, status, cache }, { models }) {
       return models.Content.find({
         channel_name: channel,
@@ -180,6 +178,9 @@ export default {
 
       return Promise.all(getAllFiles)
         .then(data => flatten(data));
+    },
+    hasLike({ entry_id }, $, { models, person = {} }) {
+      return models.Like.hasUserLike(person.PrimaryAliasId, entry_id);
     },
   },
 

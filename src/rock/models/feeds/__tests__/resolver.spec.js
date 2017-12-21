@@ -164,7 +164,7 @@ describe("Feed Query", () => {
     const results = await Query.userFeed( //eslint-disable-line
       null,
       { filters: ["LIKES"] },
-      { models: mockModels, person: null, user: { _id: "1234" } },
+      { models: mockModels, person: { PrimaryAliasId: "1234" }, user: { _id: "1234" } },
     );
 
     expect(mockModels.Like.getLikedContent).toHaveBeenCalledWith("1234", {});
@@ -180,7 +180,7 @@ describe("Feed Query", () => {
     const results = await Query.userFeed( //eslint-disable-line
       null,
       { filters: ["LIKES"] },
-      { models: mockModels, person: null, user: { _id: "1234" } },
+      { models: mockModels, person: { PrimaryAliasId: "1234" }, user: { _id: "1234" } },
     );
 
     expect(results).toHaveLength(1);
