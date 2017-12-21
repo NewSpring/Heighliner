@@ -67,7 +67,7 @@ export default {
       }
 
       if (filters.includes("LIKES") && user) {
-        const likedContent = await models.Like.getLikedContent(user._id, models.Node);
+        const likedContent = await models.Like.getLikedContent(person.PrimaryAliasId, models.Node);
         const reversed = Array.isArray(likedContent) ? likedContent.reverse() : likedContent;
         filterQueries.push(reversed);
       }
