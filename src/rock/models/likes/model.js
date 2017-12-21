@@ -11,7 +11,11 @@ const schema = {
   createdAt: String,
 };
 
-const Model = new MongoConnector("like", schema);
+const Model = new MongoConnector("like", schema, [
+  {
+    keys: { userId: 1, entryId: 1 },
+  },
+]);
 
 /*
   skip?: Int, // how many to trim off the front
@@ -101,6 +105,13 @@ export class Like {
       error: "",
       code: "",
     };
+  }
+
+  async hasUserLike(userId, entryId) {
+    return !!await this.model.findOne({
+      entryId: createGlobalId(entryId, "Content"), // Why are IDs encrypted?
+      userId,
+    });
   }
 }
 
