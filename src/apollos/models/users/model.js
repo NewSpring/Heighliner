@@ -126,6 +126,15 @@ export class User {
     }
   }
 
+  async userExists({ email } = {}) {
+    try {
+      const [login] = await api.get(`/UserLogins?$filter=UserName eq '${email}'`);
+      return !!login;
+    } catch (err) {
+      return false;
+    }
+  }
+
   loginUser = async ({ email, password } = {}) => {
     try {
       await this.checkUserCredentials(email, password);
@@ -227,6 +236,10 @@ export class User {
         lastName,
         password,
       } = props;
+
+      const userExists = await this.userExists({ email });
+      console.log(userExists);
+      if (userExists) throw new Error("User already exists!");
 
       const personId = await this.createUserProfile({
         email,
