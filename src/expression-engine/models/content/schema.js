@@ -35,7 +35,7 @@ export default [`
     tracks: [File]
     audio: [File]
     scripture: [ContentScripture]
-    hasLike: Boolean
+    isLiked: Boolean
   }
 
   type ContentVideo {
