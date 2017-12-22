@@ -238,7 +238,6 @@ export class User {
       } = props;
 
       const userExists = await this.userExists({ email });
-      console.log(userExists);
       if (userExists) throw new Error("User already exists!");
 
       const personId = await this.createUserProfile({
