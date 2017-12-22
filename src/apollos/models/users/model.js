@@ -2,14 +2,19 @@ import crypto from "crypto";
 import moment from "moment";
 import stripTags from "striptags";
 import Random from "meteor-random";
-import isEmpty from "lodash/isEmpty";
-import isNil from "lodash/isNil";
+import {
+  isEmpty,
+  isNil,
+  difference,
+  includes,
+} from "lodash";
 import makeNewGuid from "./makeNewGuid";
 import sendEmail from "./sendEmail";
 import * as api from "./api";
 
 import { MongoConnector } from "../../mongo";
 import { defaultCache } from "../../../util/cache";
+import { FOLLOWABLE_TOPICS } from "../../../constants";
 
 // Needs migration
 const UserModel = new MongoConnector("user", {
@@ -45,12 +50,23 @@ const UserTokensModel = new MongoConnector("user_tokens", {
   },
 ]);
 
+const UserIgnoredTopics = new MongoConnector("user_ignored_topics", {
+  _id: String,
+  userId: String,
+  topic: String,
+}, [
+  {
+    keys: { userId: 1 },
+  },
+]);
+
 export class User {
   // Deprecate
   constructor({ cache } = { cache: defaultCache }) {
     this.cache = cache;
     this.model = UserModel;
     this.tokens = UserTokensModel;
+    this.ignoredTopics = UserIgnoredTopics;
   }
 
   // Deprecate
@@ -357,6 +373,48 @@ export class User {
       });
 
       return true;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async getUserFollowingTopics(userId) {
+    try {
+      const ignoredTopicObjects = await this.ignoredTopics.find({
+        userId,
+      });
+
+      const ignoredTopics = ignoredTopicObjects.map(({ topic }) => (topic));
+
+      return difference(FOLLOWABLE_TOPICS, ignoredTopics);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  ignoreTopic({ userId, topic } = {}) {
+    if (!includes(FOLLOWABLE_TOPICS, topic)) throw new Error("Topic cannot be followed");
+    return this.ignoredTopics.create({
+      _id: Random.id(),
+      userId,
+      topic,
+    });
+  }
+
+  followTopic({ userId, topic } = {}) {
+    return this.ignoredTopics.remove({
+      userId,
+      topic,
+    });
+  }
+
+  async toggleTopic({ userId, topic } = {}) {
+    try {
+      const isIgnoringTopic = !!await this.ignoredTopics.findOne({ userId, topic });
+      if (isIgnoringTopic) {
+        return this.followTopic({ userId, topic });
+      }
+      return this.ignoreTopic({ userId, topic });
     } catch (err) {
       throw err;
     }

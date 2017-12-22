@@ -31,6 +31,7 @@ export default [`
     services: UserService @deprecated(reason: "This is a private server-only field")
     emails: [UserEmail] @deprecated(reason: "Use email instead")
     email: String
+    followedTopics: [String]
   }
 
   type LoginMutationResponse {
