@@ -13,7 +13,8 @@ export default {
 
       // Home feed query
       if (filters.includes("CONTENT")) {
-        const topics = await models.User.getUserFollowingTopics(person.PrimaryAliasId);
+        const topics = await models.User.getUserFollowingTopics(person && person.PrimaryAliasId);
+
         const channels = topics
           .map(x => x.toLowerCase())
           .map((x) => {
