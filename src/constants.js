@@ -2,7 +2,7 @@
 export const FOLLOWABLE_TOPICS = [
   "Articles",
   "Devotionals",
-  "Events",
+  "Events", // These are forced
   "Music",
   "News",
   "Series",

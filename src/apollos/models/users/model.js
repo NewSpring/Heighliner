@@ -388,7 +388,7 @@ export class User {
 
       return difference(FOLLOWABLE_TOPICS, ignoredTopics);
     } catch (err) {
-      throw err;
+      return FOLLOWABLE_TOPICS;
     }
   }
 
