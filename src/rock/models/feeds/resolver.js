@@ -14,9 +14,8 @@ export default {
 
       // Home feed query
       if (filters.includes("CONTENT")) {
-        let { channels } = opts.content;
-
-        channels = channels
+        const topics = await models.User.getUserFollowingTopics(person.PrimaryAliasId);
+        const channels = topics
           .map(x => x.toLowerCase())
           .map((x) => {
             if (x === "series") return ["series_newspring"];
