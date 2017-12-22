@@ -1,7 +1,6 @@
 
 import casual from "casual";
 import Resolver from "../resolver";
-import { parseGlobalId } from "../../../../util";
 
 const sampleData = {
   _id: casual.word,
@@ -40,7 +39,7 @@ const sampleData = {
 
 it("has a currentUser root level query which pulls from the context", () => {
   const { currentUser } = Resolver.Query;
-  expect(currentUser(null, null, { user: "TEST" })).toBe("TEST");
+  expect(currentUser(null, null, { user: "TEST", person: "TEST" })).toEqual({ user: "TEST", person: "TEST" });
   expect(currentUser(null, null, {})).toBe(null);
 });
 
@@ -82,21 +81,20 @@ it("`UserService` should return the 'resume' object from the data", () => {
 
 it("`User` should return the 'id' value from the data", () => {
   const { User } = Resolver;
-  const parentType = { name: "User" };
-  const { id } = parseGlobalId(User.id(sampleData, null, null, { parentType }));
+  const id = User.id({ user: sampleData });
   expect(id).toEqual(sampleData._id);
 });
 
 it("`User` should return the 'services' object from the data", () => {
   const { User } = Resolver;
 
-  const services = User.services(sampleData);
+  const services = User.services({ user: sampleData });
   expect(services).toEqual(sampleData.services);
 });
 
 it("`User` should return the 'emails' object from the data", () => {
   const { User } = Resolver;
 
-  const emails = User.emails(sampleData);
+  const emails = User.emails({ user: sampleData });
   expect(emails).toEqual(sampleData.emails);
 });
