@@ -4,12 +4,11 @@ export default {
   Query: {
     userFeed: async (
       _,
-      { filters, limit, skip, status, cache, options = "{}" },
+      { filters, limit, skip, status, cache },
       { models, person, user },
     ) => {
       if (!filters) return null;
 
-      const opts = JSON.parse(options);
       const filterQueries = [];
 
       // Home feed query
