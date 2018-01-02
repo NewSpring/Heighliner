@@ -1,6 +1,7 @@
 
 import casual from "casual";
 import Resolver from "../resolver";
+import { FOLLOWABLE_TOPICS } from "../../../../constants";
 
 const sampleUser = {
   _id: casual.word,
@@ -142,4 +143,12 @@ it("Mutation `toggleTopic` should call 'toggleTopic' from 'User'", () => {
     topic: "Articles",
     userId: samplePerson.PrimaryAliasId,
   });
+});
+
+it("`topics` should return all 'FOLLOWABLE_TOPICS'", () => {
+  const { Query } = Resolver;
+
+  const followableTopics = Query.topics();
+
+  expect(followableTopics).toEqual(FOLLOWABLE_TOPICS);
 });
