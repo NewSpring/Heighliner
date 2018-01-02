@@ -1,11 +1,15 @@
 
 import get from "lodash/get";
+import { FOLLOWABLE_TOPICS } from "../../../constants";
 
 export default {
   Query: {
     currentUser(_, args, { user, person }) {
       if (!user || !person) return null;
       return { user, person };
+    },
+    topics() {
+      return FOLLOWABLE_TOPICS;
     },
   },
 
