@@ -119,6 +119,9 @@ export default {
       models.Person.getGroups(Id, 1), // 1: security groups
     groups: ({ Id }, { cache = true, groupTypeIds = [] }, { models }) =>
       models.Person.getGroups(Id, groupTypeIds),
+    followedTopics(_, $, { models, person }) {
+      return models.User.getUserFollowingTopics(person.PrimaryAliasId);
+    },
   },
 
   PhoneNumber: {
