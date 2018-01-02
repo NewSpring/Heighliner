@@ -100,7 +100,10 @@ describe("Feed Query", () => {
     },
     Node: {
 
-    }
+    },
+    User: {
+      getUserFollowingTopics: jest.fn(),
+    },
   };
 
   afterEach(() => {
@@ -164,7 +167,7 @@ describe("Feed Query", () => {
     const results = await Query.userFeed( //eslint-disable-line
       null,
       { filters: ["LIKES"] },
-      { models: mockModels, person: null, user: { _id: "1234" } },
+      { models: mockModels, person: { PrimaryAliasId: "1234" }, user: { _id: "1234" } },
     );
 
     expect(mockModels.Like.getLikedContent).toHaveBeenCalledWith("1234", {});
@@ -180,7 +183,7 @@ describe("Feed Query", () => {
     const results = await Query.userFeed( //eslint-disable-line
       null,
       { filters: ["LIKES"] },
-      { models: mockModels, person: null, user: { _id: "1234" } },
+      { models: mockModels, person: { PrimaryAliasId: "1234" }, user: { _id: "1234" } },
     );
 
     expect(results).toHaveLength(1);
@@ -191,13 +194,13 @@ describe("Feed Query", () => {
 
     mockModels.Content.findByCampusName.mockReturnValueOnce([sampleData.news]);
     mockModels.Person.getCampusFromId.mockReturnValueOnce(sampleData.userCampus);
+    mockModels.User.getUserFollowingTopics.mockReturnValueOnce(["News"]);
     // mockModels.Campus.find.mockReturnValueOnce(Promise.resolve([{ Guid: "harambe" }]));
 
     const results = await Query.userFeed( //eslint-disable-line
       null,
       {
         filters: ["CONTENT"],
-        options: "{\"content\":{\"channels\":[\"news\"]}}",
       },
       { models: mockModels, person: { Id: "1234" } },
     );
@@ -219,12 +222,12 @@ describe("Feed Query", () => {
 
     mockModels.Content.findByCampusName.mockReset();
     mockModels.Content.findByCampusName.mockReturnValueOnce([sampleData.news]);
+    mockModels.User.getUserFollowingTopics.mockReturnValueOnce(["News"]);
 
     const results = await Query.userFeed( //eslint-disable-line
       null,
       {
         filters: ["CONTENT"],
-        options: "{\"content\":{\"channels\":[\"news\"]}}",
       },
       { models: mockModels, person: { Id: "1234" } },
     );
