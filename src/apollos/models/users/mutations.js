@@ -5,4 +5,5 @@ export default [
   "changeUserPassword(oldPassword: String!, newPassword: String!): Boolean",
   "forgotUserPassword(email: String!, sourceURL: String): Boolean",
   "resetUserPassword(token: String!, newPassword: String!): LoginMutationResponse",
+  "toggleTopic(topic: String!): Boolean",
 ];
