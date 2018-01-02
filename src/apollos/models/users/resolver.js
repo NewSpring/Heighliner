@@ -1,11 +1,15 @@
 
 import get from "lodash/get";
+import { FOLLOWABLE_TOPICS } from "../../../constants";
 
 export default {
   Query: {
     currentUser(_, args, { user, person }) {
       if (!user || !person) return null;
       return { user, person };
+    },
+    topics() {
+      return FOLLOWABLE_TOPICS;
     },
   },
 
@@ -38,12 +42,15 @@ export default {
     },
     services: (props = {}) => get(props, "user.services"), // Deprecated
     emails: (props = {}) => get(props, "user.emails"), // Deprecated
-    email: async ({ user, person }) => {
+    email: ({ user, person }) => {
       const email = get(user, "emails.0.address");
       if (email) return email; // Deprecated Mongo User
 
       // Rock Profile
       return person.Email;
+    },
+    followedTopics({ person }, $, { models }) {
+      return models.User.getUserFollowingTopics(person.PrimaryAliasId);
     },
   },
 
@@ -80,6 +87,15 @@ export default {
         newPassword,
       } = props;
       return models.User.changePassword(user, oldPassword, newPassword);
+    },
+    toggleTopic(_, props, { models, person }) {
+      const {
+        topic,
+      } = props;
+      return models.User.toggleTopic({
+        topic,
+        userId: person.PrimaryAliasId,
+      });
     },
   },
 };
