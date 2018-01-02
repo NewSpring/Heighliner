@@ -45,6 +45,9 @@ export default {
       // Rock Profile
       return person.Email;
     },
+    followedTopics({ person }, $, { models }) {
+      return models.User.getUserFollowingTopics(person.PrimaryAliasId);
+    },
   },
 
   Mutation: {
@@ -80,6 +83,15 @@ export default {
         newPassword,
       } = props;
       return models.User.changePassword(user, oldPassword, newPassword);
+    },
+    toggleTopic(_, props, { models, person }) {
+      const {
+        topic,
+      } = props;
+      return models.User.toggleTopic({
+        topic,
+        userId: person.PrimaryAliasId,
+      });
     },
   },
 };
