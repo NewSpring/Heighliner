@@ -42,7 +42,7 @@ export default {
     },
     services: (props = {}) => get(props, "user.services"), // Deprecated
     emails: (props = {}) => get(props, "user.emails"), // Deprecated
-    email: async ({ user, person }) => {
+    email: ({ user, person }) => {
       const email = get(user, "emails.0.address");
       if (email) return email; // Deprecated Mongo User
 
