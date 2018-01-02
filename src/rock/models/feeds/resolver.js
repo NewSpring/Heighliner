@@ -4,19 +4,18 @@ export default {
   Query: {
     userFeed: async (
       _,
-      { filters, limit, skip, status, cache, options = "{}" },
+      { filters, limit, skip, status, cache },
       { models, person, user },
     ) => {
       if (!filters) return null;
 
-      const opts = JSON.parse(options);
       const filterQueries = [];
 
       // Home feed query
       if (filters.includes("CONTENT")) {
-        let { channels } = opts.content;
+        const topics = await models.User.getUserFollowingTopics(person && person.PrimaryAliasId);
 
-        channels = channels
+        const channels = topics
           .map(x => x.toLowerCase())
           .map((x) => {
             if (x === "series") return ["series_newspring"];

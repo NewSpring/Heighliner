@@ -31,6 +31,7 @@ export default [
     roles(cache: Boolean = true): [Group]
     attributes(key: String): [Attribute]
     groups(cache: Boolean = true, groupTypeIds: [Int] = []): [Group]
+    followedTopics: [String]
   }
 
   type PhoneNumberMutationResponse implements MutationResponse {
