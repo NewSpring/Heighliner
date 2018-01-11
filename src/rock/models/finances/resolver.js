@@ -23,6 +23,13 @@ export default {
         { cache },
       );
     },
+    savedPayment: (_, { id }, { models, person }) => {
+      if (!person) return null;
+      return models.SavedPayment.findOneByPersonAlias({
+        aliases: person.aliases,
+        id,
+      });
+    },
     transactions: (
       _,
       { people, start, end, limit, cache, skip },
