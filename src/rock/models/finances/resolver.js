@@ -23,6 +23,13 @@ export default {
         { cache },
       );
     },
+    savedPayment: (_, { id }, { models, person }) => {
+      if (!person) return null;
+      return models.SavedPayment.findOneByPersonAlias({
+        aliases: person.aliases,
+        id,
+      });
+    },
     transactions: (
       _,
       { people, start, end, limit, cache, skip },
@@ -240,9 +247,10 @@ export default {
 
   SavePaymentMutationResponse: {
     ...MutationReponseResolver,
-    savedPayment: ({ savedPaymentId }, _, { models }) => {
-      if (!savedPaymentId) return null;
-      return models.SavedPayment.getFromId(savedPaymentId).then(([x]) => x);
+    savedPayment: ({ savedPaymentId, Id }, _, { models }) => {
+      const id = savedPaymentId || Id;
+      if (!id) return null;
+      return models.SavedPayment.getFromId(id).then(([x]) => x);
     },
   },
 
