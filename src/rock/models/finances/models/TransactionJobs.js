@@ -84,7 +84,9 @@ export default class TransactionJobs extends Rock {
       .then(this.findOrCreateTransaction)
       .then(this.findOrCreateSchedule)
       .then(this.createTransactionDetails)
-      .then(this.createSavedPayment)
+      // NOTE: This will save the payment method until the job is processed
+      // but it should save the payment method immediately
+      // .then(this.createSavedPayment)
       .then(this.updateBillingAddress)
       .then(this.updateBatchControlAmount)
       .then(this.sendGivingEmail),

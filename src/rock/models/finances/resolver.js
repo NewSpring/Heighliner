@@ -257,10 +257,14 @@ export default {
   CompleteOrderMutationResponse: {
     ...MutationReponseResolver,
     transaction: ({ transactionId }, _, { models }) => {
+      // NOTE: This will always resolve to null because completeOrder only returns
+      // the formatted data for the job
       if (!transactionId) return null;
       return models.Transaction.getFromId(transactionId);
     },
     schedule: ({ scheduleId }, _, { models }) => {
+      // NOTE: This will always resolve to null because completeOrder only returns
+      // the formatted data for the job
       if (!scheduleId) return null;
       return models.ScheduledTransaction.getFromId(scheduleId);
     },
@@ -271,7 +275,7 @@ export default {
     },
     savedPayment: ({ savedPaymentId }, _, { models }) => {
       if (!savedPaymentId) return null;
-      return models.SavedPayment.getFromId(savedPaymentId);
+      return models.SavedPayment.getFromId(savedPaymentId).then(([x]) => x);
     },
   },
 
