@@ -85,8 +85,6 @@ export default {
     ) => {
       const geo = { latitude: null, longitude: null };
 
-      console.log("campus: ", campus, campuses);
-
       // XXX this is to maintain backwards compat
       if (campuses.length) {
         campus = campuses.shift();

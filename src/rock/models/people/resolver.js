@@ -1,4 +1,5 @@
 import Moment from "moment";
+import isArray from "lodash/isArray";
 import { createGlobalId } from "../../../util";
 
 const MutationReponseResolver = {
@@ -91,11 +92,20 @@ export default {
       if (!person || !person.Id) return null;
       return models.Person.getIP(Id, args);
     },
-    phoneNumbers: (
+    phoneNumbers: async (
       { Id },
       _,
       { models }, // tslint:disable-line
-    ) => models.Person.getPhoneNumbersFromId(Id),
+    ) => {
+      try {
+        const result = await models.Person.getPhoneNumbersFromId(Id);
+        if (!isArray(result)) throw new Error(result);
+        return result;
+      } catch (err) {
+        console.log(err);
+        return [];
+      }
+    },
     photo: ({ PhotoId }, _, { models }) => {
       if (!PhotoId) {
         return "//dg0ddngxdz549.cloudfront.net/images/cached/images/remote/http_s3.amazonaws.com/ns.images/all/member_images/members.nophoto_1000_1000_90_c1.jpg";
@@ -117,8 +127,18 @@ export default {
       models.Rock.getAttributesFromEntity(Id, key, 15 /* Person Entity Type */),
     roles: ({ Id }, { cache = true }, { models }) =>
       models.Person.getGroups(Id, 1), // 1: security groups
-    groups: ({ Id }, { cache = true, groupTypeIds = [] }, { models }) =>
-      models.Person.getGroups(Id, groupTypeIds),
+    groups: async ({ Id }, { cache = true, groupTypeIds = [] }, { models }) => {
+      try {
+        // TODO: getGroups should throw an error when it fails
+        // to connect (or fails for any other reason)
+        const result = await models.Person.getGroups(Id, groupTypeIds);
+        if (!isArray(result)) throw new Error(result);
+        return result;
+      } catch (err) {
+        console.log(err);
+        return [];
+      }
+    },
     followedTopics({ PrimaryAliasId }, $, { models }) {
       return models.User.getUserFollowingTopics(PrimaryAliasId);
     },
