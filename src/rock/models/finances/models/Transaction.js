@@ -519,15 +519,22 @@ export default class Transaction extends Rock {
 
       const transactionJob = { ...transaction, platform, version };
       this.TransactionJob.add(transactionJob);
+
       if (accountName) {
         const savedPaymentResult = await this.TransactionJob.createSavedPayment(transactionJob);
         return {
           ...transaction,
           savedPaymentId: get(savedPaymentResult, "FinancialPersonSavedAccount.Id"),
+          code: 200,
+          success: true,
         };
       }
 
-      return transaction;
+      return {
+        ...transaction,
+        code: 200,
+        success: true,
+      };
     } catch ({ message, code }) {
       return { error: message, code, success: false };
     }
