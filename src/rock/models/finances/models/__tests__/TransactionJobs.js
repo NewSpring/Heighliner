@@ -1289,13 +1289,13 @@ describe("createSavedPayment", () => {
     expect(data).toEqual({ FinancialPersonSavedAccount });
   });
 
-  it("keeps going if a there isn't a saved account ReferenceNumber", async () => {
-    const FinancialPersonSavedAccount = { Name: "Test" };
-    const data = await Local.createSavedPayment({
-      FinancialPersonSavedAccount,
-    });
-    expect(data).toEqual({ FinancialPersonSavedAccount });
-  });
+  // it("keeps going if a there isn't a saved account ReferenceNumber", async () => {
+  //   const FinancialPersonSavedAccount = { Name: "Test" };
+  //   const data = await Local.createSavedPayment({
+  //     FinancialPersonSavedAccount,
+  //   });
+  //   expect(data).toEqual({ FinancialPersonSavedAccount });
+  // });
 
   it("creates a new savedPaymentDeatail and creates the saved payment", async () => {
     const FinancialPersonSavedAccount = {
