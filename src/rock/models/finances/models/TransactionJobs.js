@@ -415,8 +415,8 @@ export default class TransactionJobs extends Rock {
 
     if (
       FinancialPersonSavedAccount.Id ||
-      !FinancialPersonSavedAccount.Name ||
-      !FinancialPersonSavedAccount.ReferenceNumber
+      !FinancialPersonSavedAccount.Name
+      // || !FinancialPersonSavedAccount.ReferenceNumber
     ) return data;
 
     delete FinancialPaymentDetail.Id;
