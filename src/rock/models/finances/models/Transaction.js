@@ -4,6 +4,7 @@ import { assign, isArray, find, flatten } from "lodash";
 import QueryString from "querystring";
 import fetch from "isomorphic-fetch";
 import { parseString } from "xml2js";
+import get from "lodash/get";
 
 import { createGlobalId } from "../../../../util";
 import { createCache } from "../../../../util/cache";
@@ -342,7 +343,7 @@ export default class Transaction extends Rock {
     this.gateway = assign(
       gateways,
       attributes,
-      // { SecurityKey: "2F822Rw39fx762MaV7Yy86jXGTC7sCDy" }
+      // { SecurityKey: "2F822Rw39fx762MaV7Yy86jXGTC7sCDy" },
     );
     return this.gateway;
   }
@@ -508,18 +509,34 @@ export default class Transaction extends Rock {
   }
 
   async completeOrder({ scheduleId, token, person, accountName, origin, platform, version }) {
-    const gatewayDetails = await this.loadGatewayDetails("NMI Gateway");
+    try {
+      const gatewayDetails = await this.loadGatewayDetails("NMI Gateway");
 
-    return this.charge(token, gatewayDetails)
-      .then(response => formatTransaction({
+      const response = await this.charge(token, gatewayDetails);
+      const transaction = formatTransaction({
         scheduleId, response, person, accountName, origin,
-      }, gatewayDetails))
-      .then((data) => {
-        this.TransactionJob.add({...data, platform, version});
-        return data;
-      })
-      .catch(({ message, code }) =>
-         ({ error: message, code, success: false }),
-      );
+      }, gatewayDetails);
+
+      const transactionJob = { ...transaction, platform, version };
+      this.TransactionJob.add(transactionJob);
+
+      if (accountName) {
+        const savedPaymentResult = await this.TransactionJob.createSavedPayment(transactionJob);
+        return {
+          ...transaction,
+          savedPaymentId: get(savedPaymentResult, "FinancialPersonSavedAccount.Id"),
+          code: 200,
+          success: true,
+        };
+      }
+
+      return {
+        ...transaction,
+        code: 200,
+        success: true,
+      };
+    } catch ({ message, code }) {
+      return { error: message, code, success: false };
+    }
   }
 }

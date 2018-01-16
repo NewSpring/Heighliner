@@ -213,7 +213,7 @@ describe("batch process", () => {
     Local.findOrCreateTransaction = jest.fn();
     Local.findOrCreateSchedule = jest.fn();
     Local.createTransactionDetails = jest.fn();
-    Local.createSavedPayment = jest.fn();
+    // Local.createSavedPayment = jest.fn();
     Local.updateBillingAddress = jest.fn();
     Local.updateBatchControlAmount = jest.fn();
     Local.sendGivingEmail = jest.fn();
@@ -225,7 +225,7 @@ describe("batch process", () => {
     expect(Local.findOrCreateTransaction).toBeCalled();
     expect(Local.findOrCreateSchedule).toBeCalled();
     expect(Local.createTransactionDetails).toBeCalled();
-    expect(Local.createSavedPayment).toBeCalled();
+    // expect(Local.createSavedPayment).toBeCalled();
     expect(Local.updateBillingAddress).toBeCalled();
     expect(Local.updateBatchControlAmount).toBeCalled();
     expect(Local.sendGivingEmail).toBeCalled();
@@ -1289,13 +1289,13 @@ describe("createSavedPayment", () => {
     expect(data).toEqual({ FinancialPersonSavedAccount });
   });
 
-  it("keeps going if a there isn't a saved account ReferenceNumber", async () => {
-    const FinancialPersonSavedAccount = { Name: "Test" };
-    const data = await Local.createSavedPayment({
-      FinancialPersonSavedAccount,
-    });
-    expect(data).toEqual({ FinancialPersonSavedAccount });
-  });
+  // it("keeps going if a there isn't a saved account ReferenceNumber", async () => {
+  //   const FinancialPersonSavedAccount = { Name: "Test" };
+  //   const data = await Local.createSavedPayment({
+  //     FinancialPersonSavedAccount,
+  //   });
+  //   expect(data).toEqual({ FinancialPersonSavedAccount });
+  // });
 
   it("creates a new savedPaymentDeatail and creates the saved payment", async () => {
     const FinancialPersonSavedAccount = {

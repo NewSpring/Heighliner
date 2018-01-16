@@ -138,6 +138,15 @@ export default class SavedPayment extends Rock {
       })
     , { cache })
       .then(this.getFromIds.bind(this));
-
+  }
+  findOneByPersonAlias({ aliases, id }, { cache = false } = {}) {
+    const query = { aliases, id };
+    return this.cache.get(this.cache.encode(query), () => SavedPaymentTable.findOne({
+        where: { PersonAliasId: { $in: aliases }, Id: id },
+        order: [
+          ["ModifiedDateTime", "ASC"],
+        ],
+      })
+    , { cache });
   }
 }
