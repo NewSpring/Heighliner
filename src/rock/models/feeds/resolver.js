@@ -57,7 +57,7 @@ export default {
         );
 
         filterQueries.push(
-          models.SavedPayment.findByPersonAlias(
+          models.SavedPayment.findExpiringByPersonAlias(
             person.aliases,
             { limit: 3, offset: 0 },
             { cache: null },

@@ -1,5 +1,7 @@
 
 import uuid from "node-uuid";
+import padStart from "lodash/padStart";
+import moment from "moment";
 
 import { createGlobalId } from "../../../../util";
 import {
@@ -48,13 +50,15 @@ export default class SavedPayment extends Rock {
     if (!person) throw new Error("Must be signed in to save a payment");
 
     return this.charge(token, gatewayDetails)
-      .then(response => {
+      .then((response) => {
         let FinancialPaymentDetail = {};
         if (response.billing["cc-number"]) {
           FinancialPaymentDetail = {
             AccountNumberMasked: response.billing["cc-number"],
             CurrencyTypeValueId: 156,
             CreditCardTypeValueId: getCardType(response.billing["cc-number"]),
+            ExpirationMonthEncrypted: response.billing["cc-exp"] && response.billing["cc-exp"].slice(0, 2),
+            ExpirationYearEncrypted: response.billing["cc-exp"] && response.billing["cc-exp"].slice(2, 4),
           };
         } else {
           FinancialPaymentDetail = {
@@ -125,14 +129,69 @@ export default class SavedPayment extends Rock {
     return SavedPaymentTable.findOne({ where: { Id: entityId }});
   }
 
-  async findByPersonAlias(aliases, { limit, offset }, { cache }) {
+  async findExpiringByPersonAlias(aliases, { limit, offset }, { cache }) {
     const query = { aliases, limit, offset };
+    const nextMonth = moment().startOf("month").add(1, "month");
+    const thisMonth = moment().startOf("month");
+
+    const paymentMethods = await this.findByPersonAlias(aliases);
+    const paymentMethodIds = paymentMethods
+      .map(({ FinancialPaymentDetailId }) => (FinancialPaymentDetailId));
+
+    const expiringPaymentMethodDetails = await FinancialPaymentDetailTable.find({
+      where: {
+        Id: {
+          $in: paymentMethodIds,
+        },
+        $or: [
+          {
+            ExpirationYearEncrypted: nextMonth.format("YY"),
+            ExpirationMonthEncrypted: nextMonth.format("MM"),
+          },
+          {
+            ExpirationYearEncrypted: thisMonth.format("YY"),
+            ExpirationMonthEncrypted: thisMonth.format("MM"),
+          },
+        ],
+      },
+      attributes: ["Id"],
+    });
+    const expiringPaymentMethodDetailIds = expiringPaymentMethodDetails
+      .map(({ Id }) => (Id));
+
+    return await this.cache.get(this.cache.encode(query), () => SavedPaymentTable.find({
+      where: {
+        $and: [
+          {
+            PersonAliasId: {
+              $in: aliases,
+            },
+          },
+          {
+            FinancialPaymentDetailId: {
+              $in: expiringPaymentMethodDetailIds,
+            },
+          },
+        ],
+      },
+      order: [
+        ["ModifiedDateTime", "ASC"],
+      ],
+      // attributes: ["Id"],
+      limit,
+      offset,
+    }), { cache }).then(this.getFromIds.bind(this));
+  }
+
+  async findByPersonAlias(aliases, { limit, offset } = {}, { cache } = {}) {
+    const query = { aliases, limit, offset };
+
     return await this.cache.get(this.cache.encode(query), () => SavedPaymentTable.find({
         where: { PersonAliasId: { $in: aliases }},
         order: [
           ["ModifiedDateTime", "ASC"],
         ],
-        attributes: ["Id"],
+        // attributes: ["Id"],
         limit,
         offset,
       })
