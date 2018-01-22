@@ -343,7 +343,7 @@ export default class Transaction extends Rock {
     this.gateway = assign(
       gateways,
       attributes,
-      // { SecurityKey: "2F822Rw39fx762MaV7Yy86jXGTC7sCDy" },
+      { SecurityKey: "2F822Rw39fx762MaV7Yy86jXGTC7sCDy" },
     );
     return this.gateway;
   }
