@@ -512,7 +512,29 @@ export default {
 
       return models.Transaction.getPaymentDetailsById(FinancialPaymentDetailId);
     },
-    expirationMonth: ({ ExpirationMonthEncrypted }) => ExpirationMonthEncrypted,
-    expirationYear: ({ ExpirationYearEncrypted }) => ExpirationYearEncrypted,
+    expirationMonth: async (props, _, { models }) => {
+      try {
+        const { ExpirationMonthEncrypted, FinancialPaymentDetailId } = props;
+        if (ExpirationMonthEncrypted) return ExpirationMonthEncrypted;
+
+        const paymentDetails = await models.Transaction
+          .getPaymentDetailsById(FinancialPaymentDetailId);
+        return paymentDetails.ExpirationMonthEncrypted;
+      } catch (err) {
+        return undefined;
+      }
+    },
+    expirationYear: async (props, _, { models }) => {
+      try {
+        const { ExpirationYearEncrypted, FinancialPaymentDetailId } = props;
+        if (ExpirationYearEncrypted) return ExpirationYearEncrypted;
+
+        const paymentDetails = await models.Transaction
+          .getPaymentDetailsById(FinancialPaymentDetailId);
+        return paymentDetails.ExpirationYearEncrypted;
+      } catch (err) {
+        return undefined;
+      }
+    },
   },
 };

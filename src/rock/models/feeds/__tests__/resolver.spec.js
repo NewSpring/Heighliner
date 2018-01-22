@@ -83,7 +83,7 @@ describe("Feed Query", () => {
       findByPersonAlias: jest.fn(),
     },
     SavedPayment: {
-      findByPersonAlias: jest.fn(),
+      findExpiringByPersonAlias: jest.fn(),
     },
     Like: {
       getLikedContent: jest.fn(),
@@ -108,7 +108,7 @@ describe("Feed Query", () => {
 
   afterEach(() => {
     mockModels.Transaction.findByPersonAlias.mockReset();
-    mockModels.SavedPayment.findByPersonAlias.mockReset();
+    mockModels.SavedPayment.findExpiringByPersonAlias.mockReset();
   });
 
   it("should return null with no person", async () => {
@@ -131,7 +131,7 @@ describe("Feed Query", () => {
     const { Query } = Resolver;
 
     mockModels.Transaction.findByPersonAlias.mockReturnValueOnce([]);
-    mockModels.SavedPayment.findByPersonAlias.mockReturnValueOnce([]);
+    mockModels.SavedPayment.findExpiringByPersonAlias.mockReturnValueOnce([]);
 
     const results = await Query.userFeed( //eslint-disable-line
       null,
@@ -146,7 +146,7 @@ describe("Feed Query", () => {
     const { Query } = Resolver;
 
     mockModels.Transaction.findByPersonAlias.mockReturnValueOnce([sampleData.Transaction]);
-    mockModels.SavedPayment.findByPersonAlias.mockReturnValueOnce([sampleData.SavedPayment]);
+    mockModels.SavedPayment.findExpiringByPersonAlias.mockReturnValueOnce([sampleData.SavedPayment]);
 
     const results = await Query.userFeed( //eslint-disable-line
       null,
