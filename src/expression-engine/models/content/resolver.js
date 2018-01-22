@@ -6,9 +6,7 @@ import { createGlobalId } from "../../../util";
 import sortBy from "lodash/sortBy";
 
 export default {
-
   Query: {
-
     content(_, { channel, limit, skip, status, cache }, { models }) {
       return models.Content.find({
         channel_name: channel,
@@ -103,6 +101,19 @@ export default {
     body: ({ body, legacy_body }, _, { models }) => models.Content.cleanMarkup(body || legacy_body),
     description: ({ description }) => description,
     ooyalaId: ({ video }) => video,
+    video: ({ video }) => {
+      if (!video) return null;
+      const pbid = 'ZmJmNTVlNDk1NjcwYTVkMzAzODkyMjg0';
+      const pcode = 'E1dWM6UGncxhent7MRATc3hmkzUD';
+      const playerConfig = 'https%3A%2F%2Fd3n6tjerleuu41.cloudfront.net%2Fnewspring%2Fskin.new.json';
+
+      const embedUrl = `https://player.ooyala.com/static/v4/production/latest/skin-plugin/iframe.html?ec=${video}&pbid=${pbid}&pcode=${pcode}&skin.config=${playerConfig}`;
+
+      return ({
+        id: video,
+        embedUrl,
+      });
+    },
     tags: ({ tags }, _, { models }) => models.Content.splitByNewLines(tags),
     speaker: ({ speaker }) => speaker,
     hashtag: ({ hashtag }) => hashtag,
@@ -167,6 +178,9 @@ export default {
 
       return Promise.all(getAllFiles)
         .then(data => flatten(data));
+    },
+    isLiked({ entry_id }, $, { models, person = {} }) {
+      return models.Like.hasUserLike(person.PrimaryAliasId, entry_id);
     },
   },
 

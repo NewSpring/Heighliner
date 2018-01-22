@@ -1,17 +1,21 @@
 import uuid from "node-uuid";
-import { Cache, defaultCache } from "../../../util/cache";
+import { defaultCache } from "../../../util/cache";
 import { MongoConnector } from "../../../apollos/mongo";
 import { createGlobalId } from "../../../util/node/model";
 
 const schema = {
   _id: String,
-  userId: String,
-  entryId: String,
+  userId: String, // AKA: PrimaryAliasId (pending migration from mongoId to rockId)
+  entryId: String, // AKA: id returned by content
   type: String,
   createdAt: String,
 };
 
-const Model = new MongoConnector("like", schema);
+const Model = new MongoConnector("like", schema, [
+  {
+    keys: { userId: 1, entryId: 1 },
+  },
+]);
 
 /*
   skip?: Int, // how many to trim off the front
@@ -101,6 +105,14 @@ export class Like {
       error: "",
       code: "",
     };
+  }
+
+  async hasUserLike(userId, entryId) {
+    if (!userId || !entryId) return false;
+    return !!await this.model.findOne({
+      entryId: createGlobalId(entryId, "Content"), // Why are IDs encrypted?
+      userId,
+    });
   }
 }
 
