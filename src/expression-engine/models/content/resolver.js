@@ -89,9 +89,8 @@ export default {
       if (!video) return null;
       const pbid = 'ZmJmNTVlNDk1NjcwYTVkMzAzODkyMjg0';
       const pcode = 'E1dWM6UGncxhent7MRATc3hmkzUD';
-      const playerConfig = 'https%3A%2F%2Fd3n6tjerleuu41.cloudfront.net%2Fnewspring%2Fskin.new.json';
 
-      const embedUrl = `https://player.ooyala.com/static/v4/production/latest/skin-plugin/iframe.html?ec=${video}&pbid=${pbid}&pcode=${pcode}`; // &skin.config=${playerConfig}
+      const embedUrl = `https://player.ooyala.com/static/v4/production/latest/skin-plugin/iframe.html?ec=${video}&pbid=${pbid}&pcode=${pcode}&skin.config=${playerConfig}`;
 
       return embedUrl;
     },
@@ -116,7 +115,6 @@ export default {
       if (!video) return null;
       const pbid = 'ZmJmNTVlNDk1NjcwYTVkMzAzODkyMjg0';
       const pcode = 'E1dWM6UGncxhent7MRATc3hmkzUD';
-      const playerConfig = ''; // 'https%3A%2F%2Fd3n6tjerleuu41.cloudfront.net%2Fnewspring%2Fskin.new.json';
 
       const embedUrl = `https://player.ooyala.com/static/v4/production/latest/skin-plugin/iframe.html?ec=${video}&pbid=${pbid}&pcode=${pcode}&skin.config=${playerConfig}`;
 
