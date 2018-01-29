@@ -89,6 +89,7 @@ export default {
       if (!video) return null;
       const pbid = 'ZmJmNTVlNDk1NjcwYTVkMzAzODkyMjg0';
       const pcode = 'E1dWM6UGncxhent7MRATc3hmkzUD';
+      const playerConfig = encodeURIComponent('https://my.newspring.cc/ooyala/skin.new.json');
 
       const embedUrl = `https://player.ooyala.com/static/v4/production/latest/skin-plugin/iframe.html?ec=${video}&pbid=${pbid}&pcode=${pcode}&skin.config=${playerConfig}`;
 
@@ -115,6 +116,7 @@ export default {
       if (!video) return null;
       const pbid = 'ZmJmNTVlNDk1NjcwYTVkMzAzODkyMjg0';
       const pcode = 'E1dWM6UGncxhent7MRATc3hmkzUD';
+      const playerConfig = encodeURIComponent('https://my.newspring.cc/ooyala/skin.new.json');
 
       const embedUrl = `https://player.ooyala.com/static/v4/production/latest/skin-plugin/iframe.html?ec=${video}&pbid=${pbid}&pcode=${pcode}&skin.config=${playerConfig}`;
 
