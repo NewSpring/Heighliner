@@ -3,6 +3,7 @@ export default [`
   type LiveFeed {
     live: Boolean!
     embedCode: String
+    embedUrl: String
   }
 
   # should this be a global type that implements Node?
