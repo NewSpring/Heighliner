@@ -84,6 +84,17 @@ export default {
   LiveFeed: {
     live: ({ isLive }) => !!isLive,
     embedCode: ({ snippet_contents }) => snippet_contents,
+    embedUrl: ({ snippet_contents: video }) => {
+      // video = 'V1a2xxZDE6g-BJTbHZEU8N37nDPFFWq1';
+      if (!video) return null;
+      const pbid = 'ZmJmNTVlNDk1NjcwYTVkMzAzODkyMjg0';
+      const pcode = 'E1dWM6UGncxhent7MRATc3hmkzUD';
+      const playerConfig = 'https%3A%2F%2Fd3n6tjerleuu41.cloudfront.net%2Fnewspring%2Fskin.new.json';
+
+      const embedUrl = `https://player.ooyala.com/static/v4/production/latest/skin-plugin/iframe.html?ec=${video}&pbid=${pbid}&pcode=${pcode}`; // &skin.config=${playerConfig}
+
+      return embedUrl;
+    },
   },
 
   ContentColor: {
@@ -105,7 +116,7 @@ export default {
       if (!video) return null;
       const pbid = 'ZmJmNTVlNDk1NjcwYTVkMzAzODkyMjg0';
       const pcode = 'E1dWM6UGncxhent7MRATc3hmkzUD';
-      const playerConfig = 'https%3A%2F%2Fd3n6tjerleuu41.cloudfront.net%2Fnewspring%2Fskin.new.json';
+      const playerConfig = ''; // 'https%3A%2F%2Fd3n6tjerleuu41.cloudfront.net%2Fnewspring%2Fskin.new.json';
 
       const embedUrl = `https://player.ooyala.com/static/v4/production/latest/skin-plugin/iframe.html?ec=${video}&pbid=${pbid}&pcode=${pcode}&skin.config=${playerConfig}`;
 
