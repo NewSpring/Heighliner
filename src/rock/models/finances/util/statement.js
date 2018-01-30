@@ -37,7 +37,7 @@ export const formatMoney = (amount) => (
   `$${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
 );
 
-export const Statement = ({ transactions, person, home, total }) => (
+export const Statement = ({ transactions, person, home = {}, total }) => (
   <html>
     <head>
       <style>{`
