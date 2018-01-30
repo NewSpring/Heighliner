@@ -3,6 +3,7 @@ export default [`
   type LiveFeed {
     live: Boolean!
     embedCode: String
+    embedUrl: String
   }
 
   # should this be a global type that implements Node?
@@ -21,7 +22,8 @@ export default [`
   type ContentData {
     body: String
     description: String
-    ooyalaId: String
+    ooyalaId: String @deprecated(reason: "Use video instead")
+    video: ContentVideo
     speaker: String
     isLight: Boolean
     hashtag: String
@@ -34,6 +36,12 @@ export default [`
     tracks: [File]
     audio: [File]
     scripture: [ContentScripture]
+    isLiked: Boolean
+  }
+
+  type ContentVideo {
+    id: String
+    embedUrl: String
   }
 
   type ContentMeta {
