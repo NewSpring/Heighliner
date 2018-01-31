@@ -313,7 +313,7 @@ export default {
     code: ({ TransactionCode }) => TransactionCode,
     gateway: ({ FinancialGatewayId }) => FinancialGatewayId,
     numberOfPayments: ({ NumberOfPayments }) => NumberOfPayments,
-    isActive: (props) => console.log(props) || props.IsActive,
+    isActive: ({ IsActive }) => IsActive,
     date: ({ CreatedDate, ModifiedDate }) => ModifiedDate || CreatedDate,
     details: ({ Id, FinancialScheduledTransactionDetails }, _, { models }) => {
       if (FinancialScheduledTransactionDetails) {
