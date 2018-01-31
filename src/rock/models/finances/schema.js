@@ -21,6 +21,7 @@ export default [`
     transactions: [Transaction]
     schedule: DefinedValue
     payment: PaymentDetail
+    isActive: Boolean
   }
 
   type Transaction implements Node {
