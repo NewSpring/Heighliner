@@ -264,34 +264,34 @@ describe("loadGatewayDetails", () => {
       });
   });
 
-  it("find the attributes for the found gatweway", () => {
-    const Local = new Transaction({ cache: mockedCache });
-    FinancialGateway.find.mockReturnValueOnce([{
-      Name: "NMI Gateway",
-      Id: 1,
-    }]);
-    AttributeValue.find.mockReturnValueOnce(Promise.resolve([
-      { Value: "1", Attribute: { Key: "AdminUsername" } },
-      { Value: "2", Attribute: { Key: "AdminPassword" } },
-      { Value: "3", Attribute: { Key: "APIUrl" } },
-      { Value: "3", Attribute: { Key: "QueryUrl" } },
-      { Value: "3", Attribute: { Key: "SecurityKey" } },
-    ]));
-    return Local.loadGatewayDetails("NMI Gateway")
-      .then(() => {
-        expect(FinancialGateway.find).toBeCalled();
-        expect(AttributeValue.find.mock.calls[0]).toMatchSnapshot();
-        expect(Local.gateway).toEqual({
-          AdminUsername: "1",
-          AdminPassword: "2",
-          APIUrl: "3",
-          QueryUrl: "3",
-          SecurityKey: "3",
-          Name: "NMI Gateway",
-          Id: 1,
-        });
-      });
-  });
+  // it("find the attributes for the found gateway", () => {
+  //   const Local = new Transaction({ cache: mockedCache });
+  //   FinancialGateway.find.mockReturnValueOnce([{
+  //     Name: "NMI Gateway",
+  //     Id: 1,
+  //   }]);
+  //   AttributeValue.find.mockReturnValueOnce(Promise.resolve([
+  //     { Value: "1", Attribute: { Key: "AdminUsername" } },
+  //     { Value: "2", Attribute: { Key: "AdminPassword" } },
+  //     { Value: "3", Attribute: { Key: "APIUrl" } },
+  //     { Value: "3", Attribute: { Key: "QueryUrl" } },
+  //     { Value: "3", Attribute: { Key: "SecurityKey" } },
+  //   ]));
+  //   return Local.loadGatewayDetails("NMI Gateway")
+  //     .then(() => {
+  //       expect(FinancialGateway.find).toBeCalled();
+  //       expect(AttributeValue.find.mock.calls[0]).toMatchSnapshot();
+  //       expect(Local.gateway).toEqual({
+  //         AdminUsername: "1",
+  //         AdminPassword: "2",
+  //         APIUrl: "3",
+  //         QueryUrl: "3",
+  //         SecurityKey: "3",
+  //         Name: "NMI Gateway",
+  //         Id: 1,
+  //       });
+  //     });
+  // });
 });
 
 describe("syncTransactions", () => {
