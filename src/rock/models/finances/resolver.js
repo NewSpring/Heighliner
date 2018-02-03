@@ -23,6 +23,13 @@ export default {
         { cache },
       );
     },
+    savedPayment: (_, { id }, { models, person }) => {
+      if (!person) return null;
+      return models.SavedPayment.findOneByPersonAlias({
+        aliases: person.aliases,
+        id,
+      });
+    },
     transactions: (
       _,
       { people, start, end, limit, cache, skip },
@@ -240,19 +247,24 @@ export default {
 
   SavePaymentMutationResponse: {
     ...MutationReponseResolver,
-    savedPayment: ({ savedPaymentId }, _, { models }) => {
-      if (!savedPaymentId) return null;
-      return models.SavedPayment.getFromId(savedPaymentId).then(([x]) => x);
+    savedPayment: ({ savedPaymentId, Id }, _, { models }) => {
+      const id = savedPaymentId || Id;
+      if (!id) return null;
+      return models.SavedPayment.getFromId(id).then(([x]) => x);
     },
   },
 
   CompleteOrderMutationResponse: {
     ...MutationReponseResolver,
     transaction: ({ transactionId }, _, { models }) => {
+      // NOTE: This will always resolve to null because completeOrder only returns
+      // the formatted data for the job
       if (!transactionId) return null;
       return models.Transaction.getFromId(transactionId);
     },
     schedule: ({ scheduleId }, _, { models }) => {
+      // NOTE: This will always resolve to null because completeOrder only returns
+      // the formatted data for the job
       if (!scheduleId) return null;
       return models.ScheduledTransaction.getFromId(scheduleId);
     },
@@ -263,7 +275,7 @@ export default {
     },
     savedPayment: ({ savedPaymentId }, _, { models }) => {
       if (!savedPaymentId) return null;
-      return models.SavedPayment.getFromId(savedPaymentId);
+      return models.SavedPayment.getFromId(savedPaymentId).then(([x]) => x);
     },
   },
 
@@ -301,6 +313,7 @@ export default {
     code: ({ TransactionCode }) => TransactionCode,
     gateway: ({ FinancialGatewayId }) => FinancialGatewayId,
     numberOfPayments: ({ NumberOfPayments }) => NumberOfPayments,
+    isActive: ({ IsActive }) => IsActive,
     date: ({ CreatedDate, ModifiedDate }) => ModifiedDate || CreatedDate,
     details: ({ Id, FinancialScheduledTransactionDetails }, _, { models }) => {
       if (FinancialScheduledTransactionDetails) {
@@ -500,7 +513,29 @@ export default {
 
       return models.Transaction.getPaymentDetailsById(FinancialPaymentDetailId);
     },
-    expirationMonth: ({ ExpirationMonthEncrypted }) => ExpirationMonthEncrypted,
-    expirationYear: ({ ExpirationYearEncrypted }) => ExpirationYearEncrypted,
+    expirationMonth: async (props, _, { models }) => {
+      try {
+        const { ExpirationMonthEncrypted, FinancialPaymentDetailId } = props;
+        if (ExpirationMonthEncrypted) return ExpirationMonthEncrypted;
+
+        const paymentDetails = await models.Transaction
+          .getPaymentDetailsById(FinancialPaymentDetailId);
+        return paymentDetails.ExpirationMonthEncrypted;
+      } catch (err) {
+        return undefined;
+      }
+    },
+    expirationYear: async (props, _, { models }) => {
+      try {
+        const { ExpirationYearEncrypted, FinancialPaymentDetailId } = props;
+        if (ExpirationYearEncrypted) return ExpirationYearEncrypted;
+
+        const paymentDetails = await models.Transaction
+          .getPaymentDetailsById(FinancialPaymentDetailId);
+        return paymentDetails.ExpirationYearEncrypted;
+      } catch (err) {
+        return undefined;
+      }
+    },
   },
 };
