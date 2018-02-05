@@ -20,7 +20,6 @@ export default {
     currentPerson: async (_, { cache }, { person, models, user }) => {
       if (cache && person) return person;
 
-      // Will anything under this ever happen considering we're adding person to context?
       if (user && user.services && user.services.rock) { // Deprecated Mongo User
         return models.Person.getFromAliasId(user.services.rock.PrimaryAliasId, {
           cache,
@@ -119,15 +118,15 @@ export default {
     birthMonth: ({ BirthMonth }) => BirthMonth,
     birthYear: ({ BirthYear }) => BirthYear,
     email: ({ Email }) => Email,
-    campus: ({ Id }, { cache = true }, { models }) =>
+    campus: ({ Id }, { cache }, { models }) =>
       models.Person.getCampusFromId(Id, { cache }),
-    home: ({ Id }, { cache = true }, { models }) =>
+    home: ({ Id }, { cache }, { models }) =>
       models.Person.getHomesFromId(Id, { cache }).then(x => x[0]), // only return the first home for now,
     attributes: ({ Id }, { key }, { models }) =>
       models.Rock.getAttributesFromEntity(Id, key, 15 /* Person Entity Type */),
-    roles: ({ Id }, { cache = true }, { models }) =>
+    roles: ({ Id }, { cache }, { models }) =>
       models.Person.getGroups(Id, 1), // 1: security groups
-    groups: async ({ Id }, { cache = true, groupTypeIds = [] }, { models }) => {
+    groups: async ({ Id }, { cache, groupTypeIds = [] }, { models }) => {
       try {
         // TODO: getGroups should throw an error when it fails
         // to connect (or fails for any other reason)
