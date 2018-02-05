@@ -7,6 +7,7 @@ import {
   isNil,
   difference,
   includes,
+  omit,
 } from "lodash";
 import makeNewGuid from "./makeNewGuid";
 import sendEmail from "./sendEmail";
@@ -418,6 +419,11 @@ export class User {
     } catch (err) {
       throw err;
     }
+  }
+
+  updateProfile(personId, newProfile = {}) {
+    if (!personId) throw new Error("personId is required!");
+    return api.patch(`/People/${personId}`, omit(newProfile, "Campus"));
   }
 }
 
