@@ -15,6 +15,7 @@ import * as api from "./api";
 
 import { MongoConnector } from "../../mongo";
 import { defaultCache } from "../../../util/cache";
+import { parseGlobalId } from "../../../util/node/model";
 import { FOLLOWABLE_TOPICS } from "../../../constants";
 
 // Needs migration
@@ -428,7 +429,8 @@ export class User {
   async updateProfile(personId, { Campus, ...newProfile } = {}) {
     try {
       if (!personId) throw new Error("personId is required!");
-      if (Campus) {
+      const { id: CampusId } = parseGlobalId(Campus) || {};
+      if (CampusId) {
         const currentLocations = await this.getLocations(personId);
         const currentLocationId = get(currentLocations, "0.Id");
 
@@ -436,7 +438,7 @@ export class User {
         // case where a currentLocation is undefined.
         // Should it?
         if (currentLocationId) {
-          await api.patch(`/Groups/${currentLocationId}`, { CampusId: Campus });
+          await api.patch(`/Groups/${currentLocationId}`, { CampusId });
         }
       }
 
