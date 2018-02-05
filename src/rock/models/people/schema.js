@@ -26,11 +26,11 @@ export default [
     birthYear: Int
     email: String
     impersonationParameter(expireDateTime: String, pageId: Int, usageLimit: Int): String
-    campus(cache: Boolean = true): Campus
-    home(cache: Boolean = true): Location
-    roles(cache: Boolean = true): [Group]
+    campus(cache: Boolean = false): Campus
+    home(cache: Boolean = false): Location
+    roles(cache: Boolean = false): [Group]
     attributes(key: String): [Attribute]
-    groups(cache: Boolean = true, groupTypeIds: [Int] = []): [Group]
+    groups(cache: Boolean = false, groupTypeIds: [Int] = []): [Group]
     followedTopics: [String]
   }
 
