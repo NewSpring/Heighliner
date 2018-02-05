@@ -6,4 +6,5 @@ export default [
   "forgotUserPassword(email: String!, sourceURL: String): Boolean",
   "resetUserPassword(token: String!, newPassword: String!): LoginMutationResponse",
   "toggleTopic(topic: String!): Boolean",
+  "updateProfile(input: UserProfileInput): Boolean",
 ];

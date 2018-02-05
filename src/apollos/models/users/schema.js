@@ -38,4 +38,15 @@ export default [`
     id: ID!
     token: String
   }
+
+  input UserProfileInput {
+    NickName: String,
+    FirstName: String,
+    LastName: String,
+    Email: String,
+    BirthMonth: String,
+    BirthDay: String,
+    BirthYear: String,
+    Campus: String,
+  }
 `];
