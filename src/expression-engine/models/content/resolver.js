@@ -191,7 +191,11 @@ export default {
         .then(data => flatten(data));
     },
     isLiked({ entry_id }, $, { models, person = {} }) {
-      return models.Like.hasUserLike(person.PrimaryAliasId, entry_id);
+      return models.Like.hasUserLike({
+        userId: person.PrimaryAliasId,
+        entryId: entry_id,
+        entryType: "Content",
+      });
     },
   },
 

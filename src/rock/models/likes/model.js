@@ -107,10 +107,10 @@ export class Like {
     };
   }
 
-  async hasUserLike(userId, entryId) {
-    if (!userId || !entryId) return false;
+  async hasUserLike({ userId, entryId, entryType } = {}) {
+    if (!userId || !entryId || !entryType) return false;
     return !!await this.model.findOne({
-      entryId: createGlobalId(entryId, "Content"), // Why are IDs encrypted?
+      entryId: createGlobalId(entryId, entryType), // Why are IDs encrypted?
       userId,
     });
   }

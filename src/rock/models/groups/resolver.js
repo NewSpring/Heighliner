@@ -329,6 +329,13 @@ export default {
     }),
     type: resolveAttribute(16814, x => x && x.length && x[0].Value),
     groupType: ({ GroupTypeId }) => GroupTypeId,
+    isLiked({ Id }, $, { models, person = {} }, { parentType }) {
+      return models.Like.hasUserLike({
+        userId: person.PrimaryAliasId,
+        entryId: Id,
+        entryType: parentType.name,
+      });
+    },
   },
 
   GroupSearch: {
