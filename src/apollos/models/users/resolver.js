@@ -110,5 +110,14 @@ export default {
         "Campus",
       ]));
     },
+    updateHomeAddress(_, { input } = {}, { models, person }) {
+      return models.User.updateHomeAddress(person.Id, pick(input, [
+        "Street1",
+        "Street2",
+        "City",
+        "State",
+        "PostalCode",
+      ]));
+    },
   },
 };

@@ -7,4 +7,5 @@ export default [
   "resetUserPassword(token: String!, newPassword: String!): LoginMutationResponse",
   "toggleTopic(topic: String!): Boolean",
   "updateProfile(input: UserProfileInput): Boolean",
+  "updateHomeAddress(input: HomeAddressInput): Boolean",
 ];

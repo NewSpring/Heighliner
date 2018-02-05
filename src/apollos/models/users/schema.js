@@ -40,13 +40,21 @@ export default [`
   }
 
   input UserProfileInput {
-    NickName: String,
-    FirstName: String,
-    LastName: String,
-    Email: String,
-    BirthMonth: String,
-    BirthDay: String,
-    BirthYear: String,
-    Campus: ID,
+    NickName: String
+    FirstName: String
+    LastName: String
+    Email: String
+    BirthMonth: String
+    BirthDay: String
+    BirthYear: String
+    Campus: ID
+  }
+
+  input HomeAddressInput {
+    Street1: String
+    Street2: String
+    City: String
+    State: String
+    PostalCode: String
   }
 `];

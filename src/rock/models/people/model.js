@@ -136,7 +136,6 @@ export class Person extends Rock {
   //   return PersonTable.model.getGroups.apply(PersonTable.model, args);
   // }
   async getCampusFromId(id, { cache } = { cache: true }) {
-    console.log({ cache });
     return await this.cache.get(
       `${id}:PersonCampus`,
       () =>

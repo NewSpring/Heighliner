@@ -421,11 +421,15 @@ export class User {
     }
   }
 
+  getLocations(personId) {
+    return api.get(`/Groups/GetFamilies/${personId}?$expand=GroupLocations,GroupLocations/Location,GroupLocations/GroupLocationTypeValue&$select=Id,GroupLocations/Location/Id,GroupLocations/GroupLocationTypeValue/Value`);
+  }
+
   async updateProfile(personId, { Campus, ...newProfile } = {}) {
     try {
       if (!personId) throw new Error("personId is required!");
       if (Campus) {
-        const currentLocations = await api.get(`/Groups/GetFamilies/${personId}?$expand=GroupLocations,GroupLocations/Location,GroupLocations/GroupLocationTypeValue&$select=Id,GroupLocations/Location/Id,GroupLocations/GroupLocationTypeValue/Value`);
+        const currentLocations = await this.getLocations(personId);
         const currentLocationId = get(currentLocations, "0.Id");
 
         // NOTE: Holtzman wasn't considering the
@@ -442,7 +446,49 @@ export class User {
 
       return true;
     } catch (err) {
-      console.log(err);
+      throw err;
+    }
+  }
+
+  async updateHomeAddress(personId, newAddress) {
+    try {
+      const currentLocations = await this.getLocations(personId);
+      const homeLocation = get(currentLocations, "0.GroupLocations", []).find(location => (
+        location.GroupLocationTypeValue.Value === "Home"
+      ));
+      const homeLocationId = get(homeLocation, "Location.Id");
+
+      if (homeLocationId) {
+        await api.patch(`/Locations/${homeLocationId}`, newAddress);
+      } else {
+        const Location = {
+          ...newAddress,
+          Guid: makeNewGuid(),
+          IsActive: true,
+        };
+        const [LocationId, person] = await Promise.all([
+          api.post("/Locations", Location),
+          this.getUserProfile(personId),
+        ]);
+
+        const GroupId = get(currentLocations, "0.Id");
+        const GroupLocation = {
+          GroupId,
+          LocationId,
+          GroupLocationTypeValueId: 19, // Home
+          IsMailingLocation: true,
+          Guid: makeNewGuid(),
+          CreatedByPersonAliasId: person.PrimaryAliasId,
+          // NOTE: This is required by the rock API but was removed in Holtzman!
+          // (new users couldn't create a home address)
+          Order: 0,
+        };
+
+        await api.post("/GroupLocations", GroupLocation);
+      }
+
+      return true;
+    } catch (err) {
       throw err;
     }
   }
