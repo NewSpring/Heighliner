@@ -7,7 +7,7 @@ import {
   isNil,
   difference,
   includes,
-  omit,
+  get,
 } from "lodash";
 import makeNewGuid from "./makeNewGuid";
 import sendEmail from "./sendEmail";
@@ -421,9 +421,30 @@ export class User {
     }
   }
 
-  updateProfile(personId, newProfile = {}) {
-    if (!personId) throw new Error("personId is required!");
-    return api.patch(`/People/${personId}`, omit(newProfile, "Campus"));
+  async updateProfile(personId, { Campus, ...newProfile } = {}) {
+    try {
+      if (!personId) throw new Error("personId is required!");
+      if (Campus) {
+        const currentLocations = await api.get(`/Groups/GetFamilies/${personId}?$expand=GroupLocations,GroupLocations/Location,GroupLocations/GroupLocationTypeValue&$select=Id,GroupLocations/Location/Id,GroupLocations/GroupLocationTypeValue/Value`);
+        const currentLocationId = get(currentLocations, "0.Id");
+
+        // NOTE: Holtzman wasn't considering the
+        // case where a currentLocation is undefined.
+        // Should it?
+        if (currentLocationId) {
+          await api.patch(`/Groups/${currentLocationId}`, { CampusId: Campus });
+        }
+      }
+
+      if (!isEmpty(newProfile)) {
+        await api.patch(`/People/${personId}`, newProfile);
+      }
+
+      return true;
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
   }
 }
 

@@ -47,6 +47,6 @@ export default [`
     BirthMonth: String,
     BirthDay: String,
     BirthYear: String,
-    Campus: String,
+    Campus: ID,
   }
 `];
