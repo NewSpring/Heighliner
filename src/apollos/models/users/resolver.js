@@ -1,5 +1,6 @@
 
 import get from "lodash/get";
+import pick from "lodash/pick";
 import { FOLLOWABLE_TOPICS } from "../../../constants";
 
 export default {
@@ -96,6 +97,27 @@ export default {
         topic,
         userId: person.PrimaryAliasId,
       });
+    },
+    updateProfile(_, { input } = {}, { models, person }) {
+      return models.User.updateProfile(person.Id, pick(input, [
+        "NickName",
+        "FirstName",
+        "LastName",
+        "Email",
+        "BirthMonth",
+        "BirthDay",
+        "BirthYear",
+        "Campus",
+      ]));
+    },
+    updateHomeAddress(_, { input } = {}, { models, person }) {
+      return models.User.updateHomeAddress(person.Id, pick(input, [
+        "Street1",
+        "Street2",
+        "City",
+        "State",
+        "PostalCode",
+      ]));
     },
   },
 };
