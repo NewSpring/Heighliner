@@ -429,8 +429,8 @@ export class User {
   async updateProfile(personId, { Campus, ...newProfile } = {}) {
     try {
       if (!personId) throw new Error("personId is required!");
-      const { id: CampusId } = parseGlobalId(Campus) || {};
-      if (CampusId) {
+      if (Campus) {
+        const { id: CampusId } = parseGlobalId(Campus) || {};
         const currentLocations = await this.getLocations(personId);
         const currentLocationId = get(currentLocations, "0.Id");
 
