@@ -127,7 +127,6 @@ export default function (app, monitor) {
           context.person = await timeout(
             createdModels.Person.getFromAliasId(
               person.PrimaryAliasId,
-              { cache: false },
             ), 5000);
           context.person.PrimaryAliasId = person.PrimaryAliasId;
         } else {

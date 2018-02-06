@@ -15,7 +15,7 @@ import * as api from "./api";
 
 import { MongoConnector } from "../../mongo";
 import { defaultCache } from "../../../util/cache";
-import { parseGlobalId } from "../../../util/node/model";
+import { parseGlobalId, createGlobalId } from "../../../util/node/model";
 import { FOLLOWABLE_TOPICS } from "../../../constants";
 
 // Needs migration
@@ -454,7 +454,10 @@ export class User {
 
   async updateHomeAddress(personId, newAddress) {
     try {
-      const currentLocations = await this.getLocations(personId);
+      const [currentLocations, person] = await Promise.all([
+        this.getLocations(personId),
+        this.getUserProfile(personId),
+      ]);
       const homeLocation = get(currentLocations, "0.GroupLocations", []).find(location => (
         location.GroupLocationTypeValue.Value === "Home"
       ));
@@ -468,10 +471,7 @@ export class User {
           Guid: makeNewGuid(),
           IsActive: true,
         };
-        const [LocationId, person] = await Promise.all([
-          api.post("/Locations", Location),
-          this.getUserProfile(personId),
-        ]);
+        const LocationId = await api.post("/Locations", Location);
 
         const GroupId = get(currentLocations, "0.Id");
         const GroupLocation = {
@@ -489,6 +489,9 @@ export class User {
         await api.post("/GroupLocations", GroupLocation);
       }
 
+      const res = await this.cache.get(createGlobalId(`${personId}`, "PersonCampus"));
+      console.log({ res });
+      await this.cache.del(createGlobalId(`${person.PrimaryAliasId}`, "PersonAlias"));
       return true;
     } catch (err) {
       throw err;
