@@ -20,7 +20,6 @@ export default {
     currentPerson: async (_, { cache }, { person, models, user }) => {
       if (cache && person) return person;
 
-      // Will anything under this ever happen considering we're adding person to context?
       if (user && user.services && user.services.rock) { // Deprecated Mongo User
         return models.Person.getFromAliasId(user.services.rock.PrimaryAliasId, {
           cache,
