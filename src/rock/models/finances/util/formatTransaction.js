@@ -13,6 +13,8 @@ export default ({ response, person = {}, accountName, origin, scheduleId }, gate
       CurrencyTypeValueId: 156,
       CreditCardTypeValueId: getCardType(response.billing["cc-number"]),
       Guid: uuid.v4(),
+      ExpirationMonthEncrypted: response.billing["cc-exp"] && response.billing["cc-exp"].slice(0, 2),
+      ExpirationYearEncrypted: response.billing["cc-exp"] && response.billing["cc-exp"].slice(2, 4),
     };
     FinancialPaymentValue = getCardName(response.billing["cc-number"]);
   } else {
