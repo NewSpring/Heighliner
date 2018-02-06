@@ -7,6 +7,7 @@ import {
   isNil,
   difference,
   includes,
+  get,
 } from "lodash";
 import makeNewGuid from "./makeNewGuid";
 import sendEmail from "./sendEmail";
@@ -14,6 +15,7 @@ import * as api from "./api";
 
 import { MongoConnector } from "../../mongo";
 import { defaultCache } from "../../../util/cache";
+import { parseGlobalId } from "../../../util/node/model";
 import { FOLLOWABLE_TOPICS } from "../../../constants";
 
 // Needs migration
@@ -415,6 +417,79 @@ export class User {
         return this.followTopic({ userId, topic });
       }
       return this.ignoreTopic({ userId, topic });
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  getLocations(personId) {
+    return api.get(`/Groups/GetFamilies/${personId}?$expand=GroupLocations,GroupLocations/Location,GroupLocations/GroupLocationTypeValue&$select=Id,GroupLocations/Location/Id,GroupLocations/GroupLocationTypeValue/Value`);
+  }
+
+  async updateProfile(personId, { Campus, ...newProfile } = {}) {
+    try {
+      if (!personId) throw new Error("personId is required!");
+      if (Campus) {
+        const { id: CampusId } = parseGlobalId(Campus) || {};
+        const currentLocations = await this.getLocations(personId);
+        const currentLocationId = get(currentLocations, "0.Id");
+
+        // NOTE: Holtzman wasn't considering the
+        // case where a currentLocation is undefined.
+        // Should it?
+        if (currentLocationId) {
+          await api.patch(`/Groups/${currentLocationId}`, { CampusId });
+        }
+      }
+
+      if (!isEmpty(newProfile)) {
+        await api.patch(`/People/${personId}`, newProfile);
+      }
+
+      return true;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async updateHomeAddress(personId, newAddress) {
+    try {
+      const currentLocations = await this.getLocations(personId);
+      const homeLocation = get(currentLocations, "0.GroupLocations", []).find(location => (
+        location.GroupLocationTypeValue.Value === "Home"
+      ));
+      const homeLocationId = get(homeLocation, "Location.Id");
+
+      if (homeLocationId) {
+        await api.patch(`/Locations/${homeLocationId}`, newAddress);
+      } else {
+        const Location = {
+          ...newAddress,
+          Guid: makeNewGuid(),
+          IsActive: true,
+        };
+        const [LocationId, person] = await Promise.all([
+          api.post("/Locations", Location),
+          this.getUserProfile(personId),
+        ]);
+
+        const GroupId = get(currentLocations, "0.Id");
+        const GroupLocation = {
+          GroupId,
+          LocationId,
+          GroupLocationTypeValueId: 19, // Home
+          IsMailingLocation: true,
+          Guid: makeNewGuid(),
+          CreatedByPersonAliasId: person.PrimaryAliasId,
+          // NOTE: This is required by the rock API but was removed in Holtzman!
+          // (new users couldn't create a home address)
+          Order: 0,
+        };
+
+        await api.post("/GroupLocations", GroupLocation);
+      }
+
+      return true;
     } catch (err) {
       throw err;
     }
