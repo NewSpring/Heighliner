@@ -1,7 +1,7 @@
 
 import Resolver from "../resolver";
 
-const mockUser = { _id: "12345" };
+const mockUser = { PrimaryAliasId: "12345" };
 const mockModels = {
   Like: {
     toggleLike: jest.fn(),
@@ -18,14 +18,15 @@ describe("Likes Mutation", () => {
   it("should return empty array with improper input", () => {
     const toggleLike = Resolver.Mutation.toggleLike;
 
-    let res = toggleLike(null, {nodeId: "1234"}, {});
-    expect(res).toEqual([]);
+    expect(() => {
+      toggleLike(null, {nodeId: "1234"}, {});
+    }).toThrow();
   });
 
   it("should call toggleLike with the correct args", () => {
     const toggleLike = Resolver.Mutation.toggleLike;
 
-    const res = toggleLike(null, { nodeId: "1234" }, { models: mockModels, user: mockUser});
+    const res = toggleLike(null, { nodeId: "1234" }, { models: mockModels, person: mockUser });
     expect(mockModels.Like.toggleLike).toHaveBeenCalledWith("1234", "12345", {});
   });
 });
