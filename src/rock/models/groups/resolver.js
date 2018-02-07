@@ -85,8 +85,6 @@ export default {
     ) => {
       const geo = { latitude: null, longitude: null };
 
-      console.log("campus: ", campus, campuses);
-
       // XXX this is to maintain backwards compat
       if (campuses.length) {
         campus = campuses.shift();
@@ -331,6 +329,13 @@ export default {
     }),
     type: resolveAttribute(16814, x => x && x.length && x[0].Value),
     groupType: ({ GroupTypeId }) => GroupTypeId,
+    isLiked({ Id }, $, { models, person = {} }, { parentType }) {
+      return models.Like.hasUserLike({
+        userId: person.PrimaryAliasId,
+        entryId: Id,
+        entryType: parentType.name,
+      });
+    },
   },
 
   GroupSearch: {
