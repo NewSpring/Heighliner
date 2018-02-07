@@ -118,6 +118,19 @@ export default {
     body: ({ body, legacy_body }, _, { models }) => models.Content.cleanMarkup(body || legacy_body),
     description: ({ description }) => description,
     ooyalaId: ({ video }) => video,
+    video: ({ video }) => {
+      if (!video) return null;
+      const pbid = 'ZmJmNTVlNDk1NjcwYTVkMzAzODkyMjg0';
+      const pcode = 'E1dWM6UGncxhent7MRATc3hmkzUD';
+      const playerConfig = encodeURIComponent('https://my.newspring.cc/ooyala/skin.new.json');
+
+      const embedUrl = `https://player.ooyala.com/static/v4/production/latest/skin-plugin/iframe.html?ec=${video}&pbid=${pbid}&pcode=${pcode}&skin.config=${playerConfig}`;
+
+      return ({
+        id: video,
+        embedUrl,
+      });
+    },
     tags: ({ tags }, _, { models }) => models.Content.splitByNewLines(tags),
     speaker: ({ speaker }) => speaker,
     hashtag: ({ hashtag }) => hashtag,
@@ -187,6 +200,13 @@ export default {
       }
 
       return Promise.all(getAllFiles).then(data => flatten(data));
+    },
+    isLiked({ entry_id }, $, { models, person = {} }) {
+      return models.Like.hasUserLike({
+        userId: person.PrimaryAliasId,
+        entryId: entry_id,
+        entryType: "Content",
+      });
     },
   },
 
