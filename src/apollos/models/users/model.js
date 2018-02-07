@@ -153,11 +153,11 @@ export class User {
     }
   }
 
-  loginUser = async ({ email, password } = {}) => {
+  loginUser = async ({ email, password, user } = {}) => {
     try {
       await this.checkUserCredentials(email, password);
 
-      const login = await this.getLatestLoginByUsername(email);
+      const login = user || await this.getLatestLoginByUsername(email);
 
       if (!login.IsConfirmed) {
         api.post(`/UserLogins/${login.Id}`, {
@@ -290,7 +290,7 @@ export class User {
         },
       );
 
-      return this.loginUser({ email, password });
+      return this.loginUser({ email, password, user });
     } catch (err) {
       throw err;
     }
