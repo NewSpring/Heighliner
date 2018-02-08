@@ -379,14 +379,14 @@ it("`ContentData` should return description", () => {
   expect(description).toEqual(mockData.description);
 });
 
-it("`ContentData` should return ooyalaId", () => {
+it("`ContentData` should return wistiaId", () => {
   const { ContentData } = Resolver;
   const mockData = {
     video: "id",
   };
 
-  const ooyalaId = ContentData.ooyalaId(mockData);
-  expect(ooyalaId).toEqual(mockData.video);
+  const wistiaId = ContentData.wistiaId(mockData);
+  expect(wistiaId).toEqual(mockData.video);
 });
 
 it("`ContentData` should call splitByNewLines", () => {
