@@ -117,7 +117,7 @@ export default {
   ContentData: {
     body: ({ body, legacy_body }, _, { models }) => models.Content.cleanMarkup(body || legacy_body),
     description: ({ description }) => description,
-    ooyalaId: ({ video }) => video,
+    wistiaId: ({ video }) => video,
     tags: ({ tags }, _, { models }) => models.Content.splitByNewLines(tags),
     speaker: ({ speaker }) => speaker,
     hashtag: ({ hashtag }) => hashtag,
