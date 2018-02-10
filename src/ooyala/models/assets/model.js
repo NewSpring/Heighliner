@@ -1,4 +1,3 @@
-// import { OoyalaFetchConnector } from "../../fetch";
 import OoyalaApi from "ooyala-api";
 import { map } from "lodash";
 import { defaultCache } from "../../../util/cache";
@@ -9,23 +8,9 @@ class Ooyala {
   __type = "Ooyala";
 
   constructor({ cache } = { cache: defaultCache }) {
-    // super();
     this.cache = cache;
     this.api = new OoyalaApi(OOYALA_KEY, OOYALA_SECRET, { concurrency: 6 });
   }
-
-  // async get(query) {
-  //   return await this.cache.get(`${this.__type}:${query}`, () => (
-  //     this.api.get(query)
-  //     .then((body) => {
-  //       console.log("OoyalaRequest");
-  //       return [body;
-  //     })
-  //       .catch((err) => {
-  //         console.log(err);
-  //       })
-  //   ));
-  // }
 
   async getLabels(query) {
     return await this.cache.get(`${this.__type}:Labels:${query}`, () => (
@@ -37,14 +22,13 @@ class Ooyala {
     ));
   }
 
+  // Shouldn't be cached because result is time sensative
   async getSource(query) {
-    return await this.cache.get(`${this.__type}:Source:${query}`, () => (
-      this.api.get(`/v2/assets/${query}/source_file_info`)
+    return await this.api.get(`/v2/assets/${query}/source_file_info`)
       .then(body => body.source_file_url)
-        .catch((err) => {
-          console.log(err);
-        })
-    ));
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   async getAsset(query) {
@@ -59,8 +43,8 @@ class Ooyala {
 
   async getBacklot() {
     return await this.cache.get(`${this.__type}:Backlot`, () => (
-      this.api.get("/v2/assets/")
-      .then(body => body.items)
+      this.api.get("/v2/assets", null, { recursive: true })
+      .then(body => body)
         .catch((err) => {
           console.log(err);
         })

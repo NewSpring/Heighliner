@@ -1,17 +1,20 @@
-
 export default [`
-  type Backlot {
-    cursor: Int
-    assets: [Ooyala]
+  type Label {
+    name: String,
+    parent: String,
+    fullName: String,
+    id: String,
   }
 
-  type Ooyala {
+  type Asset {
     name: String
     description: String
     source: String
-    embedCode: String
-    tags: [String]
+    labels: [Label]
     status: String
     duration: Int
+    createdAt: String
+    previewImage: String,
+    filename: String,
   }
 `];
