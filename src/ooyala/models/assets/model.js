@@ -16,7 +16,6 @@ class Ooyala {
     return await this.cache.get(`${this.__type}:Labels:${query}`, () => (
       this.api.get(`/v2/assets/${query}/labels`)
       .then((body) => {
-        console.log(body);
         return body.items;
       })
         .catch((err) => {
@@ -46,11 +45,20 @@ class Ooyala {
 
   async getBacklot() {
     return await this.cache.get(`${this.__type}:Backlot`, () => (
-      this.api.get("/v2/assets", null, { recursive: true })
-      .then(body => body)
-        .catch((err) => {
-          console.log(err);
-        })
+      // leaving both api calls in for reference.
+      // .get(path, queryparams, options)
+      // this.api.get("/v2/assets", null, { recursive: true })
+      this.api.get("/v2/assets", { limit: 10 })
+      .then((body) => {
+        if (body.items !== undefined) {
+          return body.items;
+        }
+
+        return body;
+      })
+      .catch((err) => {
+        console.log(err);
+      })
     ));
   }
 }
