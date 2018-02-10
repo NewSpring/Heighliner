@@ -47,8 +47,8 @@ class Ooyala {
     return await this.cache.get(`${this.__type}:Backlot`, () => (
       // leaving both api calls in for reference.
       // .get(path, queryparams, options)
-      // this.api.get("/v2/assets", null, { recursive: true })
-      this.api.get("/v2/assets", { limit: 10 })
+      // this.api.get("/v2/assets", { limit: 10 })
+      this.api.get("/v2/assets", null, { recursive: true })
       .then((body) => {
         if (body.items !== undefined) {
           return body.items;
