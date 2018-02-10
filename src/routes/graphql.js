@@ -31,6 +31,13 @@ import GoogleSS, { queries as GoogleSSQueries } from "../google-site-search";
 // Import ESV API
 import ESV, { queries as ESVQueries } from "../esv";
 
+import Ooyala, { queries as OoyalaQueries } from "../ooyala";
+
+import Wistia, {
+  queries as WistiaQueries,
+  mutations as WistiaMutations,
+} from "../wistia";
+
 // Merge all applications together
 // eslint-ignore-next-line
 let { schema, models, resolvers } = loadApplications({
@@ -39,6 +46,8 @@ let { schema, models, resolvers } = loadApplications({
   Rock,
   GoogleSS,
   ESV,
+  Ooyala,
+  Wistia,
 });
 
 // join all application queries and generate base query
@@ -49,9 +58,12 @@ schema = createSchema({
     ...RockQueries,
     ...GoogleSSQueries,
     ...ESVQueries,
+    ...OoyalaQueries,
+    ...WistiaQueries,
   ],
   mutations: [
     // ...ApollosMutations,
+    ...WistiaMutations,
     ...RockMutations,
   ],
   schema,
@@ -87,6 +99,8 @@ export default function (app, monitor) {
       Rock.connect({ datadog }),
       GoogleSS.connect(),
       ESV.connect(),
+      Ooyala.connect(),
+      Wistia.connect(),
     ]).then(([REDIS]) => {
       cache = REDIS;
     });

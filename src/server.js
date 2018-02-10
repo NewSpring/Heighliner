@@ -27,3 +27,6 @@ const listener = app.listen(process.env.PORT || 80, () => {
   // eslint-disable-next-line
   console.log("Listening at http://%s%s", host, port === 80 ? "" : `:${port}`);
 });
+
+// this is only here for ooyala
+listener.setTimeout(10 * 60 * 1000);

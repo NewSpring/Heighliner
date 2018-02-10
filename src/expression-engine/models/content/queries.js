@@ -7,7 +7,7 @@ export default [
     collection: ID,
     limit: Int = 20,
     skip: Int = 0,
-    status: String = "open",
+    status: [String] = ["open"],
     cache: Boolean = true
   ): [Content]`,
 

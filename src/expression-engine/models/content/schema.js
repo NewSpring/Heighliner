@@ -22,6 +22,7 @@ export default [`
     body: String
     description: String
     ooyalaId: String
+    originalVideo: Asset
     speaker: String
     isLight: Boolean
     hashtag: String
