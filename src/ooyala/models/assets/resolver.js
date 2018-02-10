@@ -19,13 +19,13 @@ export default {
     createdAt: ({ createdAt }) => createdAt,
     previewImage: ({ previewImage }) => previewImage,
     filename: ({ filename }) => filename,
-    tags: async ({ embed_code }, _, { models }) => await models.Ooyala.getLabels(embed_code),
+    labels: async ({ embed_code }, _, { models }) => await models.Ooyala.getLabels(embed_code),
     source: async ({ embed_code }, _, { models }) => await models.Ooyala.getSource(embed_code),
   },
   Label: {
     name: ({ name }) => name,
-    parent: ({ parent }) => parent,
-    fullname: ({ fullName }) => fullName,
+    parent: ({ parent_id }) => parent_id,
+    fullName: ({ full_name }) => full_name,
     id: ({ id }) => id,
   },
 };

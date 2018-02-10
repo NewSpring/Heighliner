@@ -15,7 +15,10 @@ class Ooyala {
   async getLabels(query) {
     return await this.cache.get(`${this.__type}:Labels:${query}`, () => (
       this.api.get(`/v2/assets/${query}/labels`)
-      .then(body => map(body.items, "name"))
+      .then((body) => {
+        console.log(body);
+        return body.items;
+      })
         .catch((err) => {
           console.log(err);
         })

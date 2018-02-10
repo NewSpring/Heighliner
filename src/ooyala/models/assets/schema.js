@@ -10,6 +10,7 @@ export default [`
     name: String
     description: String
     source: String
+    embedCode: String,
     labels: [Label]
     status: String
     duration: Int
