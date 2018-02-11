@@ -1,9 +1,8 @@
-
 import bodyParser from "body-parser";
 import cors from "cors";
 
 export default (app) => {
-  const sites = /^http(s?):\/\/.*.?(newspring|newspringfuse|newspringnetwork|apollos.netlify|newspring.github).(com|cc|io|dev)\/$/;
+  const sites = /^http(s?):\/\/.*.?(newspring|newspringfuse|newspringnetwork|apollos.netlify|newspring.github).(com|cc|io|dev)\/?$/;
   const local = /^http(s?):\/\/localhost:\d*$/;
 
   const corsOptions = {

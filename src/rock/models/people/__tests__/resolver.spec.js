@@ -51,7 +51,7 @@ describe("Person Tests", () => {
   });
   xit("Pullng phone numbers seems to be disabled at the moment.", () => {}); // tslint:disable-line
 
-  it("`Person` has a photo.", () => {
+  it("`Person` has a photo.", async () => {
     const { Person } = Resolver;
 
     const placeHolderPhoto =
@@ -67,10 +67,10 @@ describe("Person Tests", () => {
       },
     };
 
-    Person.photo({ PhotoId: samplePhotoId }, null, { models });
+    await Person.photo({ PhotoId: samplePhotoId }, null, { models });
 
     // If no photoId then return placeholder image.
-    const noPhotoAvailable = Person.photo({ PhotoId: null }, null, { models });
+    const noPhotoAvailable = await Person.photo({ PhotoId: null }, null, { models });
     expect(placeHolderPhoto === noPhotoAvailable).toBeTruthy();
   });
 
