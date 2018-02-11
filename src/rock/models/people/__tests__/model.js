@@ -160,9 +160,7 @@ describe("Person", () => {
 
   it("gets person groups from cache lookup", async () => {
     await personModel.getGroups(12, 34);
-    expect(mockedCache.get.mock.calls[0][0]).toEqual(
-      "12:GroupMemberId:34:GroupTypes",
-    );
+    expect(mockedCache.get.mock.calls[0][0]).toEqual("12:GroupMemberId:34:GroupTypes");
     expect(typeof mockedCache.get.mock.calls[0][1]).toEqual("function");
   });
 
@@ -215,7 +213,7 @@ describe("Person", () => {
       expect(PersonalDeviceTable.post).toBeCalledWith({
         PersonAliasId: "harambe",
         DeviceRegistrationId: "123456",
-        PersonalDeviceTypeId: 671, // `mobile` device type
+        PersonalDeviceTypeValueId: 671, // `mobile` device type
         NotificationsEnabled: 1,
         ForeignKey: "chrome",
         Guid: "guid",
