@@ -1,8 +1,8 @@
-
-export default [`
+export default [
+  `
   type LiveFeed {
     live: Boolean!
-    embedCode: String
+    fuse: Boolean!
   }
 
   # should this be a global type that implements Node?
@@ -21,7 +21,7 @@ export default [`
   type ContentData {
     body: String
     description: String
-    ooyalaId: String
+    wistiaId: String
     speaker: String
     isLight: Boolean
     hashtag: String
@@ -79,4 +79,5 @@ export default [`
     tracks: [File]
     seriesId: ID
   }
-`];
+`,
+];
