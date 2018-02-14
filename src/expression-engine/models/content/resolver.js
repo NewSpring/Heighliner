@@ -95,6 +95,9 @@ export default {
 
       return embedUrl;
     },
+    videoUrl: ({ snippet_contents: video }) => (
+      `https://secure-cf-c.ooyala.com/${video}/DOcJ-FxaFrRg4gtDEwOjI5cDowODE7AZ`
+    ),
   },
 
   ContentColor: {
@@ -123,6 +126,7 @@ export default {
       return ({
         id: video,
         embedUrl,
+        videoUrl: `https://secure-cf-c.ooyala.com/${video}/DOcJ-FxaFrRg4gtDEwOjI5cDowODE7AZ`,
       });
     },
     tags: ({ tags }, _, { models }) => models.Content.splitByNewLines(tags),
