@@ -101,6 +101,7 @@ export default {
   LiveFeed: {
     live: ({ isLive }) => !!isLive,
     fuse: ({ isFuse }) => !!isFuse,
+    embedCode: ({ snippet_contents }) => snippet_contents,
   },
 
   ContentColor: {
