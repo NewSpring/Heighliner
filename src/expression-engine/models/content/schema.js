@@ -21,6 +21,7 @@ export default [
   type ContentData {
     body: String
     description: String
+    ooyalaId: String
     wistiaId: String
     speaker: String
     isLight: Boolean
