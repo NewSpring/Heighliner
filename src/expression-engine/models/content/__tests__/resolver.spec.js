@@ -1,4 +1,3 @@
-
 import { difference } from "lodash";
 import { createGlobalId } from "../../../../util";
 import Resolver from "../resolver";
@@ -6,7 +5,7 @@ import Resolver from "../resolver";
 const sampleData = {
   live: {
     isLive: true,
-    snippet_contents: "the snippet contents",
+    isFuse: false,
   },
   contentColor: {
     id: "theId",
@@ -128,7 +127,9 @@ it("`Query` feed should lower case, convert, and exclude Series and Music", () =
   const models = {
     Content: {
       find: (object, cache) => {
-        expect(object.channel_name).toEqual({ $or: difference(eeChannels, ["series_newspring", "newspring_albums"]) });
+        expect(object.channel_name).toEqual({
+          $or: difference(eeChannels, ["series_newspring", "newspring_albums"]),
+        });
       },
     },
   };
@@ -286,12 +287,12 @@ it("`LiveFeed` should return the live flag", () => {
   expect(isLive).toEqual(sampleData.live.isLive);
 });
 
-it("`LiveFeed` should reurn the embedCode", () => {
+it("`LiveFeed` should return the fuse flag", () => {
   const { LiveFeed } = Resolver;
 
-  const embedCode = LiveFeed.embedCode(sampleData.live);
+  const isFuse = LiveFeed.fuse(sampleData.live);
 
-  expect(embedCode).toEqual(sampleData.live.snippet_contents);
+  expect(isFuse).toEqual(sampleData.live.isFuse);
 });
 
 it("`ContentColor` returns the color id", () => {
@@ -378,14 +379,14 @@ it("`ContentData` should return description", () => {
   expect(description).toEqual(mockData.description);
 });
 
-it("`ContentData` should return ooyalaId", () => {
+it("`ContentData` should return wistiaId", () => {
   const { ContentData } = Resolver;
   const mockData = {
     video: "id",
   };
 
-  const ooyalaId = ContentData.ooyalaId(mockData);
-  expect(ooyalaId).toEqual(mockData.video);
+  const wistiaId = ContentData.wistiaId(mockData);
+  expect(wistiaId).toEqual(mockData.video);
 });
 
 it("`ContentData` should call splitByNewLines", () => {
@@ -504,12 +505,12 @@ it("`ContentData` should return color and primary if color", () => {
   };
 
   const colors = ContentData.colors(mockData);
-  expect(colors).toEqual(
-    [{
+  expect(colors).toEqual([
+    {
       value: mockData.color,
       description: "primary",
-    }],
-  );
+    },
+  ]);
 });
 
 it("`ContentData` should prioritize fgcolor over bgcolor", () => {
@@ -521,12 +522,12 @@ it("`ContentData` should prioritize fgcolor over bgcolor", () => {
   };
 
   const colors = ContentData.colors(mockData);
-  expect(colors).toEqual(
-    [{
+  expect(colors).toEqual([
+    {
       value: mockData.fgcolor,
       description: "primary",
-    }],
-  );
+    },
+  ]);
 });
 
 it("`ContentData` should return bgcolor and primary if no color", () => {
@@ -538,12 +539,12 @@ it("`ContentData` should return bgcolor and primary if no color", () => {
   };
 
   const colors = ContentData.colors(mockData);
-  expect(colors).toEqual(
-    [{
+  expect(colors).toEqual([
+    {
       value: mockData.bgcolor,
       description: "primary",
-    }],
-  );
+    },
+  ]);
 });
 
 it("`ContentData` returns blank array if no audio or tracks", async () => {
@@ -638,10 +639,10 @@ it("`ContentData` fetches audio and tracks files if both", async () => {
         count++;
         expect(entry_id).toEqual(mockData.entry_id);
         expect([mockData.audio, mockData.tracks].indexOf(thing) > -1).toBeTruthy();
-        const splitField = thing === mockData.audio ?
-          Number(mockData.exp_channel.exp_channel_fields.audio.split("_").pop()) :
-          Number(mockData.exp_channel.exp_channel_fields.tracks.split("_").pop())
-        ;
+        const splitField =
+          thing === mockData.audio
+            ? Number(mockData.exp_channel.exp_channel_fields.audio.split("_").pop())
+            : Number(mockData.exp_channel.exp_channel_fields.tracks.split("_").pop());
         expect(thingPosition).toEqual(splitField);
         if (thing === mockData.audio) {
           expect(duration).toEqual(mockData.audio_duration);
@@ -723,7 +724,9 @@ it("`ContentData` calls model with blurred image position when blurred image", a
       getFilesFromContent: (entry_id, thing, position) => {
         expect(entry_id).toEqual(mockData.entry_id);
         expect(thing).toEqual(mockData.image_blurred);
-        const splitField = Number(mockData.exp_channel.exp_channel_fields.image_blurred.split("_").pop());
+        const splitField = Number(
+          mockData.exp_channel.exp_channel_fields.image_blurred.split("_").pop(),
+        );
         expect(position).toEqual(splitField);
       },
     },
@@ -756,10 +759,10 @@ it("`ContentData` calls model twice if both image and blurred image", async () =
         count++;
         expect(entry_id).toEqual(mockData.entry_id);
         expect([mockData.image, mockData.image_blurred].indexOf(thing) > -1).toBeTruthy();
-        const splitField = thing === mockData.image ?
-          Number(mockData.exp_channel.exp_channel_fields.image.split("_").pop()) :
-          Number(mockData.exp_channel.exp_channel_fields.image_blurred.split("_").pop())
-        ;
+        const splitField =
+          thing === mockData.image
+            ? Number(mockData.exp_channel.exp_channel_fields.image.split("_").pop())
+            : Number(mockData.exp_channel.exp_channel_fields.image_blurred.split("_").pop());
         expect(position).toEqual(splitField);
       },
     },
@@ -788,12 +791,11 @@ it("`ContentData` returns 5 resized images if image", async () => {
   const models = {
     File: {
       getFilesFromContent: (entry_id, thing, position) =>
-         Promise.resolve([
-           {
-             url: "url.jpg",
-           },
-         ])
-      ,
+        Promise.resolve([
+          {
+            url: "url.jpg",
+          },
+        ]),
     },
   };
 
@@ -821,12 +823,11 @@ it("`ContentData` returns 10 resized images if image and blurred image", async (
   const models = {
     File: {
       getFilesFromContent: (entry_id, thing, position) =>
-         Promise.resolve([
-           {
-             url: "url.jpg",
-           },
-         ])
-      ,
+        Promise.resolve([
+          {
+            url: "url.jpg",
+          },
+        ]),
     },
   };
 
@@ -853,12 +854,11 @@ it("`ContentData` returns only image size specified", async () => {
   const models = {
     File: {
       getFilesFromContent: (entry_id, thing, position) =>
-         Promise.resolve([
-           {
-             url: "url.jpg",
-           },
-         ])
-      ,
+        Promise.resolve([
+          {
+            url: "url.jpg",
+          },
+        ]),
     },
   };
 
@@ -887,17 +887,16 @@ it("`ContentData` returns only ratio specified", async () => {
   const models = {
     File: {
       getFilesFromContent: (entry_id, thing, position) =>
-         Promise.resolve([
-           {
-             url: "url.jpg",
-             fileLabel: "1:2",
-           },
-           {
-             url: "url.jpg",
-             fileLabel: "2:1",
-           },
-         ])
-      ,
+        Promise.resolve([
+          {
+            url: "url.jpg",
+            fileLabel: "1:2",
+          },
+          {
+            url: "url.jpg",
+            fileLabel: "2:1",
+          },
+        ]),
     },
   };
 
@@ -1054,9 +1053,7 @@ it("`ContentMeta` should null if no body, legacy_body, or summary", async () => 
   };
   const models = {
     Content: {
-      cleanMarkup: markup =>
-         null
-      ,
+      cleanMarkup: markup => null,
     },
   };
 
@@ -1193,8 +1190,8 @@ it("`Content` channelName should return channel name", () => {
 it("`Content` campus should call campus.find", async () => {
   const { Content } = Resolver;
   const mockData = { campus: "[1234] [harambe] Clemson" };
-  const mockModels = { models:
-    { Campus: { find: jest.fn(() => Promise.resolve([])) } }
+  const mockModels = {
+    models: { Campus: { find: jest.fn(() => Promise.resolve([])) } },
   };
 
   const campus = await Content.campus(mockData, null, mockModels);
@@ -1332,7 +1329,6 @@ it("`Content` children should call findByParentId", () => {
   Content.children(mockData, mockInput, { models });
 });
 
-
 it("`Content` should sort children by entry date", async () => {
   const { Content } = Resolver;
   const mockData = {
@@ -1361,7 +1357,6 @@ it("`Content` should sort children by entry date", async () => {
   expect(res[1].title).toEqual("second");
   expect(res[2].title).toEqual("third");
 });
-
 
 it("`Content` related call splitByNewLines", () => {
   const { Content } = Resolver;
@@ -1398,9 +1393,7 @@ it("`Content` related should return null if tags falsy", () => {
   };
   const models = {
     Content: {
-      splitByNewLines: () =>
-         null
-      ,
+      splitByNewLines: () => null,
     },
   };
 
@@ -1421,9 +1414,7 @@ it("`Content` related should return null if tags is empty array", () => {
   };
   const models = {
     Content: {
-      splitByNewLines: () =>
-         []
-      ,
+      splitByNewLines: () => [],
     },
   };
 
@@ -1445,8 +1436,7 @@ it("`Content` related should call findByTags if tags", () => {
   };
   const models = {
     Content: {
-      splitByNewLines: () =>
-         splitTags,
+      splitByNewLines: () => splitTags,
       findByTags: (inputs, options, cache) => {
         expect(inputs.tags).toEqual(splitTags);
         expect(inputs.includeChannels).toEqual(mockInput.includeChannels);
