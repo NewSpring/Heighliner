@@ -22,7 +22,7 @@ import { Group, GroupLocation, GroupMember } from "../../groups/tables";
 
 import { Location as LocationModel } from "../../campuses/tables";
 
-export default async (transaction) => {
+export default async transaction => {
   if (!transaction) return Promise.resolve();
   const {
     CampusId,
@@ -43,7 +43,10 @@ export default async (transaction) => {
   const exists = Existing.length > 0;
   if (exists) return Promise.resolve();
 
-  const People = await PersonTable.find({ where: Person, include: [{ model: PersonAlias.model }] });
+  const People = await PersonTable.find({
+    where: Person,
+    include: [{ model: PersonAlias.model }],
+  });
   if (!People.length) return Promise.resolve();
 
   let ids;
@@ -65,7 +68,9 @@ export default async (transaction) => {
     });
 
     if (FoundLocations.length) {
-      ids = flatten(FoundLocations.map(x => x.Group.GroupMembers)).map(x => x.PersonId);
+      ids = flatten(FoundLocations.map(x => x.Group.GroupMembers)).map(
+        x => x.PersonId
+      );
     } else {
       ids = [People[0].Id];
       console.warn(`no locations found for ${People.map(x => x.FirstName)}`);
@@ -95,12 +100,15 @@ export default async (transaction) => {
   Transaction.AuthorizedPersonAliasId = PrimaryAliasId;
   Transaction.CreatedByPersonAliasId = PrimaryAliasId;
 
-  const FinancialPaymentDetailId = await FinancialPaymentDetail.post(PaymentDetail);
+  const FinancialPaymentDetailId = await FinancialPaymentDetail.post(
+    PaymentDetail
+  );
 
   Transaction.FinancialPaymentDetailId = FinancialPaymentDetailId;
 
   // get the batch id and add it to the transaction.
-  const currencyType = PaymentDetail.CurrencyTypeValueId === 156 ? "Credit Card" : "ACH";
+  const currencyType =
+    PaymentDetail.CurrencyTypeValueId === 156 ? "Credit Card" : "ACH";
   const newBatch = new FinancialBatch();
   const batch = await newBatch.findOrCreate({
     currencyType,
@@ -113,7 +121,8 @@ export default async (transaction) => {
       where: ScheduledTransaction,
     }).then(x => x && x.Id);
 
-    if (ScheduledTransactionId) Transaction.ScheduledTransactionId = ScheduledTransactionId;
+    if (ScheduledTransactionId)
+      Transaction.ScheduledTransactionId = ScheduledTransactionId;
     if (!ScheduledTransactionId) {
       console.error(`
         Scheduled Transaction is missing for person ${FoundPerson.Id} with

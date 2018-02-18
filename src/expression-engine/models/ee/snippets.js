@@ -1,9 +1,6 @@
 /* tslint:disable:no-shadowed-variable */
 
-import {
-  INTEGER,
-  STRING,
-} from "sequelize";
+import { INTEGER, STRING } from "sequelize";
 
 import { MySQLConnector } from "../../mysql";
 
@@ -15,10 +12,7 @@ const snippetsSchema = {
 };
 
 let Snippets;
-export {
-  Snippets,
-  snippetsSchema,
-};
+export { Snippets, snippetsSchema };
 
 export function connect() {
   Snippets = new MySQLConnector("exp_snippets", snippetsSchema);
@@ -32,7 +26,6 @@ export function connect() {
 //   ChannelData,
 //   Sites,
 // }): void {
-
 
 // };
 

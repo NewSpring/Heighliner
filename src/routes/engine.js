@@ -9,7 +9,7 @@ const apolloEngine = new Engine({
 
 if (process.env.NODE_ENV === "production") apolloEngine.start();
 
-export default (app) => {
+export default app => {
   if (process.env.NODE_ENV === "production") {
     app.use(apolloEngine.expressMiddleware());
   }

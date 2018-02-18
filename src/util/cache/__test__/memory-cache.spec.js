@@ -1,4 +1,3 @@
-
 import casual from "casual";
 import { InMemoryCache } from "../memory-cache";
 
@@ -9,10 +8,9 @@ it("`InMemoryCache` should have a way to get items from the cache", () => {
   const cacheData = { [id]: data };
   const cache = new InMemoryCache(cacheData);
 
-  return cache.get(id, () => Promise.resolve())
-    .then((result) => {
-      expect(result).toEqual(data);
-    });
+  return cache.get(id, () => Promise.resolve()).then(result => {
+    expect(result).toEqual(data);
+  });
 });
 
 it("`InMemoryCache` should use a lookup method if no cache entry exists", () => {
@@ -22,11 +20,9 @@ it("`InMemoryCache` should use a lookup method if no cache entry exists", () => 
   const cacheData = {};
   const cache = new InMemoryCache(cacheData);
 
-  const spyLookup = () =>
-     Promise.resolve(data)
-  ;
+  const spyLookup = () => Promise.resolve(data);
 
-  return cache.get(id, spyLookup).then((result) => {
+  return cache.get(id, spyLookup).then(result => {
     expect(result).toEqual(data);
   });
 });
@@ -38,24 +34,23 @@ it("`InMemoryCache` should have a way to set items in the cache with a ttl", () 
   const cacheData = {};
   const cache = new InMemoryCache(cacheData);
 
-  const spyLookup = () =>
-     Promise.resolve(data)
-  ;
+  const spyLookup = () => Promise.resolve(data);
 
-  return cache.get(id, spyLookup, { ttl: 0.1 })
-    .then((result) => {
+  return cache
+    .get(id, spyLookup, { ttl: 0.1 })
+    .then(result => {
       expect(result).toEqual(data);
     })
-    .then(() =>
-       new Promise((c, r) => {
-         setTimeout(() => {
-           expect(cacheData[id]).toBeFalsy();
-           c();
-         }, (0.1 * 60) + 25);
-       }),
+    .then(
+      () =>
+        new Promise((c, r) => {
+          setTimeout(() => {
+            expect(cacheData[id]).toBeFalsy();
+            c();
+          }, 0.1 * 60 + 25);
+        })
     );
 });
-
 
 it("should have a way to set items in the cache", () => {
   const id = casual.word;
@@ -64,10 +59,9 @@ it("should have a way to set items in the cache", () => {
   const cacheData = {};
   const cache = new InMemoryCache(cacheData);
 
-  return cache.set(id, data)
-    .then(() => {
-      expect(cacheData[id]).toEqual(data);
-    });
+  return cache.set(id, data).then(() => {
+    expect(cacheData[id]).toEqual(data);
+  });
 });
 
 it("should eventually return true if successfully set", () => {
@@ -77,11 +71,10 @@ it("should eventually return true if successfully set", () => {
   const cacheData = {};
   const cache = new InMemoryCache(cacheData);
 
-  return cache.set(id, data)
-    .then((success) => {
-      expect(cacheData[id]).toEqual(data);
-      expect(success).toBeTruthy();
-    });
+  return cache.set(id, data).then(success => {
+    expect(cacheData[id]).toEqual(data);
+    expect(success).toBeTruthy();
+  });
 });
 
 it("should have a way to set items in the cache with a ttl", () => {
@@ -91,17 +84,19 @@ it("should have a way to set items in the cache with a ttl", () => {
   const cacheData = {};
   const cache = new InMemoryCache(cacheData);
 
-  return cache.set(id, data, 0.1)
-    .then((result) => {
+  return cache
+    .set(id, data, 0.1)
+    .then(result => {
       expect(cacheData[id]).toEqual(data);
     })
-    .then(() =>
-       new Promise((c, r) => {
-         setTimeout(() => {
-           expect(cacheData[id]).toBeFalsy();
-           c();
-         }, (0.1 * 60) + 25);
-       }),
+    .then(
+      () =>
+        new Promise((c, r) => {
+          setTimeout(() => {
+            expect(cacheData[id]).toBeFalsy();
+            c();
+          }, 0.1 * 60 + 25);
+        })
     );
 });
 

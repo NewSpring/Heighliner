@@ -1,4 +1,3 @@
-
 import { connect } from "./mongo";
 import Users from "./models/users";
 

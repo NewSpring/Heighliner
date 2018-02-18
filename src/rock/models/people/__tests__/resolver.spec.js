@@ -82,7 +82,7 @@ describe("Person Tests", () => {
     expect(models.Rock.getAttributesFromEntity).toHaveBeenCalledWith(
       123,
       "ThugLyfe",
-      15,
+      15
     );
   });
 
@@ -117,13 +117,13 @@ describe("PhoneNumber Mutations", () => {
       {
         phoneNumber: "(555) 555-5555",
       },
-      { models, person: "person" },
+      { models, person: "person" }
     );
     expect(models.PhoneNumber.setPhoneNumber).toHaveBeenCalledWith(
       {
         phoneNumber: "(555) 555-5555",
       },
-      "person",
+      "person"
     );
   });
 
@@ -174,12 +174,12 @@ describe("DeviceRegistration Mutation", () => {
         registrationId: "harambe",
         uuid: "chrome",
       },
-      { models, person: "person" },
+      { models, person: "person" }
     );
     expect(models.PersonalDevice.saveId).toHaveBeenCalledWith(
       "harambe",
       "chrome",
-      "person",
+      "person"
     );
   });
 });

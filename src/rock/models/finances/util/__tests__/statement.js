@@ -41,7 +41,7 @@ describe("Statement", () => {
         home={home}
         transactions={transactions}
         total={total}
-      />,
+      />
     );
     expect(component).toMatchSnapshot();
   });
@@ -63,12 +63,12 @@ describe("generatePDF", () => {
     jest.mock("react-dom/server");
     ReactDOMServer.renderToStaticMarkup = jest.fn(c => c);
     return generatePDF().then(
-      (res) => {
+      res => {
         throw new Error("generatePDF didn't fail");
       },
-      (res) => {
+      res => {
         expect(res).toBeDefined();
-      },
+      }
     );
   });
 });

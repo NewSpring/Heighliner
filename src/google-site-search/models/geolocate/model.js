@@ -1,4 +1,3 @@
-
 import { GoogleConnector } from "../../fetch";
 
 class GGeolocate extends GoogleConnector {
@@ -9,8 +8,7 @@ class GGeolocate extends GoogleConnector {
     const endpoint = `${this.url}${query}&key=${this.key}`;
     return this.get(endpoint);
   }
-
-};
+}
 
 export default {
   GGeolocate,

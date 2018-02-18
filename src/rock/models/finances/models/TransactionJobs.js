@@ -17,25 +17,16 @@ import {
 
 import FinancialBatch from "./FinancialBatch";
 
-import {
-  DefinedValue,
-} from "../../system/tables";
+import { DefinedValue } from "../../system/tables";
 
-import {
-  Person as PersonTable,
-  PersonAlias,
-} from "../../people/tables";
+import { Person as PersonTable, PersonAlias } from "../../people/tables";
 
 import {
   Campus as CampusTable,
   Location as LocationTable,
 } from "../../campuses/tables";
 
-import {
-  Group,
-  GroupLocation,
-  GroupMember,
-} from "../../groups/tables";
+import { Group, GroupLocation, GroupMember } from "../../groups/tables";
 
 import { Rock } from "../../system";
 import report from "../util/logError";
@@ -70,7 +61,11 @@ export const readIdsFromFrequencies = (plan, frequencies) => {
   return null;
 };
 
-const TRANSACTION_QUEUE = queue("Transaction Receipt", 6379, process.env.REDIS_HOST);
+const TRANSACTION_QUEUE = queue(
+  "Transaction Receipt",
+  6379,
+  process.env.REDIS_HOST
+);
 
 export default class TransactionJobs extends Rock {
   constructor({ cache }) {
@@ -78,41 +73,42 @@ export default class TransactionJobs extends Rock {
     this.FinancialBatch = new FinancialBatch({ cache });
     this.queue = TRANSACTION_QUEUE;
 
-    this.queue.process(({ data }) =>  Promise.resolve(data)
-      .then(this.getOrCreatePerson)
-      .then(this.createPaymentDetail)
-      .then(this.findOrCreateTransaction)
-      .then(this.findOrCreateSchedule)
-      .then(this.createTransactionDetails)
-      .then(this.createSavedPayment)
-      .then(this.updateBillingAddress)
-      .then(this.updateBatchControlAmount)
-      .then(this.sendGivingEmail),
+    this.queue.process(({ data }) =>
+      Promise.resolve(data)
+        .then(this.getOrCreatePerson)
+        .then(this.createPaymentDetail)
+        .then(this.findOrCreateTransaction)
+        .then(this.findOrCreateSchedule)
+        .then(this.createTransactionDetails)
+        .then(this.createSavedPayment)
+        .then(this.updateBillingAddress)
+        .then(this.updateBatchControlAmount)
+        .then(this.sendGivingEmail)
     );
 
     // XXX rewrite mock to support events
     if (!this.queue.on) return;
 
-    this.queue
-      .on("error", (e) => report({}, e))
-      .on("failed", report)
+    this.queue.on("error", e => report({}, e)).on("failed", report);
   }
 
-  add = (data) => {
+  add = data => {
     // will retry every 5 minutes for one day
     this.queue.add(data, {
       removeOnComplete: true,
       attempts: 288,
       backoff: { type: "fixed", delay: 60000 * 5 },
     });
-  }
+  };
 
-  getOrCreatePerson = async (data) => {
+  getOrCreatePerson = async data => {
     const { Person } = data;
     if (Person.Id) return data;
 
     // make sure this person wasn't already created once before
-    const foundPerson = await PersonTable.findOne({ where: { Guid: Person.Guid } });
+    const foundPerson = await PersonTable.findOne({
+      where: { Guid: Person.Guid },
+    });
     if (foundPerson) {
       data.Person = foundPerson;
       return data;
@@ -123,21 +119,16 @@ export default class TransactionJobs extends Rock {
     Entities.Person = await PersonTable.findOne({
       where: { Id },
       include: [{ model: PersonAlias.model }],
-    }).then((x) => {
+    }).then(x => {
       x.PrimaryAliasId = x.PersonAlias.Id;
       return x;
     });
 
     return Entities;
-  }
+  };
 
-  updateBillingAddress = async (data) => {
-    const {
-      Person,
-      Location,
-      GroupId,
-      GroupLocationId,
-    } = data;
+  updateBillingAddress = async data => {
+    const { Person, Location, GroupId, GroupLocationId } = data;
 
     if (Location.Id) return data;
 
@@ -152,7 +143,11 @@ export default class TransactionJobs extends Rock {
           attributes: [],
           where: { GroupTypeId: 10 }, // Family
           include: [
-            { model: GroupMember.model, where: { PersonId: `${Person.Id}` }, attributes: [] },
+            {
+              model: GroupMember.model,
+              where: { PersonId: `${Person.Id}` },
+              attributes: [],
+            },
           ],
         },
       ],
@@ -169,10 +164,13 @@ export default class TransactionJobs extends Rock {
       NewGroupId = await Group.findOne({
         where: { GroupTypeId: 10 }, // Family
         include: [
-          { model: GroupMember.model, where: { PersonId: `${Person.Id}` }, attributes: [] },
+          {
+            model: GroupMember.model,
+            where: { PersonId: `${Person.Id}` },
+            attributes: [],
+          },
         ],
-      })
-        .then(x => x && x.Id);
+      }).then(x => x && x.Id);
       data.GroupId = NewGroupId;
     }
 
@@ -198,7 +196,7 @@ export default class TransactionJobs extends Rock {
     return data;
   };
 
-  createPaymentDetail = async (data) => {
+  createPaymentDetail = async data => {
     const { FinancialPaymentDetail } = data;
     if (FinancialPaymentDetail.Id) return data;
 
@@ -206,13 +204,14 @@ export default class TransactionJobs extends Rock {
     FinancialPaymentDetail.Guid = uuid.v4();
 
     // create a payment detail
-    FinancialPaymentDetail.Id = await FinancialPaymentDetailTable
-      .post(FinancialPaymentDetail);
+    FinancialPaymentDetail.Id = await FinancialPaymentDetailTable.post(
+      FinancialPaymentDetail
+    );
 
     return data;
-  }
+  };
 
-  findOrCreateTransaction = async (data) => {
+  findOrCreateTransaction = async data => {
     const {
       FinancialPaymentDetail,
       FinancialPaymentValue,
@@ -252,15 +251,10 @@ export default class TransactionJobs extends Rock {
     Transaction.Id = await TransactionTable.post(Transaction);
 
     return data;
-  }
+  };
 
-  findOrCreateSchedule = async (data) => {
-    const {
-      FinancialPaymentDetail,
-      Person,
-      Schedule,
-      SourceTypeValue,
-    } = data;
+  findOrCreateSchedule = async data => {
+    const { FinancialPaymentDetail, Person, Schedule, SourceTypeValue } = data;
     // not a schedule transaction
     if (!Schedule.GatewayScheduleId) return data;
 
@@ -277,8 +271,10 @@ export default class TransactionJobs extends Rock {
       await DefinedValue.find({
         where: { DefinedTypeId: 23 },
       })
-        .then(x => readIdsFromFrequencies(Schedule.TransactionFrequencyValue, x))
-        .then((id) => {
+        .then(x =>
+          readIdsFromFrequencies(Schedule.TransactionFrequencyValue, x)
+        )
+        .then(id => {
           Schedule.TransactionFrequencyValueId = id;
           delete Schedule.TransactionFrequencyValue;
         });
@@ -287,8 +283,7 @@ export default class TransactionJobs extends Rock {
     if (!Schedule.SourceTypeValueId && SourceTypeValue.Url) {
       Schedule.SourceTypeValueId = await DefinedValue.findOne({
         where: { Value: SourceTypeValue.Url, DefinedTypeId: 12 },
-      })
-        .then(x => x && x.Id || 10);
+      }).then(x => (x && x.Id) || 10);
     }
 
     Schedule.AuthorizedPersonAliasId = Person.PrimaryAliasId;
@@ -316,7 +311,7 @@ export default class TransactionJobs extends Rock {
 
       if (currentDetails && currentDetails.length) {
         await Promise.all(
-          currentDetails.map(({ Id }) => ScheduledTransactionDetail.delete(Id)),
+          currentDetails.map(({ Id }) => ScheduledTransactionDetail.delete(Id))
         );
       }
     } else {
@@ -324,87 +319,105 @@ export default class TransactionJobs extends Rock {
     }
 
     return data;
-  }
+  };
 
-  createTransactionDetails = async (data) => {
-    const {
-      Transaction,
-      Schedule,
-      Person,
-      TransactionDetails,
-      Campus,
-    } = data;
+  createTransactionDetails = async data => {
+    const { Transaction, Schedule, Person, TransactionDetails, Campus } = data;
 
     // create transaction details
-    data.TransactionDetails = await Promise.all(TransactionDetails.map(async (x) => {
-      if (x.Id) return x;
+    data.TransactionDetails = await Promise.all(
+      TransactionDetails.map(async x => {
+        if (x.Id) return x;
 
-      let AccountId = await FinancialAccount.findOne({
-        where: {
-          CampusId: Campus.Id,
-          ParentAccountId: x.AccountId,
-        },
-      })
-        .then(x => x && x.Id || null);
-
-      // Error if campus is lex, bsp, or sumter
-      if (AccountId && (Campus.Id === 4 || Campus.Id === 13 || Campus.Id === 19)) {
-        report({ data }, new Error("Creating Transaction with Incorrect Details"));
-      }
-
-      if (!AccountId) {
-        // if no account is found, use the person's campus for the account
-        const FamilyCampus = await Group.findOne({
-          where: { GroupTypeId: 10 }, // family
-          include: [
-            { model: GroupMember.model, where: { PersonId: `${Person.Id}` } },
-            { model: CampusTable.model },
-          ],
-        })
-          .then(x => x && x.Campus || {});
-
-        // ERROR IF THIS IS MISSING
-        if (!FamilyCampus || !FamilyCampus.Id) {
-          if(!FamilyCampus) report({ data }, new Error("FamilyCampus missing when creating transaction details"));
-          else report({ data }, new Error("FamilyCampus.Id missing when creating transaction details"));
-        }
-
-        AccountId = await FinancialAccount.findOne({
+        let AccountId = await FinancialAccount.findOne({
           where: {
-            CampusId: FamilyCampus.Id,
+            CampusId: Campus.Id,
             ParentAccountId: x.AccountId,
           },
-        })
-          .then(x => x && x.Id || null);
+        }).then(x => (x && x.Id) || null);
 
         // Error if campus is lex, bsp, or sumter
-        if (AccountId && (FamilyCampus.Id === 4 || FamilyCampus.Id === 13 || FamilyCampus.Id === 19)) {
-          report({ data }, new Error("Creating Transaction with Incorrect Details"));
+        if (
+          AccountId &&
+          (Campus.Id === 4 || Campus.Id === 13 || Campus.Id === 19)
+        ) {
+          report(
+            { data },
+            new Error("Creating Transaction with Incorrect Details")
+          );
         }
-      }
 
-      const detail = assign(x, {
-        CreatedByPersonAliasId: Person.PrimaryAliasId,
-        ModifiedByPersonAliasId: Person.PrimaryAliasId,
-        AccountId,
-      });
+        if (!AccountId) {
+          // if no account is found, use the person's campus for the account
+          const FamilyCampus = await Group.findOne({
+            where: { GroupTypeId: 10 }, // family
+            include: [
+              { model: GroupMember.model, where: { PersonId: `${Person.Id}` } },
+              { model: CampusTable.model },
+            ],
+          }).then(x => (x && x.Campus) || {});
 
+          // ERROR IF THIS IS MISSING
+          if (!FamilyCampus || !FamilyCampus.Id) {
+            if (!FamilyCampus)
+              report(
+                { data },
+                new Error(
+                  "FamilyCampus missing when creating transaction details"
+                )
+              );
+            else
+              report(
+                { data },
+                new Error(
+                  "FamilyCampus.Id missing when creating transaction details"
+                )
+              );
+          }
 
-      if (Schedule.Id && !Transaction.Id) {
-        detail.ScheduledTransactionId = Schedule.Id;
-        x.Id = await ScheduledTransactionDetail.post(detail);
-      } else {
-        detail.TransactionId = Transaction.Id;
-        x.Id = await TransactionDetail.post(detail);
-      }
+          AccountId = await FinancialAccount.findOne({
+            where: {
+              CampusId: FamilyCampus.Id,
+              ParentAccountId: x.AccountId,
+            },
+          }).then(x => (x && x.Id) || null);
 
-      return x;
-    }));
+          // Error if campus is lex, bsp, or sumter
+          if (
+            AccountId &&
+            (FamilyCampus.Id === 4 ||
+              FamilyCampus.Id === 13 ||
+              FamilyCampus.Id === 19)
+          ) {
+            report(
+              { data },
+              new Error("Creating Transaction with Incorrect Details")
+            );
+          }
+        }
+
+        const detail = assign(x, {
+          CreatedByPersonAliasId: Person.PrimaryAliasId,
+          ModifiedByPersonAliasId: Person.PrimaryAliasId,
+          AccountId,
+        });
+
+        if (Schedule.Id && !Transaction.Id) {
+          detail.ScheduledTransactionId = Schedule.Id;
+          x.Id = await ScheduledTransactionDetail.post(detail);
+        } else {
+          detail.TransactionId = Transaction.Id;
+          x.Id = await TransactionDetail.post(detail);
+        }
+
+        return x;
+      })
+    );
 
     return data;
-  }
+  };
 
-  createSavedPayment = async (data) => {
+  createSavedPayment = async data => {
     const {
       FinancialPaymentDetail,
       Person,
@@ -415,41 +428,52 @@ export default class TransactionJobs extends Rock {
       FinancialPersonSavedAccount.Id ||
       !FinancialPersonSavedAccount.Name ||
       !FinancialPersonSavedAccount.ReferenceNumber
-    ) return data;
+    )
+      return data;
 
     delete FinancialPaymentDetail.Id;
     FinancialPaymentDetail.Guid = uuid.v4();
 
     data = await this.createPaymentDetail(data);
 
-    FinancialPersonSavedAccount.Id = await SavedPayment.post(assign(FinancialPersonSavedAccount, {
-      PersonAliasId: Person.PrimaryAliasId,
-      FinancialPaymentDetailId: FinancialPaymentDetail.Id,
-      CreatedByPersonAliasId: Person.PrimaryAliasId,
-      ModifiedByPersonAliasId: Person.PrimaryAliasId,
-    }));
+    FinancialPersonSavedAccount.Id = await SavedPayment.post(
+      assign(FinancialPersonSavedAccount, {
+        PersonAliasId: Person.PrimaryAliasId,
+        FinancialPaymentDetailId: FinancialPaymentDetail.Id,
+        CreatedByPersonAliasId: Person.PrimaryAliasId,
+        ModifiedByPersonAliasId: Person.PrimaryAliasId,
+      })
+    );
 
     return data;
-  }
+  };
 
-  updateBatchControlAmount = async (data) => {
+  updateBatchControlAmount = async data => {
     const { Transaction, TransactionDetails, hasUpdatedBatch } = data;
     if (hasUpdatedBatch) return data;
-    if (!Transaction.Id || !Transaction.BatchId || !TransactionDetails.length) return data;
+    if (!Transaction.Id || !Transaction.BatchId || !TransactionDetails.length)
+      return data;
 
-    const total = TransactionDetails.reduce((prev, { Amount }) => Amount + prev, 0);
+    const total = TransactionDetails.reduce(
+      (prev, { Amount }) => Amount + prev,
+      0
+    );
     if (!isNumber(total)) return data;
 
-    const Batch = await FinancialBatchTable.findOne({ where: { Id: Transaction.BatchId }});
+    const Batch = await FinancialBatchTable.findOne({
+      where: { Id: Transaction.BatchId },
+    });
     if (!Batch) return data;
 
     const ControlAmount = `${(Batch.ControlAmount + total).toFixed(2)}`;
-    await FinancialBatchTable.patch(Batch.Id, { ControlAmount: Number(ControlAmount) });
+    await FinancialBatchTable.patch(Batch.Id, {
+      ControlAmount: Number(ControlAmount),
+    });
     data.hasUpdatedBatch = true;
     return data;
-  }
+  };
 
-  sendGivingEmail = async (data) => {
+  sendGivingEmail = async data => {
     if (data.CommunicationSent) return data;
 
     const {
@@ -493,10 +517,13 @@ export default class TransactionJobs extends Rock {
       AccountNumberMasked: FinancialPaymentDetail.AccountNumberMasked.slice(-4),
     };
 
-    await this.sendEmail("Giving Receipt", [Person.PrimaryAliasId], mergeFields);
+    await this.sendEmail(
+      "Giving Receipt",
+      [Person.PrimaryAliasId],
+      mergeFields
+    );
 
     data.CommunicationSent = true;
     return data;
-  }
-
+  };
 }

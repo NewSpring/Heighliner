@@ -5,25 +5,29 @@ import creditCardType, { types } from "credit-card-type";
 
 const { AMERICAN_EXPRESS, DISCOVER, VISA, MASTERCARD } = types;
 
-export const getCardName = (card) => {
+export const getCardName = card => {
   if (!card) return "Credit Card";
   const parsed = creditCardType(card.slice(0, 4));
   const type = parsed && parsed[0] && parsed[0].type;
-  switch(type){
+  switch (type) {
     case AMERICAN_EXPRESS:
-      return "American Express"; break;
+      return "American Express";
+      break;
     case DISCOVER:
-      return "Discover"; break;
+      return "Discover";
+      break;
     case VISA:
-      return "Visa"; break;
+      return "Visa";
+      break;
     case MASTERCARD:
-      return "MasterCard"; break;
+      return "MasterCard";
+      break;
     default:
       return "Credit Card";
   }
 };
 
-export const getCardType = (card) => {
+export const getCardType = card => {
   const definedTypeMapping = {
     Visa: 7,
     MasterCard: 8,
@@ -46,7 +50,10 @@ export default (response, gateway, person) => {
   }
 
   if (transaction.condition !== "complete") return null;
-  if (transaction.action.action_type !== "sale" && transaction.action.action_type !== "settle") {
+  if (
+    transaction.action.action_type !== "sale" &&
+    transaction.action.action_type !== "settle"
+  ) {
     return null;
   }
 
@@ -58,15 +65,19 @@ export default (response, gateway, person) => {
     FinancialGatewayId: gateway.Id,
     Summary: `Reference Number: ${transaction.transaction_id}`,
     SourceTypeValueId: 798, // XXX make this dynamic
-    TransactionDateTime: Moment(transaction.action.date, "YYYYMMDDHHmmss").toISOString(),
+    TransactionDateTime: Moment(
+      transaction.action.date,
+      "YYYYMMDDHHmmss"
+    ).toISOString(),
   };
 
   const TransactionDetails = [];
   if (transaction.product) {
-    if (!isArray(transaction.product)) transaction.product = [transaction.product];
+    if (!isArray(transaction.product))
+      transaction.product = [transaction.product];
     for (const product of transaction.product) {
       TransactionDetails.push({
-         // XXX support multiple transactions
+        // XXX support multiple transactions
         // XXX this needs a change on the app side before possible
         Amount: Number(transaction.action.amount),
         AccountId: Number(product.sku),
@@ -78,7 +89,9 @@ export default (response, gateway, person) => {
       // XXX support multiple transactions
       // XXX this needs a change on the app side before possible
       Amount: Number(transaction.action.amount),
-      AccountId: Number((find(transaction.merchant_defined_field, { id: "1" }))._),
+      AccountId: Number(
+        find(transaction.merchant_defined_field, { id: "1" })._
+      ),
       Guid: uuid.v4(),
     });
   }
@@ -89,11 +102,14 @@ export default (response, gateway, person) => {
     Guid: uuid.v4(),
   };
   PaymentDetail.AccountNumberMasked = PaymentDetail.AccountNumberMasked.replace(
-    new RegExp("x", "gmi"), "*",
+    new RegExp("x", "gmi"),
+    "*"
   );
 
   if (transaction.cc_number) {
-    PaymentDetail.CreditCardTypeValueId = getCardType(PaymentDetail.AccountNumberMasked);
+    PaymentDetail.CreditCardTypeValueId = getCardType(
+      PaymentDetail.AccountNumberMasked
+    );
   }
 
   let CampusId;
@@ -103,10 +119,12 @@ export default (response, gateway, person) => {
     }
     try {
       CampusId = Number(
-        (find(transaction.merchant_defined_field, { id: "2" }))._,
+        find(transaction.merchant_defined_field, { id: "2" })._
       );
     } catch (e) {
-      console.warn(`Cannot find campus in NMI for ${transaction.transaction_id}`);
+      console.warn(
+        `Cannot find campus in NMI for ${transaction.transaction_id}`
+      );
     }
   }
 
@@ -130,7 +148,8 @@ export default (response, gateway, person) => {
 
   const ScheduledTransaction = {};
   if (transaction.original_transaction_id) {
-    ScheduledTransaction.GatewayScheduleId = transaction.original_transaction_id;
+    ScheduledTransaction.GatewayScheduleId =
+      transaction.original_transaction_id;
   }
 
   return {

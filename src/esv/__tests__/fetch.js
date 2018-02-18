@@ -4,7 +4,7 @@ import casual from "casual";
 
 import { ESVFetchConnector, connect } from "../fetch";
 
-describe('ESV', () => {
+describe("ESV", () => {
   it("`connect` should fail without any env vars", async () => {
     delete process.env.ESV_KEY;
 
@@ -37,5 +37,3 @@ describe('ESV', () => {
     expect(testFetcher.getCount()).toEqual(2);
   });
 });
-
-

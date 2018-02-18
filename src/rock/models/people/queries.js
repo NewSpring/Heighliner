@@ -1,4 +1,3 @@
-
 export default [
   "people(email: String): [Person]",
 

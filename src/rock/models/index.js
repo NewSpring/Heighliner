@@ -22,7 +22,9 @@ export function createTables() {
   for (const table in tables) {
     try {
       createdTables = merge(createdTables, tables[table].connect());
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   for (const table in tables) {

@@ -44,7 +44,7 @@ export default {
     saveDeviceRegistrationId: (
       _,
       { registrationId, uuid },
-      { models, person },
+      { models, person }
     ) => {
       if (!person) {
         return {
@@ -85,7 +85,7 @@ export default {
     phoneNumbers: (
       { Id },
       _,
-      { models }, // tslint:disable-line
+      { models } // tslint:disable-line
     ) => models.Person.getPhoneNumbersFromId(Id),
     photo: ({ PhotoId }, _, { models }) => {
       if (!PhotoId) {

@@ -31,7 +31,7 @@ export const safeTrimArray = (skip, limit, arr, emptyRet) => {
   */
   const trimmed = arr
     .slice(skip ? skip : 0)
-    .slice(0, limit ? limit > arr.length ? arr.length : limit : null);
+    .slice(0, limit ? (limit > arr.length ? arr.length : limit) : null);
 
   if (!trimmed || !trimmed.length) return emptyRet;
   return trimmed;

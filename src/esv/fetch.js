@@ -1,4 +1,3 @@
-
 import fetch from "isomorphic-fetch";
 
 export function connect() {
@@ -26,7 +25,10 @@ export class ESVFetchConnector {
 
     return fetch(request, options)
       .then(x => x.text())
-      .then(x => { console.timeEnd(label); return x; });
+      .then(x => {
+        console.timeEnd(label);
+        return x;
+      });
   }
 
   getRequest(query) {
@@ -44,5 +46,4 @@ export class ESVFetchConnector {
     this.count++;
     return this.count;
   }
-
 }

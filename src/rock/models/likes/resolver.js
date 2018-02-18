@@ -1,4 +1,3 @@
-
 const MutationReponseResolver = {
   error: ({ error }) => error,
   success: ({ success, error }) => success || !error,
@@ -9,8 +8,12 @@ export default {
   Query: {
     recentlyLiked(_, { limit, skip, cache }, { models, user }) {
       const userId = user ? user._id : null;
-      return models.Like.getRecentlyLiked({ limit, skip, cache }, userId, models.Node);
-    }
+      return models.Like.getRecentlyLiked(
+        { limit, skip, cache },
+        userId,
+        models.Node
+      );
+    },
   },
   Mutation: {
     toggleLike(_, { nodeId }, { models, user }) {
@@ -22,5 +25,5 @@ export default {
   LikesMutationResponse: {
     ...MutationReponseResolver,
     like: ({ like }) => like,
-  }
+  },
 };

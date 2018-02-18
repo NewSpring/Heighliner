@@ -160,7 +160,9 @@ describe("Person", () => {
 
   it("gets person groups from cache lookup", async () => {
     await personModel.getGroups(12, 34);
-    expect(mockedCache.get.mock.calls[0][0]).toEqual("12:GroupMemberId:34:GroupTypes");
+    expect(mockedCache.get.mock.calls[0][0]).toEqual(
+      "12:GroupMemberId:34:GroupTypes"
+    );
     expect(typeof mockedCache.get.mock.calls[0][1]).toEqual("function");
   });
 
@@ -169,7 +171,7 @@ describe("Person", () => {
       await personModel.getIP(123, personArgs);
       expect(PersonTable.fetch).toHaveBeenCalledWith(
         "GET",
-        "GetImpersonationParameter/?personId=123&expireDateTime=09%2F03%2F2037&usageLimit=1&pageId=100",
+        "GetImpersonationParameter/?personId=123&expireDateTime=09%2F03%2F2037&usageLimit=1&pageId=100"
       );
     });
   });

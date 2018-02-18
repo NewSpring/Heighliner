@@ -1,4 +1,3 @@
-
 import { createGlobalId } from "../node/model";
 
 export const defaultCache = {
@@ -19,6 +18,4 @@ export const resolvers = {
   },
 };
 
-export const mutations = [
-  "cache(id: ID!, type: String): Node",
-];
+export const mutations = ["cache(id: ID!, type: String): Node"];

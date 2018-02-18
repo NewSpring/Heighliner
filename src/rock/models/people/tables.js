@@ -81,11 +81,23 @@ export function connect() {
   };
 }
 
-export function bind({ Person, PersonAlias, PhoneNumber, PersonalDevice, Group }) {
-  PersonAlias.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
+export function bind({
+  Person,
+  PersonAlias,
+  PhoneNumber,
+  PersonalDevice,
+  Group,
+}) {
+  PersonAlias.model.belongsTo(Person.model, {
+    foreignKey: "PersonId",
+    targetKey: "Id",
+  });
   Person.model.hasOne(PersonAlias.model, { foreignKey: "PersonId" });
 
-  PhoneNumber.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
+  PhoneNumber.model.belongsTo(Person.model, {
+    foreignKey: "PersonId",
+    targetKey: "Id",
+  });
   PersonalDevice.model.belongsTo(PersonAlias.model, {
     foreignKey: "PersonAliasId",
     targetKey: "Id",

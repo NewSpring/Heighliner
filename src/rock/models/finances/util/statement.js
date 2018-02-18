@@ -11,7 +11,7 @@ import ReactDOMServer from "react-dom/server";
 import pdf from "html-pdf";
 import uuid from "node-uuid";
 
-export const generatePDF = (component) => {
+export const generatePDF = component => {
   const html = ReactDOMServer.renderToStaticMarkup(component);
   return new Promise((r, f) => {
     // XXX James says this isn't really worth mocking independent parts
@@ -35,7 +35,8 @@ export const generatePDF = (component) => {
   });
 };
 
-export const formatMoney = amount => `$${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+export const formatMoney = amount =>
+  `$${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
 
 export const Statement = ({ transactions, person, home, total }) => (
   <html>
@@ -215,21 +216,26 @@ export const Statement = ({ transactions, person, home, total }) => (
           </p>
 
           <p id="verse">
-            Malachi 3:10 "Bring the whole tithe into the storehouse, that there may be food in my
-            house. Test me in this,' says the LORD Almighty, 'and see if I will not throw open the
-            floodgates of heaven and pour out so much blessing that you will not have room enough
-            for it."
+            Malachi 3:10 "Bring the whole tithe into the storehouse, that there
+            may be food in my house. Test me in this,' says the LORD Almighty,
+            'and see if I will not throw open the floodgates of heaven and pour
+            out so much blessing that you will not have room enough for it."
           </p>
         </div>
 
         <table className="soft" style={{ width: "100%" }} id="statement-table">
           <tbody>
             <tr>
-              <th className="type" style={{ fontFamily: "Helvetica", fontWeight: 700 }}>
+              <th
+                className="type"
+                style={{ fontFamily: "Helvetica", fontWeight: 700 }}
+              >
                 Account
               </th>
               <th style={{ fontFamily: "Helvetica", fontWeight: 700 }}>Date</th>
-              <th style={{ fontFamily: "Helvetica", fontWeight: 700 }}>Amount</th>
+              <th style={{ fontFamily: "Helvetica", fontWeight: 700 }}>
+                Amount
+              </th>
             </tr>
             {transactions.map((transaction, key) => (
               <tr key={key}>
@@ -243,7 +249,10 @@ export const Statement = ({ transactions, person, home, total }) => (
                 Total
               </td>
               <td />
-              <td className="soft-ends total-amount" style={{ fontFamily: "Helvetica" }}>
+              <td
+                className="soft-ends total-amount"
+                style={{ fontFamily: "Helvetica" }}
+              >
                 {formatMoney(total)}
               </td>
             </tr>
@@ -251,9 +260,9 @@ export const Statement = ({ transactions, person, home, total }) => (
         </table>
 
         <p className="footer-text soft">
-          Thank you for your continued support. No goods or services were received in return for
-          these contributions. If you have any questions or concerns, please contact us at
-          giving@newspring.cc or 864-965-9990.
+          Thank you for your continued support. No goods or services were
+          received in return for these contributions. If you have any questions
+          or concerns, please contact us at giving@newspring.cc or 864-965-9990.
         </p>
       </div>
     </body>

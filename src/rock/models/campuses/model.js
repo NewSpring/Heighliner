@@ -19,12 +19,16 @@ export class Campus extends Rock {
 
   async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
-    return this.cache.get(globalId, () => CampusTable.findOne({ where: { Id: id }}));
+    return this.cache.get(globalId, () =>
+      CampusTable.findOne({ where: { Id: id } })
+    );
   }
 
   async findByLocationId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(`${id}`, "Location");
-    return this.cache.get(globalId, () => LocationTable.findOne({ where: { Id: id }}));
+    return this.cache.get(globalId, () =>
+      LocationTable.findOne({ where: { Id: id } })
+    );
   }
 
   // async findByPersonId(id) {
@@ -36,18 +40,16 @@ export class Campus extends Rock {
     for (const key in query) {
       if (!query[key]) delete query[key];
     }
-    return this.cache.get(this.cache.encode(query), () => CampusTable.find({
-        where: query,
-        attributes: ["Id"],
-      })
-    ,)
+    return this.cache
+      .get(this.cache.encode(query), () =>
+        CampusTable.find({
+          where: query,
+          attributes: ["Id"],
+        })
+      )
       .then(this.getFromIds.bind(this))
-      .then((x) => x.filter(y => y.Name !== "Central"))
-      ;
-
+      .then(x => x.filter(y => y.Name !== "Central"));
   }
-
-
 }
 
 export default {

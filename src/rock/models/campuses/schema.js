@@ -1,5 +1,5 @@
-
-export default [`
+export default [
+  `
   type Location implements Node {
     id: ID!
     name: String
@@ -25,4 +25,5 @@ export default [`
     locationId: ID
     location: Location
   }
-`];
+`,
+];

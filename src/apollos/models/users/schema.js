@@ -1,5 +1,5 @@
-
-export default [`
+export default [
+  `
   type Hashes {
     when: String!
     hashedToken: ID!
@@ -31,4 +31,5 @@ export default [`
     services: UserService
     emails: [UserEmail]
   }
-`];
+`,
+];

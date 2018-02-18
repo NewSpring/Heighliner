@@ -82,10 +82,7 @@ it("`addResizings` should return 1 image if 1 image and 1 size", () => {
 });
 
 it("`addResizings` should return 4 images if 2 images and 2 sizes", () => {
-  const images = [
-    createSampleImage(),
-    createSampleImage(),
-  ];
+  const images = [createSampleImage(), createSampleImage()];
   const options = {
     sizes: ["medium", "large"],
     ratios: [],
@@ -96,10 +93,7 @@ it("`addResizings` should return 4 images if 2 images and 2 sizes", () => {
 });
 
 it("`addResizings` should return only the ratio specified", () => {
-  const images = [
-    createSampleImage(),
-    createSampleImage(),
-  ];
+  const images = [createSampleImage(), createSampleImage()];
   const options = {
     sizes: null,
     ratios: ["2:1"],
@@ -109,7 +103,7 @@ it("`addResizings` should return only the ratio specified", () => {
 
   const results = addResizings(images, options);
   expect(results.length).toEqual(5);
-  results.map((image) => {
+  results.map(image => {
     expect(image.fileLabel).toEqual("2:1");
   });
 });

@@ -1,4 +1,3 @@
-
 import uuid from "node-uuid";
 
 import { createGlobalId } from "../../../../util";
@@ -17,7 +16,9 @@ export default class SavedPayment extends Rock {
 
   async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(id, this.__type);
-    return this.cache.get(globalId, () => SavedPaymentTable.find({ where: { Id: id }}));
+    return this.cache.get(globalId, () =>
+      SavedPaymentTable.find({ where: { Id: id } })
+    );
   }
 
   async delFromCache(id) {
@@ -25,7 +26,6 @@ export default class SavedPayment extends Rock {
   }
 
   async charge(token, gatewayDetails) {
-
     const complete = {
       "complete-action": {
         "api-key": gatewayDetails.SecurityKey,
@@ -39,8 +39,11 @@ export default class SavedPayment extends Rock {
   async validate({ token }, gatewayDetails) {
     if (!token) throw new Error("No token provided");
 
-    return this.charge(token, gatewayDetails)
-      .then(response => ({ code: response["result-code"], success: true, error: null }))
+    return this.charge(token, gatewayDetails).then(response => ({
+      code: response["result-code"],
+      success: true,
+      error: null,
+    }));
   }
 
   async save({ token, name, person }, gatewayDetails) {
@@ -74,19 +77,19 @@ export default class SavedPayment extends Rock {
           FinancialGatewayId: gatewayDetails.Id,
           CreatedByPersonAliasId: person.PrimaryAliasId,
           ModifiedByPersonAliasId: person.PrimaryAliasId,
-        }
+        };
 
         return FinancialPaymentDetailTable.post(FinancialPaymentDetail)
-          .then((response) => {
+          .then(response => {
             FinancialPersonSavedAccounts.FinancialPaymentDetailId = response;
-            return SavedPaymentTable.post(FinancialPersonSavedAccounts)
+            return SavedPaymentTable.post(FinancialPersonSavedAccounts);
           })
           .then(savedPaymentId => {
             this.delFromCache(savedPaymentId);
-            return { savedPaymentId }
+            return { savedPaymentId };
           });
       })
-      .catch(e => ({ error: e.message, code: e.code }));;
+      .catch(e => ({ error: e.message, code: e.code }));
   }
 
   async removeFromEntityId(entityId, gatewayDetails) {
@@ -96,7 +99,8 @@ export default class SavedPayment extends Rock {
     let existing = await this.getFromId(entityId);
     if (existing && existing.length) existing = existing[0];
 
-    if (!existing || !existing.Id) return Promise.resolve({ error: "No saved account found" });
+    if (!existing || !existing.Id)
+      return Promise.resolve({ error: "No saved account found" });
 
     return SavedPaymentTable.delete(existing.Id)
       .then(response => {
@@ -106,14 +110,17 @@ export default class SavedPayment extends Rock {
         // clear cache
         this.cache.del(globalId);
 
-        return nmi({
-          "delete-customer": {
-            "api-key": gatewayDetails.SecurityKey,
-            "customer-vault-id": existing.ReferenceNumber,
+        return nmi(
+          {
+            "delete-customer": {
+              "api-key": gatewayDetails.SecurityKey,
+              "customer-vault-id": existing.ReferenceNumber,
+            },
           },
-        }, gatewayDetails);
+          gatewayDetails
+        );
       })
-      .then(x => ({ ...x, ...{ Id: entityId }}))
+      .then(x => ({ ...x, ...{ Id: entityId } }))
       .catch(e => ({ error: e.message, code: e.code }));
   }
 
@@ -122,22 +129,24 @@ export default class SavedPayment extends Rock {
     await SavedPaymentTable.patch(entityId, { Name: name });
     // clear cache
     this.cache.del(globalId);
-    return SavedPaymentTable.findOne({ where: { Id: entityId }});
+    return SavedPaymentTable.findOne({ where: { Id: entityId } });
   }
 
   async findByPersonAlias(aliases, { limit, offset }, { cache }) {
     const query = { aliases, limit, offset };
-    return await this.cache.get(this.cache.encode(query), () => SavedPaymentTable.find({
-        where: { PersonAliasId: { $in: aliases }},
-        order: [
-          ["ModifiedDateTime", "ASC"],
-        ],
-        attributes: ["Id"],
-        limit,
-        offset,
-      })
-    , { cache })
+    return await this.cache
+      .get(
+        this.cache.encode(query),
+        () =>
+          SavedPaymentTable.find({
+            where: { PersonAliasId: { $in: aliases } },
+            order: [["ModifiedDateTime", "ASC"]],
+            attributes: ["Id"],
+            limit,
+            offset,
+          }),
+        { cache }
+      )
       .then(this.getFromIds.bind(this));
-
   }
 }

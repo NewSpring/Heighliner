@@ -1,4 +1,3 @@
-
 export default {
   Query: {
     scripture(_, { query }, { models }) {

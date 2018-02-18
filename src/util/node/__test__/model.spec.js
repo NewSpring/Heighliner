@@ -1,4 +1,3 @@
-
 import casual from "casual";
 import Node, { createGlobalId, parseGlobalId } from "../model";
 
@@ -24,7 +23,6 @@ it("`parseGlobalId` should take a global id and return the type and id", () => {
 
   expect(parseGlobalId(globalId)).toEqual({ __type, id });
 });
-
 
 it("Node class should parse an encoded id to get the type to resolve", async () => {
   const id = casual.word;

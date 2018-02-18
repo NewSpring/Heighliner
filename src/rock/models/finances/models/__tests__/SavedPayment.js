@@ -1,4 +1,3 @@
-
 import SavedPayment from "../SavedPayment";
 import { SavedPayment as SavedPaymentTable } from "../../tables";
 import nmi from "../../util/nmi";
@@ -38,9 +37,11 @@ describe("removing a saved payment", () => {
     const id = 1;
     const Local = new SavedPayment({ cache: mockedCache });
     SavedPaymentTable.find.mockReturnValueOnce([{ Id: id }]);
-    SavedPaymentTable.delete.mockReturnValueOnce(Promise.resolve({
-      status: 504,
-    }));
+    SavedPaymentTable.delete.mockReturnValueOnce(
+      Promise.resolve({
+        status: 504,
+      })
+    );
     const result = await Local.removeFromEntityId(1, {});
 
     expect(SavedPaymentTable.delete).toBeCalledWith(id);
@@ -51,9 +52,11 @@ describe("removing a saved payment", () => {
     const id = 1;
     const Local = new SavedPayment({ cache: mockedCache });
     SavedPaymentTable.find.mockReturnValueOnce([{ Id: id }]);
-    SavedPaymentTable.delete.mockReturnValueOnce(Promise.resolve({
-      status: 200,
-    }));
+    SavedPaymentTable.delete.mockReturnValueOnce(
+      Promise.resolve({
+        status: 200,
+      })
+    );
     const result = await Local.removeFromEntityId(1, {});
 
     expect(SavedPaymentTable.delete).toBeCalledWith(id);
@@ -63,23 +66,30 @@ describe("removing a saved payment", () => {
   it("calls the nmi method with the passed security key and the code of the payment", async () => {
     const id = 1;
     const Local = new SavedPayment({ cache: mockedCache });
-    SavedPaymentTable.find.mockReturnValueOnce([{
-      Id: id,
-      ReferenceNumber: "10",
-    }]);
-    SavedPaymentTable.delete.mockReturnValueOnce(Promise.resolve({
-      status: 200,
-    }));
+    SavedPaymentTable.find.mockReturnValueOnce([
+      {
+        Id: id,
+        ReferenceNumber: "10",
+      },
+    ]);
+    SavedPaymentTable.delete.mockReturnValueOnce(
+      Promise.resolve({
+        status: 200,
+      })
+    );
 
     nmi.mockReturnValueOnce(Promise.resolve({ success: true }));
     const result = await Local.removeFromEntityId(1, { SecurityKey: "safe" });
 
-    expect(nmi).toBeCalledWith({
-      "delete-customer": {
-        "api-key": "safe",
-        "customer-vault-id": "10",
+    expect(nmi).toBeCalledWith(
+      {
+        "delete-customer": {
+          "api-key": "safe",
+          "customer-vault-id": "10",
+        },
       },
-    }, { SecurityKey: "safe" });
+      { SecurityKey: "safe" }
+    );
 
     expect(result).toEqual({ success: true, Id: 1 });
   });
@@ -87,15 +97,19 @@ describe("removing a saved payment", () => {
   it("catches errors from NMI and reports it back", async () => {
     const id = 1;
     const Local = new SavedPayment({ cache: mockedCache });
-    SavedPaymentTable.find.mockReturnValueOnce([{
-      Id: id,
-      ReferenceNumber: "10",
-    }]);
+    SavedPaymentTable.find.mockReturnValueOnce([
+      {
+        Id: id,
+        ReferenceNumber: "10",
+      },
+    ]);
 
-    SavedPaymentTable.delete.mockReturnValueOnce(Promise.resolve({
-      status: 200,
-      Id: 1,
-    }));
+    SavedPaymentTable.delete.mockReturnValueOnce(
+      Promise.resolve({
+        status: 200,
+        Id: 1,
+      })
+    );
 
     nmi.mockReturnValueOnce(Promise.reject(new Error("it failed")));
     const result = await Local.removeFromEntityId(1, { SecurityKey: "safe" });
@@ -111,12 +125,15 @@ describe("charging NMI for a saved payment", () => {
 
     const result = await Local.charge("token", { SecurityKey: "safe" });
 
-    expect(nmi).toBeCalledWith({
-      "complete-action": {
-        "api-key": "safe",
-        "token-id": "token",
+    expect(nmi).toBeCalledWith(
+      {
+        "complete-action": {
+          "api-key": "safe",
+          "token-id": "token",
+        },
       },
-    }, { SecurityKey: "safe" });
+      { SecurityKey: "safe" }
+    );
 
     expect(result).toEqual({ success: true });
   });
@@ -135,10 +152,15 @@ describe("validate", () => {
 
   it("calls charge with the needed data", async () => {
     const Local = new SavedPayment({ cache: mockedCache });
-    Local.charge = jest.fn(() => Promise.resolve({
-      "result-code": "1",
-    }));
-    const result = await Local.validate({ token: "token" }, { SecurityKey: "foo" });
+    Local.charge = jest.fn(() =>
+      Promise.resolve({
+        "result-code": "1",
+      })
+    );
+    const result = await Local.validate(
+      { token: "token" },
+      { SecurityKey: "foo" }
+    );
     expect(result).toEqual({
       code: "1",
       success: true,

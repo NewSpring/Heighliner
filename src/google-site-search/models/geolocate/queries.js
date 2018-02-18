@@ -1,4 +1,1 @@
-
-export default [
-  "geolocate(origin: String, destinations: String): GGeoLocate",
-];
+export default ["geolocate(origin: String, destinations: String): GGeoLocate"];

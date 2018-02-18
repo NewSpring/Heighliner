@@ -5,7 +5,7 @@ export default {
     userFeed: async (
       _,
       { filters, limit, skip, status, cache, options = "{}" },
-      { models, person, user },
+      { models, person, user }
     ) => {
       if (!filters) return null;
 
@@ -18,7 +18,7 @@ export default {
 
         channels = channels
           .map(x => x.toLowerCase())
-          .map((x) => {
+          .map(x => {
             if (x === "series") return ["series_newspring"];
             if (x === "music") return ["newspring_albums"];
             if (x === "devotionals") return ["study_entries", "devotionals"];
@@ -30,9 +30,10 @@ export default {
         const showsNews = flatten(channels).includes("news");
 
         // get user's campus to filter news by
-        let userCampus = person && showsNews
-          ? await models.Person.getCampusFromId(person.Id, { cache })
-          : null;
+        let userCampus =
+          person && showsNews
+            ? await models.Person.getCampusFromId(person.Id, { cache })
+            : null;
 
         let content = await models.Content.findByCampusName(
           {
@@ -42,7 +43,7 @@ export default {
             status,
           },
           userCampus ? userCampus.Name : null,
-          true,
+          true
         );
 
         filterQueries.push(content);
@@ -53,28 +54,35 @@ export default {
           models.Transaction.findByPersonAlias(
             person.aliases,
             { limit: 3, offset: 0 },
-            { cache: null },
-          ),
+            { cache: null }
+          )
         );
 
         filterQueries.push(
           models.SavedPayment.findByPersonAlias(
             person.aliases,
             { limit: 3, offset: 0 },
-            { cache: null },
-          ),
+            { cache: null }
+          )
         );
       }
 
       if (filters.includes("LIKES") && user) {
-        const likedContent = await models.Like.getLikedContent(user._id, models.Node);
-        const reversed = Array.isArray(likedContent) ? likedContent.reverse() : likedContent;
+        const likedContent = await models.Like.getLikedContent(
+          user._id,
+          models.Node
+        );
+        const reversed = Array.isArray(likedContent)
+          ? likedContent.reverse()
+          : likedContent;
         filterQueries.push(reversed);
       }
 
       if (!filterQueries.length) return null;
 
-      return Promise.all(filterQueries).then(flatten).then(x => x.filter(y => Boolean(y)));
+      return Promise.all(filterQueries)
+        .then(flatten)
+        .then(x => x.filter(y => Boolean(y)));
     },
   },
 };

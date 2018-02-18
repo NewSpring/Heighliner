@@ -1,5 +1,5 @@
-
-export default [`
+export default [
+  `
   interface Node {
     id: ID!
   }
@@ -9,4 +9,5 @@ export default [`
     success: Boolean!
     code: Int
   }
-`];
+`,
+];

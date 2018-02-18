@@ -171,28 +171,43 @@ export {
 
 export function connect() {
   Transaction = new MSSQLConnector("FinancialTransaction", transactionSchema);
-  TransactionRefund = new MSSQLConnector("FinancialTransactionRefund", transactionRefundSchema);
-  TransactionDetail = new MSSQLConnector("FinancialTransactionDetail", transactionDetailSchema);
+  TransactionRefund = new MSSQLConnector(
+    "FinancialTransactionRefund",
+    transactionRefundSchema
+  );
+  TransactionDetail = new MSSQLConnector(
+    "FinancialTransactionDetail",
+    transactionDetailSchema
+  );
   ScheduledTransaction = new MSSQLConnector(
     "FinancialScheduledTransaction",
-    scheduledTransactionSchema,
+    scheduledTransactionSchema
   );
   ScheduledTransactionDetail = new MSSQLConnector(
     "FinancialScheduledTransactionDetail",
-    scheduledTransactionDetailSchema,
+    scheduledTransactionDetailSchema
   );
-  SavedPayment = new MSSQLConnector("FinancialPersonSavedAccount", savedPaymentSchema);
-  FinancialAccount = new MSSQLConnector("FinancialAccount", financialAccountSchema);
+  SavedPayment = new MSSQLConnector(
+    "FinancialPersonSavedAccount",
+    savedPaymentSchema
+  );
+  FinancialAccount = new MSSQLConnector(
+    "FinancialAccount",
+    financialAccountSchema
+  );
   FinancialPaymentDetail = new MSSQLConnector(
     "FinancialPaymentDetail",
-    financialPaymentDetailSchema,
+    financialPaymentDetailSchema
   );
-  FinancialGateway = new MSSQLConnector("FinancialGateway", financialGatewaySchema);
+  FinancialGateway = new MSSQLConnector(
+    "FinancialGateway",
+    financialGatewaySchema
+  );
   FinancialBatch = new MSSQLConnector(
     "FinancialBatch",
     financialBatchSchema,
     {},
-    "FinancialBatches",
+    "FinancialBatches"
   );
 
   return {
@@ -258,7 +273,9 @@ export function bind({
     targetKey: "Id",
   });
 
-  Transaction.model.hasMany(TransactionDetail.model, { foreignKey: "TransactionId" });
+  Transaction.model.hasMany(TransactionDetail.model, {
+    foreignKey: "TransactionId",
+  });
   TransactionDetail.model.belongsTo(Transaction.model, {
     foreignKey: "Id",
     targetKey: "TransactionId",

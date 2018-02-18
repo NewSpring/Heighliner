@@ -1,10 +1,9 @@
-
 import mongoose from "mongoose";
 
 import { MongoConnector, connect } from "../mongo";
 
 describe("connect", () => {
-  it("\'connect\' should allow for a connection status to be returned", async () => {
+  it("'connect' should allow for a connection status to be returned", async () => {
     const originalConnect = mongoose.connect;
     mongoose.connect = jest.fn((url, opts, cb) => cb(new Error()));
     const status = await connect();
@@ -12,7 +11,6 @@ describe("connect", () => {
     mongoose.connect = originalConnect;
   });
 });
-
 
 describe("MongoConnector", () => {
   let testModel;
@@ -32,7 +30,6 @@ describe("MongoConnector", () => {
   afterEach(() => {
     mongoose.connect = originalConnect;
   });
-
 
   it(" should expose the db connection", () => {
     expect(testModel.db).toBeTruthy();

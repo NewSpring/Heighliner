@@ -1,4 +1,3 @@
-
 import Raven from "raven";
 
 let sentry;
@@ -31,14 +30,13 @@ const report = ({ data, attemptsMade = 1 }, error) => {
       icon_emoji: ":feelsbulbman:",
       text: `ATTENTION: ${error.message}`,
       channel: "systems",
-    }
+    };
 
     fetch(process.env.SLACK, {
       method: "POST",
       body: JSON.stringify(message),
     });
-
   }
-}
+};
 
 export default report;

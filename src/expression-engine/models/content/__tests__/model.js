@@ -53,7 +53,9 @@ describe("getLiveStream", () => {
   });
 
   it("should call getIsLive", async () => {
-    Model.getIsLive = jest.fn(() => Promise.resolve({ isLive: true, isFuse: false }));
+    Model.getIsLive = jest.fn(() =>
+      Promise.resolve({ isLive: true, isFuse: false })
+    );
     await Model.getLiveStream();
     expect(Model.getIsLive).toBeCalled();
   });
@@ -135,7 +137,7 @@ describe("findByUrlTitle", () => {
     await Model.findByUrlTitle("articles", "harambe");
     expect(Model.cache.encode).toBeCalledWith(
       { channel: "articles", urlTitle: "harambe" },
-      "Content",
+      "Content"
     );
   });
 
@@ -177,7 +179,10 @@ describe("findByCampusName", () => {
     expect(Model.cache.get).toBeCalled();
     expect(Model.cache.get.mock.calls[0][0]).toEqual("12345");
     expect(typeof Model.cache.get.mock.calls[0][1]).toEqual("function");
-    expect(Model.cache.get.mock.calls[0][2]).toEqual({ ttl: 3600, cache: false });
+    expect(Model.cache.get.mock.calls[0][2]).toEqual({
+      ttl: 3600,
+      cache: false,
+    });
   });
 
   it("should call find with proper where value for logged out users", async () => {
@@ -186,7 +191,9 @@ describe("findByCampusName", () => {
     // force cache to call second param (find)
     Model.cache.get.mockImplementationOnce((a, b) => b());
     const res = await Model.findByCampusName({}, null, true, null);
-    expect(ChannelData.find.mock.calls[0][0].where.field_id_651).toEqual({ $or: ["", null] });
+    expect(ChannelData.find.mock.calls[0][0].where.field_id_651).toEqual({
+      $or: ["", null],
+    });
   });
 
   it("should call find with proper where value for logged in users", async () => {
@@ -194,7 +201,12 @@ describe("findByCampusName", () => {
     ChannelData.find.mockReturnValueOnce(Promise.resolve([]));
     // force cache to call second param (find)
     Model.cache.get.mockImplementationOnce((a, b) => b());
-    const res = await Model.findByCampusName({}, "Palace de Harambe", true, null);
+    const res = await Model.findByCampusName(
+      {},
+      "Palace de Harambe",
+      true,
+      null
+    );
     expect(ChannelData.find.mock.calls[0][0].where.field_id_651).toEqual({
       $or: [{ $like: "%Palace de Harambe" }, "", null],
     });
@@ -205,7 +217,12 @@ describe("findByCampusName", () => {
     ChannelData.find.mockReturnValueOnce(Promise.resolve([]));
     // force cache to call second param (find)
     Model.cache.get.mockImplementationOnce((a, b) => b());
-    const res = await Model.findByCampusName({}, "Palace de Harambe", false, null);
+    const res = await Model.findByCampusName(
+      {},
+      "Palace de Harambe",
+      false,
+      null
+    );
     expect(ChannelData.find.mock.calls[0][0].where.field_id_651).toEqual({
       $like: "%Palace de Harambe",
     });
@@ -216,7 +233,12 @@ describe("findByCampusName", () => {
     ChannelData.find.mockReturnValueOnce(Promise.resolve([]));
     // force cache to call second param (find)
     Model.cache.get.mockImplementationOnce((a, b) => b());
-    const res = await Model.findByCampusName({}, "Palace de Harambe", false, null);
+    const res = await Model.findByCampusName(
+      {},
+      "Palace de Harambe",
+      false,
+      null
+    );
     expect(ChannelData.find.mock.calls[0][0].include[0].where).toEqual({});
   });
 
@@ -225,8 +247,15 @@ describe("findByCampusName", () => {
     ChannelData.find.mockReturnValueOnce(Promise.resolve([]));
     // force cache to call second param (find)
     Model.cache.get.mockImplementationOnce((a, b) => b());
-    const res = await Model.findByCampusName({}, "Palace de Harambe", false, null);
-    expect(ChannelData.find.mock.calls[0][0].include[1].where).toMatchSnapshot();
+    const res = await Model.findByCampusName(
+      {},
+      "Palace de Harambe",
+      false,
+      null
+    );
+    expect(
+      ChannelData.find.mock.calls[0][0].include[1].where
+    ).toMatchSnapshot();
   });
 
   it("should pass limit", async () => {
@@ -238,7 +267,7 @@ describe("findByCampusName", () => {
       { limit: 5, offset: 10 },
       "Palace de Harambe",
       false,
-      null,
+      null
     );
     expect(ChannelData.find.mock.calls[0][0].limit).toEqual(5);
   });
@@ -252,7 +281,7 @@ describe("findByCampusName", () => {
       { limit: 5, offset: 10 },
       "Palace de Harambe",
       false,
-      null,
+      null
     );
     expect(ChannelData.find.mock.calls[0][0].offset).toEqual(10);
   });

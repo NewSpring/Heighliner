@@ -1,10 +1,12 @@
-
 import moment from "moment";
 import uuid from "node-uuid";
 import { isNil, omitBy } from "lodash";
 import { getCardType, getCardName } from "./translate-nmi";
 
-export default ({ response, person = {}, accountName, origin, scheduleId }, gatewayDetails) => {
+export default (
+  { response, person = {}, accountName, origin, scheduleId },
+  gatewayDetails
+) => {
   let FinancialPaymentDetail = {};
   let FinancialPaymentValue;
   if (response.billing["cc-number"]) {
@@ -34,17 +36,23 @@ export default ({ response, person = {}, accountName, origin, scheduleId }, gate
     TransactionDateTime: moment().subtract(5, "hours"),
   };
 
-  const Schedule = omitBy({
-    Id: scheduleId,
-    GatewayScheduleId: response["subscription-id"],
-    TransactionFrequencyValue: response.plan,
-    FinancialGatewayId: gatewayDetails.Id,
-    IsActive: true,
-    Guid: uuid.v4(),
-  }, isNil);
+  const Schedule = omitBy(
+    {
+      Id: scheduleId,
+      GatewayScheduleId: response["subscription-id"],
+      TransactionFrequencyValue: response.plan,
+      FinancialGatewayId: gatewayDetails.Id,
+      IsActive: true,
+      Guid: uuid.v4(),
+    },
+    isNil
+  );
 
   if (response["merchant-defined-field-3"]) {
-    const date = `${moment(response["merchant-defined-field-3"], "YYYYMMDD").toISOString()}`;
+    const date = `${moment(
+      response["merchant-defined-field-3"],
+      "YYYYMMDD"
+    ).toISOString()}`;
     Schedule.StartDate = date;
     Schedule.NextPaymentDate = date;
   }
@@ -56,33 +64,42 @@ export default ({ response, person = {}, accountName, origin, scheduleId }, gate
       Id: person.Id,
     };
   } else {
-    Person = omitBy({
-      FirstName: response.billing["first-name"],
-      LastName: response.billing["last-name"],
-      Email: response.billing.email,
-      Guid: uuid.v4(),
-      IsSystem: false,
-      Gender: 0,
-      ConnectionStatusValueId: 67, // Web Prospect
-      SystemNote: "Created from Apollos",
-    }, isNil);
+    Person = omitBy(
+      {
+        FirstName: response.billing["first-name"],
+        LastName: response.billing["last-name"],
+        Email: response.billing.email,
+        Guid: uuid.v4(),
+        IsSystem: false,
+        Gender: 0,
+        ConnectionStatusValueId: 67, // Web Prospect
+        SystemNote: "Created from Apollos",
+      },
+      isNil
+    );
   }
 
-  const Location = omitBy({
-    Street1: response.billing.address1,
-    Street2: response.billing.address2,
-    City: response.billing.city,
-    State: response.billing.state,
-    PostalCode: response.billing.postal,
-  }, isNil);
+  const Location = omitBy(
+    {
+      Street1: response.billing.address1,
+      Street2: response.billing.address2,
+      City: response.billing.city,
+      State: response.billing.state,
+      PostalCode: response.billing.postal,
+    },
+    isNil
+  );
 
-  const FinancialPersonSavedAccount = omitBy({
-    Name: accountName,
-    ReferenceNumber: response["customer-vault-id"],
-    TransactionCode: response["transaction-id"],
-    FinancialGatewayId: gatewayDetails.Id,
-    Guid: uuid.v4(),
-  }, isNil);
+  const FinancialPersonSavedAccount = omitBy(
+    {
+      Name: accountName,
+      ReferenceNumber: response["customer-vault-id"],
+      TransactionCode: response["transaction-id"],
+      FinancialGatewayId: gatewayDetails.Id,
+      Guid: uuid.v4(),
+    },
+    isNil
+  );
 
   // this is a schedule
   if (!response.product) {
@@ -109,12 +126,17 @@ export default ({ response, person = {}, accountName, origin, scheduleId }, gate
   const TransactionDetails = [];
   // eslint-disable-next-line
   for (const product of response.product) {
-    TransactionDetails.push(omitBy({
-      AccountId: Number(product["product-code"]),
-      AccountName: product.description,
-      Amount: Number(product["total-amount"]),
-      Guid: uuid.v4(),
-    }, isNil));
+    TransactionDetails.push(
+      omitBy(
+        {
+          AccountId: Number(product["product-code"]),
+          AccountName: product.description,
+          Amount: Number(product["total-amount"]),
+          Guid: uuid.v4(),
+        },
+        isNil
+      )
+    );
   }
 
   const Campus = {
