@@ -3,6 +3,7 @@ export default [
   type LiveFeed {
     live: Boolean!
     fuse: Boolean!
+    embedCode: String
   }
 
   # should this be a global type that implements Node?
@@ -21,6 +22,7 @@ export default [
   type ContentData {
     body: String
     description: String
+    ooyalaId: String
     wistiaId: String
     speaker: String
     isLight: Boolean
