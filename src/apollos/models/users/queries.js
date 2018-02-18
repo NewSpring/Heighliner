@@ -1,4 +1,1 @@
-
-export default [
-  "currentUser: User",
-];
+export default ["currentUser: User"];

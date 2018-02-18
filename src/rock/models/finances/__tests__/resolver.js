@@ -22,7 +22,7 @@ describe("Query", () => {
       resolver.Query.savedPayments(
         null,
         { limit: 3, cache: true, skip: 1 },
-        { models, person },
+        { models, person }
       );
       expect(models.SavedPayment.findByPersonAlias).toBeCalledWith(
         [22222],
@@ -30,7 +30,7 @@ describe("Query", () => {
           limit: 3,
           offset: 1,
         },
-        { cache: true },
+        { cache: true }
       );
     });
   });
@@ -59,7 +59,7 @@ describe("Query", () => {
           skip: 1,
           cache: true,
         },
-        { models, person },
+        { models, person }
       );
       expect(models.Transaction.findByGivingGroup).toBeCalledWith(
         {
@@ -69,7 +69,7 @@ describe("Query", () => {
           end: "01/16",
         },
         { limit: 3, offset: 1 },
-        { cache: true },
+        { cache: true }
       );
       expect(models.Transaction.findByPersonAlias).not.toBeCalled();
     });
@@ -96,13 +96,13 @@ describe("Query", () => {
           skip: 1,
           cache: true,
         },
-        { models, person },
+        { models, person }
       );
       expect(models.Transaction.findByGivingGroup).not.toBeCalled();
       expect(models.Transaction.findByPersonAlias).toBeCalledWith(
         [22222],
         { limit: 3, offset: 1 },
-        { cache: true },
+        { cache: true }
       );
     });
   });
@@ -122,12 +122,12 @@ describe("Query", () => {
       resolver.Query.scheduledTransactions(
         null,
         { limit: 3, cache: true, skip: 1, isActive: true },
-        { models, person },
+        { models, person }
       );
       expect(models.ScheduledTransaction.findByPersonAlias).toBeCalledWith(
         [22222],
         { limit: 3, offset: 1, isActive: true },
-        { cache: true },
+        { cache: true }
       );
     });
   });
@@ -146,7 +146,7 @@ describe("Query", () => {
           isActive: undefined,
           isPublic: undefined,
         },
-        { all: true },
+        { all: true }
       );
     });
 
@@ -160,7 +160,7 @@ describe("Query", () => {
       resolver.Query.accounts(
         null,
         { name: "Tesla", isActive: true, isPublic: true },
-        { models },
+        { models }
       );
       expect(models.FinancialAccount.find).toBeCalledWith(
         {
@@ -168,7 +168,7 @@ describe("Query", () => {
           IsActive: true,
           IsPublic: true,
         },
-        { all: undefined },
+        { all: undefined }
       );
     });
   });
@@ -183,7 +183,7 @@ describe("Query", () => {
       resolver.Query.accountFromCashTag(
         null,
         { cashTag: "$tesla" },
-        { models },
+        { models }
       );
       expect(models.FinancialAccount.find).toBeCalledWith({
         IsActive: true,
@@ -220,7 +220,7 @@ describe("Mutation", () => {
       await resolver.Mutation.cancelSavedPayment(
         null,
         { entityId: 1, gateway: "nmi" },
-        { models },
+        { models }
       );
       expect(models.Transaction.loadGatewayDetails).toBeCalledWith("nmi");
       expect(models.SavedPayment.removeFromEntityId).toBeCalledWith(1, {
@@ -252,16 +252,20 @@ describe("Mutation", () => {
             },
           },
           models,
-        },
+        }
       );
-      expect(models.Transaction.createOrder).toBeCalledWith({
-        data: { foo: true },
-        instant: true,
-        id: 1,
-        ip: "ip address",
-        requestUrl: "https://example.com/give/now",
-        origin: "https://example.com/",
-      }, { Id: 1 }, models);
+      expect(models.Transaction.createOrder).toBeCalledWith(
+        {
+          data: { foo: true },
+          instant: true,
+          id: 1,
+          ip: "ip address",
+          requestUrl: "https://example.com/give/now",
+          origin: "https://example.com/",
+        },
+        { Id: 1 },
+        models
+      );
     });
   });
   describe("validate", () => {
@@ -277,12 +281,12 @@ describe("Mutation", () => {
       await resolver.Mutation.validate(
         null,
         { token: "token", gateway: "nmi" },
-        { models },
+        { models }
       );
       expect(models.Transaction.loadGatewayDetails).toBeCalledWith("nmi");
       expect(models.SavedPayment.validate).toBeCalledWith(
         { token: "token" },
-        { nmi: true },
+        { nmi: true }
       );
     });
     it("gracefully handles errors", async () => {
@@ -298,12 +302,12 @@ describe("Mutation", () => {
       const result = await resolver.Mutation.validate(
         null,
         { token: "token", gateway: "nmi" },
-        { models },
+        { models }
       );
       expect(models.Transaction.loadGatewayDetails).toBeCalledWith("nmi");
       expect(models.SavedPayment.validate).toBeCalledWith(
         { token: "token" },
-        { nmi: true },
+        { nmi: true }
       );
       expect(result).toEqual({
         error: "failure",
@@ -334,7 +338,7 @@ describe("Mutation", () => {
               origin: "https://example.com",
             },
           },
-        },
+        }
       );
 
       expect(models.Transaction.completeOrder).not.toBeCalled();
@@ -360,10 +364,10 @@ describe("Mutation", () => {
             headers: {
               origin: "https://example.com",
               platform: "Native",
-              version: "over 9000"
+              version: "over 9000",
             },
           },
-        },
+        }
       );
 
       expect(models.Transaction.completeOrder).toBeCalledWith({
@@ -373,7 +377,7 @@ describe("Mutation", () => {
         origin: "https://example.com",
         scheduleId: 1,
         platform: "Native",
-        version: "over 9000"
+        version: "over 9000",
       });
     });
     it("passes args and context to the method", async () => {
@@ -397,7 +401,7 @@ describe("Mutation", () => {
               origin: "https://example.com",
             },
           },
-        },
+        }
       );
 
       expect(models.Transaction.completeOrder).toBeCalledWith({
@@ -427,7 +431,7 @@ describe("Mutation", () => {
       await resolver.Mutation.savePayment(
         null,
         { token: "token", gateway: "nmi", accountName: "visa" },
-        { models, person: { Id: 1 } },
+        { models, person: { Id: 1 } }
       );
       expect(models.Transaction.loadGatewayDetails).toBeCalledWith("nmi");
       expect(models.SavedPayment.save).toBeCalledWith(
@@ -436,7 +440,7 @@ describe("Mutation", () => {
           name: "visa",
           person: { Id: 1 },
         },
-        { nmi: true },
+        { nmi: true }
       );
     });
   });
@@ -453,7 +457,7 @@ describe("Mutation", () => {
       await resolver.Mutation.cancelSchedule(
         null,
         { entityId: 1, gateway: "nmi" },
-        { models },
+        { models }
       );
       expect(models.Transaction.loadGatewayDetails).toBeCalledWith("nmi");
       expect(models.ScheduledTransaction.cancelNMISchedule).toBeCalledWith(1, {
@@ -467,13 +471,14 @@ describe("Mutation", () => {
         },
         ScheduledTransaction: {
           cancelNMISchedule: jest.fn(() =>
-            Promise.reject(new Error("failure"))),
+            Promise.reject(new Error("failure"))
+          ),
         },
       };
       const result = await resolver.Mutation.cancelSchedule(
         null,
         { entityId: 1, gateway: "nmi" },
-        { models },
+        { models }
       );
       expect(models.Transaction.loadGatewayDetails).toBeCalledWith("nmi");
       expect(models.ScheduledTransaction.cancelNMISchedule).toBeCalledWith(1, {
@@ -494,7 +499,8 @@ describe("Mutation", () => {
       const models = {
         Transaction: {
           getStatement: jest.fn(() =>
-            Promise.resolve({ total: 0, transactions: [] })),
+            Promise.resolve({ total: 0, transactions: [] })
+          ),
         },
         Person: {
           getHomesFromId: jest.fn(() => Promise.resolve([1, 2])),
@@ -503,7 +509,7 @@ describe("Mutation", () => {
       await resolver.Mutation.transactionStatement(
         null,
         { people: [1, 2], start: "", end: "" },
-        { models, person },
+        { models, person }
       );
 
       // const defaultStart = moment().startOf("year");
@@ -527,17 +533,19 @@ describe("Mutation", () => {
       const models = {
         Transaction: {
           getStatement: jest.fn(() =>
-            Promise.reject(new Error("force an error"))),
+            Promise.reject(new Error("force an error"))
+          ),
         },
         Person: {
           getHomesFromId: jest.fn(() =>
-            Promise.reject(new Error("force an error"))),
+            Promise.reject(new Error("force an error"))
+          ),
         },
       };
       const result = await resolver.Mutation.transactionStatement(
         null,
         { people: [1, 2], start: "", end: "" },
-        { models, person },
+        { models, person }
       );
 
       expect(models.Transaction.getStatement).toBeCalled();
@@ -671,7 +679,7 @@ describe("FinancialAccount", () => {
     const trans = FinancialAccount.transactions(
       { Id: 20, ParentAccountId: 30 },
       {},
-      { models },
+      { models }
     );
     expect(trans).toEqual(null);
   });
@@ -700,7 +708,7 @@ describe("FinancialAccount", () => {
         start: "2013-11-03",
         end: "2015-12-03",
       },
-      { models, person },
+      { models, person }
     );
     expect(models.Transaction.findByAccountType).toBeCalledWith(
       {
@@ -711,7 +719,7 @@ describe("FinancialAccount", () => {
         start: "2013-11-03",
       },
       { limit: 3, offset: 1 },
-      { cache: true },
+      { cache: true }
     );
   });
 
@@ -739,7 +747,7 @@ describe("FinancialAccount", () => {
         start: "2013-11-03",
         end: "2015-12-03",
       },
-      { models, person },
+      { models, person }
     );
     expect(models.Transaction.findByAccountType).toBeCalledWith(
       {
@@ -750,7 +758,7 @@ describe("FinancialAccount", () => {
         start: "2013-11-03",
       },
       { limit: 3, offset: 1 },
-      { cache: true },
+      { cache: true }
     );
   });
 });

@@ -13,12 +13,16 @@ export default class FinancialBatch extends Rock {
   async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(id, this.__type);
     return this.cache.get(globalId, () =>
-      FinancialBatchTable.findOne({ where: { Id: id } }));
+      FinancialBatchTable.findOne({ where: { Id: id } })
+    );
   }
 
-  async findOrCreate(
-    { prefix = "Online Giving", suffix = "", currencyType, date },
-  ) {
+  async findOrCreate({
+    prefix = "Online Giving",
+    suffix = "",
+    currencyType,
+    date,
+  }) {
     let paymentType = "";
     if (currencyType) paymentType = currencyType;
 
@@ -42,8 +46,9 @@ export default class FinancialBatch extends Rock {
       .toISOString();
 
     // 4pm => 12:00 next day => 11:59 pm
-    const BatchEndDateTime = moment(date).endOf("day")// .subtract(1, "minute")
-    .toISOString();
+    const BatchEndDateTime = moment(date)
+      .endOf("day") // .subtract(1, "minute")
+      .toISOString();
 
     const newBatch = {
       Guid: uuid.v4(),

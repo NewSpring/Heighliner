@@ -1,4 +1,3 @@
-
 import { createGlobalId } from "../../../util";
 
 export default {
@@ -27,5 +26,4 @@ export default {
     services: ({ services }) => services,
     emails: ({ emails }) => emails,
   },
-
 };

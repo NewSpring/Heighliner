@@ -15,7 +15,7 @@ export default {
           limit,
           status,
         },
-        cache,
+        cache
       );
     },
 
@@ -38,7 +38,7 @@ export default {
         XXX make the setting dynamic and pulled from heighliner
 
       */
-      excludeChannels = excludeChannels.map(x => x.toLowerCase()).map((x) => {
+      excludeChannels = excludeChannels.map(x => x.toLowerCase()).map(x => {
         if (x === "series") return "series_newspring";
         if (x === "music") return "newspring_albums";
         return x;
@@ -57,20 +57,20 @@ export default {
           limit,
           status,
         },
-        cache,
+        cache
       );
     },
 
     taggedContent(
       _,
       { includeChannels, tagName, tags, limit, skip, cache, excludedIds },
-      { models },
+      { models }
     ) {
       if (tagName) {
         return models.Content.findByTagName(
           { tagName, includeChannels },
           { offset: skip, limit },
-          cache,
+          cache
         );
       }
 
@@ -78,7 +78,7 @@ export default {
         return models.Content.findByTags(
           { tags, includeChannels, excludedIds },
           { offset: skip, limit },
-          cache,
+          cache
         );
       }
 
@@ -116,36 +116,54 @@ export default {
   },
 
   ContentData: {
-    body: ({ body, legacy_body }, _, { models }) => models.Content.cleanMarkup(body || legacy_body),
+    body: ({ body, legacy_body }, _, { models }) =>
+      models.Content.cleanMarkup(body || legacy_body),
     description: ({ description }) => description,
     ooyalaId: ({ video }) => video,
     wistiaId: ({ video }) => video,
     tags: ({ tags }, _, { models }) => models.Content.splitByNewLines(tags),
     speaker: ({ speaker }) => speaker,
     hashtag: ({ hashtag }) => hashtag,
-    isLight: ({ lightswitch, foreground_color }) => (foreground_color || lightswitch) !== "dark",
+    isLight: ({ lightswitch, foreground_color }) =>
+      (foreground_color || lightswitch) !== "dark",
     scripture: ({ entry_id, scripture, exp_channel }, _, { models }) => {
       if (!scripture) return [];
 
-      const position = Number(exp_channel.exp_channel_fields.scripture.split("_").pop());
+      const position = Number(
+        exp_channel.exp_channel_fields.scripture.split("_").pop()
+      );
       return models.Content.getContentFromMatrix(entry_id, scripture, position);
     },
-    images: ({ image, image_blurred, exp_channel, entry_id }, { sizes, ratios }, { models }) => {
+    images: (
+      { image, image_blurred, exp_channel, entry_id },
+      { sizes, ratios },
+      { models }
+    ) => {
       if (!image && !image_blurred) return Promise.all([]);
 
       const imagePromises = [];
 
       let position;
       if (image) {
-        position = Number(exp_channel.exp_channel_fields.image.split("_").pop());
-        imagePromises.push(models.File.getFilesFromContent(entry_id, image, position));
+        position = Number(
+          exp_channel.exp_channel_fields.image.split("_").pop()
+        );
+        imagePromises.push(
+          models.File.getFilesFromContent(entry_id, image, position)
+        );
       }
 
       let blurredPosition;
       if (image_blurred) {
-        blurredPosition = Number(exp_channel.exp_channel_fields.image_blurred.split("_").pop());
+        blurredPosition = Number(
+          exp_channel.exp_channel_fields.image_blurred.split("_").pop()
+        );
         imagePromises.push(
-          models.File.getFilesFromContent(entry_id, image_blurred, blurredPosition),
+          models.File.getFilesFromContent(
+            entry_id,
+            image_blurred,
+            blurredPosition
+          )
         );
       }
 
@@ -169,23 +187,40 @@ export default {
     tracks: ({ entry_id, tracks, exp_channel }, _, { models }) => {
       if (!tracks) return [];
 
-      const position = Number(exp_channel.exp_channel_fields.tracks.split("_").pop());
+      const position = Number(
+        exp_channel.exp_channel_fields.tracks.split("_").pop()
+      );
       return models.File.getFilesFromContent(entry_id, tracks, position);
     },
-    audio: ({ entry_id, audio, tracks, exp_channel, audio_duration }, _, { models }) => {
+    audio: (
+      { entry_id, audio, tracks, exp_channel, audio_duration },
+      _,
+      { models }
+    ) => {
       if (!audio && !tracks) return Promise.all([]);
       const getAllFiles = [];
 
       if (audio) {
-        const audioPosition = Number(exp_channel.exp_channel_fields.audio.split("_").pop());
+        const audioPosition = Number(
+          exp_channel.exp_channel_fields.audio.split("_").pop()
+        );
         getAllFiles.push(
-          models.File.getFilesFromContent(entry_id, audio, audioPosition, audio_duration),
+          models.File.getFilesFromContent(
+            entry_id,
+            audio,
+            audioPosition,
+            audio_duration
+          )
         );
       }
 
       if (tracks) {
-        const trackPosition = Number(exp_channel.exp_channel_fields.tracks.split("_").pop());
-        getAllFiles.push(models.File.getFilesFromContent(entry_id, tracks, trackPosition));
+        const trackPosition = Number(
+          exp_channel.exp_channel_fields.tracks.split("_").pop()
+        );
+        getAllFiles.push(
+          models.File.getFilesFromContent(entry_id, tracks, trackPosition)
+        );
       }
 
       return Promise.all(getAllFiles).then(data => flatten(data));
@@ -195,7 +230,8 @@ export default {
   ContentMeta: {
     site: ({ site_id }) => createGlobalId(site_id, "Sites"),
     channel: ({ channel_id }) => createGlobalId(channel_id, "Channel"),
-    series: ({ series_id }, _, $, { parentType }) => createGlobalId(series_id, parentType.name),
+    series: ({ series_id }, _, $, { parentType }) =>
+      createGlobalId(series_id, parentType.name),
     urlTitle: ({ url, exp_channel_title }) =>
       url || (exp_channel_title && exp_channel_title.url_title),
     summary: async ({ summary, body, legacy_body }, _, { models }) => {
@@ -211,10 +247,14 @@ export default {
       return models.Content.getDate(day, month, year);
     },
     // XXX date fields per model
-    actualDate: ({ actualdate }, _, { models }) => models.Content.getDateFromUnix(actualdate),
-    entryDate: ({ entrydate }, _, { models }) => models.Content.getDateFromUnix(entrydate),
-    startDate: ({ startdate }, _, { models }) => models.Content.getDateFromUnix(startdate),
-    endDate: ({ enddate }, _, { models }) => models.Content.getDateFromUnix(enddate),
+    actualDate: ({ actualdate }, _, { models }) =>
+      models.Content.getDateFromUnix(actualdate),
+    entryDate: ({ entrydate }, _, { models }) =>
+      models.Content.getDateFromUnix(entrydate),
+    startDate: ({ startdate }, _, { models }) =>
+      models.Content.getDateFromUnix(startdate),
+    endDate: ({ enddate }, _, { models }) =>
+      models.Content.getDateFromUnix(enddate),
 
     // deprecated
     siteId: ({ site_id }) => createGlobalId(site_id, "Sites"),
@@ -222,15 +262,21 @@ export default {
   },
 
   Content: {
-    id: ({ entry_id }, _, $, { parentType }) => createGlobalId(entry_id, parentType.name),
+    id: ({ entry_id }, _, $, { parentType }) =>
+      createGlobalId(entry_id, parentType.name),
     channel: ({ channel_id }) => createGlobalId(channel_id, "Channel"),
     channelName: ({ exp_channel }) => exp_channel.channel_name,
     campus: ({ campus }, _, { models }) =>
       // campus is playa formatted like "[id] [clemson] Clemson"
-      campus ? models.Campus.find({ Name: campus.split(" ")[2] }).then(x => x.shift()) : null,
+      campus
+        ? models.Campus.find({ Name: campus.split(" ")[2] }).then(x =>
+            x.shift()
+          )
+        : null,
     title: ({ exp_channel_title }) => exp_channel_title.title,
     status: ({ exp_channel_title }) => exp_channel_title.status,
-    parent: ({ entry_id }, _, { models }) => models.Content.findByChildId(entry_id),
+    parent: ({ entry_id }, _, { models }) =>
+      models.Content.findByChildId(entry_id),
     meta: data => data,
     content: data => data,
     authors: ({ editorial_authors, author }) => {
@@ -238,22 +284,33 @@ export default {
       return authors ? authors.split(",") : null;
     },
     children: ({ entry_id }, { channels, showFutureEntries }, { models }) =>
-      models.Content.findByParentId(entry_id, channels, showFutureEntries).then(x =>
-        sortBy(x, item => item.exp_channel_title.entry_date),
+      models.Content.findByParentId(entry_id, channels, showFutureEntries).then(
+        x => sortBy(x, item => item.exp_channel_title.entry_date)
       ),
-    related: ({ tags }, { includeChannels, limit, skip, cache }, { models }) => {
+    related: (
+      { tags },
+      { includeChannels, limit, skip, cache },
+      { models }
+    ) => {
       tags = models.Content.splitByNewLines(tags);
       if (!tags || !tags.length) return null;
 
-      return models.Content.findByTags({ tags, includeChannels }, { offset: skip, limit }, cache);
+      return models.Content.findByTags(
+        { tags, includeChannels },
+        { offset: skip, limit },
+        cache
+      );
     },
     // deprecated
     tracks: ({ entry_id, tracks, exp_channel }, _, { models }) => {
       if (!tracks) return [];
 
-      const position = Number(exp_channel.exp_channel_fields.tracks.split("_").pop());
+      const position = Number(
+        exp_channel.exp_channel_fields.tracks.split("_").pop()
+      );
       return models.File.getFilesFromContent(entry_id, tracks, position);
     },
-    seriesId: ({ series_id }, _, $, { parentType }) => createGlobalId(series_id, parentType.name),
+    seriesId: ({ series_id }, _, $, { parentType }) =>
+      createGlobalId(series_id, parentType.name),
   },
 };

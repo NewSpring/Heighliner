@@ -97,7 +97,7 @@ export class Person extends Rock {
 
   async clearCacheFromRequest({ body }) {
     const { id, type, action } = body;
-    return Promise.resolve().then((x) => {
+    return Promise.resolve().then(x => {
       if (type === "Rock.Model.Person") {
         return this.clearCacheFromId(id, null, action);
       }
@@ -112,7 +112,7 @@ export class Person extends Rock {
     // delete the cache entry
     return Promise.resolve()
       .then(x => this.cache.del(globalId))
-      .then((x) => {
+      .then(x => {
         if (action && action === "delete") return;
         return this.getFromId(id, globalId);
       });
@@ -123,7 +123,7 @@ export class Person extends Rock {
     // delete the cache entry
     return Promise.resolve()
       .then(x => this.cache.del(globalId))
-      .then((x) => {
+      .then(x => {
         if (action && action === "delete") return;
         return this.getFromAliasId(id);
       });
@@ -131,7 +131,9 @@ export class Person extends Rock {
 
   async getFromId(id, globalId) {
     globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
-    return this.cache.get(globalId, () => PersonTable.findOne({ where: { Id: id } }));
+    return this.cache.get(globalId, () =>
+      PersonTable.findOne({ where: { Id: id } })
+    );
   }
 
   // async getGroupsFromId(...args) {
@@ -148,15 +150,17 @@ export class Person extends Rock {
             { model: Campus.model },
           ],
         }).then(x => x.Campus),
-      { cache },
+      { cache }
     );
   }
 
   async getPhoneNumbersFromId(id) {
-    return await this.cache.get(createGlobalId(`${id}:PersonPhoneNumbers`), () =>
-      PhoneNumberTable.find({
-        where: { PersonId: `${id}` },
-      }),
+    return await this.cache.get(
+      createGlobalId(`${id}:PersonPhoneNumbers`),
+      () =>
+        PhoneNumberTable.find({
+          where: { PersonId: `${id}` },
+        })
     );
   }
 
@@ -170,11 +174,14 @@ export class Person extends Rock {
         {
           personId: id,
         },
-        args,
-      ),
+        args
+      )
     );
 
-    return PersonTable.fetch("GET", `GetImpersonationParameter/?${querystring}`);
+    return PersonTable.fetch(
+      "GET",
+      `GetImpersonationParameter/?${querystring}`
+    );
   }
 
   async getHomesFromId(id, { cache } = { cache: true }) {
@@ -200,7 +207,7 @@ export class Person extends Rock {
             },
           ],
         }).then(x => x.map(y => y.Location)),
-      { cache },
+      { cache }
     );
   }
 
@@ -216,9 +223,9 @@ export class Person extends Rock {
         LEFT JOIN [Group] g ON gm.[GroupId] = g.[Id]
         LEFT JOIN [GroupMember] GroupMember ON GroupMember.GroupId = g.Id
         WHERE gm.[PersonId] = ${id} AND g.[GroupTypeId] = 10
-      `,
+      `
           )
-          .then(([members]) => members),
+          .then(([members]) => members)
       )
       .then(reverse);
   }
@@ -240,12 +247,12 @@ export class Person extends Rock {
             // XXX make this faster
             PersonAlias.find({ where: { PersonId: data.Id } })
               .then(x => x.map(y => y.Id))
-              .then((x) => {
+              .then(x => {
                 data.aliases = x;
                 return data;
-              }),
+              })
           ),
-      { cache },
+      { cache }
     );
   }
 
@@ -253,7 +260,7 @@ export class Person extends Rock {
     return this.cache.get(this.createGlobalGuidId(guid), () =>
       PersonTable.findOne({
         where: { Guid: guid },
-      }),
+      })
     );
   }
 
@@ -264,21 +271,23 @@ export class Person extends Rock {
       ? { GroupTypeId: { $or: groupTypeIds }, IsActive: true }
       : { IsActive: true };
 
-    return this.cache.get(`${personId}:GroupMemberId:${groupTypeIds}:GroupTypes`, () =>
-      Group.find({
-        where,
-        include: [
-          {
-            model: GroupMember.model,
-            where: { PersonId: `${personId}` },
-            attributes: [],
-          },
-          {
-            model: AttributeValue.model,
-            include: [{ model: Attribute.model }],
-          },
-        ],
-      }),
+    return this.cache.get(
+      `${personId}:GroupMemberId:${groupTypeIds}:GroupTypes`,
+      () =>
+        Group.find({
+          where,
+          include: [
+            {
+              model: GroupMember.model,
+              where: { PersonId: `${personId}` },
+              attributes: [],
+            },
+            {
+              model: AttributeValue.model,
+              include: [{ model: Attribute.model }],
+            },
+          ],
+        })
     );
   }
 
@@ -300,7 +309,11 @@ export class Person extends Rock {
     const attr = await this.getAttributeFromKey(key, 15 /* person entity id */);
 
     // this should only be one thing right? can you have multiple attrs on an entity?
-    const existings = await this.getAttributeValuesFromAttributeId(attr.Id, context, person.Id);
+    const existings = await this.getAttributeValuesFromAttributeId(
+      attr.Id,
+      context,
+      person.Id
+    );
 
     // If they have an attribute value, set it to the new one.
     if (existings && existings.length > 0) {
@@ -318,7 +331,9 @@ export class Person extends Rock {
           success: false,
         };
       }
-      this.cache.del(`${attr.Id}:${person.Id}:getAttributeValuesFromAttributeId`);
+      this.cache.del(
+        `${attr.Id}:${person.Id}:getAttributeValuesFromAttributeId`
+      );
       return success;
     }
 

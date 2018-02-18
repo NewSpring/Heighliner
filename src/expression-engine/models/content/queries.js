@@ -1,7 +1,6 @@
 // XXX implement pagination instead of skip
 // use `after` for ^^
 export default [
-
   `content(
     channel: String!,
     collection: ID,
@@ -39,5 +38,4 @@ export default [
     channel: String!,
     urlTitle: String!,
   ): String`,
-
 ];

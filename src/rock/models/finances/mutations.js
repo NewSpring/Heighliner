@@ -1,6 +1,4 @@
-
 export default [
-
   `syncTransactions(
     condition: String,
     transaction_type: String,
@@ -64,5 +62,5 @@ export default [
     people: [Int]
     start: String
     end: String
-  ): StatementMutationResponse`
+  ): StatementMutationResponse`,
 ];

@@ -1,4 +1,3 @@
-
 import { Rock } from "../model";
 
 import {
@@ -76,7 +75,9 @@ describe("sendEmail", () => {
     expect(result).toBe(null);
   });
   it("it should return null if no Body", async () => {
-    SystemEmailTable.findOne.mockReturnValueOnce(Promise.resolve({ Subject: "foo" }));
+    SystemEmailTable.findOne.mockReturnValueOnce(
+      Promise.resolve({ Subject: "foo" })
+    );
 
     const result = await Local.sendEmail("test");
 
@@ -86,7 +87,9 @@ describe("sendEmail", () => {
     expect(result).toBe(null);
   });
   it("it should return null if no Subject", async () => {
-    SystemEmailTable.findOne.mockReturnValueOnce(Promise.resolve({ Body: "foo" }));
+    SystemEmailTable.findOne.mockReturnValueOnce(
+      Promise.resolve({ Body: "foo" })
+    );
 
     const result = await Local.sendEmail("test");
 
@@ -96,9 +99,12 @@ describe("sendEmail", () => {
     expect(result).toBe(null);
   });
   it("it should create a Communication and patch it", async () => {
-    SystemEmailTable.findOne.mockReturnValueOnce(Promise.resolve({
-      Subject: "foo", Body: "bar",
-    }));
+    SystemEmailTable.findOne.mockReturnValueOnce(
+      Promise.resolve({
+        Subject: "foo",
+        Body: "bar",
+      })
+    );
     CommunicationTable.post.mockReturnValueOnce(Promise.resolve(10));
     CommunicationTable.patch.mockReturnValueOnce(Promise.resolve(true));
 
@@ -120,9 +126,12 @@ describe("sendEmail", () => {
     expect(result).toEqual([]);
   });
   it("it should create CommunicationRecipient for all people", async () => {
-    SystemEmailTable.findOne.mockReturnValueOnce(Promise.resolve({
-      Subject: "foo", Body: "bar",
-    }));
+    SystemEmailTable.findOne.mockReturnValueOnce(
+      Promise.resolve({
+        Subject: "foo",
+        Body: "bar",
+      })
+    );
     CommunicationTable.post.mockReturnValueOnce(Promise.resolve(10));
     CommunicationTable.patch.mockReturnValueOnce(Promise.resolve(true));
     CommunicationRecipientTable.post.mockReturnValueOnce(Promise.resolve(12));
@@ -170,12 +179,16 @@ describe("getAttributeValuesFromAttributeId", () => {
   });
 
   it("returns empty if nothing found", async () => {
-    expect(await Local.getAttributeValuesFromAttributeId(10, null, 123)).toEqual();
+    expect(
+      await Local.getAttributeValuesFromAttributeId(10, null, 123)
+    ).toEqual();
   });
 
   it("calls cache lookup", async () => {
     await Local.getAttributeValuesFromAttributeId(10, null, 123);
-    expect(mockedCache.get.mock.calls[0][0]).toEqual("10:123:getAttributeValuesFromAttributeId");
+    expect(mockedCache.get.mock.calls[0][0]).toEqual(
+      "10:123:getAttributeValuesFromAttributeId"
+    );
     expect(typeof mockedCache.get.mock.calls[0][1]).toEqual("function");
   });
 
@@ -199,13 +212,17 @@ describe("getAttributeValuesFromAttributeId", () => {
 
   it("returns properly formatted data", async () => {
     Local.processAttributeValue = jest.fn(() => "VALUE");
-    AttributeValueModel.find.mockReturnValueOnce(Promise.resolve([{ whatWasAnInsideJob: "harambe" }]));
+    AttributeValueModel.find.mockReturnValueOnce(
+      Promise.resolve([{ whatWasAnInsideJob: "harambe" }])
+    );
     await Local.getAttributeValuesFromAttributeId(10, null, 123);
     const res = await mockedCache.get.mock.calls[0][1]();
-    expect(res).toEqual([{
-      Value: "VALUE",
-      whatWasAnInsideJob: "harambe",
-    }]);
+    expect(res).toEqual([
+      {
+        Value: "VALUE",
+        whatWasAnInsideJob: "harambe",
+      },
+    ]);
   });
 });
 
@@ -228,16 +245,23 @@ describe("getAttributesFromEntity", () => {
   it("calls cache get properly", async () => {
     mockedCache.get.mockReturnValue(Promise.resolve([]));
     await Local.getAttributesFromEntity(10, "Harambe", 123);
-    expect(mockedCache.get.mock.calls[0][0]).toEqual("10:Harambe:getAttributesFromEntity");
+    expect(mockedCache.get.mock.calls[0][0]).toEqual(
+      "10:Harambe:getAttributesFromEntity"
+    );
     expect(typeof mockedCache.get.mock.calls[0][1]).toEqual("function");
   });
 
   it("calls find properly", async () => {
     mockedCache.get.mockReturnValue(Promise.resolve([]));
     await Local.getAttributesFromEntity(10, "Harambe", 123);
-    expect(mockedCache.get.mock.calls[0][0]).toEqual("10:Harambe:getAttributesFromEntity");
+    expect(mockedCache.get.mock.calls[0][0]).toEqual(
+      "10:Harambe:getAttributesFromEntity"
+    );
     await mockedCache.get.mock.calls[0][1]();
-    expect(AttributeModel.find).toBeCalledWith({ include: [{ model: "hey" }, { model: "boi" }], where: { EntityTypeId: 123, Key: "Harambe" } });
+    expect(AttributeModel.find).toBeCalledWith({
+      include: [{ model: "hey" }, { model: "boi" }],
+      where: { EntityTypeId: 123, Key: "Harambe" },
+    });
   });
 
   it("handles results that aren't defined values", async () => {
@@ -249,12 +273,14 @@ describe("getAttributesFromEntity", () => {
     };
     mockedCache.get.mockReturnValue(Promise.resolve([stuff]));
     const res = await Local.getAttributesFromEntity(10, "Harambe", 123);
-    expect(res).toEqual([{
-      Description: stuff.Description,
-      EntityId: 10,
-      Id: stuff.Id,
-      Value: stuff.Name,
-    }]);
+    expect(res).toEqual([
+      {
+        Description: stuff.Description,
+        EntityId: 10,
+        Id: stuff.Id,
+        Value: stuff.Name,
+      },
+    ]);
   });
 
   it("handles defined value results", async () => {
@@ -263,7 +289,9 @@ describe("getAttributesFromEntity", () => {
       AttributeQualifiers: [{ Key: "definedtype", Value: "piggy" }],
     };
     // mock defined value lookup
-    Local.getDefinedValuesByTypeId = jest.fn(() => Promise.resolve({ wow: "boi" }));
+    Local.getDefinedValuesByTypeId = jest.fn(() =>
+      Promise.resolve({ wow: "boi" })
+    );
     mockedCache.get.mockReturnValue(Promise.resolve([stuff]));
     const res = await Local.getAttributesFromEntity(10, "Harambe", 123);
     expect(Local.getDefinedValuesByTypeId).toBeCalledWith("piggy");

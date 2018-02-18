@@ -255,7 +255,7 @@ describe("add", () => {
         removeOnComplete: true,
         attempts: 288,
         backoff: { type: "fixed", delay: 60000 * 5 },
-      },
+      }
     );
   });
 });
@@ -285,7 +285,7 @@ describe("getOrCreatePerson", () => {
     PersonTable.findOne.mockReturnValueOnce(
       Promise.resolve({
         FirstName: "James",
-      }),
+      })
     );
 
     const data = await Local.getOrCreatePerson({ Person });
@@ -307,7 +307,7 @@ describe("getOrCreatePerson", () => {
         PersonAlias: {
           Id: 2,
         },
-      }),
+      })
     );
     const data = await Local.getOrCreatePerson({ Person });
 
@@ -525,7 +525,7 @@ describe("findOrCreateTransaction", () => {
 
     TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
     Local.FinancialBatch.findOrCreate.mockReturnValueOnce(
-      Promise.resolve({ Id: 30 }),
+      Promise.resolve({ Id: 30 })
     );
     TransactionTable.post.mockReturnValueOnce(Promise.resolve(20));
 
@@ -586,7 +586,7 @@ describe("findOrCreateTransaction", () => {
 
     TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
     Local.FinancialBatch.findOrCreate.mockReturnValueOnce(
-      Promise.resolve({ Id: 30 }),
+      Promise.resolve({ Id: 30 })
     );
     TransactionTable.post.mockReturnValueOnce(Promise.resolve(20));
     TransactionTable.post.mockClear();
@@ -708,7 +708,7 @@ describe("findOrCreateTransaction", () => {
 
     TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
     Local.FinancialBatch.findOrCreate.mockReturnValueOnce(
-      Promise.resolve({ Id: 30 }),
+      Promise.resolve({ Id: 30 })
     );
     TransactionTable.post.mockReturnValueOnce(Promise.resolve(20));
     TransactionTable.post.mockClear();
@@ -816,7 +816,7 @@ describe("findOrCreateSchedule", () => {
           Value: "Weekly",
           Id: 7,
         },
-      ]),
+      ])
     );
     ScheduledTransaction.post.mockReturnValueOnce(Promise.resolve(2));
     const data = await Local.findOrCreateSchedule({
@@ -882,12 +882,12 @@ describe("findOrCreateSchedule", () => {
           Value: "Weekly",
           Id: 7,
         },
-      ]),
+      ])
     );
     DefinedValue.findOne.mockReturnValueOnce(
       Promise.resolve({
         Id: 100,
-      }),
+      })
     );
     ScheduledTransaction.post.mockReturnValueOnce(Promise.resolve(2));
     const data = await Local.findOrCreateSchedule({
@@ -956,7 +956,7 @@ describe("findOrCreateSchedule", () => {
           Value: "Weekly",
           Id: 7,
         },
-      ]),
+      ])
     );
     DefinedValue.findOne.mockReturnValueOnce(Promise.resolve());
     ScheduledTransaction.post.mockReturnValueOnce(Promise.resolve(2));
@@ -1021,10 +1021,10 @@ describe("findOrCreateSchedule", () => {
     ScheduledTransaction.find.mockReturnValueOnce(Promise.resolve([]));
     ScheduledTransaction.patch.mockReturnValueOnce(Promise.resolve(true));
     ScheduledTransactionDetail.find.mockReturnValueOnce(
-      Promise.resolve([{ Id: 1 }]),
+      Promise.resolve([{ Id: 1 }])
     );
     ScheduledTransactionDetail.delete.mockReturnValueOnce(
-      Promise.resolve(true),
+      Promise.resolve(true)
     );
 
     const data = await Local.findOrCreateSchedule({
@@ -1145,7 +1145,7 @@ describe("createTransactionDetails", () => {
         Person,
         TransactionDetails,
         Campus,
-      }),
+      })
     ).toThrow();
   });
 
@@ -1209,55 +1209,52 @@ describe("createTransactionDetails", () => {
       Campus,
     });
   });
-  xit(
-    "if it is a schedule, it creates ScheduleTransactionDetails",
-    async () => {
-      const Transaction = {};
-      const Schedule = { Id: 1 };
-      const Person = { Id: 2, PrimaryAliasId: 3 };
-      const TransactionDetails = [{ AccountId: 4, Amount: 4 }];
-      const Campus = { Id: 5 };
+  xit("if it is a schedule, it creates ScheduleTransactionDetails", async () => {
+    const Transaction = {};
+    const Schedule = { Id: 1 };
+    const Person = { Id: 2, PrimaryAliasId: 3 };
+    const TransactionDetails = [{ AccountId: 4, Amount: 4 }];
+    const Campus = { Id: 5 };
 
-      FinancialAccount.findOne.mockReturnValueOnce(Promise.resolve({ Id: 6 }));
-      TransactionDetail.post.mockReturnValueOnce(Promise.resolve(7));
+    FinancialAccount.findOne.mockReturnValueOnce(Promise.resolve({ Id: 6 }));
+    TransactionDetail.post.mockReturnValueOnce(Promise.resolve(7));
 
-      const data = await Local.createTransactionDetails({
-        Transaction,
-        Schedule,
-        Person,
-        TransactionDetails,
-        Campus,
-      });
+    const data = await Local.createTransactionDetails({
+      Transaction,
+      Schedule,
+      Person,
+      TransactionDetails,
+      Campus,
+    });
 
-      expect(FinancialAccount.findOne).toBeCalledWith({
-        where: { CampusId: 5, ParentAccountId: 4 },
-      });
-      expect(ScheduledTransactionDetail.post).toBeCalledWith({
-        AccountId: 6,
-        CreatedByPersonAliasId: Person.PrimaryAliasId,
-        ModifiedByPersonAliasId: Person.PrimaryAliasId,
-        Amount: 4,
-        ScheduledTransactionDetailId: 1,
-        Id: 7, // XXX bug in Jest
-      });
-      expect(data).toEqual({
-        Transaction,
-        Schedule,
-        Person,
-        TransactionDetails: [
-          {
-            AccountId: 6,
-            CreatedByPersonAliasId: Person.PrimaryAliasId,
-            ModifiedByPersonAliasId: Person.PrimaryAliasId,
-            Amount: 4,
-            TransactionId: 1,
-            Id: 7, // XXX bug in Jest
-          },
-        ],
-        Campus,
-      });
-    },
-  );
+    expect(FinancialAccount.findOne).toBeCalledWith({
+      where: { CampusId: 5, ParentAccountId: 4 },
+    });
+    expect(ScheduledTransactionDetail.post).toBeCalledWith({
+      AccountId: 6,
+      CreatedByPersonAliasId: Person.PrimaryAliasId,
+      ModifiedByPersonAliasId: Person.PrimaryAliasId,
+      Amount: 4,
+      ScheduledTransactionDetailId: 1,
+      Id: 7, // XXX bug in Jest
+    });
+    expect(data).toEqual({
+      Transaction,
+      Schedule,
+      Person,
+      TransactionDetails: [
+        {
+          AccountId: 6,
+          CreatedByPersonAliasId: Person.PrimaryAliasId,
+          ModifiedByPersonAliasId: Person.PrimaryAliasId,
+          Amount: 4,
+          TransactionId: 1,
+          Id: 7, // XXX bug in Jest
+        },
+      ],
+      Campus,
+    });
+  });
 });
 
 describe("createSavedPayment", () => {
@@ -1418,7 +1415,7 @@ describe("updateBatchControlAmount", () => {
     const Transaction = { BatchId: 1, Id: 5 };
     const TransactionDetails = [{ Amount: 2 }, { Amount: 3 }];
     FinancialBatchTable.findOne.mockReturnValueOnce(
-      Promise.resolve({ Id: 5, ControlAmount: 1 }),
+      Promise.resolve({ Id: 5, ControlAmount: 1 })
     );
     FinancialBatchTable.patch.mockReturnValueOnce(Promise.resolve(true));
     const data = await Local.updateBatchControlAmount({
@@ -1479,7 +1476,7 @@ describe("sendGivingEmail", () => {
         FirstName: "James",
         Email: "james.baxley@newspring.cc",
         LastName: "Baxley",
-      }),
+      })
     );
 
     Local.sendEmail = jest.fn();
@@ -1541,7 +1538,7 @@ describe("sendGivingEmail", () => {
         FirstName: "James",
         Email: "james.baxley@newspring.cc",
         LastName: "Baxley",
-      }),
+      })
     );
 
     Local.sendEmail = jest.fn();
@@ -1604,7 +1601,7 @@ describe("sendGivingEmail", () => {
         NickName: "Jimmy",
         Email: "james.baxley@newspring.cc",
         LastName: "Baxley",
-      }),
+      })
     );
 
     Local.sendEmail = jest.fn();

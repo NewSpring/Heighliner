@@ -18,9 +18,11 @@ function getPhotoFromTag(tag) {
     gaming: "//s3.amazonaws.com/ns.assets/apollos/groups/group-games.jpg",
     hobbies: "//s3.amazonaws.com/ns.assets/apollos/groups/group-hobbies.jpg",
     moms: "//s3.amazonaws.com/ns.assets/apollos/groups/group-moms.jpg",
-    motorsports: "//s3.amazonaws.com/ns.assets/apollos/groups/group-motorsports.jpg", // tslint:disable-line
+    motorsports:
+      "//s3.amazonaws.com/ns.assets/apollos/groups/group-motorsports.jpg", // tslint:disable-line
     outdoor: "//s3.amazonaws.com/ns.assets/apollos/groups/group-outdoors.jpg",
-    "sports/fitness": "//s3.amazonaws.com/ns.assets/apollos/groups/group-sports.jpg", // tslint:disable-line
+    "sports/fitness":
+      "//s3.amazonaws.com/ns.assets/apollos/groups/group-sports.jpg", // tslint:disable-line
   };
   return photos[tag.toLowerCase()] || null;
 }
@@ -38,7 +40,8 @@ function getPhotoFromDemo(demo) {
 function getPhotoFromType(type) {
   const photos = {
     care: "//s3.amazonaws.com/ns.assets/apollos/groups/group-care.jpg",
-    interests: "//s3.amazonaws.com/ns.assets/apollos/groups/group-interests.jpg", // tslint:disable-line
+    interests:
+      "//s3.amazonaws.com/ns.assets/apollos/groups/group-interests.jpg", // tslint:disable-line
     study: "//s3.amazonaws.com/ns.assets/apollos/groups/group-study.jpg",
   };
   return photos[type.toLowerCase()] || null;
@@ -53,15 +56,17 @@ function resolveAttribute(id, resolver) {
     let chunk;
 
     if (Array.isArray(AttributeValues)) {
-      chunk = AttributeValues.filter(x => x.Attribute && x.Attribute.Id === id)[0];
+      chunk = AttributeValues.filter(
+        x => x.Attribute && x.Attribute.Id === id
+      )[0];
     }
     if (!chunk) {
       return Promise.resolve(null).then(x => resolver(x, data, args, context));
     }
 
-    return models.Rock
-      .getAttributeValuesFromId(chunk.Id, { models })
-      .then(x => resolver(x, data, args, context));
+    return models.Rock.getAttributeValuesFromId(chunk.Id, { models }).then(x =>
+      resolver(x, data, args, context)
+    );
   };
 }
 
@@ -81,7 +86,7 @@ export default {
         longitude,
         zip,
       },
-      { models, ip, person },
+      { models, ip, person }
     ) => {
       const geo = { latitude: null, longitude: null };
 
@@ -94,17 +99,18 @@ export default {
 
       if (campus) {
         // This is the new section
-        const geoCampus = await models.Campus
-          .find({ Name: campus })
+        const geoCampus = await models.Campus.find({ Name: campus })
           .then(x =>
             x.map(y => ({
               Id: y.Id,
               LocationId: y.LocationId,
-            })),
+            }))
           )
           .then(x => x.shift());
 
-        const geoCampusData = await models.Group.getLocationFromLocationId(geoCampus.LocationId);
+        const geoCampusData = await models.Group.getLocationFromLocationId(
+          geoCampus.LocationId
+        );
 
         if (geoCampusData.latitude && geoCampusData.longitude) {
           // Passed in directly from geolocation services
@@ -124,11 +130,13 @@ export default {
         geo.latitude = latitude;
         geo.longitude = longitude;
       } else if (person && person.Id) {
-        const geoLocation = await models.Person.getHomesFromId(person.Id).then(([x]) => {
-          if (!x) return {};
-          if (!x.GeoPoint) return x;
-          return models.Group.getLocationFromLocationId(x.Id);
-        });
+        const geoLocation = await models.Person.getHomesFromId(person.Id).then(
+          ([x]) => {
+            if (!x) return {};
+            if (!x.GeoPoint) return x;
+            return models.Group.getLocationFromLocationId(x.Id);
+          }
+        );
         if (geoLocation.latitude && geoLocation.longitude) {
           // Passed in directly from geolocation services
           geo.longitude = geoLocation.longitude;
@@ -165,7 +173,7 @@ export default {
 
       return models.Group.findByAttributesAndQuery(
         { query, attributes, campuses, schedules },
-        { limit, offset, geo },
+        { limit, offset, geo }
       );
     },
     groupAttributes: (_, $, { models }) => {
@@ -175,15 +183,17 @@ export default {
         16815, // tags
         16814, // type
       ];
-      const queries = ids.map(id => models.Rock.getAttributesFromId(id, { models }));
+      const queries = ids.map(id =>
+        models.Rock.getAttributesFromId(id, { models })
+      );
       return Promise.all(queries)
         .then(flatten)
         .then(x => x.filter(y => y.Value !== "Interests"))
         .then(x =>
-          x.map((y) => {
+          x.map(y => {
             y.Value = y.Value === "Childcare" ? "Kid Friendly" : y.Value;
             return y;
-          }),
+          })
         );
     },
   },
@@ -192,7 +202,7 @@ export default {
     requestGroupInfo: async (
       _,
       { groupId, message, communicationPreference },
-      { models, person },
+      { models, person }
     ) => {
       if (!person) {
         return {
@@ -207,7 +217,7 @@ export default {
           message: striptags(message, ["<br/>"], ["\n"]),
           communicationPreference,
         },
-        person,
+        person
       );
     },
   },
@@ -237,7 +247,9 @@ export default {
         if (TempWeeklyDayOfWeek) {
           // try the schedule fields if available
           const week = Moment(TempWeeklyDayOfWeek, "E").format("dddd");
-          const time = WeeklyTimeOfDay ? Moment.utc(WeeklyTimeOfDay).format("h:mm A") : null;
+          const time = WeeklyTimeOfDay
+            ? Moment.utc(WeeklyTimeOfDay).format("h:mm A")
+            : null;
           return time ? `${week} @ ${time}` : `${week}`;
         } else {
           // try parsing the ical string
@@ -253,8 +265,10 @@ export default {
             })
             .join("");
           const parsedTime = Moment(
-            `${parsed.rrule.options.byhour[0]}:${parsed.rrule.options.byminute[0]}`,
-            "hh:mm",
+            `${parsed.rrule.options.byhour[0]}:${
+              parsed.rrule.options.byminute[0]
+            }`,
+            "hh:mm"
           ).format("h:mm A");
           return `${parsedDays} @ ${parsedTime}`;
         }
@@ -274,7 +288,8 @@ export default {
     active: ({ IsActive }) => IsActive,
     ageRange: resolveAttribute(691, (x = []) => {
       // don't consider [0,0] an age range
-      const hasAgeRange = x.length && x.reduce((start, finish) => start && finish);
+      const hasAgeRange =
+        x.length && x.reduce((start, finish) => start && finish);
       if (!hasAgeRange) return null;
       return x;
     }),
@@ -292,40 +307,41 @@ export default {
     locations: ({ Id }, _, { models }) => models.Group.getLocationsById(Id),
     members: ({ Id }, _, { models }) => models.Group.getMembersById(Id),
     name: ({ Name }) => Name,
-    photo: resolveAttribute(2569, async (photo, { AttributeValues }, _, { models }) => {
-      if (photo && photo.Path) return photo.Path;
+    photo: resolveAttribute(
+      2569,
+      async (photo, { AttributeValues }, _, { models }) => {
+        if (photo && photo.Path) return photo.Path;
 
-      // check for tags first
-      const firstTag = await resolveAttribute(16815, x => x && x.length && x[0].Value)(
-        { AttributeValues },
-        _,
-        { models },
-      );
+        // check for tags first
+        const firstTag = await resolveAttribute(
+          16815,
+          x => x && x.length && x[0].Value
+        )({ AttributeValues }, _, { models });
 
-      if (firstTag) return getPhotoFromTag(firstTag);
+        if (firstTag) return getPhotoFromTag(firstTag);
 
-      // photo from demographic
-      const demographic = await resolveAttribute(1409, x => x && x.length && x[0].Value)(
-        { AttributeValues },
-        _,
-        { models },
-      );
+        // photo from demographic
+        const demographic = await resolveAttribute(
+          1409,
+          x => x && x.length && x[0].Value
+        )({ AttributeValues }, _, { models });
 
-      if (demographic) return getPhotoFromDemo(demographic);
+        if (demographic) return getPhotoFromDemo(demographic);
 
-      // type goes last since its required
-      const type = await resolveAttribute(16814, x => x && x.length && x[0].Value)(
-        { AttributeValues },
-        _,
-        { models },
-      );
+        // type goes last since its required
+        const type = await resolveAttribute(
+          16814,
+          x => x && x.length && x[0].Value
+        )({ AttributeValues }, _, { models });
 
-      if (type) return getPhotoFromType(type);
+        if (type) return getPhotoFromType(type);
 
-      return null;
-    }),
-    schedule: ({ ScheduleId }, _, { models }) => models.Group.getScheduleFromScheduleId(ScheduleId),
-    tags: resolveAttribute(16815, (x) => {
+        return null;
+      }
+    ),
+    schedule: ({ ScheduleId }, _, { models }) =>
+      models.Group.getScheduleFromScheduleId(ScheduleId),
+    tags: resolveAttribute(16815, x => {
       if (x && x.length) return x;
       return [];
     }),

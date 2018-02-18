@@ -1,8 +1,9 @@
-
 export default {
   Query: {
     geolocate(_, { origin, destinations }, { models }) {
-      const query = `origins=${encodeURI(origin)}&destinations=${encodeURI(destinations)}`;
+      const query = `origins=${encodeURI(origin)}&destinations=${encodeURI(
+        destinations
+      )}`;
       return models.GGeolocate.query(query);
     },
   },
@@ -28,5 +29,4 @@ export default {
     text: ({ text }) => text,
     value: ({ value }) => value,
   },
-
 };

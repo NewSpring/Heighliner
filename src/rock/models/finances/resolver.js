@@ -20,13 +20,13 @@ export default {
           limit,
           offset: skip,
         },
-        { cache },
+        { cache }
       );
     },
     transactions: (
       _,
       { people, start, end, limit, cache, skip },
-      { models, person },
+      { models, person }
     ) => {
       if (!person) return null;
       if (person.GivingGroupId) {
@@ -38,19 +38,19 @@ export default {
             end,
           },
           { limit, offset: skip },
-          { cache },
+          { cache }
         );
       }
       return models.Transaction.findByPersonAlias(
         person.aliases,
         { limit, offset: skip },
-        { cache },
+        { cache }
       );
     },
     scheduledTransactions: (
       _,
       { limit, cache, skip, isActive },
-      { models, person },
+      { models, person }
     ) => {
       if (!person) return null;
       return models.ScheduledTransaction.findByPersonAlias(
@@ -60,13 +60,13 @@ export default {
           offset: skip,
           isActive,
         },
-        { cache },
+        { cache }
       );
     },
     accounts: (
       _,
       { name, isActive, isPublic, isTaxDeductible, allFunds },
-      { models },
+      { models }
     ) =>
       models.FinancialAccount.find(
         {
@@ -75,27 +75,26 @@ export default {
           IsPublic: isPublic,
           IsTaxDeductible: isTaxDeductible,
         },
-        { all: allFunds },
+        { all: allFunds }
       ),
     accountFromCashTag: (_, { cashTag }, { models }) =>
-      models.FinancialAccount
-        .find({
-          IsActive: true,
-          IsPublic: true,
-        })
-        .then((x) => {
-          let correctAccount = null;
-          for (const account of x) {
-            const cashTagName = account.PublicName
-              .replace(/\s+/g, "")
-              .toLowerCase();
-            if (cashTagName === cashTag.replace("$", "")) {
-              correctAccount = account;
-              break;
-            }
+      models.FinancialAccount.find({
+        IsActive: true,
+        IsPublic: true,
+      }).then(x => {
+        let correctAccount = null;
+        for (const account of x) {
+          const cashTagName = account.PublicName.replace(
+            /\s+/g,
+            ""
+          ).toLowerCase();
+          if (cashTagName === cashTag.replace("$", "")) {
+            correctAccount = account;
+            break;
           }
-          return correctAccount;
-        }),
+        }
+        return correctAccount;
+      }),
   },
 
   Mutation: {
@@ -104,7 +103,7 @@ export default {
     cancelSavedPayment: async (
       _,
       { entityId, /* id, */ gateway },
-      { models },
+      { models }
     ) => {
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
       return models.SavedPayment.removeFromEntityId(entityId, nmi);
@@ -115,8 +114,7 @@ export default {
       const requestUrl = req.headers.referer;
       const origin = req.headers.origin;
       const parsedData = JSON.parse(data);
-      return models.Transaction
-        .createOrder(
+      return models.Transaction.createOrder(
         {
           data: parsedData,
           instant,
@@ -125,22 +123,23 @@ export default {
           requestUrl,
           origin,
         },
-          person,
-          models,
-        )
-        .catch(console.error);
+        person,
+        models
+      ).catch(console.error);
     },
     validate: async (_, { token, gateway }, { models }) => {
       if (!token) return null;
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
-      return models.SavedPayment
-        .validate({ token }, nmi)
-        .catch(e => ({ error: e.message, code: e.code, success: false }));
+      return models.SavedPayment.validate({ token }, nmi).catch(e => ({
+        error: e.message,
+        code: e.code,
+        success: false,
+      }));
     },
     completeOrder: async (
       _,
       { token, accountName, scheduleId },
-      { models, person, req },
+      { models, person, req }
     ) => {
       if (!token) return null;
       const origin = req.headers.origin;
@@ -158,51 +157,49 @@ export default {
         const user = await models.User.getFromId(scheduleId, globalId);
         if (user && user.services && user.services.rock) {
           person = await models.Person.getFromAliasId(
-            user.services.rock.PrimaryAliasId,
+            user.services.rock.PrimaryAliasId
           );
           person.PrimaryAliasId = user.services.rock.PrimaryAliasId;
           scheduleId = undefined;
         }
       }
 
-      return models.Transaction
-        .completeOrder({
-          token,
-          accountName,
-          person,
-          origin,
-          scheduleId,
-          platform,
-          version,
-        })
-        .catch(e => ({ error: e.message, code: e.code, success: false }));
+      return models.Transaction.completeOrder({
+        token,
+        accountName,
+        person,
+        origin,
+        scheduleId,
+        platform,
+        version,
+      }).catch(e => ({ error: e.message, code: e.code, success: false }));
     },
     savePayment: async (
       _,
       { token, gateway, accountName },
-      { models, person },
+      { models, person }
     ) => {
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
       return models.SavedPayment.save(
         { token, name: accountName, person },
-        nmi,
+        nmi
       );
     },
     cancelSchedule: async (_, { entityId, gateway }, { models }) => {
       // XXX only let the owner cancel the schedule
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
-      return models.ScheduledTransaction
-        .cancelNMISchedule(entityId, nmi)
-        .catch(error => ({
+      return models.ScheduledTransaction.cancelNMISchedule(entityId, nmi).catch(
+        error => ({
           error: error.message,
           code: error.code,
           success: false,
-        }));
+        })
+      );
     },
     transactionStatement: async (
       _,
       { people, start, end },
-      { models, person },
+      { models, person }
     ) => {
       if (!person) return { success: false, error: "You must be logged in" };
 
@@ -210,9 +207,9 @@ export default {
       // default to start of current year if not passed
       // if (!start) start = moment().startOf("year");
 
-      const homeLookup = models.Person
-        .getHomesFromId(person.Id)
-        .then(x => x[0]);
+      const homeLookup = models.Person.getHomesFromId(person.Id).then(
+        x => x[0]
+      );
 
       const transactionLookup = models.Transaction.getStatement({
         people,
@@ -312,17 +309,17 @@ export default {
     schedule: (
       { TransactionFrequencyValueId, TransactionFrequencyValue },
       _,
-      { models },
+      { models }
     ) => {
       if (TransactionFrequencyValue) return TransactionFrequencyValue;
       return models.ScheduledTransaction.getDefinedValueId(
-        TransactionFrequencyValueId,
+        TransactionFrequencyValueId
       );
     },
     payment: (
       { FinancialPaymentDetailId, FinancialPaymentDetail },
       _,
-      { models },
+      { models }
     ) => {
       if (FinancialPaymentDetail) return FinancialPaymentDetail;
 
@@ -348,7 +345,7 @@ export default {
     payment: (
       { FinancialPaymentDetailId, FinancialPaymentDetail },
       _,
-      { models },
+      { models }
     ) => {
       if (FinancialPaymentDetail) return FinancialPaymentDetail;
 
@@ -381,7 +378,7 @@ export default {
     transactions: (
       { Id, ParentAccountId },
       { limit, skip, cache, start, end, people = [] },
-      { models, person },
+      { models, person }
     ) => {
       // eslint-disable-line
       let include = people;
@@ -398,20 +395,19 @@ export default {
           parentId: ParentAccountId,
         },
         { limit, offset: skip },
-        { cache },
+        { cache }
       );
     },
     total: (
       { Id, ParentAccountId },
       { limit, skip, cache, start, end, people = [] },
-      { models, person },
+      { models, person }
     ) => {
       // eslint-disable-line
       let include = people;
       if (!person) return null;
       if (person && person.aliases && !people.length) include = person.aliases;
-      return models.Transaction
-        .findByAccountType(
+      return models.Transaction.findByAccountType(
         {
           id: Id,
           personId: person.GivingGroupId,
@@ -420,36 +416,37 @@ export default {
           end,
           parentId: ParentAccountId,
         },
-          { limit, offset: skip },
-          { cache },
-        )
-        .then((transactions) => {
-          if (!transactions) return null;
+        { limit, offset: skip },
+        { cache }
+      ).then(transactions => {
+        if (!transactions) return null;
 
-          return transactions
-            .map(x => x.FinancialTransactionDetails)
-            .map(flatten)
-            .map(x => x[0].Amount.toFixed())
-            .reduce((x, y) => x + y, 0);
-        });
+        return transactions
+          .map(x => x.FinancialTransactionDetails)
+          .map(flatten)
+          .map(x => x[0].Amount.toFixed())
+          .reduce((x, y) => x + y, 0);
+      });
     },
     images: ({ Id }, _, { models }) => {
       const field_id = "field_id_1513"; // eslint-disable-line
       const channel_id = "69"; // eslint-disable-line
-      return models.Content
-        .getEntryFromFieldValue(Id, field_id, channel_id)
-        .then(({ image, exp_channel, entry_id }) => {
-          if (!image) return Promise.resolve([]);
+      return models.Content.getEntryFromFieldValue(
+        Id,
+        field_id,
+        channel_id
+      ).then(({ image, exp_channel, entry_id }) => {
+        if (!image) return Promise.resolve([]);
 
-          let position;
-          if (image) {
-            position = Number(
-              exp_channel.exp_channel_fields.image.split("_").pop(),
-            );
-          }
+        let position;
+        if (image) {
+          position = Number(
+            exp_channel.exp_channel_fields.image.split("_").pop()
+          );
+        }
 
-          return models.File.getFilesFromContent(entry_id, image, position);
-        });
+        return models.File.getFilesFromContent(entry_id, image, position);
+      });
     },
   },
 
@@ -464,23 +461,23 @@ export default {
         CreditCardTypeValue,
       },
       _,
-      { models },
+      { models }
     ) => {
       if (CreditCardTypeValueId && CreditCardTypeValue) {
         return CreditCardTypeValue.Value;
       }
       if (CreditCardTypeValueId) {
-        return models.Transaction
-          .getDefinedValueId(CreditCardTypeValueId)
-          .then(x => x.Value);
+        return models.Transaction.getDefinedValueId(CreditCardTypeValueId).then(
+          x => x.Value
+        );
       }
 
       if (CurrencyTypeValueId && CurrencyTypeValue) {
         return CurrencyTypeValue.Value;
       }
-      return models.Transaction
-        .getDefinedValueId(CurrencyTypeValueId)
-        .then(x => x.Value);
+      return models.Transaction.getDefinedValueId(CurrencyTypeValueId).then(
+        x => x.Value
+      );
     },
   },
 
@@ -494,7 +491,7 @@ export default {
     payment: (
       { FinancialPaymentDetailId, FinancialPaymentDetail },
       _,
-      { models },
+      { models }
     ) => {
       if (FinancialPaymentDetail) return FinancialPaymentDetail;
 

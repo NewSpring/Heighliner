@@ -1,7 +1,6 @@
-
 import Metrics from "datadog-metrics";
 
-export default (app) => {
+export default app => {
   let dogstatsd;
   if (process.env.DATADOG_API_KEY && process.env.NODE_ENV === "production") {
     dogstatsd = new Metrics.BufferedMetricsLogger({
@@ -38,7 +37,7 @@ export default (app) => {
         dogstatsd.increment(`response_code.${res.statusCode}`, 1, statTags);
         dogstatsd.increment("response_code.all", 1, statTags);
 
-        const now = (new Date()) - req._startTime;
+        const now = new Date() - req._startTime;
         dogstatsd.histogram("response_time", now, statTags);
       };
 

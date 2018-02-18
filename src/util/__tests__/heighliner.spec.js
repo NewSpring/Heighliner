@@ -27,7 +27,9 @@ xit("`createMutations` should return an array with `type Mutation`", () => {
 
 xit("`createMutations` should include the cache interface", () => {
   const mutations = createMutations([]);
-  expect(/cache\(id: ID!, type: String\): Node/.test(mutations.join(" "))).toBeTruthy();
+  expect(
+    /cache\(id: ID!, type: String\): Node/.test(mutations.join(" "))
+  ).toBeTruthy();
 });
 
 xit("`createMutations` should allow passing in new mutations", () => {

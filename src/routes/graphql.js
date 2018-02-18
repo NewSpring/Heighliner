@@ -66,7 +66,7 @@ const executabledSchema = makeExecutableSchema({
 export function createModels({ cache }) {
   // create all of the models on app start up
   const createdModels = {};
-  Object.keys(models).forEach((name) => {
+  Object.keys(models).forEach(name => {
     createdModels[name] = new models[name]({ cache });
   });
 
@@ -74,10 +74,10 @@ export function createModels({ cache }) {
   return createdModels;
 }
 
-export default function (app, monitor) {
+export default function(app, monitor) {
   const datadog = monitor && monitor.datadog;
 
-  const graphql = async (request) => {
+  const graphql = async request => {
     let cache;
     // connect to all dbs
     await Promise.all([
@@ -122,7 +122,7 @@ export default function (app, monitor) {
       try {
         user = await timeout(
           createdModels.User.getByHashedToken(context.hashedToken),
-          1000,
+          1000
         );
         context.user = user;
       } catch (e) {
@@ -134,9 +134,9 @@ export default function (app, monitor) {
         try {
           person = await timeout(
             createdModels.Person.getFromAliasId(
-              user.services.rock.PrimaryAliasId,
+              user.services.rock.PrimaryAliasId
             ),
-            1000,
+            1000
           );
           person.PrimaryAliasId = user.services.rock.PrimaryAliasId;
         } catch (e) {
@@ -162,9 +162,9 @@ export default function (app, monitor) {
         ...context,
         ...{ models: createdModels },
       },
-      tracing: (process.env.NODE_ENV === "production"),
+      tracing: process.env.NODE_ENV === "production",
       schema: executabledSchema,
-      formatError: (error) => {
+      formatError: error => {
         if (process.env.NODE_ENV === "production") {
           if (datadog) datadog.increment("graphql.error");
           context.sentry.captureError(error, parsers.parseRequest(request));

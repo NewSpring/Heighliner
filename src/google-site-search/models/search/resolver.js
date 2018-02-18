@@ -1,5 +1,3 @@
-
-
 function getTag(tagName, { pagemap }) {
   if (!pagemap || !pagemap.metatags) return null;
   return pagemap.metatags[0][tagName];
@@ -12,7 +10,8 @@ export default {
       // adjust after to work with start
       after += 1;
 
-      const fields = "fields=queries(nextPage/startIndex,previousPage/startIndex),searchInformation/totalResults,items(cacheId,title,htmlTitle,link,displayLink,snippet,htmlSnippet,pagemap(cse_image/src,metatags/og:url,metatags/article:section))"; // tslint:disable-line
+      const fields =
+        "fields=queries(nextPage/startIndex,previousPage/startIndex),searchInformation/totalResults,items(cacheId,title,htmlTitle,link,displayLink,snippet,htmlSnippet,pagemap(cse_image/src,metatags/og:url,metatags/article:section))"; // tslint:disable-line
 
       query += `&num=${first}&start=${after}&${fields}`;
 
@@ -20,25 +19,25 @@ export default {
         query += `&=${site}`;
       }
 
-      return models.SSearch.query(query)
-        .then((x) => {
-          let next,
-            previous;
-          if (x.queries) {
-            next = x.queries.nextPage ? x.queries.nextPage[0].startIndex : 0;
-            previous = x.queries.previousPage ? x.queries.previousPage[0].startIndex : 0;
-          } else {
-            next = 0;
-            previous = 0;
-          }
+      return models.SSearch.query(query).then(x => {
+        let next, previous;
+        if (x.queries) {
+          next = x.queries.nextPage ? x.queries.nextPage[0].startIndex : 0;
+          previous = x.queries.previousPage
+            ? x.queries.previousPage[0].startIndex
+            : 0;
+        } else {
+          next = 0;
+          previous = 0;
+        }
 
-          return {
-            total: Number(x.searchInformation.totalResults),
-            next: Number(next),
-            previous: Number(previous),
-            items: x.items ? x.items : [],
-          };
-        });
+        return {
+          total: Number(x.searchInformation.totalResults),
+          next: Number(next),
+          previous: Number(previous),
+          items: x.items ? x.items : [],
+        };
+      });
     },
   },
 
@@ -61,5 +60,4 @@ export default {
     previous: ({ previous }) => previous,
     items: ({ items }) => items,
   },
-
 };

@@ -1,5 +1,5 @@
-
-export default [`
+export default [
+  `
   type DefinedValue implements Node {
     id: ID!
     _id: Int
@@ -18,4 +18,5 @@ export default [`
     id: ID!
     value: String
   }
-`];
+`,
+];

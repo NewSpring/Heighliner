@@ -1,4 +1,3 @@
-
 import Sequelize, {
   Options,
   Connection,
@@ -24,13 +23,13 @@ const EESettings = {
   opts: {
     host: process.env.MYSQL_HOST,
     ssl: process.env.MYSQL_SSL || false,
-  }
+  },
 };
 
 export function connect(monitor) {
   if (isReady) return Promise.resolve(true);
   dd = monitor && monitor.datadog;
-  return new Promise((cb) => {
+  return new Promise(cb => {
     const opts = merge({}, EESettings.opts, {
       dialect: "mysql",
       logging: process.env.LOG === "true" ? loud : noop, // tslint:disable-line
@@ -41,13 +40,21 @@ export function connect(monitor) {
       },
     });
 
-    db = new Sequelize(EESettings.database, EESettings.user, EESettings.password, opts);
+    db = new Sequelize(
+      EESettings.database,
+      EESettings.user,
+      EESettings.password,
+      opts
+    );
 
-    db.authenticate()
+    db
+      .authenticate()
       .then(() => cb(true))
       .then(() => createTables())
-      .then(() => { isReady = true; })
-      .catch((e) => {
+      .then(() => {
+        isReady = true;
+      })
+      .catch(e => {
         console.error(e); // tslint:disable-line
         db = false;
         cb(false);
@@ -56,7 +63,6 @@ export function connect(monitor) {
 }
 
 export class MySQLConnector {
-
   prefix = "exp_";
   count = 0;
 
@@ -69,24 +75,30 @@ export class MySQLConnector {
   }
 
   find(...args) {
-    return this.time(this.model.findAll.apply(this.model, args)
-      .then(this.getValues)
-      .then(data => data.map(this.mergeData)));
+    return this.time(
+      this.model.findAll
+        .apply(this.model, args)
+        .then(this.getValues)
+        .then(data => data.map(this.mergeData))
+    );
   }
 
   findOne(...args) {
-    return this.time(this.model.findOne.apply(this.model, args)
-      .then((x) => x.dataValues)
-      .then(this.mergeData));
+    return this.time(
+      this.model.findOne
+        .apply(this.model, args)
+        .then(x => x.dataValues)
+        .then(this.mergeData)
+    );
   }
 
-  mergeData = (data) => {
+  mergeData = data => {
     const keys = [];
     for (let key in data) {
       if (key.indexOf(this.prefix) > -1) keys.push(key);
     }
 
-     for (let key of keys) {
+    for (let key of keys) {
       const table = data[key];
       if (!data[key]) continue;
 
@@ -98,10 +110,10 @@ export class MySQLConnector {
     }
 
     return data;
-  }
+  };
 
   getValues(data) {
-    return data.map(x => x.dataValues)
+    return data.map(x => x.dataValues);
   }
 
   queryCount() {
@@ -119,18 +131,16 @@ export class MySQLConnector {
     return promise
       .then(x => {
         const end = new Date();
-        if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
+        if (dd) dd.histogram(`${prefix}.transaction.time`, end - start, [""]);
         console.timeEnd(label); // tslint:disable-line
         return x;
       })
       .catch(x => {
         const end = new Date();
-        if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
+        if (dd) dd.histogram(`${prefix}.transaction.time`, end - start, [""]);
         if (dd) dd.increment(`${prefix}.transaction.error`);
         console.timeEnd(label); // tslint:disable-line
         return x;
       });
   }
-
-
 }

@@ -105,7 +105,9 @@ it("`Query` feed should lower case and exclude channels passed in", () => {
   const models = {
     Content: {
       find: (object, cache) => {
-        expect(object.channel_name).toEqual({ $or: difference(eeChannels, ["devotionals"]) });
+        expect(object.channel_name).toEqual({
+          $or: difference(eeChannels, ["devotionals"]),
+        });
       },
     },
   };
@@ -233,7 +235,7 @@ it("`Query` lowReorderSets should call model function with vars", () => {
   };
   const models = {
     Content: {
-      getFromLowReorderSet: (setName) => {
+      getFromLowReorderSet: setName => {
         expect(setName).toEqual(mockData.setName);
       },
     },
@@ -343,7 +345,7 @@ it("`ContentData` should call cleanMarkup with body", () => {
   };
   const models = {
     Content: {
-      cleanMarkup: (markup) => {
+      cleanMarkup: markup => {
         expect(markup).toEqual(mockData.body);
       },
     },
@@ -360,7 +362,7 @@ it("`ContentData` should call cleanMarkup with legacy_body if no body", () => {
   };
   const models = {
     Content: {
-      cleanMarkup: (markup) => {
+      cleanMarkup: markup => {
         expect(markup).toEqual(mockData.legacy_body);
       },
     },
@@ -396,7 +398,7 @@ it("`ContentData` should call splitByNewLines", () => {
   };
   const models = {
     Content: {
-      splitByNewLines: (tags) => {
+      splitByNewLines: tags => {
         expect(tags).toEqual(mockData.tags);
       },
     },
@@ -580,7 +582,7 @@ it("`ContentData` fetches audio files if audio", async () => {
         expect(entry_id).toEqual(mockData.entry_id);
         expect(audio).toEqual(mockData.audio);
         expect(audioPosition).toEqual(
-          Number(mockData.exp_channel.exp_channel_fields.audio.split("_").pop()),
+          Number(mockData.exp_channel.exp_channel_fields.audio.split("_").pop())
         );
         expect(duration).toEqual(mockData.audio_duration);
       },
@@ -609,7 +611,9 @@ it("`ContentData` fetches tracks files if tracks", async () => {
         expect(entry_id).toEqual(mockData.entry_id);
         expect(tracks).toEqual(mockData.tracks);
         expect(trackPosition).toEqual(
-          Number(mockData.exp_channel.exp_channel_fields.tracks.split("_").pop()),
+          Number(
+            mockData.exp_channel.exp_channel_fields.tracks.split("_").pop()
+          )
         );
       },
     },
@@ -638,11 +642,17 @@ it("`ContentData` fetches audio and tracks files if both", async () => {
       getFilesFromContent: (entry_id, thing, thingPosition, duration) => {
         count++;
         expect(entry_id).toEqual(mockData.entry_id);
-        expect([mockData.audio, mockData.tracks].indexOf(thing) > -1).toBeTruthy();
+        expect(
+          [mockData.audio, mockData.tracks].indexOf(thing) > -1
+        ).toBeTruthy();
         const splitField =
           thing === mockData.audio
-            ? Number(mockData.exp_channel.exp_channel_fields.audio.split("_").pop())
-            : Number(mockData.exp_channel.exp_channel_fields.tracks.split("_").pop());
+            ? Number(
+                mockData.exp_channel.exp_channel_fields.audio.split("_").pop()
+              )
+            : Number(
+                mockData.exp_channel.exp_channel_fields.tracks.split("_").pop()
+              );
         expect(thingPosition).toEqual(splitField);
         if (thing === mockData.audio) {
           expect(duration).toEqual(mockData.audio_duration);
@@ -694,7 +704,9 @@ it("`ContentData` calls model with image position when image", async () => {
       getFilesFromContent: (entry_id, thing, position) => {
         expect(entry_id).toEqual(mockData.entry_id);
         expect(thing).toEqual(mockData.image);
-        const splitField = Number(mockData.exp_channel.exp_channel_fields.image.split("_").pop());
+        const splitField = Number(
+          mockData.exp_channel.exp_channel_fields.image.split("_").pop()
+        );
         expect(position).toEqual(splitField);
       },
     },
@@ -725,7 +737,7 @@ it("`ContentData` calls model with blurred image position when blurred image", a
         expect(entry_id).toEqual(mockData.entry_id);
         expect(thing).toEqual(mockData.image_blurred);
         const splitField = Number(
-          mockData.exp_channel.exp_channel_fields.image_blurred.split("_").pop(),
+          mockData.exp_channel.exp_channel_fields.image_blurred.split("_").pop()
         );
         expect(position).toEqual(splitField);
       },
@@ -758,11 +770,19 @@ it("`ContentData` calls model twice if both image and blurred image", async () =
       getFilesFromContent: (entry_id, thing, position) => {
         count++;
         expect(entry_id).toEqual(mockData.entry_id);
-        expect([mockData.image, mockData.image_blurred].indexOf(thing) > -1).toBeTruthy();
+        expect(
+          [mockData.image, mockData.image_blurred].indexOf(thing) > -1
+        ).toBeTruthy();
         const splitField =
           thing === mockData.image
-            ? Number(mockData.exp_channel.exp_channel_fields.image.split("_").pop())
-            : Number(mockData.exp_channel.exp_channel_fields.image_blurred.split("_").pop());
+            ? Number(
+                mockData.exp_channel.exp_channel_fields.image.split("_").pop()
+              )
+            : Number(
+                mockData.exp_channel.exp_channel_fields.image_blurred
+                  .split("_")
+                  .pop()
+              );
         expect(position).toEqual(splitField);
       },
     },
@@ -902,7 +922,7 @@ it("`ContentData` returns only ratio specified", async () => {
 
   const result = await ContentData.images(mockData, mockParams, { models });
   expect(result.length).toEqual(5);
-  result.map((image) => {
+  result.map(image => {
     expect(image.fileLabel).toEqual("2:1");
   });
 });
@@ -1017,7 +1037,7 @@ it("`ContentMeta` should call cleanMarkup with body if no summary", async () => 
   };
   const models = {
     Content: {
-      cleanMarkup: (markup) => {
+      cleanMarkup: markup => {
         expect(markup).toEqual(mockData.body);
       },
     },
@@ -1035,7 +1055,7 @@ it("`ContentMeta` should call cleanMarkup with legacy_body if no summary or body
   };
   const models = {
     Content: {
-      cleanMarkup: (markup) => {
+      cleanMarkup: markup => {
         expect(markup).toEqual(mockData.legacy_body);
       },
     },
@@ -1090,7 +1110,7 @@ it("`ContentMeta` actualDate should call getDateFromUnix", () => {
   };
   const models = {
     Content: {
-      getDateFromUnix: (actualDate) => {
+      getDateFromUnix: actualDate => {
         expect(actualDate).toEqual(mockData.actualdate);
       },
     },
@@ -1106,7 +1126,7 @@ it("`ContentMeta` entryDate should call getDateFromUnix", () => {
   };
   const models = {
     Content: {
-      getDateFromUnix: (entryDate) => {
+      getDateFromUnix: entryDate => {
         expect(entryDate).toEqual(mockData.entrydate);
       },
     },
@@ -1122,7 +1142,7 @@ it("`ContentMeta` startDate should call getDateFromUnix", () => {
   };
   const models = {
     Content: {
-      getDateFromUnix: (startDate) => {
+      getDateFromUnix: startDate => {
         expect(startDate).toEqual(mockData.startdate);
       },
     },
@@ -1138,7 +1158,7 @@ it("`ContentMeta` endDate should call getDateFromUnix", () => {
   };
   const models = {
     Content: {
-      getDateFromUnix: (endDate) => {
+      getDateFromUnix: endDate => {
         expect(endDate).toEqual(mockData.enddate);
       },
     },
@@ -1195,7 +1215,9 @@ it("`Content` campus should call campus.find", async () => {
   };
 
   const campus = await Content.campus(mockData, null, mockModels);
-  expect(mockModels.models.Campus.find).toHaveBeenCalledWith({ Name: "Clemson" });
+  expect(mockModels.models.Campus.find).toHaveBeenCalledWith({
+    Name: "Clemson",
+  });
 });
 
 it("`Content` campus should return the correct campus", async () => {
@@ -1244,7 +1266,7 @@ it("`Content` parent should call findByChildId", () => {
   };
   const models = {
     Content: {
-      findByChildId: (entry_id) => {
+      findByChildId: entry_id => {
         expect(entry_id).toEqual(mockData.entry_id);
       },
     },
@@ -1371,7 +1393,7 @@ it("`Content` related call splitByNewLines", () => {
   };
   const models = {
     Content: {
-      splitByNewLines: (tags) => {
+      splitByNewLines: tags => {
         expect(tags).toEqual(mockData.tags);
       },
     },

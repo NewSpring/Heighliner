@@ -1,9 +1,6 @@
 /* tslint:disable:no-shadowed-variable */
 
-import {
-  INTEGER,
-  STRING,
-} from "sequelize";
+import { INTEGER, STRING } from "sequelize";
 
 import { MySQLConnector } from "../../mysql";
 
@@ -30,13 +27,7 @@ const naveeNavSchema = {
 
 let Navee;
 let NaveeNav;
-export {
-  Navee,
-  naveeSchema,
-
-  NaveeNav,
-  naveeNavSchema,
-};
+export { Navee, naveeSchema, NaveeNav, naveeNavSchema };
 
 export function connect() {
   Navee = new MySQLConnector("exp_navee", naveeSchema);
@@ -48,18 +39,20 @@ export function connect() {
   };
 }
 
-export function bind({
-  Sites,
-  Navee,
-  NaveeNav,
-}) {
+export function bind({ Sites, Navee, NaveeNav }) {
   NaveeNav.model.hasOne(Navee.model, { foreignKey: "navigation_id" });
   Navee.model.belongsTo(NaveeNav.model, { foreignKey: "navigation_id" });
 
-  NaveeNav.model.belongsTo(Sites.model, { foreignKey: "site_id", targetKey: "site_id" });
+  NaveeNav.model.belongsTo(Sites.model, {
+    foreignKey: "site_id",
+    targetKey: "site_id",
+  });
   Sites.model.hasOne(NaveeNav.model, { foreignKey: "site_id" });
 
-  Navee.model.belongsTo(Sites.model, { foreignKey: "site_id", targetKey: "site_id" });
+  Navee.model.belongsTo(Sites.model, {
+    foreignKey: "site_id",
+    targetKey: "site_id",
+  });
   Sites.model.hasOne(Navee.model, { foreignKey: "site_id" });
 }
 
