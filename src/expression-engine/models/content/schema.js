@@ -88,5 +88,6 @@ export default [`
     # deprecated (moved to other types)
     tracks: [File]
     seriesId: ID
+    category: String
   }
 `];
