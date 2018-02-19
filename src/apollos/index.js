@@ -4,7 +4,7 @@ import Users from "./models/users";
 
 import { createApplication } from "../util/heighliner";
 
-export const { schema, resolvers, models, queries } = createApplication([
+export const { schema, resolvers, models, queries, mutations } = createApplication([
   Users,
 ]);
 
@@ -13,4 +13,5 @@ export default {
   resolvers,
   schema,
   connect,
+  mutations,
 };
