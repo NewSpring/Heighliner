@@ -1,7 +1,8 @@
-
-export default [`
+export default [
+  `
   type LiveFeed {
     live: Boolean!
+    fuse: Boolean!
     embedCode: String
     embedUrl: String
     videoUrl: String
@@ -25,6 +26,7 @@ export default [`
     description: String
     ooyalaId: String @deprecated(reason: "Use video instead")
     video: ContentVideo
+    wistiaId: String
     speaker: String
     isLight: Boolean
     hashtag: String
@@ -89,4 +91,5 @@ export default [`
     tracks: [File]
     seriesId: ID
   }
-`];
+`,
+];
