@@ -245,7 +245,10 @@ export class Person extends Rock {
               .then(x => x.map(y => y.Id))
               .then((x) => {
                 data.aliases = x;
-                return data;
+                return {
+                  ...data,
+                  PrimaryAliasId: id,
+                };
               }),
           ),
       { cache },
