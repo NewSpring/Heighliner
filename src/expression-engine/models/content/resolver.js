@@ -128,25 +128,20 @@ export default {
     passage: ({ passage }) => passage,
   },
 
+  ContentVideo: {
+    id: ({ hashed_id }) => hashed_id || null,
+    embedUrl: ({ hashed_id }) =>
+      hashed_id ? `http://fast.wistia.net/embed/iframe/${hashed_id}` : null,
+    videoUrl: ({ assets }) =>
+      assets ? (assets.find(({ type }) => type === "HdMp4VideoFile") || {}).url : null,
+  },
+
   ContentData: {
     body: ({ body, legacy_body }, _, { models }) => models.Content.cleanMarkup(body || legacy_body),
     description: ({ description }) => description,
     ooyalaId: ({ video }) => video,
-    video: ({ video }) => {
-      if (!video) return null;
-      const pbid = "ZmJmNTVlNDk1NjcwYTVkMzAzODkyMjg0";
-      const pcode = "E1dWM6UGncxhent7MRATc3hmkzUD";
-      const playerConfig = encodeURIComponent("https://my.newspring.cc/ooyala/skin.new.json");
-
-      const embedUrl = `https://player.ooyala.com/static/v4/production/latest/skin-plugin/iframe.html?ec=${video}&pbid=${pbid}&pcode=${pcode}&skin.config=${playerConfig}`;
-
-      return {
-        id: video,
-        embedUrl,
-        videoUrl: `https://secure-cf-c.ooyala.com/${video}/DOcJ-FxaFrRg4gtDEwOjI5cDowODE7AZ`,
-      };
-    },
     wistiaId: ({ video }) => video,
+    video: ({ video }, _, { models }) => models.Content.getContentVideo(video),
     tags: ({ tags }, _, { models }) => models.Content.splitByNewLines(tags),
     speaker: ({ speaker }) => speaker,
     hashtag: ({ hashtag }) => hashtag,
@@ -268,7 +263,7 @@ export default {
     meta: data => data,
     content: data => data,
     authors: ({ editorial_authors, author }) => {
-      const authors = author ? author : editorial_authors;
+      const authors = author || editorial_authors;
       return authors ? authors.split(",") : null;
     },
     children: ({ entry_id }, { channels, showFutureEntries }, { models }) =>
