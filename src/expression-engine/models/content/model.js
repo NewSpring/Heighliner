@@ -1,5 +1,6 @@
 
 import { isNil, pick, flatten, find, uniq, sampleSize } from "lodash";
+import fetch from "isomorphic-fetch";
 import { defaultCache } from "../../../util/cache";
 import Sequelize from "sequelize";
 import { parseGlobalId, createGlobalId } from "../../../util/node/model";
@@ -264,6 +265,20 @@ export class Content extends EE {
     return this.cache.get("snippets:PUBLIC_EMBED_CODE", () => Snippets.findOne({
       where: { snippet_name: "PUBLIC_EMBED_CODE" },
     }));
+  }
+
+  async getContentVideo(id) {
+    if (!id) return null;
+    // todo: hook this up to the caching system
+    return fetch(
+      `https://api.wistia.com/v1/medias/${id}.json?api_password=${process.env.WISTIA_KEY}`,
+    ).then((response) => {
+      if (response.status >= 400) {
+        // todo: handle this error
+        return {};
+      }
+      return response.json();
+    });
   }
 
   async getIsLive() {
