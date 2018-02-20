@@ -102,6 +102,19 @@ export default {
     live: ({ isLive }) => !!isLive,
     fuse: ({ isFuse }) => !!isFuse,
     embedCode: ({ snippet_contents }) => snippet_contents,
+    embedUrl: ({ snippet_contents: video }) => {
+      // video = 'V1a2xxZDE6g-BJTbHZEU8N37nDPFFWq1';
+      if (!video) return null;
+      const pbid = "ZmJmNTVlNDk1NjcwYTVkMzAzODkyMjg0";
+      const pcode = "E1dWM6UGncxhent7MRATc3hmkzUD";
+      const playerConfig = encodeURIComponent("https://my.newspring.cc/ooyala/skin.new.json");
+
+      const embedUrl = `https://player.ooyala.com/static/v4/production/latest/skin-plugin/iframe.html?ec=${video}&pbid=${pbid}&pcode=${pcode}&skin.config=${playerConfig}`;
+
+      return embedUrl;
+    },
+    videoUrl: ({ snippet_contents: video }) =>
+      `https://secure-cf-c.ooyala.com/${video}/DOcJ-FxaFrRg4gtDEwOjI5cDowODE7AZ`,
   },
 
   ContentColor: {
@@ -119,6 +132,20 @@ export default {
     body: ({ body, legacy_body }, _, { models }) => models.Content.cleanMarkup(body || legacy_body),
     description: ({ description }) => description,
     ooyalaId: ({ video }) => video,
+    video: ({ video }) => {
+      if (!video) return null;
+      const pbid = "ZmJmNTVlNDk1NjcwYTVkMzAzODkyMjg0";
+      const pcode = "E1dWM6UGncxhent7MRATc3hmkzUD";
+      const playerConfig = encodeURIComponent("https://my.newspring.cc/ooyala/skin.new.json");
+
+      const embedUrl = `https://player.ooyala.com/static/v4/production/latest/skin-plugin/iframe.html?ec=${video}&pbid=${pbid}&pcode=${pcode}&skin.config=${playerConfig}`;
+
+      return {
+        id: video,
+        embedUrl,
+        videoUrl: `https://secure-cf-c.ooyala.com/${video}/DOcJ-FxaFrRg4gtDEwOjI5cDowODE7AZ`,
+      };
+    },
     wistiaId: ({ video }) => video,
     tags: ({ tags }, _, { models }) => models.Content.splitByNewLines(tags),
     speaker: ({ speaker }) => speaker,
@@ -189,6 +216,13 @@ export default {
       }
 
       return Promise.all(getAllFiles).then(data => flatten(data));
+    },
+    isLiked({ entry_id }, $, { models, person = {} }) {
+      return models.Like.hasUserLike({
+        userId: person.PrimaryAliasId,
+        entryId: entry_id,
+        entryType: "Content",
+      });
     },
   },
 
