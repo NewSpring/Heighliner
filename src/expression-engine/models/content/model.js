@@ -1,6 +1,5 @@
 import { isNil, pick, flatten, find, uniq, sampleSize } from "lodash";
 import fetch from "isomorphic-fetch";
-import { defaultCache } from "../../../util/cache";
 import Sequelize from "sequelize";
 import { defaultCache } from "../../../util/cache";
 import { parseGlobalId, createGlobalId } from "../../../util/node/model";
