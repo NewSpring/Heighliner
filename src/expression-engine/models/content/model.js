@@ -1,4 +1,4 @@
-import { isNil, pick, flatten, find, uniq, sampleSize } from "lodash";
+import { isNil, pick, flatten, filter, find, uniq, sampleSize } from "lodash";
 import fetch from "isomorphic-fetch";
 import Sequelize from "sequelize";
 import { defaultCache } from "../../../util/cache";
