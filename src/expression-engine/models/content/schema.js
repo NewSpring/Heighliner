@@ -4,6 +4,7 @@ export default [`
     live: Boolean!
     embedCode: String
     embedUrl: String
+    videoUrl: String
   }
 
   # should this be a global type that implements Node?
@@ -42,6 +43,7 @@ export default [`
   type ContentVideo {
     id: String
     embedUrl: String
+    videoUrl: String
   }
 
   type ContentMeta {

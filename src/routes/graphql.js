@@ -128,7 +128,6 @@ export default function (app, monitor) {
             createdModels.Person.getFromAliasId(
               person.PrimaryAliasId,
             ), 5000);
-          context.person.PrimaryAliasId = person.PrimaryAliasId;
         } else {
           // Deprecate
           context.user = await timeout(
@@ -138,8 +137,6 @@ export default function (app, monitor) {
             createdModels.Person.getFromAliasId(
               context.user.services.rock.PrimaryAliasId,
             ), 1000);
-
-          context.person.PrimaryAliasId = context.user.services.rock.PrimaryAliasId;
         }
       } catch (e) {
         /* tslint:disable-line */

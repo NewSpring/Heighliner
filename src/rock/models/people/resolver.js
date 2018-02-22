@@ -1,5 +1,6 @@
 import Moment from "moment";
 import isArray from "lodash/isArray";
+import isEmpty from "lodash/isEmpty";
 import { createGlobalId } from "../../../util";
 
 const MutationReponseResolver = {
@@ -105,12 +106,18 @@ export default {
         return [];
       }
     },
-    photo: ({ PhotoId }, _, { models }) => {
-      if (!PhotoId) {
-        return "//dg0ddngxdz549.cloudfront.net/images/cached/images/remote/http_s3.amazonaws.com/ns.images/all/member_images/members.nophoto_1000_1000_90_c1.jpg";
-      } // tslint:disable-line
+    photo: async ({ PhotoId }, _, { models }) => {
+      const DEFAULT_PHOTO = "//dg0ddngxdz549.cloudfront.net/images/cached/images/remote/http_s3.amazonaws.com/ns.images/all/member_images/members.nophoto_1000_1000_90_c1.jpg";
+      try {
+        if (!PhotoId) return DEFAULT_PHOTO;
 
-      return models.BinaryFile.getFromId(PhotoId).then(x => x.Path);
+        const url = await models.BinaryFile.getFromId(PhotoId).then(x => x.Path);
+        if (isEmpty(url)) return DEFAULT_PHOTO;
+
+        return url;
+      } catch (err) {
+        return DEFAULT_PHOTO;
+      }
     },
     age: ({ BirthDate }) => `${Moment().diff(Moment(BirthDate), "years")}`,
     birthDate: ({ BirthDate }) => BirthDate,
