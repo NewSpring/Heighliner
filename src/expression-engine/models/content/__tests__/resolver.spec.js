@@ -394,11 +394,19 @@ it("`ContentData` should return a video", () => {
     video: "id",
   };
 
-  const video = ContentData.video(mockData);
-  expect(video).toMatchObject({
-    id: mockData.video,
-    embedUrl: expect.stringContaining('player.ooyala.com'),
-  });
+  const mockModels = {
+    Content: {
+      getContentVideo: jest.fn(),
+    },
+  };
+
+  ContentData.video(mockData, undefined, { models: mockModels });
+  expect(mockModels.Content.getContentVideo).toBeCalledWith(mockData.video);
+
+  // expect(video).toMatchObject({
+  //   id: mockData.video,
+  //   embedUrl: expect.stringContaining('player.ooyala.com'),
+  // });
 });
 
 it("`ContentData` should call splitByNewLines", () => {
