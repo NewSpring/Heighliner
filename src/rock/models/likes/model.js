@@ -11,7 +11,7 @@ const schema = {
   createdAt: String,
 };
 
-const Model = new MongoConnector("like", schema, [
+const Model = new MongoConnector("new_likes", schema, [
   {
     keys: { userId: 1, entryId: 1 },
   },
