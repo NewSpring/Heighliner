@@ -41,9 +41,9 @@ MongoClient.connect(url, async function (err, client) {
   await userTopicsAggCursor.toArray();
 
   // User Likes
-  await db.collection("likes").rename("old_likes");
+  // await db.collection("likes").rename("old_likes");
 
-  const Likes = db.collection("old_likes");
+  const Likes = db.collection("likes");
   const userLikesAggCursor = await Likes.aggregate([
     {
       $lookup: {
@@ -66,7 +66,7 @@ MongoClient.connect(url, async function (err, client) {
       }
     },
     {
-      $out: "likes",
+      $out: "new_likes",
     },
   ]);
   await userLikesAggCursor.toArray();
