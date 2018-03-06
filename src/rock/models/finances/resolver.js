@@ -1,5 +1,4 @@
 import { flatten } from "lodash";
-import moment from "moment";
 
 import { createGlobalId } from "../../../util";
 import renderStatement from "./util/statement";
@@ -36,18 +35,26 @@ export default {
       { models, person },
     ) => {
       if (!person) return null;
-      if (person.GivingGroupId) {
-        return models.Transaction.findByGivingGroup(
-          {
-            id: person.GivingGroupId,
-            include: people,
-            start,
-            end,
-          },
-          { limit, offset: skip },
-          { cache },
-        );
-      }
+      // NOTE: Not too sure what this query is trying to do
+      // it may be trying to put together transactions
+      // from all available aliases on a given user. In Holtzman
+      // this is likely broken also as the `people` object is hard-wired to
+      // a blank array (and person was returning inconsistently before also).
+      // if (person.GivingGroupId) {
+      //   console.log({ GivingGroupId: person.GivingGroupId, start, end, limit, skip, person });
+      //   return models.Transaction.findByGivingGroup(
+      //     {
+      //       id: person.GivingGroupId,
+      //       include: people,
+      //       start,
+      //       end,
+      //     },
+      //     { limit, offset: skip },
+      //     { cache },
+      //   );
+      // }
+
+      // console.log({ limit, skip, cache });
       return models.Transaction.findByPersonAlias(
         person.aliases,
         { limit, offset: skip },
