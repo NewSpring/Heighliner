@@ -9,7 +9,7 @@ export default [
     cache: Boolean = true,
     start: String,
     end: String,
-    people: [Int],
+    people: [Int] = [],
   ): [Transaction]`,
 
   `scheduledTransactions(
