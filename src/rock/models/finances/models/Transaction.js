@@ -4,6 +4,7 @@ import { assign, isArray, find, flatten } from "lodash";
 import QueryString from "querystring";
 import fetch from "isomorphic-fetch";
 import { parseString } from "xml2js";
+import get from "lodash/get";
 
 import { createGlobalId } from "../../../../util";
 import { createCache } from "../../../../util/cache";
@@ -75,17 +76,19 @@ export default class Transaction extends Rock {
   }
 
   async findByPersonAlias(aliases, { limit, offset }, { cache }) {
-    let deductibleAccounts = await FinancialAccount.find({
-      where: { IsTaxDeductible: true }
+    const deductibleAccounts = await FinancialAccount.find({
+      where: { IsTaxDeductible: true },
     }).then(x => x.map(y => y.Id));
 
     const query = { aliases, limit, offset };
+
     return this.cache.get(this.cache.encode(query), () => TransactionTable.find({
+      limit,
+      offset,
       where: { AuthorizedPersonAliasId: { $in: aliases } },
       order: [
-          ["TransactionDateTime", "DESC"],
-        ],
-      attributes: ["Id"],
+        ["TransactionDateTime", "DESC"],
+      ],
       include: [
         {
           model: TransactionDetail.model,
@@ -95,11 +98,6 @@ export default class Transaction extends Rock {
       ],
     })
     , { cache })
-      .then((x) => {
-        if(limit) return x.slice(offset, limit + offset);
-
-        return x;
-      })
       .then(this.getFromIds.bind(this));
   }
 
@@ -176,28 +174,26 @@ export default class Transaction extends Rock {
 
     let TransactionDateTime;
     if (start || end) TransactionDateTime = {};
-    if (start) TransactionDateTime.$gt = Moment(start);
-    if (end) TransactionDateTime.$lt = Moment(end);
+    if (start) TransactionDateTime.$gt = Moment(start).toDate();
+    if (end) TransactionDateTime.$lt = Moment(end).toDate();
 
     return this.cache.get(
       this.cache.encode(query, "findByGivingGroup"), () => TransactionTable.find({
-        attributes: ["Id"],
+        limit,
+        offset,
         order: [["TransactionDateTime", "DESC"]],
         where: TransactionDateTime ? [{ TransactionDateTime }] : null,
         include: [
           { model: TransactionDetail.model, where: { AccountId: { $in: deductibleAccounts } } },
           {
             model: PersonAlias.model,
-            attributes: [],
             include: [
               {
                 model: PersonTable.model,
-                attributes: [],
                 where: include && include.length ? { Id: { $in: include } } : null,
                 include: [
                   {
                     model: GroupMember.model,
-                    attributes: [],
                     include: [
                       { model: Group.model, attributes: [], where: { Id: Number(id) } },
                     ],
@@ -209,10 +205,6 @@ export default class Transaction extends Rock {
         ],
       })
     , { cache })
-      .then(x => {
-        if (!limit) return x;
-        return x.slice(offset, limit + offset);
-      })
       .then(this.getFromIds.bind(this))
       ;
   }
@@ -342,7 +334,7 @@ export default class Transaction extends Rock {
     this.gateway = assign(
       gateways,
       attributes,
-      // { SecurityKey: "2F822Rw39fx762MaV7Yy86jXGTC7sCDy" }
+      { SecurityKey: "2F822Rw39fx762MaV7Yy86jXGTC7sCDy" },
     );
     return this.gateway;
   }
@@ -508,18 +500,34 @@ export default class Transaction extends Rock {
   }
 
   async completeOrder({ scheduleId, token, person, accountName, origin, platform, version }) {
-    const gatewayDetails = await this.loadGatewayDetails("NMI Gateway");
+    try {
+      const gatewayDetails = await this.loadGatewayDetails("NMI Gateway");
 
-    return this.charge(token, gatewayDetails)
-      .then(response => formatTransaction({
+      const response = await this.charge(token, gatewayDetails);
+      const transaction = formatTransaction({
         scheduleId, response, person, accountName, origin,
-      }, gatewayDetails))
-      .then((data) => {
-        this.TransactionJob.add({...data, platform, version});
-        return data;
-      })
-      .catch(({ message, code }) =>
-         ({ error: message, code, success: false }),
-      );
+      }, gatewayDetails);
+
+      const transactionJob = { ...transaction, platform, version };
+      this.TransactionJob.add(transactionJob);
+
+      if (accountName) {
+        const savedPaymentResult = await this.TransactionJob.createSavedPayment(transactionJob);
+        return {
+          ...transaction,
+          savedPaymentId: get(savedPaymentResult, "FinancialPersonSavedAccount.Id"),
+          code: 200,
+          success: true,
+        };
+      }
+
+      return {
+        ...transaction,
+        code: 200,
+        success: true,
+      };
+    } catch ({ message, code }) {
+      return { error: message, code, success: false };
+    }
   }
 }

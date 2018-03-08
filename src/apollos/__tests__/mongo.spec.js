@@ -8,7 +8,8 @@ describe("connect", () => {
     const originalConnect = mongoose.connect;
     mongoose.connect = jest.fn((url, opts, cb) => cb(new Error()));
     const status = await connect();
-    expect(status).toBeFalsy();
+    expect(status).toBeDefined();
+    expect(status).not.toBeNull();
     mongoose.connect = originalConnect;
   });
 });

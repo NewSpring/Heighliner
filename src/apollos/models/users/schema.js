@@ -28,7 +28,33 @@ export default [`
     id: ID!
     # We should investigate how best to represent dates
     createdAt: String!
-    services: UserService
-    emails: [UserEmail]
+    services: UserService @deprecated(reason: "This is a private server-only field")
+    emails: [UserEmail] @deprecated(reason: "Use email instead")
+    email: String
+    followedTopics: [String]
+  }
+
+  type LoginMutationResponse {
+    id: ID!
+    token: String
+  }
+
+  input UserProfileInput {
+    NickName: String
+    FirstName: String
+    LastName: String
+    Email: String
+    BirthMonth: String
+    BirthDay: String
+    BirthYear: String
+    Campus: ID
+  }
+
+  input HomeAddressInput {
+    Street1: String
+    Street2: String
+    City: String
+    State: String
+    PostalCode: String
   }
 `];

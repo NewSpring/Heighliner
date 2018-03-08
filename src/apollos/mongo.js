@@ -1,10 +1,15 @@
 
 import mongoose, { Schema } from "mongoose";
 // import DataLoader from "dataloader";
+mongoose.Promise = global.Promise;
 
-let db;
+let db = mongoose.connect(process.env.MONGO_URL, {
+  server: { reconnectTries: Number.MAX_VALUE },
+});
 let dd;
 
+// NOTE: Wherever this is called it's too late in the game for
+// use to take advantage of indexing
 export function connect(monitor) {
   if (db) return Promise.resolve(true);
   dd = monitor && monitor.datadog;
@@ -28,9 +33,11 @@ mongoose.connection.on("error",
 );
 
 export class MongoConnector {
-  constructor(collection, schema) {
+  constructor(collection, schema, indexes = []) {
     this.db = db;
-    this.model = mongoose.model(collection, new Schema(schema));
+    this.schema = new Schema(schema);
+    indexes.forEach(({ keys, options } = {}) => this.schema.index(keys, options));
+    this.model = mongoose.model(collection, this.schema);
     this.count = 0;
 
     // XXX integrate data loader
