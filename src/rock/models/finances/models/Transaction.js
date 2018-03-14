@@ -510,9 +510,7 @@ export default class Transaction extends Rock {
   async completeOrder({ scheduleId, token, person, accountName, origin, platform, version }) {
     try {
       const gatewayDetails = await this.loadGatewayDetails(`${process.env.NMI_GATEWAY}`);
-      console.log("deatils: ", gatewayDetails);
       const response = await this.charge(token, gatewayDetails);
-      console.log("resp", response);
       const transaction = formatTransaction(
         {
           scheduleId,
