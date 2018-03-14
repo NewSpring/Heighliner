@@ -1,9 +1,9 @@
-
 import Moment from "moment";
 import { assign, isArray, find, flatten } from "lodash";
 import QueryString from "querystring";
 import fetch from "isomorphic-fetch";
 import { parseString } from "xml2js";
+import get from "lodash/get";
 
 import { createGlobalId } from "../../../../util";
 import { createCache } from "../../../../util/cache";
@@ -23,21 +23,11 @@ import {
   FinancialPaymentDetail as FinancialPaymentDetailTable,
 } from "../tables";
 
+import { AttributeValue, Attribute } from "../../system/tables";
 
-import {
-  AttributeValue,
-  Attribute,
-} from "../../system/tables";
+import { Person as PersonTable, PersonAlias } from "../../people/tables";
 
-import {
-  Person as PersonTable,
-  PersonAlias,
-} from "../../people/tables";
-
-import {
-  Group,
-  GroupMember,
-} from "../../groups/tables";
+import { Group, GroupMember } from "../../groups/tables";
 
 import { Rock } from "../../system";
 
@@ -54,7 +44,7 @@ export default class Transaction extends Rock {
   TransactionJob = TransactionJob;
 
   async getFromId(id, globalId) {
-    globalId = globalId ? globalId : createGlobalId(id, this.__type);
+    globalId = globalId || createGlobalId(id, this.__type);
     return this.cache.get(globalId, () => TransactionTable.findOne({ where: { Id: id } }));
   }
 
@@ -68,42 +58,47 @@ export default class Transaction extends Rock {
     if (!id) return Promise.resolve(null);
 
     const globalId = createGlobalId(`${id}`, "PaymentDetail");
-    return this.cache.get(globalId, () => FinancialPaymentDetailTable.findOne({
-      where: { Id: id },
-    }),
+    return this.cache.get(globalId, () =>
+      FinancialPaymentDetailTable.findOne({
+        where: { Id: id },
+      }),
     );
   }
 
   async findByPersonAlias(aliases, { limit, offset }, { cache }) {
-    let deductibleAccounts = await FinancialAccount.find({
-      where: { IsTaxDeductible: true }
+    const deductibleAccounts = await FinancialAccount.find({
+      where: { IsTaxDeductible: true },
     }).then(x => x.map(y => y.Id));
 
     const query = { aliases, limit, offset };
-    return this.cache.get(this.cache.encode(query), () => TransactionTable.find({
-      where: { AuthorizedPersonAliasId: { $in: aliases } },
-      order: [
-          ["TransactionDateTime", "DESC"],
-        ],
-      attributes: ["Id"],
-      include: [
-        {
-          model: TransactionDetail.model,
-          where: { AccountId: { $in: deductibleAccounts } },
-          attributes: [],
-        },
-      ],
-    })
-    , { cache })
-      .then((x) => {
-        if(limit) return x.slice(offset, limit + offset);
 
-        return x;
-      })
+    return this.cache
+      .get(
+        this.cache.encode(query),
+        () =>
+          TransactionTable.find({
+            limit,
+            offset,
+            where: { AuthorizedPersonAliasId: { $in: aliases } },
+            order: [["TransactionDateTime", "DESC"]],
+            include: [
+              {
+                model: TransactionDetail.model,
+                where: { AccountId: { $in: deductibleAccounts } },
+                attributes: [],
+              },
+            ],
+          }),
+        { cache },
+      )
       .then(this.getFromIds.bind(this));
   }
 
-  async findByAccountType({ personId, id, include = [], start, end }, { limit, offset }, { cache }) {
+  async findByAccountType(
+    { personId, id, include = [], start, end },
+    { limit, offset },
+    { cache },
+  ) {
     if (!include.length) return null;
 
     const query = { id, include, start, end, personId };
@@ -113,20 +108,20 @@ export default class Transaction extends Rock {
     if (start) TransactionDateTime.$gt = Moment(start);
     if (end) TransactionDateTime.$lt = Moment(end);
 
-    let ParentAccount = await FinancialAccount.find({
-      where: { ParentAccountId: id }
+    const ParentAccount = await FinancialAccount.find({
+      where: { ParentAccountId: id },
     }).then(x => x.map(y => y.Id));
 
     const where = {
       AuthorizedPersonAliasId: {
-        $in: include
-      }
+        $in: include,
+      },
     };
 
     const includeQuery = [
       {
         model: TransactionDetail.model,
-        where: { AccountId: { $in: ParentAccount }}
+        where: { AccountId: { $in: ParentAccount } },
       },
     ];
 
@@ -143,9 +138,7 @@ export default class Transaction extends Rock {
               {
                 model: GroupMember.model,
                 attributes: [],
-                include: [
-                  { model: Group.model, attributes: [], where: { Id: personId } },
-                ],
+                include: [{ model: Group.model, attributes: [], where: { Id: personId } }],
               },
             ],
           },
@@ -155,69 +148,71 @@ export default class Transaction extends Rock {
 
     if (start) where.TransactionDateTime = TransactionDateTime;
 
-    return this.cache.get(
-      this.cache.encode(query, "findByAccountType"), () => TransactionTable.find({
-        order: [["TransactionDateTime", "DESC"]],
-        where,
-        include: includeQuery,
-      })
-    , { cache }).then((x) => {
-      if(limit) return x.slice(offset, limit + offset);
+    return this.cache
+      .get(
+        this.cache.encode(query, "findByAccountType"),
+        () =>
+          TransactionTable.find({
+            order: [["TransactionDateTime", "DESC"]],
+            where,
+            include: includeQuery,
+          }),
+        { cache },
+      )
+      .then((x) => {
+        if (limit) return x.slice(offset, limit + offset);
 
-      return x;
-    });
+        return x;
+      });
   }
 
   async findByGivingGroup({ id, include, start, end }, { limit, offset }, { cache }) {
     const query = { id, include, start, end };
-    let deductibleAccounts = await FinancialAccount.find({
-      where: { IsTaxDeductible: true }
+    const deductibleAccounts = await FinancialAccount.find({
+      where: { IsTaxDeductible: true },
     }).then(x => x.map(y => y.Id));
 
     let TransactionDateTime;
     if (start || end) TransactionDateTime = {};
-    if (start) TransactionDateTime.$gt = Moment(start);
-    if (end) TransactionDateTime.$lt = Moment(end);
+    if (start) TransactionDateTime.$gt = Moment(start).toDate();
+    if (end) TransactionDateTime.$lt = Moment(end).toDate();
 
-    return this.cache.get(
-      this.cache.encode(query, "findByGivingGroup"), () => TransactionTable.find({
-        attributes: ["Id"],
-        order: [["TransactionDateTime", "DESC"]],
-        where: TransactionDateTime ? [{ TransactionDateTime }] : null,
-        include: [
-          { model: TransactionDetail.model, where: { AccountId: { $in: deductibleAccounts } } },
-          {
-            model: PersonAlias.model,
-            attributes: [],
+    return this.cache
+      .get(
+        this.cache.encode(query, "findByGivingGroup"),
+        () =>
+          TransactionTable.find({
+            limit,
+            offset,
+            order: [["TransactionDateTime", "DESC"]],
+            where: TransactionDateTime ? [{ TransactionDateTime }] : null,
             include: [
+              { model: TransactionDetail.model, where: { AccountId: { $in: deductibleAccounts } } },
               {
-                model: PersonTable.model,
-                attributes: [],
-                where: include && include.length ? { Id: { $in: include } } : null,
+                model: PersonAlias.model,
                 include: [
                   {
-                    model: GroupMember.model,
-                    attributes: [],
+                    model: PersonTable.model,
+                    where: include && include.length ? { Id: { $in: include } } : null,
                     include: [
-                      { model: Group.model, attributes: [], where: { Id: Number(id) } },
+                      {
+                        model: GroupMember.model,
+                        include: [
+                          { model: Group.model, attributes: [], where: { Id: Number(id) } },
+                        ],
+                      },
                     ],
                   },
                 ],
               },
             ],
-          },
-        ],
-      })
-    , { cache })
-      .then(x => {
-        if (!limit) return x;
-        return x.slice(offset, limit + offset);
-      })
-      .then(this.getFromIds.bind(this))
-      ;
+          }),
+        { cache },
+      )
+      .then(this.getFromIds.bind(this));
   }
 
-  async getStatement({ people, start, end, givingGroupId }){
+  async getStatement({ people, start, end, givingGroupId }) {
     const query = { people, start, end, givingGroupId };
 
     let TransactionDateTime;
@@ -225,18 +220,18 @@ export default class Transaction extends Rock {
     if (start) TransactionDateTime.$gt = Moment(start);
     if (end) TransactionDateTime.$lt = Moment(end);
 
-    let deductibleAccounts = await FinancialAccount.find({
-      where: { IsTaxDeductible: true }
+    const deductibleAccounts = await FinancialAccount.find({
+      where: { IsTaxDeductible: true },
     }).then(x => x.map(y => y.Id));
 
-    const where = { };
+    const where = {};
 
     const includeQuery = [
       {
         model: TransactionDetail.model,
         attributes: ["Amount", "AccountId"],
         where: { AccountId: { $in: deductibleAccounts } },
-        include: [{ model: FinancialAccount.model }]
+        include: [{ model: FinancialAccount.model }],
       },
       {
         model: PersonAlias.model,
@@ -250,14 +245,12 @@ export default class Transaction extends Rock {
               {
                 model: GroupMember.model,
                 attributes: [],
-                include: [
-                  { model: Group.model, attributes: [], where: { Id: givingGroupId } },
-                ],
+                include: [{ model: Group.model, attributes: [], where: { Id: givingGroupId } }],
               },
             ],
           },
         ],
-      }
+      },
     ];
 
     if (start) where.TransactionDateTime = TransactionDateTime;
@@ -267,41 +260,43 @@ export default class Transaction extends Rock {
       const parent = find(ParentAccounts, { Id: x.FinancialAccount.ParentAccountId });
       if (parent) return parent.PublicName;
       return x.FinancialAccount.PublicName;
-    }
+    };
 
-    return this.cache.get(
-      this.cache.encode(query, "getStatement"), () => TransactionTable.find({
-        order: [["TransactionDateTime", "DESC"]],
-        attributes: ["TransactionDateTime"],
-        where,
-        include: includeQuery,
-      })
-    )
+    return this.cache
+      .get(this.cache.encode(query, "getStatement"), () =>
+        TransactionTable.find({
+          order: [["TransactionDateTime", "DESC"]],
+          attributes: ["TransactionDateTime"],
+          where,
+          include: includeQuery,
+        }),
+      )
       .then((transactions) => {
         let total = 0;
         let details;
-        if(!Array.isArray(transactions)) {
+        if (!Array.isArray(transactions)) {
           details = [];
         } else {
-          details = flatten(transactions.map(({ TransactionDateTime, FinancialTransactionDetails }) => {
-            return FinancialTransactionDetails.map((x) => {
-              total += x.Amount;
-              return {
-                Amount: x.Amount,
-                Date: Moment(TransactionDateTime).format("MMM D, YYYY"),
-                Name: getName(x),
-              };
-            });
-          }));
+          details = flatten(
+            transactions.map(({ TransactionDateTime, FinancialTransactionDetails }) =>
+              FinancialTransactionDetails.map((x) => {
+                total += x.Amount;
+                return {
+                  Amount: x.Amount,
+                  Date: Moment(TransactionDateTime).format("MMM D, YYYY"),
+                  Name: getName(x),
+                };
+              }),
+            ),
+          );
         }
 
         return {
           transactions: details,
           total,
-        }
+        };
       })
-      .catch(this.debug)
-      ;
+      .catch(this.debug);
   }
 
   async loadGatewayDetails(gateway) {
@@ -320,30 +315,23 @@ export default class Transaction extends Rock {
           model: Attribute.model,
           where: {
             key: {
-              $in: [
-                "AdminUsername",
-                "AdminPassword",
-                "APIUrl",
-                "QueryUrl",
-                "SecurityKey",
-              ],
+              $in: ["AdminUsername", "AdminPassword", "APIUrl", "QueryUrl", "SecurityKey"],
             },
           },
         },
       ],
     })
       .then(x => x.map(y => ({ value: y.Value, key: y.Attribute.Key })))
-      .then(x => x.reduce((y, z, index) => {
-        if (index === 1) return { [y.key]: y.value, [z.key]: z.value };
-        return assign(y, { [z.key]: z.value });
-      }))
-      ;
+      .then(x =>
+        x.reduce((y, z, index) => {
+          if (index === 1) return { [y.key]: y.value, [z.key]: z.value };
+          return assign(y, { [z.key]: z.value });
+        }),
+      );
 
-    this.gateway = assign(
-      gateways,
-      attributes,
-      // { SecurityKey: "2F822Rw39fx762MaV7Yy86jXGTC7sCDy" }
-    );
+    this.gateway = assign(gateways, attributes, {
+      SecurityKey: process.env.NMI_KEY,
+    });
     return this.gateway;
   }
 
@@ -353,29 +341,39 @@ export default class Transaction extends Rock {
     const PersonId = args.personId;
     if (args.personId) delete args.personId;
 
-    const querystring = QueryString.stringify(assign({
-      username: gateway.AdminUsername,
-      password: gateway.AdminPassword,
-    }, args));
+    const querystring = QueryString.stringify(
+      assign(
+        {
+          username: gateway.AdminUsername,
+          password: gateway.AdminPassword,
+        },
+        args,
+      ),
+    );
 
     const url = `${gateway.QueryUrl}?${querystring}`;
     const transactions = await fetch(url, { method: "POST" })
       .then(x => x.text())
-      .then(x => new Promise((a, f) => {
-        parseString(x, { trim: true, explicitArray: false, mergeAttrs: true }, (err, result) => {
-          if (err) f(err);
-          if (!err) a(result);
-        });
-      }))
-      .then(x => x && (x).nm_response && (x).nm_response.transaction)
-      .then(x => isArray(x) ? x : [x])
-      .then(x => x && x.map(y => translateFromNMI(y, gateway, PersonId)))
-      ;
+      .then(
+        x =>
+          new Promise((a, f) => {
+            parseString(
+              x,
+              { trim: true, explicitArray: false, mergeAttrs: true },
+              (err, result) => {
+                if (err) f(err);
+                if (!err) a(result);
+              },
+            );
+          }),
+      )
+      .then(x => x && x.nm_response && x.nm_response.transaction)
+      .then(x => (isArray(x) ? x : [x]))
+      .then(x => x && x.map(y => translateFromNMI(y, gateway, PersonId)));
 
     return Promise.all(transactions.map(submitTransaction))
       .then(y => y.filter(x => !!x))
-      .then(this.getFromIds.bind(this))
-      ;
+      .then(this.getFromIds.bind(this));
   }
 
   charge = async (token, gatewayDetails) => {
@@ -387,12 +385,12 @@ export default class Transaction extends Rock {
     };
 
     return nmi(complete, gatewayDetails);
-  }
+  };
 
   async createOrder({ data, instant, id, ip, requestUrl, origin }, person, models) {
     if (!data) return Promise.reject(new Error("No data provided"));
 
-    const gateway = await this.loadGatewayDetails("NMI Gateway");
+    const gateway = await this.loadGatewayDetails(`${process.env.NMI_GATEWAY}`);
     const orderData = data;
 
     let method = "sale";
@@ -404,8 +402,7 @@ export default class Transaction extends Rock {
     if (orderData["start-date"]) method = "add-subscription";
 
     if (orderData.product && orderData.product.length) {
-      orderData.product = orderData.product
-        .map((x) => ({ ...x, "unit-cost": x["total-amount"]}));
+      orderData.product = orderData.product.map(x => ({ ...x, "unit-cost": x["total-amount"] }));
     }
 
     if (
@@ -450,8 +447,8 @@ export default class Transaction extends Rock {
 
     const generatedId = `apollos_${Date.now()}_${Math.ceil(Math.random() * 100000)}`;
     if (method !== "add-customer") {
-      orderData["order-description"] = "Online contribution from Apollos",
-      orderData["order-id"] = generatedId || orderData.orderId;
+      (orderData["order-description"] = "Online contribution from Apollos"),
+        (orderData["order-id"] = generatedId || orderData.orderId);
     }
 
     const order = {
@@ -462,9 +459,12 @@ export default class Transaction extends Rock {
     };
 
     if (order && order[method]) {
-      if(method === "add-subscription"){
+      if (method === "add-subscription") {
         if (!order[method]["merchant-defined-field-1"]) {
-          report({ data }, new Error("merchant-defined-field-1 missing from subscription order information"));
+          report(
+            { data },
+            new Error("merchant-defined-field-1 missing from subscription order information"),
+          );
         }
       }
       if (!order[method]["merchant-defined-field-2"]) {
@@ -508,18 +508,40 @@ export default class Transaction extends Rock {
   }
 
   async completeOrder({ scheduleId, token, person, accountName, origin, platform, version }) {
-    const gatewayDetails = await this.loadGatewayDetails("NMI Gateway");
-
-    return this.charge(token, gatewayDetails)
-      .then(response => formatTransaction({
-        scheduleId, response, person, accountName, origin,
-      }, gatewayDetails))
-      .then((data) => {
-        this.TransactionJob.add({...data, platform, version});
-        return data;
-      })
-      .catch(({ message, code }) =>
-         ({ error: message, code, success: false }),
+    try {
+      const gatewayDetails = await this.loadGatewayDetails(`${process.env.NMI_GATEWAY}`);
+      const response = await this.charge(token, gatewayDetails);
+      const transaction = formatTransaction(
+        {
+          scheduleId,
+          response,
+          person,
+          accountName,
+          origin,
+        },
+        gatewayDetails,
       );
+
+      const transactionJob = { ...transaction, platform, version };
+      this.TransactionJob.add(transactionJob);
+
+      if (accountName) {
+        const savedPaymentResult = await this.TransactionJob.createSavedPayment(transactionJob);
+        return {
+          ...transaction,
+          savedPaymentId: get(savedPaymentResult, "FinancialPersonSavedAccount.Id"),
+          code: 200,
+          success: true,
+        };
+      }
+
+      return {
+        ...transaction,
+        code: 200,
+        success: true,
+      };
+    } catch ({ message, code }) {
+      return { error: message, code, success: false };
+    }
   }
 }
