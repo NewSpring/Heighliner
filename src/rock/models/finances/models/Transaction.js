@@ -182,8 +182,8 @@ export default class Transaction extends Rock {
         this.cache.encode(query, "findByGivingGroup"),
         () =>
           TransactionTable.find({
-            limit,
-            offset,
+            // limit,
+            // offset,
             order: [["TransactionDateTime", "DESC"]],
             where: TransactionDateTime ? [{ TransactionDateTime }] : null,
             include: [
@@ -209,6 +209,10 @@ export default class Transaction extends Rock {
           }),
         { cache },
       )
+      .then((x) => {
+        if (!limit) return x;
+        return x.slice(offset, limit + offset);
+      })
       .then(this.getFromIds.bind(this));
   }
 
