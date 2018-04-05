@@ -389,6 +389,27 @@ it("`ContentData` should return wistiaId", () => {
   expect(wistiaId).toEqual(mockData.video);
 });
 
+it("`ContentData` should return a video", () => {
+  const { ContentData } = Resolver;
+  const mockData = {
+    video: "id",
+  };
+
+  const mockModels = {
+    Content: {
+      getContentVideo: jest.fn(),
+    },
+  };
+
+  ContentData.video(mockData, undefined, { models: mockModels });
+  expect(mockModels.Content.getContentVideo).toBeCalledWith(mockData.video);
+
+  // expect(video).toMatchObject({
+  //   id: mockData.video,
+  //   embedUrl: expect.stringContaining('player.ooyala.com'),
+  // });
+});
+
 it("`ContentData` should call splitByNewLines", () => {
   const { ContentData } = Resolver;
   const mockData = {
