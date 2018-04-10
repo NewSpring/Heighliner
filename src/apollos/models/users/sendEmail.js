@@ -126,9 +126,7 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
       IsBulkCommunication: false,
       Guid: makeNewGuid(),
       Subject: subject,
-      MediumData: {
-        HtmlMessage: body,
-      },
+      Message: body,
     });
 
     if (typeof PersonAliasId === "number") {
