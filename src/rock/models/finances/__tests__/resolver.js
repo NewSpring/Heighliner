@@ -35,44 +35,45 @@ describe("Query", () => {
     });
   });
   describe("Transactions", () => {
-    it("finds transactions by GivingGroupId if it is defined", () => {
-      const models = {
-        Transaction: {
-          findByGivingGroup: jest.fn(),
-          findByPersonAlias: jest.fn(),
-        },
-      };
+    // NOTE: It doesn't anymore, disabling until it's relevant
+    // it("finds transactions by GivingGroupId if it is defined", () => {
+    //   const models = {
+    //     Transaction: {
+    //       findByGivingGroup: jest.fn(),
+    //       findByPersonAlias: jest.fn(),
+    //     },
+    //   };
 
-      const person = {
-        PersonAliasId: 100,
-        aliases: [22222],
-        GivingGroupId: 7878,
-      };
+    //   const person = {
+    //     PersonAliasId: 100,
+    //     aliases: [22222],
+    //     GivingGroupId: 7878,
+    //   };
 
-      resolver.Query.transactions(
-        null,
-        {
-          people: [10, 11],
-          start: "01/15",
-          end: "01/16",
-          limit: 3,
-          skip: 1,
-          cache: true,
-        },
-        { models, person },
-      );
-      expect(models.Transaction.findByGivingGroup).toBeCalledWith(
-        {
-          id: 7878,
-          include: [10, 11],
-          start: "01/15",
-          end: "01/16",
-        },
-        { limit: 3, offset: 1 },
-        { cache: true },
-      );
-      expect(models.Transaction.findByPersonAlias).not.toBeCalled();
-    });
+    //   resolver.Query.transactions(
+    //     null,
+    //     {
+    //       people: [10, 11],
+    //       start: "01/15",
+    //       end: "01/16",
+    //       limit: 3,
+    //       skip: 1,
+    //       cache: true,
+    //     },
+    //     { models, person },
+    //   );
+    //   expect(models.Transaction.findByGivingGroup).toBeCalledWith(
+    //     {
+    //       id: 7878,
+    //       include: [10, 11],
+    //       start: "01/15",
+    //       end: "01/16",
+    //     },
+    //     { limit: 3, offset: 1 },
+    //     { cache: true },
+    //   );
+    //   expect(models.Transaction.findByPersonAlias).not.toBeCalled();
+    // });
     it("finds transactions by PersonAliases if no GroupId is defined", () => {
       const models = {
         Transaction: {
