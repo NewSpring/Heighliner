@@ -1,6 +1,4 @@
-
 export default [
-
   `syncTransactions(
     condition: String,
     transaction_type: String,
@@ -12,14 +10,14 @@ export default [
     start_date: String,
     end_date: String,
     personId: Int,
-    gateway: String = "NMI Gateway",
+    gateway: String = "${process.env.NMI_GATEWAY}",
   ): [Transaction]`,
 
   `createOrder(
     data: String!
     id: ID
     instant: Boolean = false,
-    gateway: String = "NMI Gateway",
+    gateway: String = "${process.env.NMI_GATEWAY}",
     url: String
   ): OrderMutationResponse`,
 
@@ -27,24 +25,24 @@ export default [
     token: ID!
     scheduleId: ID
     accountName: String
-    gateway: String = "NMI Gateway",
+    gateway: String = "${process.env.NMI_GATEWAY}",
   ): CompleteOrderMutationResponse`,
 
   `validate(
     token: ID!
-    gateway: String = "NMI Gateway",
+    gateway: String = "${process.env.NMI_GATEWAY}",
   ): ValidateMutationResponse`,
 
   `cancelSavedPayment(
     id: ID
     entityId: Int
-    gateway: String = "NMI Gateway",
+    gateway: String = "${process.env.NMI_GATEWAY}",
   ): SavePaymentMutationResponse`,
 
   `savePayment(
     token: ID!
     accountName: String
-    gateway: String = "NMI Gateway",
+    gateway: String = "${process.env.NMI_GATEWAY}",
   ): SavePaymentMutationResponse`,
 
   `updateSavedPayment(
@@ -55,7 +53,7 @@ export default [
   `cancelSchedule(
     id: ID
     entityId: Int
-    gateway: String = "NMI Gateway",
+    gateway: String = "${process.env.NMI_GATEWAY}",
   ): ScheduledTransactionMutationResponse`,
 
   `transactionStatement(
@@ -64,5 +62,5 @@ export default [
     people: [Int]
     start: String
     end: String
-  ): StatementMutationResponse`
+  ): StatementMutationResponse`,
 ];
