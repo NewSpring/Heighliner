@@ -4,10 +4,11 @@ exports[`Feeds Queries has all needed queries 1`] = `
 Array [
   "userFeed(
     filters: [String]!
-    limit: Int = 20,
-    skip: Int = 0,
-    status: String = \\"open\\",
+    limit: Int = 20
+    skip: Int = 0
+    status: String = \\"open\\"
     cache: Boolean = true
+    options: String = \\"{}\\"
   ): [Node]",
 ]
 `;
