@@ -401,13 +401,11 @@ it("`ContentData` should return a video", () => {
     },
   };
 
-  ContentData.video(mockData, undefined, { models: mockModels });
-  expect(mockModels.Content.getContentVideo).toBeCalledWith(mockData.video);
+  const video = ContentData.video(mockData, undefined, { models: mockModels });
 
-  // expect(video).toMatchObject({
-  //   id: mockData.video,
-  //   embedUrl: expect.stringContaining('player.ooyala.com'),
-  // });
+  expect(video).toMatchObject({
+    hashed_id: mockData.video,
+  });
 });
 
 it("`ContentData` should call splitByNewLines", () => {
