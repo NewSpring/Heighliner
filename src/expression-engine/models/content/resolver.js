@@ -129,11 +129,12 @@ export default {
   },
 
   ContentVideo: {
-    id: ({ hashed_id }) => hashed_id || null,
-    embedUrl: ({ hashed_id }) =>
-      hashed_id ? `http://fast.wistia.net/embed/iframe/${hashed_id}` : null,
-    videoUrl: ({ assets }) =>
-      assets ? (assets.find(({ type }) => type === "HdMp4VideoFile") || {}).url : null,
+    id: video => video || null,
+    embedUrl: video => // eslint-disable-line
+      video ? `http://fast.wistia.net/embed/iframe/${video}` : null,
+    videoUrl: () => null,
+    // todo: re-enable
+    //  assets ? (assets.find(({ type }) => type === "HdMp4VideoFile") || {}).url : null,
   },
 
   ContentData: {
@@ -141,7 +142,7 @@ export default {
     description: ({ description }) => description,
     ooyalaId: ({ video }) => video,
     wistiaId: ({ video }) => video,
-    video: ({ video }, _, { models }) => models.Content.getContentVideo(video),
+    video: ({ video }) => video,
     tags: ({ tags }, _, { models }) => models.Content.splitByNewLines(tags),
     speaker: ({ speaker }) => speaker,
     hashtag: ({ hashtag }) => hashtag,
