@@ -334,7 +334,7 @@ export default class Transaction extends Rock {
       );
 
     this.gateway = assign(gateways, attributes, {
-      SecurityKey: process.env.NMI_KEY,
+      // SecurityKey: process.env.NMI_KEY,
     });
     return this.gateway;
   }
