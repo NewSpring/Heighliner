@@ -71,10 +71,14 @@ MongoClient.connect(url, async function (err, client) {
   ]);
   await userLikesAggCursor.toArray();
 
-  Likes.find().forEach(function(doc) {
-    doc.createdAt = new Date(doc.createdAt);
-    db.Likes.save(doc);
-  });
+  var cursor = Likes.find();
+  while (cursor.hasNext()) {
+    var doc = cursor.next();
+    Likes.update(
+        {"_id" : doc._id},
+        {"$set" : {"createdAt" : new ISODate(doc.createdAt)}}
+      )
+  };
 
   client.close();
 });
