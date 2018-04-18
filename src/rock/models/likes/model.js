@@ -8,7 +8,7 @@ const schema = {
   userId: String, // AKA: PrimaryAliasId (pending migration from mongoId to rockId)
   entryId: String, // AKA: id returned by content
   type: String,
-  createdAt: String,
+  createdAt: Date,
 };
 
 const Model = new MongoConnector("like", schema, [
@@ -66,8 +66,7 @@ export class Like {
 
     const guid = createGlobalId(`${limit}:${skip}:${userId}`, this.__type);
     const entryIds = await this.cache.get(guid, async () => {
-      let ids = await this.model.distinct("entryId", query);
-      if (ids && Array.isArray(ids)) ids.reverse();
+      let ids = await this.model.distinct("entryId", query).sort({ createdAt: -1 });
       return safeTrimArray(skip, limit, ids, null);
     });
 
