@@ -61,11 +61,7 @@ MongoClient.connect(url, async function (err, client) {
         _id: 1,
         userId: "$user.services.rock.PrimaryAliasId",
         entryId: 1,
-        createdAt: {
-          $dateFromString: {
-             dateString: '$createdAt',
-          }
-        },
+        createdAt: 1,
         __v: { $literal: 0 },
       }
     },
@@ -74,6 +70,11 @@ MongoClient.connect(url, async function (err, client) {
     },
   ]);
   await userLikesAggCursor.toArray();
+
+  Likes.find().forEach(function(doc) {
+    doc.createdAt = new Date(doc.createdAt);
+    db.Likes.save(doc);
+  });
 
   client.close();
 });
