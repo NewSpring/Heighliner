@@ -1,6 +1,7 @@
 
 export default [
   "savedPayments(limit: Int = 20, skip: Int = 0, cache: Boolean = true): [SavedPayment]",
+  "savedPayment(id: ID!): SavedPayment",
 
   `transactions(
     limit: Int = 20,
@@ -8,7 +9,7 @@ export default [
     cache: Boolean = true,
     start: String,
     end: String,
-    people: [Int],
+    people: [Int] = [],
   ): [Transaction]`,
 
   `scheduledTransactions(
