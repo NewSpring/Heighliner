@@ -386,6 +386,7 @@ export class User {
   }
 
   async getUserFollowingTopics(userId) {
+    if (!userId) return FOLLOWABLE_TOPICS;
     try {
       const ignoredTopicObjects = await this.ignoredTopics.find({
         userId,
