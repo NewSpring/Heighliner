@@ -389,6 +389,25 @@ it("`ContentData` should return wistiaId", () => {
   expect(wistiaId).toEqual(mockData.video);
 });
 
+it("`ContentData` should return a video", () => {
+  const { ContentData } = Resolver;
+  const mockData = {
+    video: "id",
+  };
+
+  const mockModels = {
+    Content: {
+      getContentVideo: jest.fn(),
+    },
+  };
+
+  const video = ContentData.video(mockData, undefined, { models: mockModels });
+
+  expect(video).toMatchObject({
+    hashed_id: mockData.video,
+  });
+});
+
 it("`ContentData` should call splitByNewLines", () => {
   const { ContentData } = Resolver;
   const mockData = {

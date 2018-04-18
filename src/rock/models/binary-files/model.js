@@ -1,4 +1,5 @@
 // import { merge } from "lodash";
+import isEmpty from "lodash/isEmpty";
 import { defaultCache } from "../../../util/cache";
 import { createGlobalId } from "../../../util";
 
@@ -8,6 +9,7 @@ import {
 } from "./tables";
 
 import { Rock } from "../system/model";
+import * as api from "../../../apollos/models/users/api";
 
 export class BinaryFile extends Rock {
    __type = "BinaryFile";
@@ -19,7 +21,7 @@ export class BinaryFile extends Rock {
 
   processFile(file) {
     // is relative path to Rock
-    if (file.Path[0] === "~") {
+    if (file.Path && file.Path[0] === "~") {
       file.Path = file.Path.substr(2);
       file.Path = this.baseUrl + file.Path;
     }
@@ -55,10 +57,22 @@ export class BinaryFile extends Rock {
     })
       .then(this.getFromIds.bind(this))
     );
-
   }
 
-
+  async attachPhotoIdToUser({ personId, previousPhotoId, newPhotoId } = {}) {
+    try {
+      await api.patch(`/People/${personId}`, {
+        PhotoId: newPhotoId,
+      });
+      if (!isEmpty(previousPhotoId)) {
+        try {
+          await api.delete(`/BinaryFiles/${previousPhotoId}`);
+        } catch (e) {} // eslint-disable-line
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
 }
 
 export default {
