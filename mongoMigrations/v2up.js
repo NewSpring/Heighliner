@@ -61,7 +61,11 @@ MongoClient.connect(url, async function (err, client) {
         _id: 1,
         userId: "$user.services.rock.PrimaryAliasId",
         entryId: 1,
-        createdAt: 1,
+        createdAt: {
+          $dateFromString: {
+             dateString: '$createdAt',
+          }
+        },
         __v: { $literal: 0 },
       }
     },
@@ -71,14 +75,17 @@ MongoClient.connect(url, async function (err, client) {
   ]);
   await userLikesAggCursor.toArray();
 
-  var cursor = db.collection("likes").find();
-  while (cursor.hasNext()) {
-    var doc = cursor.next();
+  var cursor = await db.collection("likes").find().toArray();
+
+  let i = 0;
+
+  await cursor.forEach(function(doc) {
     db.collection("likes").update(
         {"_id" : doc._id},
-        {"$set" : {"createdAt" : new ISODate(doc.createdAt)}}
+        {"$set" : {"createdAt" : new Date(doc.createdAt)}}
       )
-  };
-
+    console.log("updated: ", i++);
+  });
+  
   client.close();
 });
