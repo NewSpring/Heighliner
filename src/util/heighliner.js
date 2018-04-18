@@ -12,6 +12,11 @@ import {
   mutations as cacheMutation,
 } from "./cache/defaults";
 
+import {
+  schema as dateSchema,
+  resolver as dateResolver,
+} from "./scalars/Date";
+
 export function getIp(request) {
   return request.headers["x-forwarded-for"] ||
     request.connection.remoteAddress ||
@@ -59,9 +64,9 @@ export function createApplication(models) {
 
 export function loadApplications(applications) {
   const joined = {
-    schema: [...nodeSchema],
+    schema: [...nodeSchema, ...dateSchema],
     models: {},
-    resolvers: merge({}, nodeResolver, cacheResolver),
+    resolvers: merge({}, nodeResolver, cacheResolver, dateResolver),
     mocks: merge({}, nodeMocks),
   };
 
