@@ -61,7 +61,11 @@ MongoClient.connect(url, async function (err, client) {
         _id: 1,
         userId: "$user.services.rock.PrimaryAliasId",
         entryId: 1,
-        createdAt: 1,
+        createdAt: {
+          $dateFromString: {
+             dateString: '$createdAt',
+          }
+        },
         __v: { $literal: 0 },
       }
     },
