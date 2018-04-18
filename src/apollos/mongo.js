@@ -98,6 +98,10 @@ export class MongoConnector {
       .then(x => { console.timeEnd(label); return x; });
   }
 
+  aggregate(...args) {
+    return this.model.aggregate(...args);
+  }
+
   getCount() {
     this.count++;
     return this.count;
