@@ -176,9 +176,9 @@ describe("Like", () => {
 
       await like.getRecentlyLiked({ limit: 1, skip: 2, cache: null }, null, mockData.nodeModel);
       expect(mongo.aggregate).toBeCalledWith([
-        { $match: {} },
-        { $sort: { createdAt: -1 } },
-        { $group: { _id: "$entryId", likedAt: { $push: "$createdAt" } } },
+        { $match: { createdAt: { $ne: null } } },
+        { $group: { _id: "$entryId", date: { $max: "$createdAt" } } },
+        { $sort: { max: -1 } },
       ]);
     });
     it("call aggregate with proper query for user", async () => {
@@ -187,9 +187,9 @@ describe("Like", () => {
 
       await like.getRecentlyLiked({ limit: 1, skip: 2, cache: null }, "harambe", mockData.nodeModel);
       expect(mongo.aggregate).toBeCalledWith([
-        { $match: { userId: { $ne: "harambe" } } },
-        { $sort: { createdAt: -1 } },
-        { $group: { _id: "$entryId", likedAt: { $push: "$createdAt" } } },
+        { $match: { createdAt: { $ne: null }, userId: { $ne: "harambe" } } },
+        { $group: { _id: "$entryId", date: { $max: "$createdAt" } } },
+        { $sort: { max: -1 } },
       ]);
     });
     it("returns correct shape of data", async () => {
