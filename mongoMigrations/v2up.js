@@ -71,10 +71,10 @@ MongoClient.connect(url, async function (err, client) {
   ]);
   await userLikesAggCursor.toArray();
 
-  var cursor = Likes.find();
+  var cursor = db.collection("likes").find();
   while (cursor.hasNext()) {
     var doc = cursor.next();
-    Likes.update(
+    db.collection("likes").update(
         {"_id" : doc._id},
         {"$set" : {"createdAt" : new ISODate(doc.createdAt)}}
       )
