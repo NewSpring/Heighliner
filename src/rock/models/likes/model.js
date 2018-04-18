@@ -67,16 +67,17 @@ export class Like {
       ? { userId: { $ne: userId } } // exlude user if there is one
       : {};
 
+    query.createdAt = { $ne: null };
+
     const guid = createGlobalId(`${limit}:${skip}:${userId}`, this.__type);
     const entryIds = await this.cache.get(guid, async () => {
       const likes = await this.model.aggregate([
         { $match: query },
-        { $sort: { createdAt: -1 } },
-        { $group: { _id: "$entryId", likedAt: { $push: "$createdAt" } } },
+        { $group: { _id: "$entryId", date: { $max: "$createdAt" } } },
+        { $sort: { max: -1 } },
       ]);
 
       const ids = likes.map(({ _id }) => _id);
-
       return safeTrimArray(skip, limit, ids, null);
     });
 
