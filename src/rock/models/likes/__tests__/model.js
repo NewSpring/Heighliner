@@ -178,7 +178,7 @@ describe("Like", () => {
       expect(mongo.aggregate).toBeCalledWith([
         { $match: { createdAt: { $ne: null } } },
         { $group: { _id: "$entryId", date: { $max: "$createdAt" } } },
-        { $sort: { max: -1 } },
+        { $sort: { date: -1 } },
       ]);
     });
     it("call aggregate with proper query for user", async () => {
@@ -189,7 +189,7 @@ describe("Like", () => {
       expect(mongo.aggregate).toBeCalledWith([
         { $match: { createdAt: { $ne: null }, userId: { $ne: "harambe" } } },
         { $group: { _id: "$entryId", date: { $max: "$createdAt" } } },
-        { $sort: { max: -1 } },
+        { $sort: { date: -1 } },
       ]);
     });
     it("returns correct shape of data", async () => {
