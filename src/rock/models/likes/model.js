@@ -74,8 +74,10 @@ export class Like {
       const likes = await this.model.aggregate([
         { $match: query },
         { $group: { _id: "$entryId", date: { $max: "$createdAt" } } },
-        { $sort: { max: -1 } },
+        { $sort: { date: -1 } },
       ]);
+
+      console.log(likes);
 
       const ids = likes.map(({ _id }) => _id);
       return safeTrimArray(skip, limit, ids, null);
