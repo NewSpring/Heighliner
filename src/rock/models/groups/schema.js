@@ -43,6 +43,7 @@ export default [
     schedule: GroupSchedule
     members: [GroupMember]
     locations: [GroupLocation]
+    isLiked: Boolean
   }
 
   type GroupSearch {
