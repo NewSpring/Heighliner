@@ -1,10 +1,10 @@
 const MongoClient = require("mongodb").MongoClient;
 
 // Connection URL
-const url = "mongodb://localhost:27017";
+const url = "mongodb://localhost";
 
 // Database Name
-const dbName = "master";
+const dbName = "name";
 
 // Use connect method to connect to the server
 MongoClient.connect(url, async function (err, client) {
@@ -61,11 +61,7 @@ MongoClient.connect(url, async function (err, client) {
         _id: 1,
         userId: "$user.services.rock.PrimaryAliasId",
         entryId: 1,
-        createdAt: {
-          $dateFromString: {
-             dateString: '$createdAt',
-          }
-        },
+        createdAt: 1,
         __v: { $literal: 0 },
       }
     },
@@ -86,6 +82,6 @@ MongoClient.connect(url, async function (err, client) {
       )
     console.log("updated: ", i++);
   });
-  
+
   client.close();
 });
