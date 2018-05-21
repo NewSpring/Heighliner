@@ -11,7 +11,7 @@ import { createSchema, loadApplications, getIp } from "../util/heighliner";
 // Import Apollos
 import Apollos, {
   queries as ApollosQueries,
-  // mutations as ApollosMutations,
+  mutations as ApollosMutations,
 } from "../apollos";
 
 // Import Rock
@@ -51,7 +51,7 @@ schema = createSchema({
     ...ESVQueries,
   ],
   mutations: [
-    // ...ApollosMutations,
+    ...ApollosMutations,
     ...RockMutations,
   ],
   schema,
@@ -108,42 +108,30 @@ export default function (app, monitor) {
     if (ip === "::1") ip = "2602:306:b81a:c420:ed84:6327:b58e:6a2d";
 
     const context = {
-      hashedToken: request.headers.authorization,
+      authToken: request.headers.authorization,
       cache,
       ip,
       req: request,
     };
 
-    if (context.hashedToken) {
+    if (context.authToken) {
       if (datadog) datadog.increment("graphql.authenticated.request");
-      // we instansiate the
       // bind the logged in user to the context overall
-      let user;
       try {
-        user = await timeout(
-          createdModels.User.getByHashedToken(context.hashedToken),
-          1000,
-        );
-        context.user = user;
+        if (context.authToken.indexOf("::") < 0) {
+          context.authToken = `::${context.authToken}`;
+        };
+        context.user = await timeout(createdModels.User.getByBasicAuth(context.authToken), 5000);
+        const person = await timeout(
+          createdModels.User.getUserProfile(context.user.PersonId), 5000);
+
+        context.person = await timeout(
+          createdModels.Person.getFromAliasId(
+            person.PrimaryAliasId,
+          ), 5000);
       } catch (e) {
         /* tslint:disable-line */
       }
-
-      let person;
-      if (user && user.services && user.services.rock) {
-        try {
-          person = await timeout(
-            createdModels.Person.getFromAliasId(
-              user.services.rock.PrimaryAliasId,
-            ),
-            1000,
-          );
-          person.PrimaryAliasId = user.services.rock.PrimaryAliasId;
-        } catch (e) {
-          /* tslint:disable-line */
-        }
-      }
-      context.person = person;
     }
 
     if (process.env.NODE_ENV === "production") {
