@@ -5,24 +5,8 @@ import { ChannelData } from "../tables";
 const newSpringLive = [
   {
     isLive: 1,
-    site: "newspring",
     entry_id: "12345",
     status: "just newspring",
-  },
-];
-
-const fuseLive = [
-  {
-    isLive: 1,
-    site: "newspring",
-    entry_id: "12345",
-    status: "newspring",
-  },
-  {
-    isLive: 1,
-    site: "fuse",
-    entry_id: "12345",
-    status: "fuse",
   },
 ];
 
@@ -53,7 +37,7 @@ describe("getLiveStream", () => {
   });
 
   it("should call getIsLive", async () => {
-    Model.getIsLive = jest.fn(() => Promise.resolve({ isLive: true, isFuse: false }));
+    Model.getIsLive = jest.fn(() => Promise.resolve({ isLive: true }));
     await Model.getLiveStream();
     expect(Model.getIsLive).toBeCalled();
   });
@@ -83,29 +67,15 @@ describe("getIsLive", () => {
     const res = await Model.getIsLive();
     expect(res).toEqual({
       isLive: 1,
-      site: "newspring",
       entry_id: "12345",
       status: "just newspring",
-      isFuse: false,
     });
   });
 
-  it("should show Fuse is live correctly", async () => {
-    Model.cache.get = jest.fn(() => Promise.resolve(fuseLive));
-    const res = await Model.getIsLive();
-    expect(res).toEqual({
-      isLive: 1,
-      site: "fuse",
-      entry_id: "12345",
-      status: "fuse",
-      isFuse: true,
-    });
-  });
-
-  it("should nothing is live correctly", async () => {
+  it("should show nothing is live correctly", async () => {
     Model.cache.get = jest.fn(() => Promise.resolve([]));
     const res = await Model.getIsLive();
-    expect(res).toEqual(null);
+    expect(res).toEqual(undefined);
   });
 });
 

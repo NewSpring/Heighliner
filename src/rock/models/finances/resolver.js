@@ -1,5 +1,4 @@
 import { flatten } from "lodash";
-import moment from "moment";
 
 import { createGlobalId } from "../../../util";
 import renderStatement from "./util/statement";
@@ -23,11 +22,14 @@ export default {
         { cache },
       );
     },
-    transactions: (
-      _,
-      { people, start, end, limit, cache, skip },
-      { models, person },
-    ) => {
+    savedPayment: (_, { id }, { models, person }) => {
+      if (!person) return null;
+      return models.SavedPayment.findOneByPersonAlias({
+        aliases: person.aliases,
+        id,
+      });
+    },
+    transactions: (_, { people, start, end, limit, cache, skip }, { models, person }) => {
       if (!person) return null;
       if (person.GivingGroupId) {
         return models.Transaction.findByGivingGroup(
@@ -41,17 +43,14 @@ export default {
           { cache },
         );
       }
+
       return models.Transaction.findByPersonAlias(
         person.aliases,
         { limit, offset: skip },
         { cache },
       );
     },
-    scheduledTransactions: (
-      _,
-      { limit, cache, skip, isActive },
-      { models, person },
-    ) => {
+    scheduledTransactions: (_, { limit, cache, skip, isActive }, { models, person }) => {
       if (!person) return null;
       return models.ScheduledTransaction.findByPersonAlias(
         person.aliases,
@@ -63,11 +62,7 @@ export default {
         { cache },
       );
     },
-    accounts: (
-      _,
-      { name, isActive, isPublic, isTaxDeductible, allFunds },
-      { models },
-    ) =>
+    accounts: (_, { name, isActive, isPublic, isTaxDeductible, allFunds }, { models }) =>
       models.FinancialAccount.find(
         {
           Name: name,
@@ -78,34 +73,25 @@ export default {
         { all: allFunds },
       ),
     accountFromCashTag: (_, { cashTag }, { models }) =>
-      models.FinancialAccount
-        .find({
-          IsActive: true,
-          IsPublic: true,
-        })
-        .then((x) => {
-          let correctAccount = null;
-          for (const account of x) {
-            const cashTagName = account.PublicName
-              .replace(/\s+/g, "")
-              .toLowerCase();
-            if (cashTagName === cashTag.replace("$", "")) {
-              correctAccount = account;
-              break;
-            }
+      models.FinancialAccount.find({
+        IsActive: true,
+        IsPublic: true,
+      }).then((x) => {
+        let correctAccount = null;
+        for (const account of x) {
+          const cashTagName = account.PublicName.replace(/\s+/g, "").toLowerCase();
+          if (cashTagName === cashTag.replace("$", "")) {
+            correctAccount = account;
+            break;
           }
-          return correctAccount;
-        }),
+        }
+        return correctAccount;
+      }),
   },
 
   Mutation: {
-    syncTransactions: (_, args, { models }) =>
-      models.Transaction.syncTransactions(args),
-    cancelSavedPayment: async (
-      _,
-      { entityId, /* id, */ gateway },
-      { models },
-    ) => {
+    syncTransactions: (_, args, { models }) => models.Transaction.syncTransactions(args),
+    cancelSavedPayment: async (_, { entityId, /* id, */ gateway }, { models }) => {
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
       return models.SavedPayment.removeFromEntityId(entityId, nmi);
     },
@@ -115,8 +101,7 @@ export default {
       const requestUrl = req.headers.referer;
       const origin = req.headers.origin;
       const parsedData = JSON.parse(data);
-      return models.Transaction
-        .createOrder(
+      return models.Transaction.createOrder(
         {
           data: parsedData,
           instant,
@@ -125,23 +110,20 @@ export default {
           requestUrl,
           origin,
         },
-          person,
-          models,
-        )
-        .catch(console.error);
+        person,
+        models,
+      ).catch(console.error);
     },
     validate: async (_, { token, gateway }, { models }) => {
       if (!token) return null;
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
-      return models.SavedPayment
-        .validate({ token }, nmi)
-        .catch(e => ({ error: e.message, code: e.code, success: false }));
+      return models.SavedPayment.validate({ token }, nmi).catch(e => ({
+        error: e.message,
+        code: e.code,
+        success: false,
+      }));
     },
-    completeOrder: async (
-      _,
-      { token, accountName, scheduleId },
-      { models, person, req },
-    ) => {
+    completeOrder: async (_, { token, accountName, scheduleId }, { models, person, req }) => {
       if (!token) return null;
       const origin = req.headers.origin;
       // XXX this is temporary until new heighliner supports this for everything
@@ -157,62 +139,43 @@ export default {
         // this is a meteor userId
         const user = await models.User.getFromId(scheduleId, globalId);
         if (user && user.services && user.services.rock) {
-          person = await models.Person.getFromAliasId(
-            user.services.rock.PrimaryAliasId,
-          );
+          person = await models.Person.getFromAliasId(user.services.rock.PrimaryAliasId);
           person.PrimaryAliasId = user.services.rock.PrimaryAliasId;
           scheduleId = undefined;
         }
       }
 
-      return models.Transaction
-        .completeOrder({
-          token,
-          accountName,
-          person,
-          origin,
-          scheduleId,
-          platform,
-          version,
-        })
-        .catch(e => ({ error: e.message, code: e.code, success: false }));
+      return models.Transaction.completeOrder({
+        token,
+        accountName,
+        person,
+        origin,
+        scheduleId,
+        platform,
+        version,
+      }).catch(e => ({ error: e.message, code: e.code, success: false }));
     },
-    savePayment: async (
-      _,
-      { token, gateway, accountName },
-      { models, person },
-    ) => {
+    savePayment: async (_, { token, gateway, accountName }, { models, person }) => {
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
-      return models.SavedPayment.save(
-        { token, name: accountName, person },
-        nmi,
-      );
+      return models.SavedPayment.save({ token, name: accountName, person }, nmi);
     },
     cancelSchedule: async (_, { entityId, gateway }, { models }) => {
       // XXX only let the owner cancel the schedule
       const nmi = await models.Transaction.loadGatewayDetails(gateway);
-      return models.ScheduledTransaction
-        .cancelNMISchedule(entityId, nmi)
-        .catch(error => ({
-          error: error.message,
-          code: error.code,
-          success: false,
-        }));
+      return models.ScheduledTransaction.cancelNMISchedule(entityId, nmi).catch(error => ({
+        error: error.message,
+        code: error.code,
+        success: false,
+      }));
     },
-    transactionStatement: async (
-      _,
-      { people, start, end },
-      { models, person },
-    ) => {
+    transactionStatement: async (_, { people, start, end }, { models, person }) => {
       if (!person) return { success: false, error: "You must be logged in" };
 
       // XXX change to require a start date for YTD statements
       // default to start of current year if not passed
       // if (!start) start = moment().startOf("year");
 
-      const homeLookup = models.Person
-        .getHomesFromId(person.Id)
-        .then(x => x[0]);
+      const homeLookup = models.Person.getHomesFromId(person.Id).then(x => x[0]);
 
       const transactionLookup = models.Transaction.getStatement({
         people,
@@ -240,19 +203,24 @@ export default {
 
   SavePaymentMutationResponse: {
     ...MutationReponseResolver,
-    savedPayment: ({ savedPaymentId }, _, { models }) => {
-      if (!savedPaymentId) return null;
-      return models.SavedPayment.getFromId(savedPaymentId).then(([x]) => x);
+    savedPayment: ({ savedPaymentId, Id }, _, { models }) => {
+      const id = savedPaymentId || Id;
+      if (!id) return null;
+      return models.SavedPayment.getFromId(id).then(([x]) => x);
     },
   },
 
   CompleteOrderMutationResponse: {
     ...MutationReponseResolver,
     transaction: ({ transactionId }, _, { models }) => {
+      // NOTE: This will always resolve to null because completeOrder only returns
+      // the formatted data for the job
       if (!transactionId) return null;
       return models.Transaction.getFromId(transactionId);
     },
     schedule: ({ scheduleId }, _, { models }) => {
+      // NOTE: This will always resolve to null because completeOrder only returns
+      // the formatted data for the job
       if (!scheduleId) return null;
       return models.ScheduledTransaction.getFromId(scheduleId);
     },
@@ -263,7 +231,7 @@ export default {
     },
     savedPayment: ({ savedPaymentId }, _, { models }) => {
       if (!savedPaymentId) return null;
-      return models.SavedPayment.getFromId(savedPaymentId);
+      return models.SavedPayment.getFromId(savedPaymentId).then(([x]) => x);
     },
   },
 
@@ -301,6 +269,7 @@ export default {
     code: ({ TransactionCode }) => TransactionCode,
     gateway: ({ FinancialGatewayId }) => FinancialGatewayId,
     numberOfPayments: ({ NumberOfPayments }) => NumberOfPayments,
+    isActive: ({ IsActive }) => IsActive,
     date: ({ CreatedDate, ModifiedDate }) => ModifiedDate || CreatedDate,
     details: ({ Id, FinancialScheduledTransactionDetails }, _, { models }) => {
       if (FinancialScheduledTransactionDetails) {
@@ -309,27 +278,16 @@ export default {
 
       return models.ScheduledTransaction.getDetailsByScheduleId(Id);
     },
-    schedule: (
-      { TransactionFrequencyValueId, TransactionFrequencyValue },
-      _,
-      { models },
-    ) => {
+    schedule: ({ TransactionFrequencyValueId, TransactionFrequencyValue }, _, { models }) => {
       if (TransactionFrequencyValue) return TransactionFrequencyValue;
-      return models.ScheduledTransaction.getDefinedValueId(
-        TransactionFrequencyValueId,
-      );
+      return models.ScheduledTransaction.getDefinedValueId(TransactionFrequencyValueId);
     },
-    payment: (
-      { FinancialPaymentDetailId, FinancialPaymentDetail },
-      _,
-      { models },
-    ) => {
+    payment: ({ FinancialPaymentDetailId, FinancialPaymentDetail }, _, { models }) => {
       if (FinancialPaymentDetail) return FinancialPaymentDetail;
 
       return models.Transaction.getPaymentDetailsById(FinancialPaymentDetailId);
     },
-    transactions: ({ Id }, _, { models }) =>
-      models.ScheduledTransaction.getTransactionsById(Id),
+    transactions: ({ Id }, _, { models }) => models.ScheduledTransaction.getTransactionsById(Id),
   },
 
   Transaction: {
@@ -345,11 +303,7 @@ export default {
 
       return models.Transaction.getDetailsById(Id);
     },
-    payment: (
-      { FinancialPaymentDetailId, FinancialPaymentDetail },
-      _,
-      { models },
-    ) => {
+    payment: ({ FinancialPaymentDetailId, FinancialPaymentDetail }, _, { models }) => {
       if (FinancialPaymentDetail) return FinancialPaymentDetail;
 
       return models.Transaction.getPaymentDetailsById(FinancialPaymentDetailId);
@@ -410,8 +364,7 @@ export default {
       let include = people;
       if (!person) return null;
       if (person && person.aliases && !people.length) include = person.aliases;
-      return models.Transaction
-        .findByAccountType(
+      return models.Transaction.findByAccountType(
         {
           id: Id,
           personId: person.GivingGroupId,
@@ -420,36 +373,33 @@ export default {
           end,
           parentId: ParentAccountId,
         },
-          { limit, offset: skip },
-          { cache },
-        )
-        .then((transactions) => {
-          if (!transactions) return null;
+        { limit, offset: skip },
+        { cache },
+      ).then((transactions) => {
+        if (!transactions) return null;
 
-          return transactions
-            .map(x => x.FinancialTransactionDetails)
-            .map(flatten)
-            .map(x => x[0].Amount.toFixed())
-            .reduce((x, y) => x + y, 0);
-        });
+        return transactions
+          .map(x => x.FinancialTransactionDetails)
+          .map(flatten)
+          .map(x => x[0].Amount.toFixed())
+          .reduce((x, y) => x + y, 0);
+      });
     },
     images: ({ Id }, _, { models }) => {
       const field_id = "field_id_1513"; // eslint-disable-line
       const channel_id = "69"; // eslint-disable-line
-      return models.Content
-        .getEntryFromFieldValue(Id, field_id, channel_id)
-        .then(({ image, exp_channel, entry_id }) => {
+      return models.Content.getEntryFromFieldValue(Id, field_id, channel_id).then(
+        ({ image, exp_channel, entry_id }) => {
           if (!image) return Promise.resolve([]);
 
           let position;
           if (image) {
-            position = Number(
-              exp_channel.exp_channel_fields.image.split("_").pop(),
-            );
+            position = Number(exp_channel.exp_channel_fields.image.split("_").pop());
           }
 
           return models.File.getFilesFromContent(entry_id, image, position);
-        });
+        },
+      );
     },
   },
 
@@ -457,12 +407,7 @@ export default {
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     accountNumber: ({ AccountNumberMasked }) => AccountNumberMasked,
     paymentType: (
-      {
-        CurrencyTypeValueId,
-        CurrencyTypeValue,
-        CreditCardTypeValueId,
-        CreditCardTypeValue,
-      },
+      { CurrencyTypeValueId, CurrencyTypeValue, CreditCardTypeValueId, CreditCardTypeValue },
       _,
       { models },
     ) => {
@@ -470,17 +415,13 @@ export default {
         return CreditCardTypeValue.Value;
       }
       if (CreditCardTypeValueId) {
-        return models.Transaction
-          .getDefinedValueId(CreditCardTypeValueId)
-          .then(x => x.Value);
+        return models.Transaction.getDefinedValueId(CreditCardTypeValueId).then(x => x.Value);
       }
 
       if (CurrencyTypeValueId && CurrencyTypeValue) {
         return CurrencyTypeValue.Value;
       }
-      return models.Transaction
-        .getDefinedValueId(CurrencyTypeValueId)
-        .then(x => x.Value);
+      return models.Transaction.getDefinedValueId(CurrencyTypeValueId).then(x => x.Value);
     },
   },
 
@@ -491,16 +432,36 @@ export default {
     guid: ({ Guid }) => Guid,
     code: ({ ReferenceNumber }) => ReferenceNumber,
     date: ({ CreatedDate, ModifiedDate }) => ModifiedDate || CreatedDate,
-    payment: (
-      { FinancialPaymentDetailId, FinancialPaymentDetail },
-      _,
-      { models },
-    ) => {
+    payment: ({ FinancialPaymentDetailId, FinancialPaymentDetail }, _, { models }) => {
       if (FinancialPaymentDetail) return FinancialPaymentDetail;
 
       return models.Transaction.getPaymentDetailsById(FinancialPaymentDetailId);
     },
-    expirationMonth: ({ ExpirationMonthEncrypted }) => ExpirationMonthEncrypted,
-    expirationYear: ({ ExpirationYearEncrypted }) => ExpirationYearEncrypted,
+    expirationMonth: async (props, _, { models }) => {
+      try {
+        const { ExpirationMonthEncrypted, FinancialPaymentDetailId } = props;
+        if (ExpirationMonthEncrypted) return ExpirationMonthEncrypted;
+
+        const paymentDetails = await models.Transaction.getPaymentDetailsById(
+          FinancialPaymentDetailId,
+        );
+        return paymentDetails.ExpirationMonthEncrypted;
+      } catch (err) {
+        return undefined;
+      }
+    },
+    expirationYear: async (props, _, { models }) => {
+      try {
+        const { ExpirationYearEncrypted, FinancialPaymentDetailId } = props;
+        if (ExpirationYearEncrypted) return ExpirationYearEncrypted;
+
+        const paymentDetails = await models.Transaction.getPaymentDetailsById(
+          FinancialPaymentDetailId,
+        );
+        return paymentDetails.ExpirationYearEncrypted;
+      } catch (err) {
+        return undefined;
+      }
+    },
   },
 };
