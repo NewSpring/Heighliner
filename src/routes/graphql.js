@@ -118,26 +118,17 @@ export default function (app, monitor) {
       if (datadog) datadog.increment("graphql.authenticated.request");
       // bind the logged in user to the context overall
       try {
-        const tokenIsBasicAuth = context.authToken.indexOf("::") >= 0;
-        if (tokenIsBasicAuth) {
-          context.user = await timeout(createdModels.User.getByBasicAuth(context.authToken), 5000);
-          const person = await timeout(
-            createdModels.User.getUserProfile(context.user.PersonId), 5000);
+        if (context.authToken.indexOf("::") < 0) {
+          context.authToken = `::${context.authToken}`;
+        };
+        context.user = await timeout(createdModels.User.getByBasicAuth(context.authToken), 5000);
+        const person = await timeout(
+          createdModels.User.getUserProfile(context.user.PersonId), 5000);
 
-          context.person = await timeout(
-            createdModels.Person.getFromAliasId(
-              person.PrimaryAliasId,
-            ), 5000);
-        } else {
-          // Deprecate
-          context.user = await timeout(
-            createdModels.User.getByHashedToken(context.authToken), 1000);
-
-          context.person = await timeout(
-            createdModels.Person.getFromAliasId(
-              context.user.services.rock.PrimaryAliasId,
-            ), 1000);
-        }
+        context.person = await timeout(
+          createdModels.Person.getFromAliasId(
+            person.PrimaryAliasId,
+          ), 5000);
       } catch (e) {
         /* tslint:disable-line */
       }

@@ -155,6 +155,11 @@ export class User {
 
   loginUser = async ({ email, password, user } = {}) => {
     try {
+      // special case for AD lookup
+      if (email.indexOf('@newspring.cc') > -1) {
+        email = email.replace(/@newspring.cc/, '');
+      }
+      
       await this.checkUserCredentials(email, password);
 
       const login = user || await this.getLatestLoginByUsername(email);
@@ -381,6 +386,7 @@ export class User {
   }
 
   async getUserFollowingTopics(userId) {
+    if (!userId) return FOLLOWABLE_TOPICS;
     try {
       const ignoredTopicObjects = await this.ignoredTopics.find({
         userId,
