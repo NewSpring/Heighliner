@@ -1,17 +1,24 @@
 import uuid from "node-uuid";
-import { Cache, defaultCache } from "../../../util/cache";
+import { defaultCache } from "../../../util/cache";
 import { MongoConnector } from "../../../apollos/mongo";
 import { createGlobalId } from "../../../util/node/model";
 
 const schema = {
   _id: String,
-  userId: String,
-  entryId: String,
+  userId: String, // AKA: PrimaryAliasId (pending migration from mongoId to rockId)
+  entryId: String, // AKA: id returned by content
   type: String,
-  createdAt: String,
+  createdAt: { type: Date, default: Date.now },
 };
 
-const Model = new MongoConnector("like", schema);
+const Model = new MongoConnector("like", schema, [
+  {
+    keys: { userId: 1, entryId: 1 },
+  },
+  {
+    keys: { createdAt: -1 },
+  },
+]);
 
 /*
   skip?: Int, // how many to trim off the front
@@ -60,10 +67,17 @@ export class Like {
       ? { userId: { $ne: userId } } // exlude user if there is one
       : {};
 
+    query.createdAt = { $ne: null };
+
     const guid = createGlobalId(`${limit}:${skip}:${userId}`, this.__type);
     const entryIds = await this.cache.get(guid, async () => {
-      let ids = await this.model.distinct("entryId", query);
-      if (ids && Array.isArray(ids)) ids.reverse();
+      const likes = await this.model.aggregate([
+        { $match: query },
+        { $group: { _id: "$entryId", date: { $max: "$createdAt" } } },
+        { $sort: { date: -1 } },
+      ]);
+
+      const ids = likes.map(({ _id }) => _id);
       return safeTrimArray(skip, limit, ids, null);
     });
 
@@ -101,6 +115,14 @@ export class Like {
       error: "",
       code: "",
     };
+  }
+
+  async hasUserLike({ userId, entryId, entryType } = {}) {
+    if (!userId || !entryId || !entryType) return false;
+    return !!await this.model.findOne({
+      entryId: createGlobalId(entryId, entryType), // Why are IDs encrypted?
+      userId,
+    });
   }
 }
 
