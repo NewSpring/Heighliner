@@ -252,7 +252,7 @@ export class Content extends EE {
 
   async getLiveStream() {
     return this.getIsLive()
-      .then(x => (!x ? { isLive: true } : x))
+      .then(x => (!x ? { isLive: false } : x))
       .then(({ isLive }) => ({ isLive }));
   }
 
