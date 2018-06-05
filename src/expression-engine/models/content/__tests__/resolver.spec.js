@@ -5,7 +5,6 @@ import Resolver from "../resolver";
 const sampleData = {
   live: {
     isLive: true,
-    isFuse: false,
   },
   contentColor: {
     id: "theId",
@@ -287,14 +286,6 @@ it("`LiveFeed` should return the live flag", () => {
   expect(isLive).toEqual(sampleData.live.isLive);
 });
 
-it("`LiveFeed` should return the fuse flag", () => {
-  const { LiveFeed } = Resolver;
-
-  const isFuse = LiveFeed.fuse(sampleData.live);
-
-  expect(isFuse).toEqual(sampleData.live.isFuse);
-});
-
 it("`ContentColor` returns the color id", () => {
   const { ContentColor } = Resolver;
 
@@ -387,6 +378,25 @@ it("`ContentData` should return wistiaId", () => {
 
   const wistiaId = ContentData.wistiaId(mockData);
   expect(wistiaId).toEqual(mockData.video);
+});
+
+it("`ContentData` should return a video", () => {
+  const { ContentData } = Resolver;
+  const mockData = {
+    video: "id",
+  };
+
+  const mockModels = {
+    Content: {
+      getContentVideo: jest.fn(),
+    },
+  };
+
+  const video = ContentData.video(mockData, undefined, { models: mockModels });
+
+  expect(video).toMatchObject({
+    hashed_id: mockData.video,
+  });
 });
 
 it("`ContentData` should call splitByNewLines", () => {
