@@ -252,8 +252,8 @@ export class Content extends EE {
 
   async getLiveStream() {
     return this.getIsLive()
-      .then(x => (!x ? { isLive: false, isFuse: false } : x))
-      .then(({ isLive, isFuse }) => ({ isLive, isFuse }));
+      .then(x => (!x ? { isLive: true } : x))
+      .then(({ isLive }) => ({ isLive }));
   }
 
   async getContentVideo(id) {
@@ -271,17 +271,15 @@ export class Content extends EE {
   }
 
   async getIsLive() {
-    return (
-      this.cache
-        .get(
-          "newspring:live",
-          () =>
-            ChannelData.db.query(
-              `
+    return this.cache
+      .get(
+        "newspring:live",
+        () =>
+          ChannelData.db.query(
+            `
       SELECT
         ((WEEKDAY(CONVERT_TZ(NOW(),'+00:00','America/Detroit')) + 1) % 7) = m.col_id_366
             AND (SELECT DATE_FORMAT(CONVERT_TZ(NOW(),'+00:00','America/Detroit'),'%H%i') TIMEONLY) BETWEEN m.col_id_367 AND m.col_id_368 AS isLive,
-            m.col_id_365 as "site",
             d.entry_id,
             t.status
       FROM
@@ -295,32 +293,11 @@ export class Content extends EE {
         AND (t.expiration_date = 0 OR t.expiration_date >= UNIX_TIMESTAMP())
         AND m.col_id_366 IS NOT NULL;
     `,
-              { type: Sequelize.QueryTypes.SELECT },
-            ),
-          { ttl: 60 },
-        )
-        // .then(x => find(x, { isLive: 1 })) // This is what used to be here.
-        .then((x) => {
-          // get all of the array items that are currently live
-          const liveItems = filter(x, { isLive: 1 });
-          // see if there are live items that are for Fuse.
-          const fuseItems = find(liveItems, { site: "fuse" });
-          // if fuseItems is not undefined then there is a Fuse item.
-          // Add isFuse = true to the object and return that object.
-          if (fuseItems !== undefined) {
-            fuseItems.isFuse = true;
-            return fuseItems;
-          }
-          // If you've made it this far then there are no fuse items.
-          // Tell the object there is none (isFuse = false), and return the
-          // regular item.
-          if (liveItems.length >= 1) {
-            liveItems[0].isFuse = false;
-            return liveItems[0];
-          }
-          return null;
-        })
-    );
+            { type: Sequelize.QueryTypes.SELECT },
+          ),
+        { ttl: 60 },
+      )
+      .then(x => find(x, { isLive: 1 }));
     // tslint:enable
   }
 

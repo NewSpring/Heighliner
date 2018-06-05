@@ -5,7 +5,6 @@ import Resolver from "../resolver";
 const sampleData = {
   live: {
     isLive: true,
-    isFuse: false,
   },
   contentColor: {
     id: "theId",
@@ -285,14 +284,6 @@ it("`LiveFeed` should return the live flag", () => {
   const isLive = LiveFeed.live(sampleData.live);
 
   expect(isLive).toEqual(sampleData.live.isLive);
-});
-
-it("`LiveFeed` should return the fuse flag", () => {
-  const { LiveFeed } = Resolver;
-
-  const isFuse = LiveFeed.fuse(sampleData.live);
-
-  expect(isFuse).toEqual(sampleData.live.isFuse);
 });
 
 it("`ContentColor` returns the color id", () => {

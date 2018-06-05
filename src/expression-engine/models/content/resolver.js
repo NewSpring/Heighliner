@@ -100,7 +100,6 @@ export default {
 
   LiveFeed: {
     live: ({ isLive }) => !!isLive,
-    fuse: ({ isFuse }) => !!isFuse,
     embedCode: ({ snippet_contents }) => snippet_contents,
     embedUrl: ({ snippet_contents: video }) => {
       // video = 'V1a2xxZDE6g-BJTbHZEU8N37nDPFFWq1';
@@ -130,8 +129,9 @@ export default {
 
   ContentVideo: {
     id: ({ hashed_id }) => hashed_id || null,
-    embedUrl: ({ hashed_id }) => // eslint_disable_line
-      hashed_id ? `http://fast.wistia.net/embed/iframe/${hashed_id}` : null,
+    embedUrl: (
+      { hashed_id }, // eslint_disable_line
+    ) => (hashed_id ? `http://fast.wistia.net/embed/iframe/${hashed_id}` : null),
     videoUrl: ({ assets = [] }) =>
       assets ? (assets.find(({ type }) => type === "HdMp4VideoFile") || {}).url : null,
   },
