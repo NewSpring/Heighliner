@@ -2,7 +2,6 @@ export default [
   `
   type LiveFeed {
     live: Boolean!
-    fuse: Boolean!
     embedCode: String
     embedUrl: String
     videoUrl: String
