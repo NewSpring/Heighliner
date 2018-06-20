@@ -2,7 +2,7 @@ import { flatten } from "lodash";
 
 import { createGlobalId } from "../../../util";
 import renderStatement from "./util/statement";
-import report from "../util/logError";
+import report from "./util/logError";
 
 const MutationReponseResolver = {
   error: ({ error }) => error,
