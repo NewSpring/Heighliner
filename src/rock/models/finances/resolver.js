@@ -2,6 +2,7 @@ import { flatten } from "lodash";
 
 import { createGlobalId } from "../../../util";
 import renderStatement from "./util/statement";
+import report from "../util/logError";
 
 const MutationReponseResolver = {
   error: ({ error }) => error,
@@ -100,7 +101,13 @@ export default {
     createOrder: (_, { instant, id, data }, { models, person, ip, req }) => {
       const requestUrl = req.headers.referer;
       const origin = req.headers.origin;
-      const parsedData = JSON.parse(data);
+      let parsedData = {};
+      try {
+        parsedData = JSON.parse(data);
+      } catch (e) {
+        report({ data }, new Error("createOrder: Unable to parse JSON"));
+      }
+
       return models.Transaction.createOrder(
         {
           data: parsedData,
