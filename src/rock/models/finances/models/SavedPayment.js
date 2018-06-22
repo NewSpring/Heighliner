@@ -186,7 +186,7 @@ export default class SavedPayment extends Rock {
                 },
               ],
             },
-            order: [["ModifiedDateTime", "DSC"]],
+            order: [["ModifiedDateTime", "DESC"]],
             // attributes: ["Id"],
             limit,
             offset,
@@ -205,7 +205,7 @@ export default class SavedPayment extends Rock {
         () =>
           SavedPaymentTable.find({
             where: { PersonAliasId: { $in: aliases } },
-            order: [["ModifiedDateTime", "DSC"]],
+            order: [["ModifiedDateTime", "DESC"]],
             // attributes: ["Id"],
             limit,
             offset,
@@ -221,7 +221,7 @@ export default class SavedPayment extends Rock {
       () =>
         SavedPaymentTable.findOne({
           where: { PersonAliasId: { $in: aliases }, Id: id },
-          order: [["ModifiedDateTime", "DSC"]],
+          order: [["ModifiedDateTime", "DESC"]],
         }),
       { cache },
     );
