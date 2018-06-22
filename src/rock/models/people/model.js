@@ -102,7 +102,7 @@ export class Person extends Rock {
         return this.clearCacheFromId(id, null, action);
       }
       if (type === "Rock.Model.PersonAlias") {
-        return this.clearCacheFromPersoAliasId(id, null, action);
+        return this.clearCacheFromPersonAliasId(id, null, action);
       }
     });
   }
@@ -118,7 +118,7 @@ export class Person extends Rock {
       });
   }
 
-  async clearCacheFromPersoAliasId(id, globalId, action) {
+  async clearCacheFromPersonAliasId(id, globalId, action) {
     globalId = globalId ? globalId : this.createGlobalAliasId(id);
     // delete the cache entry
     return Promise.resolve()
