@@ -1,4 +1,3 @@
-
 import uuid from "node-uuid";
 import padStart from "lodash/padStart";
 import moment from "moment";
@@ -18,8 +17,8 @@ export default class SavedPayment extends Rock {
   __type = "SavedPayment";
 
   async getFromId(id, globalId) {
-    globalId = globalId ? globalId : createGlobalId(id, this.__type);
-    return this.cache.get(globalId, () => SavedPaymentTable.find({ where: { Id: id }}));
+    globalId = globalId || createGlobalId(id, this.__type);
+    return this.cache.get(globalId, () => SavedPaymentTable.find({ where: { Id: id } }));
   }
 
   async delFromCache(id) {
@@ -27,7 +26,6 @@ export default class SavedPayment extends Rock {
   }
 
   async charge(token, gatewayDetails) {
-
     const complete = {
       "complete-action": {
         "api-key": gatewayDetails.SecurityKey,
@@ -41,8 +39,11 @@ export default class SavedPayment extends Rock {
   async validate({ token }, gatewayDetails) {
     if (!token) throw new Error("No token provided");
 
-    return this.charge(token, gatewayDetails)
-      .then(response => ({ code: response["result-code"], success: true, error: null }))
+    return this.charge(token, gatewayDetails).then(response => ({
+      code: response["result-code"],
+      success: true,
+      error: null,
+    }));
   }
 
   async save({ token, name, person }, gatewayDetails) {
@@ -57,8 +58,10 @@ export default class SavedPayment extends Rock {
             AccountNumberMasked: response.billing["cc-number"],
             CurrencyTypeValueId: 156,
             CreditCardTypeValueId: getCardType(response.billing["cc-number"]),
-            ExpirationMonthEncrypted: response.billing["cc-exp"] && response.billing["cc-exp"].slice(0, 2),
-            ExpirationYearEncrypted: response.billing["cc-exp"] && response.billing["cc-exp"].slice(2, 4),
+            ExpirationMonthEncrypted:
+              response.billing["cc-exp"] && response.billing["cc-exp"].slice(0, 2),
+            ExpirationYearEncrypted:
+              response.billing["cc-exp"] && response.billing["cc-exp"].slice(2, 4),
           };
         } else {
           FinancialPaymentDetail = {
@@ -78,19 +81,19 @@ export default class SavedPayment extends Rock {
           FinancialGatewayId: gatewayDetails.Id,
           CreatedByPersonAliasId: person.PrimaryAliasId,
           ModifiedByPersonAliasId: person.PrimaryAliasId,
-        }
+        };
 
         return FinancialPaymentDetailTable.post(FinancialPaymentDetail)
           .then((response) => {
             FinancialPersonSavedAccounts.FinancialPaymentDetailId = response;
-            return SavedPaymentTable.post(FinancialPersonSavedAccounts)
+            return SavedPaymentTable.post(FinancialPersonSavedAccounts);
           })
-          .then(savedPaymentId => {
+          .then((savedPaymentId) => {
             this.delFromCache(savedPaymentId);
-            return { savedPaymentId }
+            return { savedPaymentId };
           });
       })
-      .catch(e => ({ error: e.message, code: e.code }));;
+      .catch(e => ({ error: e.message, code: e.code }));
   }
 
   async removeFromEntityId(entityId, gatewayDetails) {
@@ -103,21 +106,24 @@ export default class SavedPayment extends Rock {
     if (!existing || !existing.Id) return Promise.resolve({ error: "No saved account found" });
 
     return SavedPaymentTable.delete(existing.Id)
-      .then(response => {
+      .then((response) => {
         if (response.status > 300) return response;
         if (!existing.ReferenceNumber) return response;
 
         // clear cache
         this.cache.del(globalId);
 
-        return nmi({
-          "delete-customer": {
-            "api-key": gatewayDetails.SecurityKey,
-            "customer-vault-id": existing.ReferenceNumber,
+        return nmi(
+          {
+            "delete-customer": {
+              "api-key": gatewayDetails.SecurityKey,
+              "customer-vault-id": existing.ReferenceNumber,
+            },
           },
-        }, gatewayDetails);
+          gatewayDetails,
+        );
       })
-      .then(x => ({ ...x, ...{ Id: entityId }}))
+      .then(x => ({ ...x, ...{ Id: entityId } }))
       .catch(e => ({ error: e.message, code: e.code }));
   }
 
@@ -126,17 +132,20 @@ export default class SavedPayment extends Rock {
     await SavedPaymentTable.patch(entityId, { Name: name });
     // clear cache
     this.cache.del(globalId);
-    return SavedPaymentTable.findOne({ where: { Id: entityId }});
+    return SavedPaymentTable.findOne({ where: { Id: entityId } });
   }
 
   async findExpiringByPersonAlias(aliases, { limit, offset }, { cache }) {
     const query = { aliases, limit, offset };
-    const nextMonth = moment().startOf("month").add(1, "month");
+    const nextMonth = moment()
+      .startOf("month")
+      .add(1, "month");
     const thisMonth = moment().startOf("month");
 
     const paymentMethods = await this.findByPersonAlias(aliases);
-    const paymentMethodIds = paymentMethods
-      .map(({ FinancialPaymentDetailId }) => (FinancialPaymentDetailId));
+    const paymentMethodIds = paymentMethods.map(
+      ({ FinancialPaymentDetailId }) => FinancialPaymentDetailId,
+    );
 
     const expiringPaymentMethodDetails = await FinancialPaymentDetailTable.find({
       where: {
@@ -156,56 +165,65 @@ export default class SavedPayment extends Rock {
       },
       attributes: ["Id"],
     });
-    const expiringPaymentMethodDetailIds = expiringPaymentMethodDetails
-      .map(({ Id }) => (Id));
+    const expiringPaymentMethodDetailIds = expiringPaymentMethodDetails.map(({ Id }) => Id);
 
-    return await this.cache.get(this.cache.encode(query), () => SavedPaymentTable.find({
-      where: {
-        $and: [
-          {
-            PersonAliasId: {
-              $in: aliases,
+    return await this.cache
+      .get(
+        this.cache.encode(query),
+        () =>
+          SavedPaymentTable.find({
+            where: {
+              $and: [
+                {
+                  PersonAliasId: {
+                    $in: aliases,
+                  },
+                },
+                {
+                  FinancialPaymentDetailId: {
+                    $in: expiringPaymentMethodDetailIds,
+                  },
+                },
+              ],
             },
-          },
-          {
-            FinancialPaymentDetailId: {
-              $in: expiringPaymentMethodDetailIds,
-            },
-          },
-        ],
-      },
-      order: [
-        ["ModifiedDateTime", "ASC"],
-      ],
-      // attributes: ["Id"],
-      limit,
-      offset,
-    }), { cache }).then(this.getFromIds.bind(this));
+            order: [["ModifiedDateTime", "DESC"]],
+            // attributes: ["Id"],
+            limit,
+            offset,
+          }),
+        { cache },
+      )
+      .then(this.getFromIds.bind(this));
   }
 
   async findByPersonAlias(aliases, { limit, offset } = {}, { cache } = {}) {
     const query = { aliases, limit, offset };
 
-    return await this.cache.get(this.cache.encode(query), () => SavedPaymentTable.find({
-        where: { PersonAliasId: { $in: aliases }},
-        order: [
-          ["ModifiedDateTime", "ASC"],
-        ],
-        // attributes: ["Id"],
-        limit,
-        offset,
-      })
-    , { cache })
+    return await this.cache
+      .get(
+        this.cache.encode(query),
+        () =>
+          SavedPaymentTable.find({
+            where: { PersonAliasId: { $in: aliases } },
+            order: [["ModifiedDateTime", "DESC"]],
+            // attributes: ["Id"],
+            limit,
+            offset,
+          }),
+        { cache },
+      )
       .then(this.getFromIds.bind(this));
   }
   findOneByPersonAlias({ aliases, id }, { cache = false } = {}) {
     const query = { aliases, id };
-    return this.cache.get(this.cache.encode(query), () => SavedPaymentTable.findOne({
-        where: { PersonAliasId: { $in: aliases }, Id: id },
-        order: [
-          ["ModifiedDateTime", "ASC"],
-        ],
-      })
-    , { cache });
+    return this.cache.get(
+      this.cache.encode(query),
+      () =>
+        SavedPaymentTable.findOne({
+          where: { PersonAliasId: { $in: aliases }, Id: id },
+          order: [["ModifiedDateTime", "DESC"]],
+        }),
+      { cache },
+    );
   }
 }
