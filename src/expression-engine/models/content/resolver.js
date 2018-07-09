@@ -100,6 +100,7 @@ export default {
 
   LiveFeed: {
     live: ({ isLive }) => !!isLive,
+    fuse: () => null,
     embedCode: ({ snippet_contents }) => snippet_contents,
     embedUrl: ({ snippet_contents: video }) => {
       // video = 'V1a2xxZDE6g-BJTbHZEU8N37nDPFFWq1';
