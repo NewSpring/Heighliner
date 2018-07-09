@@ -2,7 +2,7 @@ export default [
   `
   type LiveFeed {
     live: Boolean!
-    fuse: Boolean @deprecated(reason: "This no longer determines the live status")
+    fuse: Boolean! @deprecated(reason: "This no longer determines the live status")
     embedCode: String
     embedUrl: String
     videoUrl: String
