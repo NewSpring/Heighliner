@@ -1,4 +1,4 @@
-import { isNil, pick, flatten, filter, find, uniq, sampleSize } from "lodash";
+import { isNil, pick, flatten, filter, find, uniq, uniqBy, sampleSize } from "lodash";
 import fetch from "isomorphic-fetch";
 import Sequelize from "sequelize";
 import { defaultCache } from "../../../util/cache";
@@ -230,6 +230,10 @@ export class Content extends EE {
           { cache: false },
         ) // this intermentally breaks when cached
         .then(fetchMethod.bind(this))
+        // make sure that we get only unique items based on the entry id.
+        // if there is more than one item with the same entry id then we will
+        // pick only one.
+        .then(x => uniqBy(x, item => item.exp_channel_title.entry_id))
         // XXX remove when channel is part of query
         .then(x =>
           x.filter(y => !channels.length || channels.indexOf(y && y.exp_channel.channel_name) > -1),
