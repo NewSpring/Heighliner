@@ -10,13 +10,30 @@ An Apollo GraphQL server for NewSpring Church
 
 ### Setup
 
+Install Docker and docker-compose
+
 ```
-npm i && npm run build
+brew cask install docker
+brew install docker-compose
+```
+
+Start Docker GUI app.<br>
+Create container.
+
+```
+docker-compose create
+docker-compose start
+```
+
+Set up and start yarn
+
+```
+yarn
+yarn build
 ```
 
 ### Running the project
 
 ```
-// XXX docker commands
-npm start
+yarn start
 ```
