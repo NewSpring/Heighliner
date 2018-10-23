@@ -10,22 +10,21 @@ An Apollo GraphQL server for NewSpring Church
 
 ### Setup
 
-Install Docker and docker-compose
+Install Docker
 
 ```
 brew cask install docker
-brew install docker-compose
 ```
 
-Start Docker GUI app.<br>
-Create container.
+Start Docker app.
+
+Navgate to the Heighliner directory and create container.
 
 ```
-docker-compose create
-docker-compose start
+docker-compose up
 ```
 
-Set up and start yarn
+Set up yarn
 
 ```
 yarn
