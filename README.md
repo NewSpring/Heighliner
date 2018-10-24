@@ -18,6 +18,8 @@ brew cask install docker
 
 Start Docker app.
 
+![Docker](https://d1wuojemv4s7aw.cloudfront.net/items/1d0Z0Q3i403G2P1R1f2t/Screen%20Shot%202018-10-23%20at%201.29.27%20PM.png?X-CloudApp-Visitor-Id=3192497&v=4b7a77cc)
+
 Navgate to the Heighliner directory and create container.
 
 ```
