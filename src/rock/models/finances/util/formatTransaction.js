@@ -4,7 +4,7 @@ import uuid from "node-uuid";
 import { isNil, omitBy } from "lodash";
 import { getCardType, getCardName } from "./translate-nmi";
 
-export default ({ response, person = {}, accountName, origin, scheduleId }, gatewayDetails) => {
+export default ({ response, person = {}, accountName, origin, scheduleId, platform }, gatewayDetails) => {
   let FinancialPaymentDetail = {};
   let FinancialPaymentValue;
   if (response.billing["cc-number"]) {
@@ -135,6 +135,7 @@ export default ({ response, person = {}, accountName, origin, scheduleId }, gate
     Schedule,
     Location,
     Person,
+    platform,
     TransactionDetails,
     SourceTypeValue,
     FinancialPaymentValue,
