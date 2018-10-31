@@ -24,6 +24,7 @@ export default [
   `completeOrder(
     token: ID!
     scheduleId: ID
+    platform: String
     accountName: String
     gateway: String = "${process.env.NMI_GATEWAY}",
   ): CompleteOrderMutationResponse`,
