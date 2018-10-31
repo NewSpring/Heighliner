@@ -237,8 +237,13 @@ export default class TransactionJobs extends Rock {
       return data;
     }
 
-    // 884 source type: (native.ns.cc), default 798: (my.ns.cc)
-    Transaction.SourceTypeValueId = platform === "web" ? 798 : 884;
+    const platformOptions = {
+      web: 1120,
+      ios: 1121,
+      android: 1122,
+    };
+
+    Transaction.SourceTypeValueId = platformOptions[platform];
 
     Transaction.AuthorizedPersonAliasId = Person.PrimaryAliasId;
     Transaction.CreatedByPersonAliasId = Person.PrimaryAliasId;
