@@ -471,7 +471,7 @@ describe("createPaymentDetail", () => {
 
 describe("findOrCreateTransaction", () => {
   const NATIVE_SOURCE_TYPE = 884;
-  const WEB_SOURCE_TYPE = 798;
+  const WEB_SOURCE_TYPE = 1120;
   let Local;
   beforeEach(() => {
     Local = new TransactionJobs({ cache: mockedCache });
@@ -535,6 +535,7 @@ describe("findOrCreateTransaction", () => {
       Person,
       FinancialPaymentValue,
       FinancialPaymentDetail,
+      platform: "web",
     });
 
     expect(Local.FinancialBatch.findOrCreate).toBeCalledWith({
@@ -562,6 +563,7 @@ describe("findOrCreateTransaction", () => {
       Person,
       FinancialPaymentValue,
       FinancialPaymentDetail,
+      platform: "web",
     });
   });
 
@@ -597,7 +599,7 @@ describe("findOrCreateTransaction", () => {
       Person,
       FinancialPaymentValue,
       FinancialPaymentDetail,
-      platform: "Native",
+      platform: "web",
     });
 
     expect(Local.FinancialBatch.findOrCreate).toBeCalledWith({
@@ -615,7 +617,7 @@ describe("findOrCreateTransaction", () => {
       CreatedByPersonAliasId: 10,
       ModifiedByPersonAliasId: 10,
       BatchId: 30,
-      SourceTypeValueId: NATIVE_SOURCE_TYPE,
+      SourceTypeValueId: WEB_SOURCE_TYPE,
       FinancialPaymentDetailId: 45,
       ForeignKey: null,
     });
@@ -625,7 +627,7 @@ describe("findOrCreateTransaction", () => {
       Person,
       FinancialPaymentValue,
       FinancialPaymentDetail,
-      platform: "Native",
+      platform: "web",
     });
   });
 
@@ -659,6 +661,7 @@ describe("findOrCreateTransaction", () => {
       Person,
       FinancialPaymentValue,
       FinancialPaymentDetail,
+      platform: "web",
     });
 
     expect(Local.FinancialBatch.findOrCreate).toBeCalledWith({
@@ -685,6 +688,7 @@ describe("findOrCreateTransaction", () => {
       Person,
       FinancialPaymentValue,
       FinancialPaymentDetail,
+      platform: "web",
     });
   });
   it("should pass version to foreign key on new job", async () => {
@@ -719,7 +723,7 @@ describe("findOrCreateTransaction", () => {
       Person,
       FinancialPaymentValue,
       FinancialPaymentDetail,
-      platform: "Native",
+      platform: "web",
       version: "9001",
     });
 
@@ -738,7 +742,7 @@ describe("findOrCreateTransaction", () => {
       CreatedByPersonAliasId: 10,
       ModifiedByPersonAliasId: 10,
       BatchId: 30,
-      SourceTypeValueId: NATIVE_SOURCE_TYPE,
+      SourceTypeValueId: WEB_SOURCE_TYPE,
       FinancialPaymentDetailId: 45,
       ForeignKey: "v9001",
     });
@@ -748,7 +752,7 @@ describe("findOrCreateTransaction", () => {
       Person,
       FinancialPaymentValue,
       FinancialPaymentDetail,
-      platform: "Native",
+      platform: "web",
       version: "9001",
     });
   });

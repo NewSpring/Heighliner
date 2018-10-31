@@ -241,7 +241,7 @@ describe("Mutation", () => {
         {
           instant: true,
           id: 1,
-          data: '{ "foo": true }',
+          data: "{ \"foo\": true }",
         },
         {
           person: { Id: 1 },
@@ -353,6 +353,7 @@ describe("Mutation", () => {
           token: "token",
           accountName: "card",
           scheduleId: 1,
+          platform: "web",
         },
         {
           models,
@@ -360,8 +361,7 @@ describe("Mutation", () => {
           req: {
             headers: {
               origin: "https://example.com",
-              platform: "Native",
-              version: "over 9000"
+              version: "over 9000",
             },
           },
         },
@@ -373,8 +373,8 @@ describe("Mutation", () => {
         person: { Id: 1 },
         origin: "https://example.com",
         scheduleId: 1,
-        platform: "Native",
-        version: "over 9000"
+        platform: "web",
+        version: "over 9000",
       });
     });
     it("passes args and context to the method", async () => {
@@ -517,7 +517,7 @@ describe("Mutation", () => {
       expect(models.Person.getHomesFromId).toBeCalledWith(1);
       expect(render).toBeCalledWith({
         home: 1,
-        person: person,
+        person,
         total: 0,
         transactions: [],
       });
@@ -545,7 +545,7 @@ describe("Mutation", () => {
       expect(models.Person.getHomesFromId).toBeCalled();
       expect(render).toBeCalledWith({
         home: 1,
-        person: person,
+        person,
         total: 0,
         transactions: [],
       });

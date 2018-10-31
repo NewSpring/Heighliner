@@ -486,7 +486,7 @@ export default class Transaction extends Rock {
       .then((data) => {
         if (!instant) return data;
         const scheduleId = id;
-        const response = formatTransaction({ scheduleId, response: data, person, origin, platform }, gateway);
+        const response = formatTransaction({ scheduleId, response: data, person, origin }, gateway);
 
         if (!response || !response.Campus || !response.Campus.Id) {
           report({ data }, new Error("missing response campus id"));
