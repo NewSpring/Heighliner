@@ -13,34 +13,35 @@ Array [
     start_date: String,
     end_date: String,
     personId: Int,
-    gateway: String = \\"${process.env.NMI_GATEWAY}\\",
+    gateway: String = \\"undefined\\",
   ): [Transaction]",
   "createOrder(
     data: String!
     id: ID
     instant: Boolean = false,
-    gateway: String = \\"${process.env.NMI_GATEWAY}\\",
+    gateway: String = \\"undefined\\",
     url: String
   ): OrderMutationResponse",
   "completeOrder(
     token: ID!
     scheduleId: ID
+    platform: String
     accountName: String
-    gateway: String = \\"${process.env.NMI_GATEWAY}\\",
+    gateway: String = \\"undefined\\",
   ): CompleteOrderMutationResponse",
   "validate(
     token: ID!
-    gateway: String = \\"${process.env.NMI_GATEWAY}\\",
+    gateway: String = \\"undefined\\",
   ): ValidateMutationResponse",
   "cancelSavedPayment(
     id: ID
     entityId: Int
-    gateway: String = \\"${process.env.NMI_GATEWAY}\\",
+    gateway: String = \\"undefined\\",
   ): SavePaymentMutationResponse",
   "savePayment(
     token: ID!
     accountName: String
-    gateway: String = \\"${process.env.NMI_GATEWAY}\\",
+    gateway: String = \\"undefined\\",
   ): SavePaymentMutationResponse",
   "updateSavedPayment(
     entityId: Int
@@ -49,7 +50,7 @@ Array [
   "cancelSchedule(
     id: ID
     entityId: Int
-    gateway: String = \\"${process.env.NMI_GATEWAY}\\",
+    gateway: String = \\"undefined\\",
   ): ScheduledTransactionMutationResponse",
   "transactionStatement(
     limit: Int

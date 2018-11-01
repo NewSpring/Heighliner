@@ -5,17 +5,14 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Program",
-      "type": "node2",
+      "type": "node",
       "request": "launch",
-      "program": "${workspaceRoot}/lib/server.js",
-      "cwd": "${workspaceRoot}"
+      "name": "Launch Program",
+      "program": "${workspaceFolder}/src/server.js",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/babel-node",
+      "env": {
+        "PORT": "8888"
+      }
     },
-    {
-      "name": "Attach to Process",
-      "type": "node2",
-      "request": "attach",
-      "port": 9229
-    }
   ]
 }
