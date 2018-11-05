@@ -470,7 +470,7 @@ describe("createPaymentDetail", () => {
 });
 
 describe("findOrCreateTransaction", () => {
-  const NATIVE_SOURCE_TYPE = 884;
+  const IOS_SOURCE_TYPE = 1121;
   const WEB_SOURCE_TYPE = 1120;
   let Local;
   beforeEach(() => {
@@ -599,7 +599,7 @@ describe("findOrCreateTransaction", () => {
       Person,
       FinancialPaymentValue,
       FinancialPaymentDetail,
-      platform: "web",
+      platform: "ios",
     });
 
     expect(Local.FinancialBatch.findOrCreate).toBeCalledWith({
@@ -617,7 +617,7 @@ describe("findOrCreateTransaction", () => {
       CreatedByPersonAliasId: 10,
       ModifiedByPersonAliasId: 10,
       BatchId: 30,
-      SourceTypeValueId: WEB_SOURCE_TYPE,
+      SourceTypeValueId: IOS_SOURCE_TYPE,
       FinancialPaymentDetailId: 45,
       ForeignKey: null,
     });
@@ -627,7 +627,7 @@ describe("findOrCreateTransaction", () => {
       Person,
       FinancialPaymentValue,
       FinancialPaymentDetail,
-      platform: "web",
+      platform: "ios",
     });
   });
 
