@@ -78,7 +78,7 @@ export default class TransactionJobs extends Rock {
     this.FinancialBatch = new FinancialBatch({ cache });
     this.queue = TRANSACTION_QUEUE;
 
-    this.queue.process(({ data }) =>  Promise.resolve(data)
+    this.queue.process(({ data }) => Promise.resolve(data)
       .then(this.getOrCreatePerson)
       .then(this.createPaymentDetail)
       .then(this.findOrCreateTransaction)
@@ -96,8 +96,8 @@ export default class TransactionJobs extends Rock {
     if (!this.queue.on) return;
 
     this.queue
-      .on("error", (e) => report({}, e))
-      .on("failed", report)
+      .on("error", e => report({}, e))
+      .on("failed", report);
   }
 
   add = (data) => {
@@ -237,8 +237,13 @@ export default class TransactionJobs extends Rock {
       return data;
     }
 
-    // 884 source type: (native.ns.cc), default 798: (my.ns.cc)
-    Transaction.SourceTypeValueId = platform === "Native" ? 884 : 798;
+    const platformOptions = {
+      web: 1120,
+      ios: 1121,
+      android: 1122,
+    };
+
+    Transaction.SourceTypeValueId = platformOptions[platform];
 
     Transaction.AuthorizedPersonAliasId = Person.PrimaryAliasId;
     Transaction.CreatedByPersonAliasId = Person.PrimaryAliasId;
@@ -367,7 +372,7 @@ export default class TransactionJobs extends Rock {
 
         // ERROR IF THIS IS MISSING
         if (!FamilyCampus || !FamilyCampus.Id) {
-          if(!FamilyCampus) report({ data }, new Error("FamilyCampus missing when creating transaction details"));
+          if (!FamilyCampus) report({ data }, new Error("FamilyCampus missing when creating transaction details"));
           else report({ data }, new Error("FamilyCampus.Id missing when creating transaction details"));
         }
 
@@ -442,7 +447,7 @@ export default class TransactionJobs extends Rock {
     const total = TransactionDetails.reduce((prev, { Amount }) => Amount + prev, 0);
     if (!isNumber(total)) return data;
 
-    const Batch = await FinancialBatchTable.findOne({ where: { Id: Transaction.BatchId }});
+    const Batch = await FinancialBatchTable.findOne({ where: { Id: Transaction.BatchId } });
     if (!Batch) return data;
 
     const ControlAmount = `${(Batch.ControlAmount + total).toFixed(2)}`;
