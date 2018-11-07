@@ -130,11 +130,10 @@ export default {
         success: false,
       }));
     },
-    completeOrder: async (_, { token, accountName, scheduleId }, { models, person, req }) => {
+    completeOrder: async (_, { token, accountName, scheduleId, platform }, { models, person, req }) => {
       if (!token) return null;
       const origin = req.headers.origin;
       // XXX this is temporary until new heighliner supports this for everything
-      const platform = req.headers.platform;
       const version = req.headers.version;
 
       // right now scheduleId could also be a meteor userId. This is bad and legacy
