@@ -2,7 +2,6 @@
 import uuid from "node-uuid";
 import { assign, isNumber } from "lodash";
 import queue from "bull";
-import fetch from "node-fetch";
 
 import {
   Transaction as TransactionTable,
@@ -219,7 +218,6 @@ export default class TransactionJobs extends Rock {
       FinancialPaymentDetail,
       FinancialPaymentValue,
       Person,
-      SourceTypeValue,
       Transaction,
       platform,
       version,
@@ -295,7 +293,7 @@ export default class TransactionJobs extends Rock {
       Schedule.SourceTypeValueId = await DefinedValue.findOne({
         where: { Value: SourceTypeValue.Url, DefinedTypeId: 12 },
       })
-        .then(x => x && x.Id || 10);
+        .then(x => (x && x.Id) || 10);
     }
 
     Schedule.AuthorizedPersonAliasId = Person.PrimaryAliasId;
@@ -352,7 +350,7 @@ export default class TransactionJobs extends Rock {
           ParentAccountId: x.AccountId,
         },
       })
-        .then(x => x && x.Id || null);
+        .then(y => (y && y.Id) || null);
 
       // Error if campus is lex, bsp, or sumter
       if (AccountId && (Campus.Id === 4 || Campus.Id === 13 || Campus.Id === 19)) {
@@ -368,7 +366,7 @@ export default class TransactionJobs extends Rock {
             { model: CampusTable.model },
           ],
         })
-          .then(x => x && x.Campus || {});
+          .then(y => (y && y.Campus) || {});
 
         // ERROR IF THIS IS MISSING
         if (!FamilyCampus || !FamilyCampus.Id) {
@@ -382,10 +380,13 @@ export default class TransactionJobs extends Rock {
             ParentAccountId: x.AccountId,
           },
         })
-          .then(x => x && x.Id || null);
+          .then(y => (y && y.Id) || null);
 
         // Error if campus is lex, bsp, or sumter
-        if (AccountId && (FamilyCampus.Id === 4 || FamilyCampus.Id === 13 || FamilyCampus.Id === 19)) {
+        if (AccountId && (
+          FamilyCampus.Id === 4 ||
+          FamilyCampus.Id === 13 ||
+          FamilyCampus.Id === 19)) {
           report({ data }, new Error("Creating Transaction with Incorrect Details"));
         }
       }
@@ -473,6 +474,7 @@ export default class TransactionJobs extends Rock {
     // formatting to match https://github.com/SparkDevNetwork/Rock/blob/develop/Rock/Transactions/SendPaymentReceipts.cs
     let totalAmount = 0;
     const accountAmounts = [];
+    // eslint-disable-next-line
     for (const detail of TransactionDetails) {
       if (detail.Amount <= 0 || !detail.AccountId) continue; // eslint-disable-line
 
