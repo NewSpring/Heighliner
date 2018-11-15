@@ -162,28 +162,19 @@ export default {
           Promise,
         });
 
-        googleMapsClient.geocode({ address: zip }, (err, response) => {
-          if (!err) {
+        await googleMapsClient
+          .geocode({ address: zip })
+          .asPromise()
+          .then((response) => {
             const location = response.json.results[0].geometry.location;
-            console.log(location);
             geo.latitude = location.lat;
             geo.longitude = location.lng;
-          }
-        });
-        // googleMapsClient
-        // .geocode({ address: zip })
-        // .asPromise()
-        // .then((response) => {
-        // const location = response.json.results[0].geometry.location;
-        // geo.latitude = location.lat;
-        // geo.longitude = location.lng;
-        // })
-        // .catch((err) => {
-        // console.log(err);
-        // });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
 
-      console.log(geo);
       return models.Group.findByAttributesAndQuery(
         { query, attributes, campuses, schedules },
         { limit, offset, geo },
