@@ -1,7 +1,5 @@
 import striptags from "striptags";
 import { flatten } from "lodash";
-import { geocode } from "google-geocoding";
-import { geography } from "mssql-geoparser";
 import { createClient as createGoogleMapsClient } from "@google/maps";
 import Moment from "moment";
 import ical from "ical";
@@ -20,10 +18,10 @@ function getPhotoFromTag(tag) {
     hobbies: "//s3.amazonaws.com/ns.assets/apollos/groups/group-hobbies.jpg",
     moms: "//s3.amazonaws.com/ns.assets/apollos/groups/group-moms.jpg",
     motorsports:
-      "//s3.amazonaws.com/ns.assets/apollos/groups/group-motorsports.jpg", // tslint:disable-line
+      "//s3.amazonaws.com/ns.assets/apollos/groups/group-motorsports.jpg",
     outdoor: "//s3.amazonaws.com/ns.assets/apollos/groups/group-outdoors.jpg",
     "sports/fitness":
-      "//s3.amazonaws.com/ns.assets/apollos/groups/group-sports.jpg", // tslint:disable-line
+      "//s3.amazonaws.com/ns.assets/apollos/groups/group-sports.jpg",
   };
   return photos[tag.toLowerCase()] || null;
 }
@@ -42,7 +40,7 @@ function getPhotoFromType(type) {
   const photos = {
     care: "//s3.amazonaws.com/ns.assets/apollos/groups/group-care.jpg",
     interests:
-      "//s3.amazonaws.com/ns.assets/apollos/groups/group-interests.jpg", // tslint:disable-line
+      "//s3.amazonaws.com/ns.assets/apollos/groups/group-interests.jpg",
     study: "//s3.amazonaws.com/ns.assets/apollos/groups/group-study.jpg",
   };
   return photos[type.toLowerCase()] || null;
