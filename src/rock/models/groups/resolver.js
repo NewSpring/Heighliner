@@ -1,7 +1,6 @@
 import striptags from "striptags";
 import { flatten } from "lodash";
-import { geocode } from "google-geocoding";
-import { geography } from "mssql-geoparser";
+import { createClient as createGoogleMapsClient } from "@google/maps";
 import Moment from "moment";
 import ical from "ical";
 import { createGlobalId } from "../../../util";
@@ -18,9 +17,11 @@ function getPhotoFromTag(tag) {
     gaming: "//s3.amazonaws.com/ns.assets/apollos/groups/group-games.jpg",
     hobbies: "//s3.amazonaws.com/ns.assets/apollos/groups/group-hobbies.jpg",
     moms: "//s3.amazonaws.com/ns.assets/apollos/groups/group-moms.jpg",
-    motorsports: "//s3.amazonaws.com/ns.assets/apollos/groups/group-motorsports.jpg", // tslint:disable-line
+    motorsports:
+      "//s3.amazonaws.com/ns.assets/apollos/groups/group-motorsports.jpg",
     outdoor: "//s3.amazonaws.com/ns.assets/apollos/groups/group-outdoors.jpg",
-    "sports/fitness": "//s3.amazonaws.com/ns.assets/apollos/groups/group-sports.jpg", // tslint:disable-line
+    "sports/fitness":
+      "//s3.amazonaws.com/ns.assets/apollos/groups/group-sports.jpg",
   };
   return photos[tag.toLowerCase()] || null;
 }
@@ -38,7 +39,8 @@ function getPhotoFromDemo(demo) {
 function getPhotoFromType(type) {
   const photos = {
     care: "//s3.amazonaws.com/ns.assets/apollos/groups/group-care.jpg",
-    interests: "//s3.amazonaws.com/ns.assets/apollos/groups/group-interests.jpg", // tslint:disable-line
+    interests:
+      "//s3.amazonaws.com/ns.assets/apollos/groups/group-interests.jpg",
     study: "//s3.amazonaws.com/ns.assets/apollos/groups/group-study.jpg",
   };
   return photos[type.toLowerCase()] || null;
@@ -53,15 +55,17 @@ function resolveAttribute(id, resolver) {
     let chunk;
 
     if (Array.isArray(AttributeValues)) {
-      chunk = AttributeValues.filter(x => x.Attribute && x.Attribute.Id === id)[0];
+      chunk = AttributeValues.filter(
+        x => x.Attribute && x.Attribute.Id === id,
+      )[0];
     }
     if (!chunk) {
       return Promise.resolve(null).then(x => resolver(x, data, args, context));
     }
 
-    return models.Rock
-      .getAttributeValuesFromId(chunk.Id, { models })
-      .then(x => resolver(x, data, args, context));
+    return models.Rock.getAttributeValuesFromId(chunk.Id, { models }).then(x =>
+      resolver(x, data, args, context),
+    );
   };
 }
 
@@ -92,8 +96,7 @@ export default {
 
       if (campus) {
         // This is the new section
-        const geoCampus = await models.Campus
-          .find({ Name: campus })
+        const geoCampus = await models.Campus.find({ Name: campus })
           .then(x =>
             x.map(y => ({
               Id: y.Id,
@@ -102,7 +105,9 @@ export default {
           )
           .then(x => x.shift());
 
-        const geoCampusData = await models.Group.getLocationFromLocationId(geoCampus.LocationId);
+        const geoCampusData = await models.Group.getLocationFromLocationId(
+          geoCampus.LocationId,
+        );
 
         if (geoCampusData.latitude && geoCampusData.longitude) {
           // Passed in directly from geolocation services
@@ -122,11 +127,13 @@ export default {
         geo.latitude = latitude;
         geo.longitude = longitude;
       } else if (person && person.Id) {
-        const geoLocation = await models.Person.getHomesFromId(person.Id).then(([x]) => {
-          if (!x) return {};
-          if (!x.GeoPoint) return x;
-          return models.Group.getLocationFromLocationId(x.Id);
-        });
+        const geoLocation = await models.Person.getHomesFromId(person.Id).then(
+          ([x]) => {
+            if (!x) return {};
+            if (!x.GeoPoint) return x;
+            return models.Group.getLocationFromLocationId(x.Id);
+          },
+        );
         if (geoLocation.latitude && geoLocation.longitude) {
           // Passed in directly from geolocation services
           geo.longitude = geoLocation.longitude;
@@ -148,17 +155,22 @@ export default {
         }
         // remove zipcode data
         // find by zipcode
-        const googleGeoData = await new Promise((resolve, reject) => {
-          geocode(zip, (err, result) => {
-            // XXX we don't really want to reject this because
-            // this is an additive feature
-            if (err) return resolve({});
-            resolve(result);
-          });
+        const googleMapsClient = createGoogleMapsClient({
+          key: process.env.GOOGLE_GEO_LOCATE,
+          Promise,
         });
 
-        geo.latitude = googleGeoData.lat;
-        geo.longitude = googleGeoData.lng;
+        await googleMapsClient
+          .geocode({ address: zip })
+          .asPromise()
+          .then((response) => {
+            const location = response.json.results[0].geometry.location;
+            geo.latitude = location.lat;
+            geo.longitude = location.lng;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
 
       return models.Group.findByAttributesAndQuery(
@@ -173,7 +185,9 @@ export default {
         16815, // tags
         16814, // type
       ];
-      const queries = ids.map(id => models.Rock.getAttributesFromId(id, { models }));
+      const queries = ids.map(id =>
+        models.Rock.getAttributesFromId(id, { models }),
+      );
       return Promise.all(queries)
         .then(flatten)
         .then(x => x.filter(y => y.Value !== "Interests"))
@@ -235,27 +249,30 @@ export default {
         if (TempWeeklyDayOfWeek) {
           // try the schedule fields if available
           const week = Moment(TempWeeklyDayOfWeek, "E").format("dddd");
-          const time = WeeklyTimeOfDay ? Moment.utc(WeeklyTimeOfDay).format("h:mm A") : null;
+          const time = WeeklyTimeOfDay
+            ? Moment.utc(WeeklyTimeOfDay).format("h:mm A")
+            : null;
           return time ? `${week} @ ${time}` : `${week}`;
-        } else {
-          // try parsing the ical string
-          const key = Object.keys(ical.parseICS(iCalendarContent))[0];
-          const parsed = ical.parseICS(iCalendarContent)[key];
-          const days = parsed.rrule.options.byweekday;
-          const parsedDays = days
-            .map((day, i) => {
-              const dayName = Moment()
-                .day(day + 1)
-                .format("dddd");
-              return i < days.length - 1 ? `${dayName}, ` : `${dayName}`;
-            })
-            .join("");
-          const parsedTime = Moment(
-            `${parsed.rrule.options.byhour[0]}:${parsed.rrule.options.byminute[0]}`,
-            "hh:mm",
-          ).format("h:mm A");
-          return `${parsedDays} @ ${parsedTime}`;
         }
+        // try parsing the ical string
+        const key = Object.keys(ical.parseICS(iCalendarContent))[0];
+        const parsed = ical.parseICS(iCalendarContent)[key];
+        const days = parsed.rrule.options.byweekday;
+        const parsedDays = days
+          .map((day, i) => {
+            const dayName = Moment()
+              .day(day + 1)
+              .format("dddd");
+            return i < days.length - 1 ? `${dayName}, ` : `${dayName}`;
+          })
+          .join("");
+        const parsedTime = Moment(
+          `${parsed.rrule.options.byhour[0]}:${
+            parsed.rrule.options.byminute[0]
+          }`,
+          "hh:mm",
+        ).format("h:mm A");
+        return `${parsedDays} @ ${parsedTime}`;
       } catch (e) {
         return null;
       }
@@ -272,7 +289,8 @@ export default {
     active: ({ IsActive }) => IsActive,
     ageRange: resolveAttribute(691, (x = []) => {
       // don't consider [0,0] an age range
-      const hasAgeRange = x.length && x.reduce((start, finish) => start && finish);
+      const hasAgeRange =
+        x.length && x.reduce((start, finish) => start && finish);
       if (!hasAgeRange) return null;
       return x;
     }),
@@ -290,39 +308,40 @@ export default {
     locations: ({ Id }, _, { models }) => models.Group.getLocationsById(Id),
     members: ({ Id }, _, { models }) => models.Group.getMembersById(Id),
     name: ({ Name }) => Name,
-    photo: resolveAttribute(2569, async (photo, { AttributeValues }, _, { models }) => {
-      if (photo && photo.Path) return photo.Path;
+    photo: resolveAttribute(
+      2569,
+      async (photo, { AttributeValues }, _, { models }) => {
+        if (photo && photo.Path) return photo.Path;
 
-      // check for tags first
-      const firstTag = await resolveAttribute(16815, x => x && x.length && x[0].Value)(
-        { AttributeValues },
-        _,
-        { models },
-      );
+        // check for tags first
+        const firstTag = await resolveAttribute(
+          16815,
+          x => x && x.length && x[0].Value,
+        )({ AttributeValues }, _, { models });
 
-      if (firstTag) return getPhotoFromTag(firstTag);
+        if (firstTag) return getPhotoFromTag(firstTag);
 
-      // photo from demographic
-      const demographic = await resolveAttribute(1409, x => x && x.length && x[0].Value)(
-        { AttributeValues },
-        _,
-        { models },
-      );
+        // photo from demographic
+        const demographic = await resolveAttribute(
+          1409,
+          x => x && x.length && x[0].Value,
+        )({ AttributeValues }, _, { models });
 
-      if (demographic) return getPhotoFromDemo(demographic);
+        if (demographic) return getPhotoFromDemo(demographic);
 
-      // type goes last since its required
-      const type = await resolveAttribute(16814, x => x && x.length && x[0].Value)(
-        { AttributeValues },
-        _,
-        { models },
-      );
+        // type goes last since its required
+        const type = await resolveAttribute(
+          16814,
+          x => x && x.length && x[0].Value,
+        )({ AttributeValues }, _, { models });
 
-      if (type) return getPhotoFromType(type);
+        if (type) return getPhotoFromType(type);
 
-      return null;
-    }),
-    schedule: ({ ScheduleId }, _, { models }) => models.Group.getScheduleFromScheduleId(ScheduleId),
+        return null;
+      },
+    ),
+    schedule: ({ ScheduleId }, _, { models }) =>
+      models.Group.getScheduleFromScheduleId(ScheduleId),
     tags: resolveAttribute(16815, (x) => {
       if (x && x.length) return x;
       return [];
