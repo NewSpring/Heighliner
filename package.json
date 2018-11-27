@@ -14,7 +14,7 @@
     "build:production": "NODE_ENV=production webpack",
     "danger": "danger run --verbose"
   },
-  "author": "jbaxleyiii",
+  "author": "NewSpring",
   "jest": {
     "moduleFileExtensions": [
       "js",
@@ -100,7 +100,7 @@
     "ghooks": "^1.2.3",
     "graphql-tester": "0.0.4",
     "jest": "^19.0.0",
-    "nodemon": "1.18.6",
+    "nodemon": "1.18.7",
     "npm-install-webpack-plugin": "^4.0.5",
     "react-test-renderer": "^15.4.1",
     "redis-mock": "^0.16.0",
