@@ -289,6 +289,7 @@ export default {
     active: ({ IsActive }) => IsActive,
     ageRange: resolveAttribute(691, (x = []) => {
       // don't consider [0,0] an age range
+      if (x === null) x = [];
       const hasAgeRange =
         x.length && x.reduce((start, finish) => start && finish);
       if (!hasAgeRange) return null;
