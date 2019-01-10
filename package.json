@@ -9,7 +9,7 @@
     "commit": "git-cz",
     "lint-fix": "eslint ./src  --fix",
     "lint": "eslint ./src",
-    "start": "NODE_ENV=development webpack --watch & ./node_modules/.bin/nodemon ./lib/server.js",
+    "start": "NODE_ENV=development docker-compose start & webpack --watch & ./node_modules/.bin/nodemon ./lib/server.js",
     "build": "NODE_ENV=development webpack",
     "build:production": "NODE_ENV=production webpack",
     "danger": "danger run --verbose"
