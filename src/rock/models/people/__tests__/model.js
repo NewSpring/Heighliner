@@ -2,7 +2,7 @@ import { PhoneNumber, Person, PersonalDevice } from "../model";
 import {
   PhoneNumber as PhoneNumberTable,
   Person as PersonTable,
-  PersonalDevice as PersonalDeviceTable,
+  PersonalDevice as PersonalDeviceTable
 } from "../tables";
 
 import { AttributeValue, Attribute } from "../../system/tables";
@@ -10,7 +10,7 @@ import { AttributeValue, Attribute } from "../../system/tables";
 import {
   Group,
   GroupMember,
-  GroupLocation,
+  GroupLocation
   // GroupTypeRole,
   // GroupType,
 } from "../../groups/tables";
@@ -20,49 +20,49 @@ jest.mock("../tables", () => ({
     post: jest.fn(),
     findOne: jest.fn(),
     cache: {
-      del: jest.fn(() => {}),
-    },
+      del: jest.fn(() => {})
+    }
   },
   Person: {
-    fetch: jest.fn(),
+    fetch: jest.fn()
   },
   PersonalDevice: {
     post: jest.fn(),
     findOne: jest.fn(),
     find: jest.fn(),
     cache: {
-      del: jest.fn(() => {}),
-    },
-  },
+      del: jest.fn(() => {})
+    }
+  }
 }));
 
 jest.mock("../../groups/tables", () => ({
   Group: {
-    find: jest.fn(),
+    find: jest.fn()
   },
   GroupMember: {
-    model: "GroupMember",
-  },
+    model: "GroupMember"
+  }
 }));
 
 jest.mock("../../system/tables", () => ({
   Attribute: {
-    model: "AttributeModel",
+    model: "AttributeModel"
   },
   AttributeValue: {
-    model: "AttributeValueModel",
-  },
+    model: "AttributeValueModel"
+  }
 }));
 
 jest.mock("node-uuid", () => ({
-  v4: () => "guid",
+  v4: () => "guid"
 }));
 
 const mockArgs = { phoneNumber: "(555) 555-5555" };
 const personArgs = {
   expireDateTime: "2037-09-03T17:56:26-04:00",
   usageLimit: 1,
-  pageId: 100,
+  pageId: 100
 };
 
 describe("setPhoneNumber", () => {
@@ -94,7 +94,7 @@ describe("setPhoneNumber", () => {
 
     await setPhoneNumber(mockArgs, { Id: 9999999999 });
     expect(PhoneNumberTable.findOne).toHaveBeenCalledWith({
-      where: { Number: "5555555555", PersonId: 9999999999 },
+      where: { Number: "5555555555", PersonId: 9999999999 }
     });
   });
 
@@ -110,7 +110,7 @@ describe("setPhoneNumber", () => {
     const { setPhoneNumber } = phoneNumberModel;
     PhoneNumberTable.post.mockReturnValueOnce({
       status: 404,
-      statusText: "BAD BAD BAD",
+      statusText: "BAD BAD BAD"
     });
 
     const result = await setPhoneNumber(mockArgs, { Id: 9999999999 });
@@ -130,7 +130,7 @@ describe("Person", () => {
   let personModel;
   let personalDeviceModel;
   const mockedCache = {
-    get: jest.fn((id, lookup) => Promise.resolve().then(lookup)),
+    get: jest.fn((id, lookup) => Promise.resolve().then(lookup))
   };
 
   beforeEach(() => {
@@ -148,19 +148,21 @@ describe("Person", () => {
         {
           model: GroupMember.model,
           where: { PersonId: "12" },
-          attributes: [],
+          attributes: []
         },
         {
           model: AttributeValue.model,
-          include: [{ model: Attribute.model }],
-        },
-      ],
+          include: [{ model: Attribute.model }]
+        }
+      ]
     });
   });
 
   it("gets person groups from cache lookup", async () => {
     await personModel.getGroups(12, 34);
-    expect(mockedCache.get.mock.calls[0][0]).toEqual("12:GroupMemberId:34:GroupTypes");
+    expect(mockedCache.get.mock.calls[0][0]).toEqual(
+      "12:GroupMemberId:34:GroupTypes"
+    );
     expect(typeof mockedCache.get.mock.calls[0][1]).toEqual("function");
   });
 
@@ -169,7 +171,7 @@ describe("Person", () => {
       await personModel.getIP(123, personArgs);
       expect(PersonTable.fetch).toHaveBeenCalledWith(
         "GET",
-        "GetImpersonationParameter/?personId=123&expireDateTime=09%2F03%2F2037&usageLimit=1&pageId=100",
+        "GetImpersonationParameter/?personId=123&expireDateTime=09%2F03%2F2037&usageLimit=1&pageId=100"
       );
     });
   });
@@ -181,7 +183,7 @@ describe("Person", () => {
       expect(res).toEqual({
         code: 400,
         success: false,
-        error: "Insufficient information",
+        error: "Insufficient information"
       });
     });
 
@@ -191,7 +193,7 @@ describe("Person", () => {
       expect(res).toEqual({
         code: 400,
         success: false,
-        error: "Insufficient information",
+        error: "Insufficient information"
       });
     });
 
@@ -201,14 +203,14 @@ describe("Person", () => {
       expect(res).toEqual({
         code: 400,
         success: false,
-        error: "Insufficient information",
+        error: "Insufficient information"
       });
     });
 
     it("posts with correct info", async () => {
       const { saveId } = personalDeviceModel;
       const res = await saveId("123456", "chrome", {
-        PrimaryAliasId: "harambe",
+        PrimaryAliasId: "harambe"
       });
       expect(PersonalDeviceTable.post).toBeCalledWith({
         PersonAliasId: "harambe",
@@ -216,7 +218,7 @@ describe("Person", () => {
         PersonalDeviceTypeValueId: 671, // `mobile` device type
         NotificationsEnabled: 1,
         ForeignKey: "chrome",
-        Guid: "guid",
+        Guid: "guid"
       });
       expect(res).toEqual({ code: 200, success: true });
     });
@@ -224,7 +226,7 @@ describe("Person", () => {
     it("returns with 200 if post doesn't fail", async () => {
       const { saveId } = personalDeviceModel;
       const res = await saveId("123456", "chrome", {
-        PrimaryAliasId: "harambe",
+        PrimaryAliasId: "harambe"
       });
       expect(res).toEqual({ code: 200, success: true });
     });
@@ -233,10 +235,10 @@ describe("Person", () => {
       const { saveId } = personalDeviceModel;
       PersonalDeviceTable.post.mockReturnValueOnce({
         status: 9999,
-        statusText: "bruh no",
+        statusText: "bruh no"
       });
       const res = await saveId("123456", "chrome", {
-        PrimaryAliasId: "harambe",
+        PrimaryAliasId: "harambe"
       });
       expect(res).toEqual({ code: 9999, success: false, error: "bruh no" });
     });

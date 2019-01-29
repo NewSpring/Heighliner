@@ -2,13 +2,7 @@ import crypto from "crypto";
 import moment from "moment";
 import stripTags from "striptags";
 import Random from "meteor-random";
-import {
-  isEmpty,
-  isNil,
-  difference,
-  includes,
-  get,
-} from "lodash";
+import { isEmpty, isNil, difference, includes, get } from "lodash";
 import makeNewGuid from "./makeNewGuid";
 import sendEmail from "./sendEmail";
 import * as api from "./api";
@@ -26,41 +20,51 @@ const UserModel = new MongoConnector("user", {
     password: { bcrypt: String },
     rock: { PersonId: Number, PrimaryAliasId: Number },
     resume: {
-      loginTokens: [{ when: Date, hashedToken: String }],
-    },
+      loginTokens: [{ when: Date, hashedToken: String }]
+    }
   },
   emails: [{ address: String, verified: Boolean }],
-  profile: { lastLogin: Date },
+  profile: { lastLogin: Date }
 });
 
-const UserTokensModel = new MongoConnector("user_tokens", {
-  _id: String,
-  token: String,
-  type: String,
-  loginId: Number,
-  createdAt: { type: Date, default: Date.now },
-  expireCreatedAt: { type: Date },
-}, [
+const UserTokensModel = new MongoConnector(
+  "user_tokens",
   {
-    keys: { expireCreatedAt: 1 },
-    options: { // 1 day and only reset tokens
-      expireAfterSeconds: 43200,
-      partialFilterExpression: { // Mongo 3.2+ only (we're on 3.0)
-        type: { $eq: "reset" },
-      },
-    },
+    _id: String,
+    token: String,
+    type: String,
+    loginId: Number,
+    createdAt: { type: Date, default: Date.now },
+    expireCreatedAt: { type: Date }
   },
-]);
+  [
+    {
+      keys: { expireCreatedAt: 1 },
+      options: {
+        // 1 day and only reset tokens
+        expireAfterSeconds: 43200,
+        partialFilterExpression: {
+          // Mongo 3.2+ only (we're on 3.0)
+          type: { $eq: "reset" }
+        }
+      }
+    }
+  ]
+);
 
-const UserIgnoredTopics = new MongoConnector("user_ignored_topics", {
-  _id: String,
-  userId: String,
-  topic: String,
-}, [
+const UserIgnoredTopics = new MongoConnector(
+  "user_ignored_topics",
   {
-    keys: { userId: 1 },
+    _id: String,
+    userId: String,
+    topic: String
   },
-]);
+  [
+    {
+      keys: { userId: 1 }
+    }
+  ]
+);
 
 export class User {
   // Deprecate
@@ -80,16 +84,19 @@ export class User {
   // Deprecate
   async getByHashedToken(rawToken) {
     // allow for client or server side auth calls
-    const token = crypto.createHash("sha256")
+    const token = crypto
+      .createHash("sha256")
       .update(rawToken)
       .digest("base64");
 
-    return await this.cache.get(`hashedToken:${token}`, () => this.model.findOne({
-      $or: [
-        { "services.resume.loginTokens.hashedToken": token },
-        { "services.resume.loginTokens.hashedToken": rawToken },
-      ],
-    }));
+    return await this.cache.get(`hashedToken:${token}`, () =>
+      this.model.findOne({
+        $or: [
+          { "services.resume.loginTokens.hashedToken": token },
+          { "services.resume.loginTokens.hashedToken": rawToken }
+        ]
+      })
+    );
   }
 
   async getByBasicAuth(token) {
@@ -103,7 +110,9 @@ export class User {
   }
 
   async getLatestLoginByUsername(username = "") {
-    const [login] = await api.get(`/UserLogins?$filter=UserName eq '${username}'`);
+    const [login] = await api.get(
+      `/UserLogins?$filter=UserName eq '${username}'`
+    );
     return login;
   }
 
@@ -115,14 +124,14 @@ export class User {
     try {
       const { loginId } = await this.tokens.findOne({
         token,
-        type,
+        type
       });
 
       return this.getLoginById(loginId);
     } catch (err) {
       throw new Error("Token Expired!");
     }
-  }
+  };
 
   getUserProfile(personId) {
     return api.get(`/People/${personId}`);
@@ -135,7 +144,7 @@ export class User {
       // an endpoint where we can use that cookie to identify the user
       const isAuthorized = await api.post("/Auth/login", {
         Username,
-        Password,
+        Password
       });
 
       return isAuthorized;
@@ -146,7 +155,9 @@ export class User {
 
   async userExists({ email } = {}) {
     try {
-      const [login] = await api.get(`/UserLogins?$filter=UserName eq '${email}'`);
+      const [login] = await api.get(
+        `/UserLogins?$filter=UserName eq '${email}'`
+      );
       return !!login;
     } catch (err) {
       return false;
@@ -156,22 +167,22 @@ export class User {
   loginUser = async ({ email, password, user } = {}) => {
     try {
       // special case for AD lookup
-      if (email.indexOf('@newspring.cc') > -1) {
-        email = email.replace(/@newspring.cc/, '');
+      if (email.indexOf("@newspring.cc") > -1) {
+        email = email.replace(/@newspring.cc/, "");
       }
-      
+
       await this.checkUserCredentials(email, password);
 
-      const login = user || await this.getLatestLoginByUsername(email);
+      const login = user || (await this.getLatestLoginByUsername(email));
 
       if (!login.IsConfirmed) {
         api.post(`/UserLogins/${login.Id}`, {
-          IsConfirmed: true,
+          IsConfirmed: true
         });
       }
 
       api.patch(`/UserLogins/${login.Id}`, {
-        LastLoginDateTime: `${moment().toISOString()}`,
+        LastLoginDateTime: `${moment().toISOString()}`
       });
 
       const person = await this.getUserProfile(login.PersonId);
@@ -181,38 +192,35 @@ export class User {
         _id: Random.id(),
         loginId: login.Id,
         token,
-        type: "login",
+        type: "login"
       });
 
       return {
         id: person.PrimaryAliasId,
-        token,
+        token
       };
     } catch (err) {
       throw err;
     }
-  }
+  };
 
   logoutUser = async ({ token, loginId } = {}) => {
     try {
-      if (isNil(loginId) || isEmpty(token)) throw new Error("User is not logged in!");
+      if (isNil(loginId) || isEmpty(token))
+        throw new Error("User is not logged in!");
       await this.tokens.remove({
         token,
-        loginId,
+        loginId
       });
       return true;
     } catch (err) {
       throw err;
     }
-  }
+  };
 
   createUserProfile = async (props = {}) => {
     try {
-      const {
-        email,
-        firstName,
-        lastName,
-      } = props;
+      const { email, firstName, lastName } = props;
 
       return await api.post("/People", {
         Email: email,
@@ -223,20 +231,16 @@ export class User {
         Gender: 0,
         RecordTypeValueId: 1,
         ConnectionStatusValueId: 67, // Web Prospect
-        SystemNote: "Created from NewSpring Apollos",
+        SystemNote: "Created from NewSpring Apollos"
       });
     } catch (err) {
       throw new Error("Unable to create profile!");
     }
-  }
+  };
 
   createUserLogin = async (props = {}) => {
     try {
-      const {
-        email,
-        password,
-        personId,
-      } = props;
+      const { email, password, personId } = props;
 
       return await api.post("/UserLogins", {
         PersonId: personId,
@@ -244,21 +248,16 @@ export class User {
         UserName: email,
         IsConfirmed: true,
         PlainTextPassword: password,
-        LastLoginDateTime: `${moment().toISOString()}`,
+        LastLoginDateTime: `${moment().toISOString()}`
       });
     } catch (err) {
       throw new Error("Unable to create user login!");
     }
-  }
+  };
 
   async registerUser(props = {}) {
     try {
-      const {
-        email,
-        firstName,
-        lastName,
-        password,
-      } = props;
+      const { email, firstName, lastName, password } = props;
 
       const userExists = await this.userExists({ email });
       if (userExists) throw new Error("User already exists!");
@@ -266,34 +265,33 @@ export class User {
       const personId = await this.createUserProfile({
         email,
         firstName,
-        lastName,
+        lastName
       });
 
       const loginId = await this.createUserLogin({
         email,
         password,
-        personId,
+        personId
       });
 
       const [user, person] = await Promise.all([
         api.get(`/UserLogins/${loginId}`),
-        api.get(`/People/${personId}`),
+        api.get(`/People/${personId}`)
       ]);
 
       // Removed saving it to a constant
       // because we don't know if this ID could change
       // from other sources (migrations, integrity checks, etc)
-      const [systemEmail] = await api.get("/SystemEmails?$filter=Title eq 'Account Created'");
-      if (!systemEmail) throw new Error("Account created email does not exist!");
-
-      sendEmail(
-        systemEmail.Id,
-        Number(person.PrimaryAliasId),
-        {
-          Person: person,
-          User: user,
-        },
+      const [systemEmail] = await api.get(
+        "/SystemEmails?$filter=Title eq 'Account Created'"
       );
+      if (!systemEmail)
+        throw new Error("Account created email does not exist!");
+
+      sendEmail(systemEmail.Id, Number(person.PrimaryAliasId), {
+        Person: person,
+        User: user
+      });
 
       return this.loginUser({ email, password, user });
     } catch (err) {
@@ -319,25 +317,23 @@ export class User {
         loginId: login.Id,
         token,
         type: "reset",
-        expireCreatedAt: new Date(),
+        expireCreatedAt: new Date()
       });
 
-      const [systemEmail] = await api.get("/SystemEmails?$filter=Title eq 'Reset Password'");
+      const [systemEmail] = await api.get(
+        "/SystemEmails?$filter=Title eq 'Reset Password'"
+      );
       if (!systemEmail) throw new Error("Reset password email does not exist!");
 
-      sendEmail(
-        systemEmail.Id,
-        Number(person.PrimaryAliasId),
-        {
-          Person: person,
-          ResetPasswordUrl: `${sourceURL}/reset-password/${token}`,
-        },
-      );
+      sendEmail(systemEmail.Id, Number(person.PrimaryAliasId), {
+        Person: person,
+        ResetPasswordUrl: `${sourceURL}/reset-password/${token}`
+      });
       return true;
     } catch (err) {
       throw err;
     }
-  }
+  };
 
   resetPassword = async (token, newPassword) => {
     try {
@@ -349,20 +345,20 @@ export class User {
         ...user,
         PlainTextPassword: newPassword,
         IsConfirmed: true,
-        EntityTypeId: 27,
+        EntityTypeId: 27
       });
 
       this.tokens.remove({
         loginId: user.Id,
         token,
-        type: "reset",
+        type: "reset"
       });
 
       return this.loginUser({ email: user.UserName, password: newPassword });
     } catch (err) {
       throw err;
     }
-  }
+  };
 
   async changePassword(login, oldPassword, newPassword) {
     try {
@@ -376,7 +372,7 @@ export class User {
         ...login,
         PlainTextPassword: newPassword,
         IsConfirmed: true,
-        EntityTypeId: 27,
+        EntityTypeId: 27
       });
 
       return true;
@@ -389,10 +385,10 @@ export class User {
     if (!userId) return FOLLOWABLE_TOPICS;
     try {
       const ignoredTopicObjects = await this.ignoredTopics.find({
-        userId,
+        userId
       });
 
-      const ignoredTopics = ignoredTopicObjects.map(({ topic }) => (topic));
+      const ignoredTopics = ignoredTopicObjects.map(({ topic }) => topic);
 
       return difference(FOLLOWABLE_TOPICS, ignoredTopics);
     } catch (err) {
@@ -401,24 +397,28 @@ export class User {
   }
 
   ignoreTopic({ userId, topic } = {}) {
-    if (!includes(FOLLOWABLE_TOPICS, topic)) throw new Error("Topic cannot be followed");
+    if (!includes(FOLLOWABLE_TOPICS, topic))
+      throw new Error("Topic cannot be followed");
     return this.ignoredTopics.create({
       _id: Random.id(),
       userId,
-      topic,
+      topic
     });
   }
 
   followTopic({ userId, topic } = {}) {
     return this.ignoredTopics.remove({
       userId,
-      topic,
+      topic
     });
   }
 
   async toggleTopic({ userId, topic } = {}) {
     try {
-      const isIgnoringTopic = !!await this.ignoredTopics.findOne({ userId, topic });
+      const isIgnoringTopic = !!(await this.ignoredTopics.findOne({
+        userId,
+        topic
+      }));
       if (isIgnoringTopic) {
         return this.followTopic({ userId, topic });
       }
@@ -429,7 +429,9 @@ export class User {
   }
 
   getLocations(personId) {
-    return api.get(`/Groups/GetFamilies/${personId}?$expand=GroupLocations,GroupLocations/Location,GroupLocations/GroupLocationTypeValue&$select=Id,GroupLocations/Location/Id,GroupLocations/GroupLocationTypeValue/Value`);
+    return api.get(
+      `/Groups/GetFamilies/${personId}?$expand=GroupLocations,GroupLocations/Location,GroupLocations/GroupLocationTypeValue&$select=Id,GroupLocations/Location/Id,GroupLocations/GroupLocationTypeValue/Value`
+    );
   }
 
   async updateProfile(personId, { Campus, ...newProfile } = {}) {
@@ -461,9 +463,9 @@ export class User {
   async updateHomeAddress(personId, newAddress) {
     try {
       const currentLocations = await this.getLocations(personId);
-      const homeLocation = get(currentLocations, "0.GroupLocations", []).find(location => (
-        location.GroupLocationTypeValue.Value === "Home"
-      ));
+      const homeLocation = get(currentLocations, "0.GroupLocations", []).find(
+        location => location.GroupLocationTypeValue.Value === "Home"
+      );
       const homeLocationId = get(homeLocation, "Location.Id");
 
       if (homeLocationId) {
@@ -472,11 +474,11 @@ export class User {
         const Location = {
           ...newAddress,
           Guid: makeNewGuid(),
-          IsActive: true,
+          IsActive: true
         };
         const [LocationId, person] = await Promise.all([
           api.post("/Locations", Location),
-          this.getUserProfile(personId),
+          this.getUserProfile(personId)
         ]);
 
         const GroupId = get(currentLocations, "0.Id");
@@ -489,7 +491,7 @@ export class User {
           CreatedByPersonAliasId: person.PrimaryAliasId,
           // NOTE: This is required by the rock API but was removed in Holtzman!
           // (new users couldn't create a home address)
-          Order: 0,
+          Order: 0
         };
 
         await api.post("/GroupLocations", GroupLocation);
@@ -503,5 +505,5 @@ export class User {
 }
 
 export default {
-  User,
+  User
 };

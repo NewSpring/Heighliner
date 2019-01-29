@@ -1,4 +1,3 @@
-
 import Transaction from "./models/Transaction";
 import ScheduledTransaction from "./models/ScheduledTransaction";
 import SavedPayment from "./models/SavedPayment";
@@ -8,5 +7,5 @@ export default {
   Transaction,
   ScheduledTransaction,
   SavedPayment,
-  FinancialAccount,
+  FinancialAccount
 };

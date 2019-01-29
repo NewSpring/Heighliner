@@ -26,11 +26,11 @@ describe("Statement", () => {
     Street2: "",
     City: "Cincinnati",
     State: "OH",
-    PostalCode: "45220",
+    PostalCode: "45220"
   };
   const transactions = [
     { Name: "Admission", Date: "2016-01-01", Amount: 15 },
-    { Name: "Admission", Date: "2016-02-01", Amount: 15 },
+    { Name: "Admission", Date: "2016-02-01", Amount: 15 }
   ];
   const total = 30;
 
@@ -41,7 +41,7 @@ describe("Statement", () => {
         home={home}
         transactions={transactions}
         total={total}
-      />,
+      />
     );
     expect(component).toMatchSnapshot();
   });
@@ -63,12 +63,12 @@ describe("generatePDF", () => {
     jest.mock("react-dom/server");
     ReactDOMServer.renderToStaticMarkup = jest.fn(c => c);
     return generatePDF().then(
-      (res) => {
+      res => {
         throw new Error("generatePDF didn't fail");
       },
-      (res) => {
+      res => {
         expect(res).toBeDefined();
-      },
+      }
     );
   });
 });

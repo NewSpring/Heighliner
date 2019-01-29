@@ -2,7 +2,7 @@ import Resolver from "../fieldTypeResolvers";
 import Moment from "moment";
 
 jest.mock("moment", () => () => ({
-  toString: () => "harambe",
+  toString: () => "harambe"
 }));
 
 describe("Date", () => {

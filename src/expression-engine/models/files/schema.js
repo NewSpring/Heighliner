@@ -1,4 +1,5 @@
-export default [`
+export default [
+  `
   # interface File {
   #   id: ID!
   #   file: String!
@@ -34,4 +35,5 @@ export default [`
     fileType: String
     fileLabel: String
   }
-`];
+`
+];

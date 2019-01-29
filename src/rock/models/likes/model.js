@@ -8,16 +8,16 @@ const schema = {
   userId: String, // AKA: PrimaryAliasId (pending migration from mongoId to rockId)
   entryId: String, // AKA: id returned by content
   type: String,
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now }
 };
 
 const Model = new MongoConnector("like", schema, [
   {
-    keys: { userId: 1, entryId: 1 },
+    keys: { userId: 1, entryId: 1 }
   },
   {
-    keys: { createdAt: -1 },
-  },
+    keys: { createdAt: -1 }
+  }
 ]);
 
 /*
@@ -31,14 +31,14 @@ export const safeTrimArray = (skip, limit, arr, emptyRet) => {
   if (skip && skip >= arr.length) return emptyRet; // skips more than we have
 
   /*
-  * first slice: trims the front of the array by "skip"
-  * second: trims the back.
-  *   it checks for limit, then checks if it would be outside of array bounds
-  *     if it's outside of array bounds, just returns whole array
-  */
+   * first slice: trims the front of the array by "skip"
+   * second: trims the back.
+   *   it checks for limit, then checks if it would be outside of array bounds
+   *     if it's outside of array bounds, just returns whole array
+   */
   const trimmed = arr
-    .slice(skip ? skip : 0)
-    .slice(0, limit ? limit > arr.length ? arr.length : limit : null);
+    .slice(skip || 0)
+    .slice(0, limit ? (limit > arr.length ? arr.length : limit) : null);
 
   if (!trimmed || !trimmed.length) return emptyRet;
   return trimmed;
@@ -74,7 +74,7 @@ export class Like {
       const likes = await this.model.aggregate([
         { $match: query },
         { $group: { _id: "$entryId", date: { $max: "$createdAt" } } },
-        { $sort: { date: -1 } },
+        { $sort: { date: -1 } }
       ]);
 
       const ids = likes.map(({ _id }) => _id);
@@ -83,26 +83,26 @@ export class Like {
 
     if (!entryIds || !entryIds.length) return null;
 
-    let promises = entryIds.map(x => nodeModel.get(x));
+    const promises = entryIds.map(x => nodeModel.get(x));
     return Promise.all(promises).then(likes => likes.filter(x => x));
   }
 
   async toggleLike(nodeId, userId, nodeModel) {
-    let existingLike = await this.model.findOne({
+    const existingLike = await this.model.findOne({
       entryId: nodeId,
-      userId,
+      userId
     });
 
     if (existingLike) {
       await this.model.remove({
-        _id: existingLike._id,
+        _id: existingLike._id
       });
     } else {
       await this.model.create({
         _id: uuid.v4(),
         userId,
         entryId: nodeId,
-        createdAt: new Date(),
+        createdAt: new Date()
       });
     }
 
@@ -113,19 +113,19 @@ export class Like {
       like: nodeModel.get(nodeId),
       success: true,
       error: "",
-      code: "",
+      code: ""
     };
   }
 
   async hasUserLike({ userId, entryId, entryType } = {}) {
     if (!userId || !entryId || !entryType) return false;
-    return !!await this.model.findOne({
+    return !!(await this.model.findOne({
       entryId: createGlobalId(entryId, entryType), // Why are IDs encrypted?
-      userId,
-    });
+      userId
+    }));
   }
 }
 
 export default {
-  Like,
+  Like
 };

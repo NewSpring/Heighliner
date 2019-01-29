@@ -8,7 +8,7 @@ import { createGlobalId } from "../../../util";
 const MutationReponseResolver = {
   error: ({ error }) => error,
   success: ({ success, error }) => success || !error,
-  code: ({ code }) => code,
+  code: ({ code }) => code
 };
 
 function getPhotoFromTag(tag) {
@@ -21,7 +21,7 @@ function getPhotoFromTag(tag) {
       "//s3.amazonaws.com/ns.assets/apollos/groups/group-motorsports.jpg",
     outdoor: "//s3.amazonaws.com/ns.assets/apollos/groups/group-outdoors.jpg",
     "sports/fitness":
-      "//s3.amazonaws.com/ns.assets/apollos/groups/group-sports.jpg",
+      "//s3.amazonaws.com/ns.assets/apollos/groups/group-sports.jpg"
   };
   return photos[tag.toLowerCase()] || null;
 }
@@ -31,7 +31,7 @@ function getPhotoFromDemo(demo) {
     coed: "//s3.amazonaws.com/ns.assets/apollos/groups/group-coed.jpg",
     married: "//s3.amazonaws.com/ns.assets/apollos/groups/group-married.jpg",
     men: "//s3.amazonaws.com/ns.assets/apollos/groups/group-men.jpg",
-    women: "//s3.amazonaws.com/ns.assets/apollos/groups/group-women.jpg",
+    women: "//s3.amazonaws.com/ns.assets/apollos/groups/group-women.jpg"
   };
   return photos[demo.toLowerCase()] || null;
 }
@@ -41,7 +41,7 @@ function getPhotoFromType(type) {
     care: "//s3.amazonaws.com/ns.assets/apollos/groups/group-care.jpg",
     interests:
       "//s3.amazonaws.com/ns.assets/apollos/groups/group-interests.jpg",
-    study: "//s3.amazonaws.com/ns.assets/apollos/groups/group-study.jpg",
+    study: "//s3.amazonaws.com/ns.assets/apollos/groups/group-study.jpg"
   };
   return photos[type.toLowerCase()] || null;
 }
@@ -56,7 +56,7 @@ function resolveAttribute(id, resolver) {
 
     if (Array.isArray(AttributeValues)) {
       chunk = AttributeValues.filter(
-        x => x.Attribute && x.Attribute.Id === id,
+        x => x.Attribute && x.Attribute.Id === id
       )[0];
     }
     if (!chunk) {
@@ -64,7 +64,7 @@ function resolveAttribute(id, resolver) {
     }
 
     return models.Rock.getAttributeValuesFromId(chunk.Id, { models }).then(x =>
-      resolver(x, data, args, context),
+      resolver(x, data, args, context)
     );
   };
 }
@@ -83,9 +83,9 @@ export default {
         query,
         latitude,
         longitude,
-        zip,
+        zip
       },
-      { models, ip, person },
+      { models, ip, person }
     ) => {
       const geo = { latitude: null, longitude: null };
 
@@ -100,13 +100,13 @@ export default {
           .then(x =>
             x.map(y => ({
               Id: y.Id,
-              LocationId: y.LocationId,
-            })),
+              LocationId: y.LocationId
+            }))
           )
           .then(x => x.shift());
 
         const geoCampusData = await models.Group.getLocationFromLocationId(
-          geoCampus.LocationId,
+          geoCampus.LocationId
         );
 
         if (geoCampusData.latitude && geoCampusData.longitude) {
@@ -132,7 +132,7 @@ export default {
             if (!x) return {};
             if (!x.GeoPoint) return x;
             return models.Group.getLocationFromLocationId(x.Id);
-          },
+          }
         );
         if (geoLocation.latitude && geoLocation.longitude) {
           // Passed in directly from geolocation services
@@ -157,25 +157,25 @@ export default {
         // find by zipcode
         const googleMapsClient = createGoogleMapsClient({
           key: process.env.GOOGLE_GEO_LOCATE,
-          Promise,
+          Promise
         });
 
         await googleMapsClient
           .geocode({ address: zip })
           .asPromise()
-          .then((response) => {
+          .then(response => {
             const location = response.json.results[0].geometry.location;
             geo.latitude = location.lat;
             geo.longitude = location.lng;
           })
-          .catch((err) => {
+          .catch(err => {
             console.log(err);
           });
       }
 
       return models.Group.findByAttributesAndQuery(
         { query, attributes, campuses, schedules },
-        { limit, offset, geo },
+        { limit, offset, geo }
       );
     },
     groupAttributes: (_, $, { models }) => {
@@ -183,52 +183,52 @@ export default {
         1409, // demographic
         5406, // kid friendly
         16815, // tags
-        16814, // type
+        16814 // type
       ];
       const queries = ids.map(id =>
-        models.Rock.getAttributesFromId(id, { models }),
+        models.Rock.getAttributesFromId(id, { models })
       );
       return Promise.all(queries)
         .then(flatten)
         .then(x => x.filter(y => y.Value !== "Interests"))
         .then(x =>
-          x.map((y) => {
+          x.map(y => {
             y.Value = y.Value === "Childcare" ? "Kid Friendly" : y.Value;
             return y;
-          }),
+          })
         );
-    },
+    }
   },
 
   Mutation: {
     requestGroupInfo: async (
       _,
       { groupId, message, communicationPreference },
-      { models, person },
+      { models, person }
     ) => {
       if (!person) {
         return {
           code: 401,
           success: false,
-          error: "Must be logged in to make this request",
+          error: "Must be logged in to make this request"
         };
       }
       return await models.Group.requestGroupInfo(
         {
           groupId,
           message: striptags(message, ["<br/>"], ["\n"]),
-          communicationPreference,
+          communicationPreference
         },
-        person,
+        person
       );
-    },
+    }
   },
 
   GroupMember: {
     id: ({ Id }, _, $, { parentType }) => createGlobalId(Id, parentType.name),
     role: ({ GroupTypeRole }) => GroupTypeRole && GroupTypeRole.Name, // XXX should we expand this?
     person: ({ PersonId }, _, { models }) => models.Person.getFromId(PersonId),
-    status: ({ GroupMemberStatus }) => GroupMemberStatus,
+    status: ({ GroupMemberStatus }) => GroupMemberStatus
   },
 
   GroupLocation: {
@@ -236,7 +236,7 @@ export default {
     location: ({ LocationId }, _, { models }) =>
       // XXX abstract to location model
       // models.Location.getFromId(LocationId);
-      models.Group.getLocationFromLocationId(LocationId),
+      models.Group.getLocationFromLocationId(LocationId)
   },
 
   GroupSchedule: {
@@ -270,7 +270,7 @@ export default {
           `${parsed.rrule.options.byhour[0]}:${
             parsed.rrule.options.byminute[0]
           }`,
-          "hh:mm",
+          "hh:mm"
         ).format("h:mm A");
         return `${parsedDays} @ ${parsedTime}`;
       } catch (e) {
@@ -282,7 +282,7 @@ export default {
     name: ({ Name }) => Name,
     start: ({ EffectiveStartDate }) => EffectiveStartDate,
     time: ({ WeeklyTimeOfDay }) => WeeklyTimeOfDay,
-    iCal: ({ iCalendarContent }) => iCalendarContent,
+    iCal: ({ iCalendarContent }) => iCalendarContent
   },
 
   Group: {
@@ -316,7 +316,7 @@ export default {
         // check for tags first
         const firstTag = await resolveAttribute(
           16815,
-          x => x && x.length && x[0].Value,
+          x => x && x.length && x[0].Value
         )({ AttributeValues }, _, { models });
 
         if (firstTag) return getPhotoFromTag(firstTag);
@@ -324,7 +324,7 @@ export default {
         // photo from demographic
         const demographic = await resolveAttribute(
           1409,
-          x => x && x.length && x[0].Value,
+          x => x && x.length && x[0].Value
         )({ AttributeValues }, _, { models });
 
         if (demographic) return getPhotoFromDemo(demographic);
@@ -332,17 +332,17 @@ export default {
         // type goes last since its required
         const type = await resolveAttribute(
           16814,
-          x => x && x.length && x[0].Value,
+          x => x && x.length && x[0].Value
         )({ AttributeValues }, _, { models });
 
         if (type) return getPhotoFromType(type);
 
         return null;
-      },
+      }
     ),
     schedule: ({ ScheduleId }, _, { models }) =>
       models.Group.getScheduleFromScheduleId(ScheduleId),
-    tags: resolveAttribute(16815, (x) => {
+    tags: resolveAttribute(16815, x => {
       if (x && x.length) return x;
       return [];
     }),
@@ -352,17 +352,17 @@ export default {
       return models.Like.hasUserLike({
         userId: person.PrimaryAliasId,
         entryId: Id,
-        entryType: parentType.name,
+        entryType: parentType.name
       });
-    },
+    }
   },
 
   GroupSearch: {
     count: ({ count }) => count,
-    results: ({ results }) => results,
+    results: ({ results }) => results
   },
 
   GroupsMutationResponse: {
-    ...MutationReponseResolver,
-  },
+    ...MutationReponseResolver
+  }
 };

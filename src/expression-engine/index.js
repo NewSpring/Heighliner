@@ -1,4 +1,3 @@
-
 import { connect } from "./mysql";
 
 import { createApplication } from "../util/heighliner";
@@ -10,7 +9,7 @@ import Navigation from "./models/navigation";
 export const { models, resolvers, mocks, schema, queries } = createApplication([
   Content,
   Files,
-  Navigation,
+  Navigation
 ]);
 
 export default {
@@ -18,5 +17,5 @@ export default {
   resolvers,
   mocks,
   schema,
-  connect,
+  connect
 };

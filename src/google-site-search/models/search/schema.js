@@ -1,5 +1,5 @@
-
-export default [`
+export default [
+  `
   type SSSearchResult {
     id: ID
     title: String
@@ -19,4 +19,5 @@ export default [`
     previous: Int
     items: [SSSearchResult]
   }
-`];
+`
+];

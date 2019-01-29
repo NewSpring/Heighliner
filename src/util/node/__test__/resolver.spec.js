@@ -1,10 +1,9 @@
-
 import casual from "casual";
 import Resolver from "../resolver";
 
 const sampleData = {
   _id: casual.word,
-  __type: "Test",
+  __type: "Test"
 };
 
 it("Node should only have a __resolveType on the resolver", () => {
@@ -22,7 +21,7 @@ it("Node should return the type from the data passed to it", () => {
     getType(type) {
       expect(type).toEqual(sampleData.__type);
       return type;
-    },
+    }
   };
 
   const __type = Node.__resolveType(sampleData, null, { schema });
@@ -38,8 +37,8 @@ it("Query node should return the data via the `Node` class", () => {
       get(id) {
         expect(id).toEqual(fakeId);
         return sampleData;
-      },
-    },
+      }
+    }
   };
 
   const data = Query.node(null, { id: fakeId }, { models });

@@ -1,4 +1,3 @@
-
 import schema from "./schema";
 import models from "./model";
 import mutations from "./mutations";
@@ -10,5 +9,5 @@ export default {
   models,
   mutations,
   resolvers,
-  queries,
+  queries
 };

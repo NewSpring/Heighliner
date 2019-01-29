@@ -1,5 +1,5 @@
-
-export default [`
+export default [
+  `
   type Hashes {
     when: String!
     hashedToken: ID!
@@ -57,4 +57,5 @@ export default [`
     State: String
     PostalCode: String
   }
-`];
+`
+];

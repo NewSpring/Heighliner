@@ -16,5 +16,5 @@ export default [
   // XXX clientIp and campuses are depracated
   //
   // XXX should this take a group type id?
-  "groupAttributes: [DefinedValue]",
+  "groupAttributes: [DefinedValue]"
 ];

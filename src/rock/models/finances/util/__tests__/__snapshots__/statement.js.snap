@@ -4,7 +4,7 @@ exports[`Statement should render with data 1`] = `
 <html>
   <head>
     <style>
-      
+
               html,
               body {
                 height: 100%;
@@ -12,129 +12,129 @@ exports[`Statement should render with data 1`] = `
               @media all {
                 .page-break {
                   display: block;
-      
+
                   page-break-before: always;
                 }
               }
-      
+
               @media print {
                 .page-break {
                   display: block;
-      
+
                   page-break-before: always;
                 }
               }
               .container {
                 margin: 0 auto;
               }
-      
+
               .pre-text {
                 font-family: "Courier New";
                 font-size: 12px;
                 line-height: 1.4em;
               }
-      
+
               .print-subheader {
                 color: black;
                 font-family: "Helvetica";
               }
-      
+
               #logo-img {
                 margin-top: 1000px
                 width: 155px;
                 height: 40px;
               }
-      
+
               #church-address {
                 float: left;
                 margin-top: 0;
                 padding-right: 150px;
               }
-      
+
               #verse {
                 display: inline-block;
               }
-      
+
               #statement-table td {
                 padding-top: 10px;
                 padding-bottom: 10px;
-      
+
                 border-bottom: 1px solid #ddd;
               }
-      
+
               th {
                 padding-bottom: 10px;
-      
+
                 border-bottom: 1px solid #ddd;
-      
+
                 font-family: "Helvetica";
                 font-weight: 700;
               }
-      
+
               table {
                 text-align: left;
-      
+
                 font-family: "Courier New";
                 font-size: 12px;
               }
-      
+
               h7 {
                 font-size: 12px;
               }
-      
+
               .type {
                 width: 55%;
               }
-      
+
               .total {
                 color: black;
-      
+
                 font-family: "Helvetica";
                 font-size: 18px;
                 font-weight: 800;
               }
-      
+
               .newspring--icon,
               .newspring--icon::after {
                 background-color: black;
               }
-      
+
               .newspring--icon {
                 position: absolute;
-      
+
                 margin-top: 200px;
                 margin-left: 200px;
               }
-      
+
               .logo-icon {
                 position: absolute;
                 right: 0;
                 bottom: 0;
-      
+
                 margin: 20px;
               }
-      
+
               #statement-table {
                 padding-top: 20px;
               }
-      
+
               #statement-table .total td {
                 padding-top: 20px;
                 padding-bottom: 20px;
               }
-      
+
               .footer-text {
-      
+
                 width: 5in;
                 margin-top: 40px;
                 margin-bottom: 100px;
-      
+
                 font-size: 12px;
                 font-style: italic;
                 line-height: 1.4em;
               }
-      
-            
+
+
     </style>
   </head>
   <body>
@@ -168,24 +168,24 @@ exports[`Statement should render with data 1`] = `
         >
           NewSpring Church
           <br />
-          EIN# 26-4189337 
+          EIN# 26-4189337
           <br />
           PO Box 1407
           <br />
           Anderson, SC 29622 US
         </p>
         <p>
-          
-           
-          
+
+
+
           <br />
           3400 Vine St
           <br />
-          
+
           Cincinnati
-           
+
           OH
-           
+
           45220
         </p>
         <p

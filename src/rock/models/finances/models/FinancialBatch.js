@@ -11,14 +11,18 @@ export default class FinancialBatch extends Rock {
   __type = "FinancialBatch";
 
   async getFromId(id, globalId) {
-    globalId = globalId ? globalId : createGlobalId(id, this.__type);
+    globalId = globalId || createGlobalId(id, this.__type);
     return this.cache.get(globalId, () =>
-      FinancialBatchTable.findOne({ where: { Id: id } }));
+      FinancialBatchTable.findOne({ where: { Id: id } })
+    );
   }
 
-  async findOrCreate(
-    { prefix = "Online Giving", suffix = "", currencyType, date },
-  ) {
+  async findOrCreate({
+    prefix = "Online Giving",
+    suffix = "",
+    currencyType,
+    date
+  }) {
     let paymentType = "";
     if (currencyType) paymentType = currencyType;
 
@@ -29,8 +33,8 @@ export default class FinancialBatch extends Rock {
         Status: 1,
         BatchStartDateTime: { $lte: date },
         BatchEndDateTime: { $gt: date },
-        Name: batchName,
-      },
+        Name: batchName
+      }
     });
 
     if (batch.length) return batch[0];
@@ -42,8 +46,9 @@ export default class FinancialBatch extends Rock {
       .toISOString();
 
     // 4pm => 12:00 next day => 11:59 pm
-    const BatchEndDateTime = moment(date).endOf("day")// .subtract(1, "minute")
-    .toISOString();
+    const BatchEndDateTime = moment(date)
+      .endOf("day") // .subtract(1, "minute")
+      .toISOString();
 
     const newBatch = {
       Guid: uuid.v4(),
@@ -53,7 +58,7 @@ export default class FinancialBatch extends Rock {
       // XXX this is actually stored on the payment gateway if we want to make
       // it a dynamic value
       BatchStartDateTime,
-      BatchEndDateTime,
+      BatchEndDateTime
     };
 
     const batchId = await FinancialBatchTable.post(newBatch);

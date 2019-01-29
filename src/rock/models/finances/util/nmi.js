@@ -14,10 +14,10 @@ export default (payload, gateway) => {
     fetch(gateway.APIUrl, {
       method: "POST",
       body: `${xml}`,
-      headers: { "Content-Type": "text/xml" },
+      headers: { "Content-Type": "text/xml" }
     })
       .then(response => response.text())
-      .then((result) => {
+      .then(result => {
         let data = result;
         // clean all tags to make sure they are parseable
         const matches = data.match(/<([^>]+)>/gim);
@@ -39,9 +39,9 @@ export default (payload, gateway) => {
               (err, result) => {
                 if (err) f(err);
                 if (!err) s(result);
-              },
+              }
             );
-          }),
+          })
       )
       .then(({ response }) => {
         const data = response;
@@ -52,7 +52,10 @@ export default (payload, gateway) => {
         let err;
 
         // special mapping to ensure duplicates
-        if (data["result-text"] && data["result-text"].indexOf("Duplicate") > -1) {
+        if (
+          data["result-text"] &&
+          data["result-text"].indexOf("Duplicate") > -1
+        ) {
           number = 430;
         }
 
@@ -65,8 +68,8 @@ export default (payload, gateway) => {
         error.code = number;
         throw error;
       }),
-    60000,
-  ).catch((err) => {
+    60000
+  ).catch(err => {
     if (err instanceof TimeoutError) {
       throw new Error(`
           The request to our payment process took longer than expected.

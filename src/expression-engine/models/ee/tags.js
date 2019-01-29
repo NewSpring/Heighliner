@@ -1,9 +1,6 @@
 /* tslint:disable:no-shadowed-variable */
 
-import {
-  INTEGER,
-  STRING,
-} from "sequelize";
+import { INTEGER, STRING } from "sequelize";
 
 import { MySQLConnector } from "../../mysql";
 
@@ -11,24 +8,17 @@ const tagSchema = {
   tag_id: { type: INTEGER, primaryKey: true },
   tag_name: { type: STRING },
   entry_date: { type: INTEGER },
-  clicks: { type: INTEGER },
+  clicks: { type: INTEGER }
 };
 
 const tagEntriesSchema = {
   tag_id: { type: INTEGER, primaryKey: true },
-  entry_id: { type: INTEGER },
+  entry_id: { type: INTEGER }
 };
-
 
 let Tags;
 let TagEntries;
-export {
-  Tags,
-  tagSchema,
-
-  TagEntries,
-  tagEntriesSchema,
-};
+export { Tags, tagSchema, TagEntries, tagEntriesSchema };
 
 export function connect() {
   Tags = new MySQLConnector("exp_tag_tags", tagSchema);
@@ -36,7 +26,7 @@ export function connect() {
 
   return {
     Tags,
-    TagEntries,
+    TagEntries
   };
 }
 
@@ -50,5 +40,5 @@ export function bind({ ChannelData, Tags, TagEntries }) {
 
 export default {
   connect,
-  bind,
+  bind
 };

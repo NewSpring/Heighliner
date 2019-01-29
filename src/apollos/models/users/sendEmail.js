@@ -57,7 +57,7 @@ Parser.registerFilters({
       if (format === "#,##0.00") {
         return `${Number(value).toFixed(2)}`.replace(
           /\B(?=(\d{3})+(?!\d))/g,
-          ",",
+          ","
         );
       }
       return null;
@@ -74,8 +74,8 @@ Parser.registerFilters({
       format = format.replace(/y/gim, "Y");
       return moment(input).format(format);
       // return Liquid.StandardFilters.date(input, format.toLowerCase())
-    },
-  },
+    }
+  }
 });
 
 export default async function sendEmail(emailId, PersonAliasId, merge) {
@@ -83,7 +83,8 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
     let mergeFields = merge;
 
     const Email = await api.get(`/SystemEmails/${emailId}`);
-    if (!Email.Body || !Email.Subject) throw new Error(`No email body or subject found for ${emailId}`);
+    if (!Email.Body || !Email.Subject)
+      throw new Error(`No email body or subject found for ${emailId}`);
 
     /*
 
@@ -98,12 +99,12 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
 
     // eslint-disable-next-line max-len
     const Globals = await api.get(
-      "/AttributeValues?$filter=Attribute/EntityTypeId eq null&$expand=Attribute&$select=Attribute/Key,Value",
+      "/AttributeValues?$filter=Attribute/EntityTypeId eq null&$expand=Attribute&$select=Attribute/Key,Value"
     );
 
     // eslint-disable-next-line max-len
     const Defaults = await api.get(
-      "/Attributes?$filter=EntityTypeId eq null&$select=DefaultValue,Key",
+      "/Attributes?$filter=EntityTypeId eq null&$select=DefaultValue,Key"
     );
 
     for (const d of Defaults) {
@@ -116,17 +117,17 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
 
     const [subject, body] = await Promise.all([
       Parser.parseAndRender(Email.Subject, mergeFields),
-      Parser.parseAndRender(Email.Body, mergeFields),
+      Parser.parseAndRender(Email.Body, mergeFields)
     ]);
 
     const CommunicationId = await api.post("/Communications", {
-      CommunicationType: 'email', // Not sure why Holtzman didn't have this
+      CommunicationType: "email", // Not sure why Holtzman didn't have this
       SenderPersonAliasId: null,
       Status: 3,
       IsBulkCommunication: false,
       Guid: makeNewGuid(),
       Subject: subject,
-      Message: body,
+      Message: body
     });
 
     if (typeof PersonAliasId === "number") {
@@ -135,13 +136,16 @@ export default async function sendEmail(emailId, PersonAliasId, merge) {
 
     const ids = [];
     for (const id of PersonAliasId) {
-      const CommunicationRecipientId = await api.post("/CommunicationRecipients", {
-        MediumEntityTypeId: 37, // Mandrill, added this here instead, it seems to be working :D
-        PersonAliasId: id,
-        CommunicationId,
-        Status: 0, // Pending
-        Guid: makeNewGuid(),
-      });
+      const CommunicationRecipientId = await api.post(
+        "/CommunicationRecipients",
+        {
+          MediumEntityTypeId: 37, // Mandrill, added this here instead, it seems to be working :D
+          PersonAliasId: id,
+          CommunicationId,
+          Status: 0, // Pending
+          Guid: makeNewGuid()
+        }
+      );
 
       ids.push(CommunicationRecipientId);
     }

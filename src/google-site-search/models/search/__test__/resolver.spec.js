@@ -1,43 +1,37 @@
 import casual from "casual";
 import Resolver from "../resolver";
 
-const generateSearchItem = () =>
-   ({
-     cacheId: casual.word,
-     title: `${casual.word}|${casual.word}`,
-     htmlTitle: `${casual.word}|${casual.word}`,
-     link: casual.url,
-     displayLink: casual.url,
-     snippet: casual.description,
-     htmlSnippet: casual.description,
-     pagemap: {
-       metatags: [
-         {
-           "og:type": casual.word,
-           "article:section": casual.word,
-         },
-       ],
-       cse_image: [
-         {
-           src: casual.url,
-         },
-       ],
-     },
-     type: casual.word,
-     section: casual.word,
-     image: casual.url,
-   })
-;
-
-const generateSearch = (items = []) =>
-   ({
-     total: 2,
-     next: 3,
-     previous: 0,
-     items,
-   })
-;
-
+const generateSearchItem = () => ({
+  cacheId: casual.word,
+  title: `${casual.word}|${casual.word}`,
+  htmlTitle: `${casual.word}|${casual.word}`,
+  link: casual.url,
+  displayLink: casual.url,
+  snippet: casual.description,
+  htmlSnippet: casual.description,
+  pagemap: {
+    metatags: [
+      {
+        "og:type": casual.word,
+        "article:section": casual.word
+      }
+    ],
+    cse_image: [
+      {
+        src: casual.url
+      }
+    ]
+  },
+  type: casual.word,
+  section: casual.word,
+  image: casual.url
+});
+const generateSearch = (items = []) => ({
+  total: 2,
+  next: 3,
+  previous: 0,
+  items
+});
 it("`Query` should expose search method", () => {
   const { Query } = Resolver;
   expect(Query.search).toBeTruthy();
@@ -194,10 +188,7 @@ it("`SSSearch` should return previous", () => {
 
 it("`SSSearch` should return items", () => {
   const { SSSearch } = Resolver;
-  const sampleItems = [
-    generateSearchItem(),
-    generateSearchItem(),
-  ];
+  const sampleItems = [generateSearchItem(), generateSearchItem()];
   const sampleSearch = generateSearch(sampleItems);
 
   const items = SSSearch.items(sampleSearch);

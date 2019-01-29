@@ -1,11 +1,10 @@
-
 import { createGlobalId } from "../node/model";
 
 export const defaultCache = {
   get: (id, lookup) => Promise.resolve().then(lookup),
   set: id => Promise.resolve().then(() => true),
   del() {},
-  encode: (obj, prefix) => `${prefix}${JSON.stringify(obj)}`,
+  encode: (obj, prefix) => `${prefix}${JSON.stringify(obj)}`
 };
 
 export const resolvers = {
@@ -15,10 +14,8 @@ export const resolvers = {
       return Promise.resolve()
         .then(() => cache.del(id))
         .then(() => models.Node.get(id));
-    },
-  },
+    }
+  }
 };
 
-export const mutations = [
-  "cache(id: ID!, type: String): Node",
-];
+export const mutations = ["cache(id: ID!, type: String): Node"];
