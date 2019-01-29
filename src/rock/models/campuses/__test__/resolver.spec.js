@@ -9,7 +9,7 @@ const sampleData = {
     Guid: "15DDDE79-1999-49F5-9C97-79DE3066073C",
     LocationId: "14",
     Url: "https://google.com",
-    ServiceTimes: "Sunday^9:15am|Sunday^11:15am|",
+    ServiceTimes: "Sunday^9:15am|Sunday^11:15am|"
   },
   location: {
     Id: "a133f80c70ea2a02c09c61c296ad9673",
@@ -20,8 +20,8 @@ const sampleData = {
     City: "Aiken",
     PostalCode: "29801-6385",
     Latitude: 33.57248,
-    Longitude: -81.76644,
-  },
+    Longitude: -81.76644
+  }
 };
 
 it("`Campus` queries data from either Id or Name.", () => {
@@ -34,8 +34,8 @@ it("`Campus` queries data from either Id or Name.", () => {
       find({ Id, Name }) {
         expect(Id).toEqual(sampleId);
         expect(Name).toEqual(sampleName);
-      },
-    },
+      }
+    }
   };
 
   Query.campuses(null, { id: sampleId, name: sampleName }, { models });
@@ -66,9 +66,7 @@ it("`Campus` should have service times formmated correctly", () => {
   const { Campus } = Resolver;
 
   const services = Campus.services(sampleData.campuses);
-  expect(services).toEqual([
-    "Sunday at 9:15am & 11:15am",
-  ]);
+  expect(services).toEqual(["Sunday at 9:15am & 11:15am"]);
 });
 
 it("`Campus` should have a shortCode.", () => {
@@ -100,8 +98,8 @@ it("`Campus` should return valid location data.", () => {
     Campus: {
       findByLocationId(id) {
         expect(id).toEqual(sampleId);
-      },
-    },
+      }
+    }
   };
 
   Campus.location({ LocationId: sampleId }, null, { models });
@@ -151,7 +149,10 @@ it("`Location` should return latitude.", () => {
   const noGeoPoint = Location.latitude({ GeoPoint: null, latitude: null });
   expect(null).toEqual(noGeoPoint);
 
-  const Latitude = Location.latitude({ GeoPoint: null, latitude: sampleData.location.Latitude });
+  const Latitude = Location.latitude({
+    GeoPoint: null,
+    latitude: sampleData.location.Latitude
+  });
   expect(sampleData.location.Latitude).toEqual(Latitude);
 });
 
@@ -163,7 +164,7 @@ it("`Location` should return longitude.", () => {
 
   const Longitude = Location.longitude({
     GeoPoint: null,
-    longitude: sampleData.location.Longitude,
+    longitude: sampleData.location.Longitude
   });
 
   expect(sampleData.location.Longitude).toEqual(Longitude);

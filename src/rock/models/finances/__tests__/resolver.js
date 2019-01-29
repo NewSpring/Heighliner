@@ -10,27 +10,27 @@ describe("Query", () => {
     it("finds by person alias", () => {
       const models = {
         SavedPayment: {
-          findByPersonAlias: jest.fn(),
-        },
+          findByPersonAlias: jest.fn()
+        }
       };
 
       const person = {
         PersonAliasId: 100,
-        aliases: [22222],
+        aliases: [22222]
       };
 
       resolver.Query.savedPayments(
         null,
         { limit: 3, cache: true, skip: 1 },
-        { models, person },
+        { models, person }
       );
       expect(models.SavedPayment.findByPersonAlias).toBeCalledWith(
         [22222],
         {
           limit: 3,
-          offset: 1,
+          offset: 1
         },
-        { cache: true },
+        { cache: true }
       );
     });
   });
@@ -78,13 +78,13 @@ describe("Query", () => {
       const models = {
         Transaction: {
           findByGivingGroup: jest.fn(),
-          findByPersonAlias: jest.fn(),
-        },
+          findByPersonAlias: jest.fn()
+        }
       };
 
       const person = {
         PersonAliasId: 100,
-        aliases: [22222],
+        aliases: [22222]
       };
 
       resolver.Query.transactions(
@@ -95,15 +95,15 @@ describe("Query", () => {
           end: "01/16",
           limit: 3,
           skip: 1,
-          cache: true,
+          cache: true
         },
-        { models, person },
+        { models, person }
       );
       expect(models.Transaction.findByGivingGroup).not.toBeCalled();
       expect(models.Transaction.findByPersonAlias).toBeCalledWith(
         [22222],
         { limit: 3, offset: 1 },
-        { cache: true },
+        { cache: true }
       );
     });
   });
@@ -111,24 +111,24 @@ describe("Query", () => {
     it("finds schedules by PersonAliases", () => {
       const models = {
         ScheduledTransaction: {
-          findByPersonAlias: jest.fn(),
-        },
+          findByPersonAlias: jest.fn()
+        }
       };
 
       const person = {
         PersonAliasId: 100,
-        aliases: [22222],
+        aliases: [22222]
       };
 
       resolver.Query.scheduledTransactions(
         null,
         { limit: 3, cache: true, skip: 1, isActive: true },
-        { models, person },
+        { models, person }
       );
       expect(models.ScheduledTransaction.findByPersonAlias).toBeCalledWith(
         [22222],
         { limit: 3, offset: 1, isActive: true },
-        { cache: true },
+        { cache: true }
       );
     });
   });
@@ -136,8 +136,8 @@ describe("Query", () => {
     it("returns all accounts if none defined", () => {
       const models = {
         FinancialAccount: {
-          find: jest.fn(),
-        },
+          find: jest.fn()
+        }
       };
 
       resolver.Query.accounts(null, { allFunds: true }, { models });
@@ -145,31 +145,31 @@ describe("Query", () => {
         {
           name: undefined,
           isActive: undefined,
-          isPublic: undefined,
+          isPublic: undefined
         },
-        { all: true },
+        { all: true }
       );
     });
 
     it("returns the giving account specified", () => {
       const models = {
         FinancialAccount: {
-          find: jest.fn(),
-        },
+          find: jest.fn()
+        }
       };
 
       resolver.Query.accounts(
         null,
         { name: "Tesla", isActive: true, isPublic: true },
-        { models },
+        { models }
       );
       expect(models.FinancialAccount.find).toBeCalledWith(
         {
           Name: "Tesla",
           IsActive: true,
-          IsPublic: true,
+          IsPublic: true
         },
-        { all: undefined },
+        { all: undefined }
       );
     });
   });
@@ -177,18 +177,18 @@ describe("Query", () => {
     it("returns an account from a cashtag", async () => {
       const models = {
         FinancialAccount: {
-          find: jest.fn(() => Promise.resolve([])),
-        },
+          find: jest.fn(() => Promise.resolve([]))
+        }
       };
 
       resolver.Query.accountFromCashTag(
         null,
         { cashTag: "$tesla" },
-        { models },
+        { models }
       );
       expect(models.FinancialAccount.find).toBeCalledWith({
         IsActive: true,
-        IsPublic: true,
+        IsPublic: true
       });
     });
   });
@@ -199,12 +199,12 @@ describe("Mutation", () => {
     it("has a `syncTransactions` which passes args to Transaction.syncTransactions", () => {
       const models = {
         Transaction: {
-          syncTransactions: jest.fn(),
-        },
+          syncTransactions: jest.fn()
+        }
       };
       resolver.Mutation.syncTransactions(null, { foo: "bar" }, { models });
       expect(models.Transaction.syncTransactions).toBeCalledWith({
-        foo: "bar",
+        foo: "bar"
       });
     });
   });
@@ -212,20 +212,20 @@ describe("Mutation", () => {
     it("loads gatewayDetails and removes a saved payment", async () => {
       const models = {
         Transaction: {
-          loadGatewayDetails: jest.fn(() => Promise.resolve({ nmi: true })),
+          loadGatewayDetails: jest.fn(() => Promise.resolve({ nmi: true }))
         },
         SavedPayment: {
-          removeFromEntityId: jest.fn(() => Promise.resolve(true)),
-        },
+          removeFromEntityId: jest.fn(() => Promise.resolve(true))
+        }
       };
       await resolver.Mutation.cancelSavedPayment(
         null,
         { entityId: 1, gateway: "nmi" },
-        { models },
+        { models }
       );
       expect(models.Transaction.loadGatewayDetails).toBeCalledWith("nmi");
       expect(models.SavedPayment.removeFromEntityId).toBeCalledWith(1, {
-        nmi: true,
+        nmi: true
       });
     });
   });
@@ -233,15 +233,15 @@ describe("Mutation", () => {
     it("translates the args and context into the model call", async () => {
       const models = {
         Transaction: {
-          createOrder: jest.fn(() => Promise.resolve()),
-        },
+          createOrder: jest.fn(() => Promise.resolve())
+        }
       };
       await resolver.Mutation.createOrder(
         null,
         {
           instant: true,
           id: 1,
-          data: "{ \"foo\": true }",
+          data: "{ \"foo\": true }"
         },
         {
           person: { Id: 1 },
@@ -249,67 +249,71 @@ describe("Mutation", () => {
           req: {
             headers: {
               referer: "https://example.com/give/now",
-              origin: "https://example.com/",
-            },
+              origin: "https://example.com/"
+            }
           },
-          models,
-        },
+          models
+        }
       );
-      expect(models.Transaction.createOrder).toBeCalledWith({
-        data: { foo: true },
-        instant: true,
-        id: 1,
-        ip: "ip address",
-        requestUrl: "https://example.com/give/now",
-        origin: "https://example.com/",
-      }, { Id: 1 }, models);
+      expect(models.Transaction.createOrder).toBeCalledWith(
+        {
+          data: { foo: true },
+          instant: true,
+          id: 1,
+          ip: "ip address",
+          requestUrl: "https://example.com/give/now",
+          origin: "https://example.com/"
+        },
+        { Id: 1 },
+        models
+      );
     });
   });
   describe("validate", () => {
     it("loads gatewayDetails and validates a card", async () => {
       const models = {
         Transaction: {
-          loadGatewayDetails: jest.fn(() => Promise.resolve({ nmi: true })),
+          loadGatewayDetails: jest.fn(() => Promise.resolve({ nmi: true }))
         },
         SavedPayment: {
-          validate: jest.fn(() => Promise.resolve(true)),
-        },
+          validate: jest.fn(() => Promise.resolve(true))
+        }
       };
       await resolver.Mutation.validate(
         null,
         { token: "token", gateway: "nmi" },
-        { models },
+        { models }
       );
       expect(models.Transaction.loadGatewayDetails).toBeCalledWith("nmi");
       expect(models.SavedPayment.validate).toBeCalledWith(
         { token: "token" },
-        { nmi: true },
+        { nmi: true }
       );
     });
     it("gracefully handles errors", async () => {
       const models = {
         Transaction: {
-          loadGatewayDetails: jest.fn(() => Promise.resolve({ nmi: true })),
+          loadGatewayDetails: jest.fn(() => Promise.resolve({ nmi: true }))
         },
         SavedPayment: {
-          validate: jest.fn(() => Promise.reject(new Error("failure"))),
-        },
+          validate: jest.fn(() => Promise.reject(new Error("failure")))
+        }
       };
 
       const result = await resolver.Mutation.validate(
         null,
         { token: "token", gateway: "nmi" },
-        { models },
+        { models }
       );
       expect(models.Transaction.loadGatewayDetails).toBeCalledWith("nmi");
       expect(models.SavedPayment.validate).toBeCalledWith(
         { token: "token" },
-        { nmi: true },
+        { nmi: true }
       );
       expect(result).toEqual({
         error: "failure",
         code: undefined,
-        success: false,
+        success: false
       });
     });
   });
@@ -317,25 +321,25 @@ describe("Mutation", () => {
     it("early returns without a token", async () => {
       const models = {
         Transaction: {
-          completeOrder: jest.fn(() => Promise.resolve({ nmi: true })),
-        },
+          completeOrder: jest.fn(() => Promise.resolve({ nmi: true }))
+        }
       };
       const result = await resolver.Mutation.completeOrder(
         null,
         {
           token: undefined,
           accountName: "card",
-          scheduleId: 1,
+          scheduleId: 1
         },
         {
           models,
           person: { Id: 1 },
           req: {
             headers: {
-              origin: "https://example.com",
-            },
-          },
-        },
+              origin: "https://example.com"
+            }
+          }
+        }
       );
 
       expect(models.Transaction.completeOrder).not.toBeCalled();
@@ -344,8 +348,8 @@ describe("Mutation", () => {
     it("passes args and context to the method", async () => {
       const models = {
         Transaction: {
-          completeOrder: jest.fn(() => Promise.resolve({ nmi: true })),
-        },
+          completeOrder: jest.fn(() => Promise.resolve({ nmi: true }))
+        }
       };
       await resolver.Mutation.completeOrder(
         null,
@@ -353,7 +357,7 @@ describe("Mutation", () => {
           token: "token",
           accountName: "card",
           scheduleId: 1,
-          platform: "web",
+          platform: "web"
         },
         {
           models,
@@ -361,10 +365,10 @@ describe("Mutation", () => {
           req: {
             headers: {
               origin: "https://example.com",
-              version: "over 9000",
-            },
-          },
-        },
+              version: "over 9000"
+            }
+          }
+        }
       );
 
       expect(models.Transaction.completeOrder).toBeCalledWith({
@@ -374,31 +378,31 @@ describe("Mutation", () => {
         origin: "https://example.com",
         scheduleId: 1,
         platform: "web",
-        version: "over 9000",
+        version: "over 9000"
       });
     });
     it("passes args and context to the method", async () => {
       const models = {
         Transaction: {
-          completeOrder: jest.fn(() => Promise.reject(new Error("failure"))),
-        },
+          completeOrder: jest.fn(() => Promise.reject(new Error("failure")))
+        }
       };
       const result = await resolver.Mutation.completeOrder(
         null,
         {
           token: "token",
           accountName: "card",
-          scheduleId: 1,
+          scheduleId: 1
         },
         {
           models,
           person: { Id: 1 },
           req: {
             headers: {
-              origin: "https://example.com",
-            },
-          },
-        },
+              origin: "https://example.com"
+            }
+          }
+        }
       );
 
       expect(models.Transaction.completeOrder).toBeCalledWith({
@@ -406,12 +410,12 @@ describe("Mutation", () => {
         accountName: "card",
         person: { Id: 1 },
         origin: "https://example.com",
-        scheduleId: 1,
+        scheduleId: 1
       });
       expect(result).toEqual({
         error: "failure",
         code: undefined,
-        success: false,
+        success: false
       });
     });
   });
@@ -419,25 +423,25 @@ describe("Mutation", () => {
     it("loads gatewayDetails and saves a card", async () => {
       const models = {
         Transaction: {
-          loadGatewayDetails: jest.fn(() => Promise.resolve({ nmi: true })),
+          loadGatewayDetails: jest.fn(() => Promise.resolve({ nmi: true }))
         },
         SavedPayment: {
-          save: jest.fn(() => Promise.resolve(true)),
-        },
+          save: jest.fn(() => Promise.resolve(true))
+        }
       };
       await resolver.Mutation.savePayment(
         null,
         { token: "token", gateway: "nmi", accountName: "visa" },
-        { models, person: { Id: 1 } },
+        { models, person: { Id: 1 } }
       );
       expect(models.Transaction.loadGatewayDetails).toBeCalledWith("nmi");
       expect(models.SavedPayment.save).toBeCalledWith(
         {
           token: "token",
           name: "visa",
-          person: { Id: 1 },
+          person: { Id: 1 }
         },
-        { nmi: true },
+        { nmi: true }
       );
     });
   });
@@ -445,45 +449,44 @@ describe("Mutation", () => {
     it("loads gatewayDetails and cancels a schedule", async () => {
       const models = {
         Transaction: {
-          loadGatewayDetails: jest.fn(() => Promise.resolve({ nmi: true })),
+          loadGatewayDetails: jest.fn(() => Promise.resolve({ nmi: true }))
         },
         ScheduledTransaction: {
-          cancelNMISchedule: jest.fn(() => Promise.resolve(true)),
-        },
+          cancelNMISchedule: jest.fn(() => Promise.resolve(true))
+        }
       };
       await resolver.Mutation.cancelSchedule(
         null,
         { entityId: 1, gateway: "nmi" },
-        { models },
+        { models }
       );
       expect(models.Transaction.loadGatewayDetails).toBeCalledWith("nmi");
       expect(models.ScheduledTransaction.cancelNMISchedule).toBeCalledWith(1, {
-        nmi: true,
+        nmi: true
       });
     });
     it("gracefully handles errors", async () => {
       const models = {
         Transaction: {
-          loadGatewayDetails: jest.fn(() => Promise.resolve({ nmi: true })),
+          loadGatewayDetails: jest.fn(() => Promise.resolve({ nmi: true }))
         },
         ScheduledTransaction: {
-          cancelNMISchedule: jest.fn(() =>
-            Promise.reject(new Error("failure"))),
-        },
+          cancelNMISchedule: jest.fn(() => Promise.reject(new Error("failure")))
+        }
       };
       const result = await resolver.Mutation.cancelSchedule(
         null,
         { entityId: 1, gateway: "nmi" },
-        { models },
+        { models }
       );
       expect(models.Transaction.loadGatewayDetails).toBeCalledWith("nmi");
       expect(models.ScheduledTransaction.cancelNMISchedule).toBeCalledWith(1, {
-        nmi: true,
+        nmi: true
       });
       expect(result).toEqual({
         error: "failure",
         code: undefined,
-        success: false,
+        success: false
       });
     });
   });
@@ -495,16 +498,17 @@ describe("Mutation", () => {
       const models = {
         Transaction: {
           getStatement: jest.fn(() =>
-            Promise.resolve({ total: 0, transactions: [] })),
+            Promise.resolve({ total: 0, transactions: [] })
+          )
         },
         Person: {
-          getHomesFromId: jest.fn(() => Promise.resolve([1, 2])),
-        },
+          getHomesFromId: jest.fn(() => Promise.resolve([1, 2]))
+        }
       };
       await resolver.Mutation.transactionStatement(
         null,
         { people: [1, 2], start: "", end: "" },
-        { models, person },
+        { models, person }
       );
 
       // const defaultStart = moment().startOf("year");
@@ -512,14 +516,14 @@ describe("Mutation", () => {
         start: "",
         end: "",
         givingGroupId: 1,
-        people: [1, 2],
+        people: [1, 2]
       });
       expect(models.Person.getHomesFromId).toBeCalledWith(1);
       expect(render).toBeCalledWith({
         home: 1,
         person,
         total: 0,
-        transactions: [],
+        transactions: []
       });
     });
     it("gracefully handles errors", async () => {
@@ -528,17 +532,19 @@ describe("Mutation", () => {
       const models = {
         Transaction: {
           getStatement: jest.fn(() =>
-            Promise.reject(new Error("force an error"))),
+            Promise.reject(new Error("force an error"))
+          )
         },
         Person: {
           getHomesFromId: jest.fn(() =>
-            Promise.reject(new Error("force an error"))),
-        },
+            Promise.reject(new Error("force an error"))
+          )
+        }
       };
       const result = await resolver.Mutation.transactionStatement(
         null,
         { people: [1, 2], start: "", end: "" },
-        { models, person },
+        { models, person }
       );
 
       expect(models.Transaction.getStatement).toBeCalled();
@@ -547,12 +553,12 @@ describe("Mutation", () => {
         home: 1,
         person,
         total: 0,
-        transactions: [],
+        transactions: []
       });
       expect(result).toEqual({
         code: 500,
         error: "force an error",
-        success: false,
+        success: false
       });
     });
   });
@@ -576,7 +582,7 @@ const sampleData = {
     ModifiedDateTime: "2016-03-07T08:28:36.133Z",
     Url: "http://image.image",
     PublicDescription: "A public description",
-    IsPublic: true,
+    IsPublic: true
   },
   transaction: {
     Id: 14,
@@ -602,10 +608,10 @@ const sampleData = {
         Amount: 100,
         Summary: null,
         CreatedDateTime: "2013-11-26T12:57:44.000Z",
-        ModifiedDateTime: null,
-      },
-    ],
-  },
+        ModifiedDateTime: null
+      }
+    ]
+  }
 };
 
 describe("FinancialAccount", () => {
@@ -665,14 +671,14 @@ describe("FinancialAccount", () => {
       Transaction: {
         findByAccountType() {
           return null;
-        },
-      },
+        }
+      }
     };
 
     const trans = FinancialAccount.transactions(
       { Id: 20, ParentAccountId: 30 },
       {},
-      { models },
+      { models }
     );
     expect(trans).toEqual(null);
   });
@@ -682,13 +688,13 @@ describe("FinancialAccount", () => {
 
     const models = {
       Transaction: {
-        findByAccountType: jest.fn(() => Promise.resolve({})),
-      },
+        findByAccountType: jest.fn(() => Promise.resolve({}))
+      }
     };
 
     const person = {
       PersonAliasId: 100,
-      aliases: [22222],
+      aliases: [22222]
     };
 
     // eslint-disable-next-line
@@ -699,9 +705,9 @@ describe("FinancialAccount", () => {
         skip: 1,
         cache: true,
         start: "2013-11-03",
-        end: "2015-12-03",
+        end: "2015-12-03"
       },
-      { models, person },
+      { models, person }
     );
     expect(models.Transaction.findByAccountType).toBeCalledWith(
       {
@@ -709,10 +715,10 @@ describe("FinancialAccount", () => {
         id: 200,
         include: [22222],
         parentId: 300,
-        start: "2013-11-03",
+        start: "2013-11-03"
       },
       { limit: 3, offset: 1 },
-      { cache: true },
+      { cache: true }
     );
   });
 
@@ -721,13 +727,13 @@ describe("FinancialAccount", () => {
 
     const models = {
       Transaction: {
-        findByAccountType: jest.fn(() => Promise.resolve([])),
-      },
+        findByAccountType: jest.fn(() => Promise.resolve([]))
+      }
     };
 
     const person = {
       PersonAliasId: 100,
-      aliases: [22222],
+      aliases: [22222]
     };
 
     // eslint-disable-next-line
@@ -738,9 +744,9 @@ describe("FinancialAccount", () => {
         skip: 1,
         cache: true,
         start: "2013-11-03",
-        end: "2015-12-03",
+        end: "2015-12-03"
       },
-      { models, person },
+      { models, person }
     );
     expect(models.Transaction.findByAccountType).toBeCalledWith(
       {
@@ -748,10 +754,10 @@ describe("FinancialAccount", () => {
         id: 200,
         include: [22222],
         parentId: 300,
-        start: "2013-11-03",
+        start: "2013-11-03"
       },
       { limit: 3, offset: 1 },
-      { cache: true },
+      { cache: true }
     );
   });
 });

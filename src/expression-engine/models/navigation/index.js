@@ -8,5 +8,5 @@ export default {
   schema,
   resolvers,
   models,
-  queries,
+  queries
 };

@@ -1,4 +1,3 @@
-
 import { connect } from "./fetch";
 
 import { createApplication } from "../util/heighliner";
@@ -6,7 +5,7 @@ import { createApplication } from "../util/heighliner";
 import Scripture from "./models/scripture";
 
 export const { schema, resolvers, models, queries, mocks } = createApplication([
-  Scripture,
+  Scripture
 ]);
 
 export default {
@@ -14,5 +13,5 @@ export default {
   resolvers,
   mocks,
   schema,
-  connect,
+  connect
 };

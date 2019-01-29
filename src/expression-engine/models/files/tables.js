@@ -1,9 +1,6 @@
 /* tslint:disable:no-shadowed-variable */
 
-import {
-  INTEGER,
-  STRING,
-} from "sequelize";
+import { INTEGER, STRING } from "sequelize";
 
 import { MySQLConnector } from "../../mysql";
 
@@ -12,7 +9,7 @@ const assetsFilesSchema = {
   folder_id: { type: INTEGER },
   source_type: { type: STRING },
   source_id: { type: INTEGER },
-  file_name: { type: STRING },
+  file_name: { type: STRING }
 };
 
 const assetsSelectionSchema = {
@@ -21,19 +18,19 @@ const assetsSelectionSchema = {
   field_id: { type: INTEGER },
   col_id: { type: INTEGER },
   row_id: { type: INTEGER },
-  var_id: { type: INTEGER },
+  var_id: { type: INTEGER }
 };
 
 const assetsFoldersSchema = {
   folder_id: { type: INTEGER, primaryKey: true },
   source_id: { type: INTEGER },
   parent_id: { type: INTEGER },
-  full_path: { type: STRING },
+  full_path: { type: STRING }
 };
 
 const assetsSourcesSchema = {
   source_id: { type: INTEGER, primaryKey: true },
-  settings: { type: STRING },
+  settings: { type: STRING }
 };
 
 let Assets;
@@ -43,20 +40,20 @@ let AssetsSources;
 export {
   Assets,
   assetsFilesSchema,
-
   AssetsSelections,
   assetsSelectionSchema,
-
   AssetsFolders,
   assetsFoldersSchema,
-
   AssetsSources,
-  assetsSourcesSchema,
+  assetsSourcesSchema
 };
 
 export function connect() {
   Assets = new MySQLConnector("exp_assets_files", assetsFilesSchema);
-  AssetsSelections = new MySQLConnector("exp_assets_selections", assetsSelectionSchema);
+  AssetsSelections = new MySQLConnector(
+    "exp_assets_selections",
+    assetsSelectionSchema
+  );
   AssetsFolders = new MySQLConnector("exp_assets_folders", assetsFoldersSchema);
   AssetsSources = new MySQLConnector("exp_assets_sources", assetsSourcesSchema);
 
@@ -67,7 +64,7 @@ export function connect() {
     Assets,
     AssetsSelections,
     AssetsFolders,
-    AssetsSources,
+    AssetsSources
   };
 }
 
@@ -76,7 +73,7 @@ export function bind({
   Assets,
   AssetsSelections,
   AssetsFolders,
-  AssetsSources,
+  AssetsSources
 }) {
   Assets.model.hasMany(AssetsSelections.model, { foreignKey: "file_id" });
   AssetsSelections.model.belongsTo(Assets.model, { foreignKey: "file_id" });
@@ -93,5 +90,5 @@ export function bind({
 
 export default {
   connect,
-  bind,
+  bind
 };

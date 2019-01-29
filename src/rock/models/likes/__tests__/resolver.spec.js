@@ -1,13 +1,12 @@
-
 import Resolver from "../resolver";
 
 const mockUser = { PrimaryAliasId: "12345" };
 const mockModels = {
   Like: {
     toggleLike: jest.fn(),
-    getRecentlyLiked: jest.fn(),
+    getRecentlyLiked: jest.fn()
   },
-  Node: {},
+  Node: {}
 };
 
 describe("Likes Mutation", () => {
@@ -19,18 +18,25 @@ describe("Likes Mutation", () => {
     const toggleLike = Resolver.Mutation.toggleLike;
 
     expect(() => {
-      toggleLike(null, {nodeId: "1234"}, {});
+      toggleLike(null, { nodeId: "1234" }, {});
     }).toThrow();
   });
 
   it("should call toggleLike with the correct args", () => {
     const toggleLike = Resolver.Mutation.toggleLike;
 
-    const res = toggleLike(null, { nodeId: "1234" }, { models: mockModels, person: mockUser });
-    expect(mockModels.Like.toggleLike).toHaveBeenCalledWith("1234", "12345", {});
+    const res = toggleLike(
+      null,
+      { nodeId: "1234" },
+      { models: mockModels, person: mockUser }
+    );
+    expect(mockModels.Like.toggleLike).toHaveBeenCalledWith(
+      "1234",
+      "12345",
+      {}
+    );
   });
 });
-
 
 describe("getRecentLikes", () => {
   afterEach(() => {
@@ -39,18 +45,25 @@ describe("getRecentLikes", () => {
 
   it("should pass falsy for user, cache, limit, skip when not defined", () => {
     const recentlyLiked = Resolver.Query.recentlyLiked;
-    recentlyLiked(null, {}, {models: mockModels, user: null});
+    recentlyLiked(null, {}, { models: mockModels, user: null });
     expect(mockModels.Like.getRecentlyLiked).toBeCalledWith(
-      {"cache": undefined, "limit": undefined, "skip": undefined}, null, {}
+      { cache: undefined, limit: undefined, skip: undefined },
+      null,
+      {}
     );
   });
 
   it("should call getRecentlyLiked with proper args", () => {
     const recentlyLiked = Resolver.Query.recentlyLiked;
-    recentlyLiked(null, {limit: 0, skip: 1, cache: false}, {models: mockModels, user: {_id: "harambe"}});
+    recentlyLiked(
+      null,
+      { limit: 0, skip: 1, cache: false },
+      { models: mockModels, user: { _id: "harambe" } }
+    );
     expect(mockModels.Like.getRecentlyLiked).toBeCalledWith(
-      {"cache": false, "limit": 0, "skip": 1}, "harambe", {}
+      { cache: false, limit: 0, skip: 1 },
+      "harambe",
+      {}
     );
   });
-
 });

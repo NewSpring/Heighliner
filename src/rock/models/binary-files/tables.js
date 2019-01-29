@@ -1,10 +1,6 @@
 /* tslint:disable:no-shadowed-variable */
 
-import {
-  INTEGER,
-  STRING,
-  BOOLEAN,
-} from "sequelize";
+import { INTEGER, STRING, BOOLEAN } from "sequelize";
 
 import { MSSQLConnector } from "../../mssql";
 
@@ -18,7 +14,7 @@ const binaryFileSchema = {
   MimeType: { type: STRING },
   Path: { type: STRING },
   StorageEntitySettings: { type: String },
-  StorageEntityTypeId: { type: INTEGER },
+  StorageEntityTypeId: { type: INTEGER }
 };
 
 const binaryFileTypeSchema = {
@@ -27,19 +23,12 @@ const binaryFileTypeSchema = {
   Description: { type: STRING },
   IsSystem: { type: BOOLEAN },
   Name: { type: STRING },
-  StorageEntityTypeId: { type: INTEGER },
+  StorageEntityTypeId: { type: INTEGER }
 };
-
 
 let BinaryFile;
 let BinaryFileType;
-export {
-  BinaryFile,
-  binaryFileSchema,
-
-  BinaryFileType,
-  binaryFileTypeSchema,
-};
+export { BinaryFile, binaryFileSchema, BinaryFileType, binaryFileTypeSchema };
 
 export function connect() {
   BinaryFile = new MSSQLConnector("BinaryFile", binaryFileSchema);
@@ -47,19 +36,18 @@ export function connect() {
 
   return {
     BinaryFile,
-    BinaryFileType,
+    BinaryFileType
   };
 }
 
-export function bind({
-  BinaryFile,
-}) {
+export function bind({ BinaryFile }) {
   BinaryFile.model.belongsTo(BinaryFileType.model, {
-    foreignKey: "BinaryFileTypeId", targetKey: "Id",
+    foreignKey: "BinaryFileTypeId",
+    targetKey: "Id"
   });
 }
 
 export default {
   connect,
-  bind,
+  bind
 };

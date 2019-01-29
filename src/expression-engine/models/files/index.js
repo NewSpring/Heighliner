@@ -6,5 +6,5 @@ import models from "./model";
 export default {
   schema,
   resolvers,
-  models,
+  models
 };

@@ -9,7 +9,7 @@ import {
   SavedPayment,
   Transaction as TransactionTable,
   TransactionDetail,
-  FinancialAccount,
+  FinancialAccount
 } from "../../tables";
 
 import { AttributeValue } from "../../../system/tables";
@@ -29,62 +29,62 @@ jest.mock("../../util/nmi");
 jest.mock("../../tables", () => ({
   FinancialGateway: {
     find: jest.fn(),
-    model: "FinancialGateway",
+    model: "FinancialGateway"
   },
   FinancialAccount: {
     find: jest.fn(),
-    model: "FinancialAccount",
+    model: "FinancialAccount"
   },
   SavedPayment: {
     find: jest.fn(),
-    findOne: jest.fn(),
+    findOne: jest.fn()
   },
   Transaction: {
     findOne: jest.fn(),
-    find: jest.fn(),
+    find: jest.fn()
   },
   TransactionDetail: {
-    model: "TransactionDetail",
-  },
+    model: "TransactionDetail"
+  }
 }));
 
 jest.mock("../../../people/tables", () => ({
   PersonAlias: {
-    model: "PersonAlias",
+    model: "PersonAlias"
   },
   Person: {
-    model: "PersonTable",
-  },
+    model: "PersonTable"
+  }
 }));
 
 jest.mock("../../../groups/tables", () => ({
   GroupMember: {
-    model: "GroupMember",
+    model: "GroupMember"
   },
   Group: {
-    model: "Group",
-  },
+    model: "Group"
+  }
 }));
 
 jest.mock("../../../system/tables", () => ({
   AttributeValue: {
-    find: jest.fn(() => Promise.resolve()),
+    find: jest.fn(() => Promise.resolve())
   },
   Attribute: {
-    model: "Attribue",
-  },
+    model: "Attribue"
+  }
 }));
 
 jest.mock("xml2js", () => ({
   parseString: jest.fn((xml, opts, callback) => {
     callback(null, {});
-  }),
+  })
 }));
 
 jest.mock("isomorphic-fetch", () => jest.fn(() => Promise.resolve()));
 jest.mock("../../util/formatTransaction");
 
-moment.mockImplementation((date) => {
+moment.mockImplementation(date => {
   date = new String(date);
   date.toISOString = () => `${date || "now"}`;
   date.format = format => `${date || "now"} formatted as ${format}`;
@@ -97,7 +97,7 @@ const mockedCache = {
   get: jest.fn((id, lookup) => Promise.resolve().then(lookup)),
   set: jest.fn(() => Promise.resolve().then(() => true)),
   del() {},
-  encode: jest.fn((obj, prefix) => `${prefix}${JSON.stringify(obj)}`),
+  encode: jest.fn((obj, prefix) => `${prefix}${JSON.stringify(obj)}`)
 };
 
 describe("getFromId", () => {
@@ -123,15 +123,21 @@ describe("getStatement", () => {
     {
       TransactionDateTime: "2016-12-02T13:44:51.743Z",
       FinancialTransactionDetails: [
-        { Amount: 1, FinancialAccount: { ParentAccountId: 1, PublicName: "Cincinnati Zoo" } },
-      ],
+        {
+          Amount: 1,
+          FinancialAccount: { ParentAccountId: 1, PublicName: "Cincinnati Zoo" }
+        }
+      ]
     },
     {
       TransactionDateTime: "2016-01-01T13:44:51.743Z",
       FinancialTransactionDetails: [
-        { Amount: 2, FinancialAccount: { ParentAccountId: 1, PublicName: "Harambe" } },
-      ],
-    },
+        {
+          Amount: 2,
+          FinancialAccount: { ParentAccountId: 1, PublicName: "Harambe" }
+        }
+      ]
+    }
   ];
 
   afterEach(() => {
@@ -147,7 +153,10 @@ describe("getStatement", () => {
     const Local = new Transaction({ cache: mockedCache });
     FinancialAccount.find.mockReturnValueOnce(Promise.resolve([])); // for deductible accounts
     TransactionTable.find.mockReturnValueOnce(Promise.resolve());
-    expect(await Local.getStatement({})).toEqual({ total: 0, transactions: [] });
+    expect(await Local.getStatement({})).toEqual({
+      total: 0,
+      transactions: []
+    });
   });
 
   it("should return full data with no props to filter", async () => {
@@ -157,19 +166,21 @@ describe("getStatement", () => {
         {
           Amount: 1,
           Date: moment("2016-12-02T13:44:51.743Z").format("MMM D, YYYY"),
-          Name: "Cincinnati Zoo Fund",
+          Name: "Cincinnati Zoo Fund"
         },
         {
           Amount: 2,
           Date: moment("2016-01-01T13:44:51.743Z").format("MMM D, YYYY"),
-          Name: "Cincinnati Zoo Fund",
-        },
-      ],
+          Name: "Cincinnati Zoo Fund"
+        }
+      ]
     };
     const Local = new Transaction({ cache: mockedCache });
     FinancialAccount.find.mockReturnValueOnce(Promise.resolve([])); // for deductible accounts
     FinancialAccount.find.mockReturnValueOnce(Promise.resolve(mockAccounts));
-    TransactionTable.find.mockReturnValueOnce(Promise.resolve(mockTransactions));
+    TransactionTable.find.mockReturnValueOnce(
+      Promise.resolve(mockTransactions)
+    );
     expect(await Local.getStatement({})).toEqual(expected);
   });
 
@@ -178,7 +189,7 @@ describe("getStatement", () => {
       people: [1, 2],
       givingGroupId: 0,
       start: "2016-01-01T00:00:00.743Z",
-      end: "2016-12-01T00:00:00.743Z",
+      end: "2016-12-01T00:00:00.743Z"
     };
     const Local = new Transaction({ cache: mockedCache });
     FinancialAccount.find.mockReturnValueOnce(Promise.resolve([])); // for deductible accounts
@@ -191,7 +202,10 @@ describe("getStatement", () => {
         .toEqual({ Id: 0 });
       expect(call.where) // start, end check
         .toEqual({
-          TransactionDateTime: { $gt: "2016-01-01T00:00:00.743Z", $lt: "2016-12-01T00:00:00.743Z" },
+          TransactionDateTime: {
+            $gt: "2016-01-01T00:00:00.743Z",
+            $lt: "2016-12-01T00:00:00.743Z"
+          }
         });
     });
   });
@@ -200,8 +214,10 @@ describe("getStatement", () => {
     const Local = new Transaction({ cache: mockedCache });
     FinancialAccount.find.mockReturnValueOnce(Promise.resolve([])); // for deductible accounts
     FinancialAccount.find.mockReturnValueOnce(Promise.resolve(mockAccounts));
-    TransactionTable.find.mockReturnValueOnce(Promise.resolve(mockTransactions));
-    return Local.getStatement({}).then((res) => {
+    TransactionTable.find.mockReturnValueOnce(
+      Promise.resolve(mockTransactions)
+    );
+    return Local.getStatement({}).then(res => {
       expect(res.transactions[0].Name).toEqual("Cincinnati Zoo Fund");
     });
   });
@@ -209,16 +225,22 @@ describe("getStatement", () => {
   it("should use transaction fund name if parent fund not present", () => {
     const Local = new Transaction({ cache: mockedCache });
     FinancialAccount.find.mockReturnValueOnce(Promise.resolve([])); // for deductible accounts
-    TransactionTable.find.mockReturnValueOnce(Promise.resolve(mockTransactions));
-    return Local.getStatement({}).then((res) => {
+    TransactionTable.find.mockReturnValueOnce(
+      Promise.resolve(mockTransactions)
+    );
+    return Local.getStatement({}).then(res => {
       expect(res.transactions[1].Name).toEqual("Harambe");
     });
   });
 
   it("should add join for deductible accounts in lookup", async () => {
     const Local = new Transaction({ cache: mockedCache });
-    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([{ Id: 99 }, { Id: 909 }])); // for deductible accounts
-    TransactionTable.find.mockReturnValueOnce(Promise.resolve(mockTransactions));
+    FinancialAccount.find.mockReturnValueOnce(
+      Promise.resolve([{ Id: 99 }, { Id: 909 }])
+    ); // for deductible accounts
+    TransactionTable.find.mockReturnValueOnce(
+      Promise.resolve(mockTransactions)
+    );
     const res = await Local.getStatement({});
 
     const call = TransactionTable.find.mock.calls[0][0];
@@ -301,23 +323,26 @@ describe("syncTransactions", () => {
       QueryUrl: "3",
       SecurityKey: "3",
       Name: "NMI Gateway",
-      Id: 1,
+      Id: 1
     };
 
     fetch.mockReturnValueOnce(
       Promise.resolve({
-        text: () => Promise.resolve("<xml>"),
-      }),
+        text: () => Promise.resolve("<xml>")
+      })
     );
 
     return Local.syncTransactions({
       gateway: "NMI Gateway",
-      transaction_code: "4",
-    }).then((response) => {
+      transaction_code: "4"
+    }).then(response => {
       expect(response).toEqual([]);
-      expect(fetch).toBeCalledWith("3?username=1&password=2&transaction_code=4", {
-        method: "POST",
-      });
+      expect(fetch).toBeCalledWith(
+        "3?username=1&password=2&transaction_code=4",
+        {
+          method: "POST"
+        }
+      );
       expect(parseString.mock.calls[0][0]).toEqual("<xml>");
     });
   });
@@ -334,7 +359,7 @@ describe("createOrder", () => {
       QueryUrl: "3",
       SecurityKey: "3",
       Name: "NMI Gateway",
-      Id: 1,
+      Id: 1
     };
   });
   afterEach(() => {
@@ -358,13 +383,15 @@ describe("createOrder", () => {
       QueryUrl: "3",
       SecurityKey: "3",
       Name: process.env.NMI_GATEWAY,
-      Id: 1,
+      Id: 1
     }));
 
     nmi.mockReturnValueOnce(Promise.resolve(true));
 
     await Local.createOrder({ data: {} });
-    expect(Local.loadGatewayDetails).toBeCalledWith(`${process.env.NMI_GATEWAY}`);
+    expect(Local.loadGatewayDetails).toBeCalledWith(
+      `${process.env.NMI_GATEWAY}`
+    );
   });
 
   it("correctly formats the data object", async () => {
@@ -373,14 +400,14 @@ describe("createOrder", () => {
         result: 1,
         "result-code": 100,
         "form-url": order,
-        "transaction-id": 1,
-      }),
+        "transaction-id": 1
+      })
     );
 
     const data = await Local.createOrder({
       data: { test: true, amount: 1 },
       requestUrl: "https://my.newspring.cc/give/now",
-      ip: "1",
+      ip: "1"
     });
 
     delete data.url.sale["order-id"];
@@ -395,14 +422,14 @@ describe("createOrder", () => {
         result: 1,
         "result-code": 100,
         "form-url": order,
-        "transaction-id": 1,
-      }),
+        "transaction-id": 1
+      })
     );
 
     const data = await Local.createOrder({
       data: { "start-date": "01012020", amount: 1 },
       requestUrl: "https://my.newspring.cc/give/now",
-      ip: "1",
+      ip: "1"
     });
 
     expect(data.url["add-subscription"]["order-id"]).toBeTruthy();
@@ -418,17 +445,17 @@ describe("createOrder", () => {
         result: 1,
         "result-code": 100,
         "form-url": order,
-        "transaction-id": 1,
-      }),
+        "transaction-id": 1
+      })
     );
 
     const data = await Local.createOrder(
       {
         data: { amount: 1 },
         requestUrl: "https://my.newspring.cc/give/now",
-        ip: "1",
+        ip: "1"
       },
-      { PrimaryAliasId: 10 },
+      { PrimaryAliasId: 10 }
     );
 
     expect(data.url.sale["order-id"]).toBeTruthy();
@@ -444,17 +471,17 @@ describe("createOrder", () => {
         result: 1,
         "result-code": 100,
         "form-url": order,
-        "transaction-id": 1,
-      }),
+        "transaction-id": 1
+      })
     );
 
     const data = await Local.createOrder(
       {
         data: { amount: 0 },
         requestUrl: "https://my.newspring.cc/give/now",
-        ip: "1",
+        ip: "1"
       },
-      { PrimaryAliasId: 10 },
+      { PrimaryAliasId: 10 }
     );
 
     expect(data.url.validate["order-id"]).toBeTruthy();
@@ -470,17 +497,17 @@ describe("createOrder", () => {
         result: 1,
         "result-code": 100,
         "form-url": order,
-        "transaction-id": 1,
-      }),
+        "transaction-id": 1
+      })
     );
 
     const data = await Local.createOrder(
       {
         data: {},
         requestUrl: "https://my.newspring.cc/give/now",
-        ip: "1",
+        ip: "1"
       },
-      { PrimaryAliasId: 10 },
+      { PrimaryAliasId: 10 }
     );
 
     expect(data.url["add-customer"]["order-id"]).toBeFalsy();
@@ -496,28 +523,28 @@ describe("createOrder", () => {
         result: 1,
         "result-code": 100,
         "form-url": order,
-        "transaction-id": 1,
-      }),
+        "transaction-id": 1
+      })
     );
     SavedPayment.findOne.mockReturnValueOnce(
       Promise.resolve({
-        ReferenceNumber: 100,
-      }),
+        ReferenceNumber: 100
+      })
     );
     const data = await Local.createOrder(
       {
         data: { savedAccount: 10, amount: 1 },
         requestUrl: "https://my.newspring.cc/give/now",
-        ip: "1",
+        ip: "1"
       },
-      { PrimaryAliasId: 10 },
+      { PrimaryAliasId: 10 }
     );
 
     expect(data.url.sale["order-id"]).toBeTruthy();
     delete data.url.sale["order-id"];
 
     expect(SavedPayment.findOne).toBeCalledWith({
-      where: { Id: 10 },
+      where: { Id: 10 }
     });
     expect(nmi).toBeCalled();
     expect(data).toMatchSnapshot();
@@ -529,7 +556,7 @@ describe("createOrder", () => {
     const data = await Local.createOrder({
       requestUrl: "https://my.newspring.cc/give/now",
       ip: "1",
-      data: {},
+      data: {}
     });
 
     expect(nmi).toBeCalled();
@@ -542,21 +569,21 @@ describe("createOrder", () => {
         result: 1,
         "result-code": 100,
         "form-url": order,
-        "transaction-id": 1,
-      }),
+        "transaction-id": 1
+      })
     );
     formatTransaction.mockReturnValueOnce({});
     Local.TransactionJob = {
-      add: jest.fn(),
+      add: jest.fn()
     };
     const data = await Local.createOrder(
       {
         data: {},
         instant: true,
         requestUrl: "https://my.newspring.cc/give/now",
-        ip: "1",
+        ip: "1"
       },
-      { PrimaryAliasId: 10 },
+      { PrimaryAliasId: 10 }
     );
 
     expect(formatTransaction).toBeCalled();
@@ -572,28 +599,28 @@ describe("createOrder", () => {
         result: 1,
         "result-code": 100,
         "form-url": order,
-        "transaction-id": 1,
-      }),
+        "transaction-id": 1
+      })
     );
     formatTransaction.mockReturnValueOnce({});
     Local.TransactionJob = {
-      add: jest.fn(),
+      add: jest.fn()
     };
     const data = await Local.createOrder(
       {
         data: {},
         instant: true,
         requestUrl: "https://my.newspring.cc/give/now",
-        ip: "1",
+        ip: "1"
       },
       { PrimaryAliasId: 10, Id: 123 },
       {
         Person: {
           getCampusFromId: () => {
             123;
-          },
-        },
-      },
+          }
+        }
+      }
     );
 
     expect(data.url["add-customer"]["merchant-defined-field-2"]).toEqual(20);
@@ -605,22 +632,22 @@ describe("createOrder", () => {
         result: 1,
         "result-code": 100,
         "form-url": order,
-        "transaction-id": 1,
-      }),
+        "transaction-id": 1
+      })
     );
     formatTransaction.mockReturnValueOnce({});
     Local.TransactionJob = {
-      add: jest.fn(),
+      add: jest.fn()
     };
     const data = await Local.createOrder(
       {
         data: {},
         instant: true,
         requestUrl: "https://my.newspring.cc/give/now",
-        ip: "1",
+        ip: "1"
       },
       { PrimaryAliasId: 10 },
-      { Person: { getCampusFromId: () => null } },
+      { Person: { getCampusFromId: () => null } }
     );
 
     expect(data.url["add-customer"]["merchant-defined-field-2"]).toEqual(20);
@@ -638,7 +665,7 @@ describe("charging NMI", () => {
       QueryUrl: "3",
       SecurityKey: "3",
       Name: "NMI Gateway",
-      Id: 1,
+      Id: 1
     };
   });
   afterEach(() => {
@@ -653,10 +680,10 @@ describe("charging NMI", () => {
       {
         "complete-action": {
           "api-key": "safe",
-          "token-id": "token",
-        },
+          "token-id": "token"
+        }
       },
-      { SecurityKey: "safe" },
+      { SecurityKey: "safe" }
     );
 
     expect(result).toEqual({ success: true });
@@ -674,7 +701,7 @@ describe("completeOrder", () => {
       QueryUrl: "3",
       SecurityKey: "3",
       Name: "NMI Gateway",
-      Id: 1,
+      Id: 1
     };
   });
   afterEach(() => {
@@ -685,7 +712,7 @@ describe("completeOrder", () => {
     formatTransaction.mockClear();
     formatTransaction.mockReturnValueOnce({ someStuff: "harambe" });
     Local.TransactionJob = {
-      add: jest.fn(),
+      add: jest.fn()
     };
 
     await Local.completeOrder({
@@ -695,7 +722,7 @@ describe("completeOrder", () => {
       accountName: "Visa",
       origin: "http://example.com",
       version: "over 9000",
-      platform: "Native",
+      platform: "Native"
     });
 
     expect(formatTransaction).toBeCalledWith(
@@ -704,15 +731,15 @@ describe("completeOrder", () => {
         person: { FirstName: "James" },
         accountName: "Visa",
         origin: "http://example.com",
-        response: { success: true },
+        response: { success: true }
       },
-      Local.gateway,
+      Local.gateway
     );
 
     expect(Local.TransactionJob.add).toBeCalledWith({
       platform: "Native",
       version: "over 9000",
-      someStuff: "harambe",
+      someStuff: "harambe"
     });
   });
 
@@ -721,7 +748,7 @@ describe("completeOrder", () => {
     formatTransaction.mockClear();
     formatTransaction.mockReturnValueOnce({});
     Local.TransactionJob = {
-      add: jest.fn(),
+      add: jest.fn()
     };
 
     const result = await Local.completeOrder({
@@ -729,13 +756,13 @@ describe("completeOrder", () => {
       token: "token",
       person: { FirstName: "James" },
       accountName: "Visa",
-      origin: "http://example.com",
+      origin: "http://example.com"
     });
 
     expect(result).toEqual({
       error: "dang",
       code: undefined,
-      success: false,
+      success: false
     });
   });
 });
@@ -751,7 +778,9 @@ describe("findByAccountType", () => {
   });
 
   it("queries for related child account types", async () => {
-    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([{ Id: 1 }, { Id: 2 }, { Id: 3 }]));
+    FinancialAccount.find.mockReturnValueOnce(
+      Promise.resolve([{ Id: 1 }, { Id: 2 }, { Id: 3 }])
+    );
 
     TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
 
@@ -760,58 +789,62 @@ describe("findByAccountType", () => {
         id: 1234,
         include: [10, 11],
         start: "10/13",
-        end: "10/15",
+        end: "10/15"
       },
       { limit: 3, offset: 0 },
-      { cache: null },
+      { cache: null }
     );
 
     expect(FinancialAccount.find).toBeCalledWith({
-      where: { ParentAccountId: 1234 },
+      where: { ParentAccountId: 1234 }
     });
   });
 
   it("queries for transactions related to account type", async () => {
-    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([{ Id: 1 }, { Id: 2 }, { Id: 3 }]));
+    FinancialAccount.find.mockReturnValueOnce(
+      Promise.resolve([{ Id: 1 }, { Id: 2 }, { Id: 3 }])
+    );
     TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
 
     await Local.findByAccountType(
       {
         id: 1234,
-        include: [10, 11],
+        include: [10, 11]
       },
       { limit: null, offset: null },
-      { cache: null },
+      { cache: null }
     );
 
     expect(TransactionTable.find).toBeCalledWith({
       order: [["TransactionDateTime", "DESC"]],
       where: {
         AuthorizedPersonAliasId: {
-          $in: [10, 11],
-        },
+          $in: [10, 11]
+        }
       },
       include: [
         {
           model: TransactionDetail.model,
-          where: { AccountId: { $in: [1, 2, 3] } },
-        },
-      ],
+          where: { AccountId: { $in: [1, 2, 3] } }
+        }
+      ]
     });
   });
 
   it("queries for transactions related to account type but based on a person ID", async () => {
-    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([{ Id: 1 }, { Id: 2 }, { Id: 3 }]));
+    FinancialAccount.find.mockReturnValueOnce(
+      Promise.resolve([{ Id: 1 }, { Id: 2 }, { Id: 3 }])
+    );
     TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
 
     await Local.findByAccountType(
       {
         personId: 54321,
         id: 1234,
-        include: [10, 11],
+        include: [10, 11]
       },
       { limit: null, offset: null },
-      { cache: null },
+      { cache: null }
     );
 
     expect(TransactionTable.find).toBeCalledWith({
@@ -820,7 +853,7 @@ describe("findByAccountType", () => {
       include: [
         {
           model: TransactionDetail.model,
-          where: { AccountId: { $in: [1, 2, 3] } },
+          where: { AccountId: { $in: [1, 2, 3] } }
         },
         {
           model: PersonAlias.model,
@@ -833,18 +866,22 @@ describe("findByAccountType", () => {
                 {
                   model: GroupMember.model,
                   attributes: [],
-                  include: [{ model: Group.model, attributes: [], where: { Id: 54321 } }],
-                },
-              ],
-            },
-          ],
-        },
-      ],
+                  include: [
+                    { model: Group.model, attributes: [], where: { Id: 54321 } }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     });
   });
 
   it("queries based on a date range", async () => {
-    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([{ Id: 1 }, { Id: 2 }, { Id: 3 }]));
+    FinancialAccount.find.mockReturnValueOnce(
+      Promise.resolve([{ Id: 1 }, { Id: 2 }, { Id: 3 }])
+    );
     TransactionTable.find.mockReturnValueOnce(Promise.resolve([]));
 
     await Local.findByAccountType(
@@ -852,36 +889,42 @@ describe("findByAccountType", () => {
         id: 1234,
         include: [10, 11],
         start: "10/13",
-        end: "10/15",
+        end: "10/15"
       },
       { limit: null, offset: null },
-      { cache: null },
+      { cache: null }
     );
 
     expect(TransactionTable.find).toBeCalledWith({
       order: [["TransactionDateTime", "DESC"]],
       where: {
         AuthorizedPersonAliasId: {
-          $in: [10, 11],
+          $in: [10, 11]
         },
         TransactionDateTime: {
           $gt: "10/13",
-          $lt: "10/15",
-        },
+          $lt: "10/15"
+        }
       },
       include: [
         {
           model: TransactionDetail.model,
-          where: { AccountId: { $in: [1, 2, 3] } },
-        },
-      ],
+          where: { AccountId: { $in: [1, 2, 3] } }
+        }
+      ]
     });
   });
 
   it("limits the return value when defined", async () => {
     FinancialAccount.find.mockReturnValueOnce(Promise.resolve([]));
     TransactionTable.find.mockReturnValueOnce(
-      Promise.resolve([{ Id: 200 }, { Id: 300 }, { Id: 400 }, { Id: 500 }, { Id: 600 }]),
+      Promise.resolve([
+        { Id: 200 },
+        { Id: 300 },
+        { Id: 400 },
+        { Id: 500 },
+        { Id: 600 }
+      ])
     );
 
     const data = await Local.findByAccountType(
@@ -889,10 +932,10 @@ describe("findByAccountType", () => {
         id: 1234,
         include: [10, 11],
         start: "10/13",
-        end: "10/15",
+        end: "10/15"
       },
       { limit: 3, offset: 0 },
-      { cache: null },
+      { cache: null }
     );
 
     // XXX why can't I use toHaveLength?
@@ -900,16 +943,18 @@ describe("findByAccountType", () => {
   });
 
   it("fails if no person is included", async () => {
-    FinancialAccount.find.mockReturnValueOnce(Promise.resolve([{ Id: 1 }, { Id: 2 }, { Id: 3 }]));
+    FinancialAccount.find.mockReturnValueOnce(
+      Promise.resolve([{ Id: 1 }, { Id: 2 }, { Id: 3 }])
+    );
 
     TransactionTable.find.mockReturnValueOnce(Promise.resolve());
 
     const data = await Local.findByAccountType(
       {
-        id: 1234,
+        id: 1234
       },
       { limit: null, offset: null },
-      { cache: null },
+      { cache: null }
     );
 
     expect(data).toBeFalsy();

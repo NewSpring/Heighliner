@@ -1,4 +1,1 @@
-
-export default [
-  "navigation(nav: String!): [Navigation]",
-];
+export default ["navigation(nav: String!): [Navigation]"];

@@ -8,5 +8,5 @@ export const FOLLOWABLE_TOPICS = [
   "Series",
   "Sermons",
   "Stories",
-  "Studies",
+  "Studies"
 ];

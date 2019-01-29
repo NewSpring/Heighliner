@@ -1,45 +1,47 @@
-
 import { merge } from "lodash";
 
 import {
   schema as nodeSchema,
   resolver as nodeResolver,
-  mocks as nodeMocks,
+  mocks as nodeMocks
 } from "./node";
 
 import {
   resolvers as cacheResolver,
-  mutations as cacheMutation,
+  mutations as cacheMutation
 } from "./cache/defaults";
 
-import {
-  schema as dateSchema,
-  resolver as dateResolver,
-} from "./scalars/Date";
+import { schema as dateSchema, resolver as dateResolver } from "./scalars/Date";
 
 export function getIp(request) {
-  return request.headers["x-forwarded-for"] ||
+  return (
+    request.headers["x-forwarded-for"] ||
     request.connection.remoteAddress ||
     request.socket.remoteAddress ||
-    request.connection.socket.remoteAddress;
+    request.connection.socket.remoteAddress
+  );
 }
 
 export function createQueries(queries) {
-  return [`
+  return [
+    `
     type Query {
       ${queries.join("\n")}
       node(id: ID!): Node
     }
-  `];
+  `
+  ];
 }
 
 export function createMutations(mutations = []) {
-  return [`
+  return [
+    `
     type Mutation {
       ${mutations.join("\n")}
       ${cacheMutation.join("\n")}
     }
-  `];
+  `
+  ];
 }
 
 export function createApplication(models) {
@@ -48,15 +50,17 @@ export function createApplication(models) {
     models: {},
     resolvers: {},
     queries: [],
-    mutations: [],
+    mutations: []
   };
 
   for (const model of models) {
     if (model.schema) joined.schema = [...joined.schema, ...model.schema];
     if (model.models) joined.models = merge(joined.models, model.models);
-    if (model.resolvers) joined.resolvers = merge(joined.resolvers, model.resolvers);
+    if (model.resolvers)
+      joined.resolvers = merge(joined.resolvers, model.resolvers);
     if (model.queries) joined.queries = [...joined.queries, ...model.queries];
-    if (model.mutations) joined.mutations = [...joined.mutations, ...model.mutations];
+    if (model.mutations)
+      joined.mutations = [...joined.mutations, ...model.mutations];
   }
 
   return joined;
@@ -67,10 +71,10 @@ export function loadApplications(applications) {
     schema: [...nodeSchema, ...dateSchema],
     models: {},
     resolvers: merge({}, nodeResolver, cacheResolver, dateResolver),
-    mocks: merge({}, nodeMocks),
+    mocks: merge({}, nodeMocks)
   };
 
-  Object.keys(applications).forEach((name) => {
+  Object.keys(applications).forEach(name => {
     const app = applications[name];
     joined.schema = [...joined.schema, ...app.schema];
     joined.models = merge(joined.models, app.models);
@@ -90,21 +94,18 @@ export function loadApplications(applications) {
 
 export function createSchema({ queries, schema, mutations }) {
   // build base level schema
-  const root = [`
+  const root = [
+    `
     schema {
       query: Query
       mutation: Mutation
     }
-  `];
+  `
+  ];
 
   const query = createQueries(queries);
   const mutation = createMutations(mutations);
 
   // generate the final schema
-  return [
-    ...root,
-    ...query,
-    ...mutation,
-    ...schema,
-  ];
+  return [...root, ...query, ...mutation, ...schema];
 }

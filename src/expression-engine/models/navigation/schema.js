@@ -1,5 +1,5 @@
-
-export default [`
+export default [
+  `
   type Navigation implements Node {
     id: ID!
     text: String
@@ -9,4 +9,5 @@ export default [`
     image: String
     children: [Navigation]
   }
-`];
+`
+];

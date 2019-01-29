@@ -1,12 +1,6 @@
 import { assign, filter, includes } from "lodash";
 
-const allResizings = [
-  "xlarge",
-  "large",
-  "medium",
-  "small",
-  "xsmall",
-];
+const allResizings = ["xlarge", "large", "medium", "small", "xsmall"];
 const sourceBucket = "ns.images";
 const resizeBucket = "resizings";
 
@@ -26,13 +20,11 @@ const addResizings = (images, options = { sizes: null, ratios: [] }) => {
   const resizings = options.sizes || allResizings;
 
   if (options.ratios && options.ratios.length > 0) {
-    images = filter(images, image =>
-       includes(options.ratios, image.fileLabel),
-    );
+    images = filter(images, image => includes(options.ratios, image.fileLabel));
   }
 
-  images.map((image) => {
-    resizings.map((resize) => {
+  images.map(image => {
+    resizings.map(resize => {
       const resizedImage = assign({}, image);
       resizedImage.url = generateFilename(resizedImage.url, resize);
       resizedImage.size = resize;
@@ -43,6 +35,4 @@ const addResizings = (images, options = { sizes: null, ratios: [] }) => {
   return result;
 };
 
-export {
-  addResizings,
-};
+export { addResizings };

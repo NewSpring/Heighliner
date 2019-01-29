@@ -1,4 +1,3 @@
-
 import { connect } from "./fetch";
 
 import { createApplication } from "../util/heighliner";
@@ -8,7 +7,7 @@ import Geolcate from "./models/geolocate";
 
 export const { schema, resolvers, models, queries, mocks } = createApplication([
   Search,
-  Geolcate,
+  Geolcate
 ]);
 
 export default {
@@ -16,5 +15,5 @@ export default {
   resolvers,
   mocks,
   schema,
-  connect,
+  connect
 };

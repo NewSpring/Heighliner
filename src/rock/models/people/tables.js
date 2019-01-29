@@ -23,12 +23,12 @@ const personSchema = {
   MaritalStatusValueId: { type: INTEGER },
   MiddleName: { type: STRING },
   NickName: { type: STRING },
-  PhotoId: { type: INTEGER },
+  PhotoId: { type: INTEGER }
 };
 
 const aliasSchema = {
   Id: { type: INTEGER, primaryKey: true },
-  PersonId: { type: INTEGER },
+  PersonId: { type: INTEGER }
 };
 
 // XXX move to its own model if/when needed
@@ -42,7 +42,7 @@ const phoneNumberSchema = {
   IsUnlisted: { type: BOOLEAN },
   Number: { type: STRING },
   NumberFormatted: { type: STRING },
-  PersonId: { type: INTEGER },
+  PersonId: { type: INTEGER }
 };
 
 const personalDeviceSchema = {
@@ -50,7 +50,7 @@ const personalDeviceSchema = {
   PersonAliasId: { type: INTEGER },
   DeviceRegistrationId: { type: STRING },
   PersonalDeviceTypeValueId: { type: INTEGER },
-  NotificationsEnabled: { type: BOOLEAN },
+  NotificationsEnabled: { type: BOOLEAN }
 };
 
 let Person;
@@ -64,7 +64,7 @@ export {
   aliasSchema,
   PhoneNumber,
   phoneNumberSchema,
-  PersonalDevice,
+  PersonalDevice
 };
 
 export function connect() {
@@ -77,29 +77,41 @@ export function connect() {
     Person,
     PersonAlias,
     PhoneNumber,
-    PersonalDevice,
+    PersonalDevice
   };
 }
 
-export function bind({ Person, PersonAlias, PhoneNumber, PersonalDevice, Group }) {
-  PersonAlias.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
+export function bind({
+  Person,
+  PersonAlias,
+  PhoneNumber,
+  PersonalDevice,
+  Group
+}) {
+  PersonAlias.model.belongsTo(Person.model, {
+    foreignKey: "PersonId",
+    targetKey: "Id"
+  });
   Person.model.hasOne(PersonAlias.model, { foreignKey: "PersonId" });
 
-  PhoneNumber.model.belongsTo(Person.model, { foreignKey: "PersonId", targetKey: "Id" });
+  PhoneNumber.model.belongsTo(Person.model, {
+    foreignKey: "PersonId",
+    targetKey: "Id"
+  });
   PersonalDevice.model.belongsTo(PersonAlias.model, {
     foreignKey: "PersonAliasId",
-    targetKey: "Id",
+    targetKey: "Id"
   });
 
   Person.model.belongsToMany(Group.model, {
     as: "Groups",
     through: "GroupMember",
     foreignKey: "PersonId",
-    otherKey: "GroupId",
+    otherKey: "GroupId"
   });
 }
 
 export default {
   connect,
-  bind,
+  bind
 };
