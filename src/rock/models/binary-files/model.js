@@ -12,7 +12,7 @@ import { Rock } from "../system/model";
 import * as api from "../../../apollos/models/users/api";
 
 export class BinaryFile extends Rock {
-   __type = "BinaryFile";
+  __type = "BinaryFile";
 
   constructor({ cache } = { cache: defaultCache }) {
     super({ cache });
@@ -35,9 +35,9 @@ export class BinaryFile extends Rock {
   }
 
   async getFromId(id, globalId) {
-    globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
-    return this.cache.get(globalId, () => BinaryFileTable.findOne({ where: { Id: id }})
-      .then(this.processFile)
+    globalId = globalId || createGlobalId(`${id}`, this.__type);
+    return this.cache.get(globalId, () => BinaryFileTable.findOne({ where: { Id: id } })
+      .then(this.processFile),
     );
   }
 
@@ -45,7 +45,7 @@ export class BinaryFile extends Rock {
     return this.cache.get(`${Guid}:BinaryFileGuid`, () => BinaryFileTable.findOne({
       where: { Guid },
     })
-      .then(this.processFile)
+      .then(this.processFile),
     );
   }
 
@@ -55,7 +55,7 @@ export class BinaryFile extends Rock {
       where: query,
       attributes: ["Id"],
     })
-      .then(this.getFromIds.bind(this))
+      .then(this.getFromIds.bind(this)),
     );
   }
 

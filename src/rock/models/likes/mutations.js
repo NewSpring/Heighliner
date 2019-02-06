@@ -1,4 +1,4 @@
 
 export default [
-   `toggleLike(nodeId: String!): LikesMutationResponse`,
+  "toggleLike(nodeId: String!): LikesMutationResponse",
 ];

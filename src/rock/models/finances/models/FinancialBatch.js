@@ -11,7 +11,7 @@ export default class FinancialBatch extends Rock {
   __type = "FinancialBatch";
 
   async getFromId(id, globalId) {
-    globalId = globalId ? globalId : createGlobalId(id, this.__type);
+    globalId = globalId || createGlobalId(id, this.__type);
     return this.cache.get(globalId, () =>
       FinancialBatchTable.findOne({ where: { Id: id } }));
   }

@@ -11,22 +11,21 @@ export default class FinancialAccount extends Rock {
   __type = "FinancialAccount";
 
   async getFromId(id, globalId) {
-    globalId = globalId ? globalId : createGlobalId(id, this.__type);
+    globalId = globalId || createGlobalId(id, this.__type);
     return this.cache.get(
       globalId,
-      () => FinancialAccountTable.findOne({ where: { Id: id }})
-        .then(x => {
+      () => FinancialAccountTable.findOne({ where: { Id: id } })
+        .then((x) => {
           // if this is a children fund, lets get the parent
           if (!x.ParentAccountId) return x;
 
-          return FinancialAccountTable.findOne({ where: { Id: x.ParentAccountId }});
-        })
+          return FinancialAccountTable.findOne({ where: { Id: x.ParentAccountId } });
+        }),
     );
   }
 
   async find(where, { all }) {
-
-    for (let key in where) {
+    for (const key in where) {
       if (isUndefined(where[key])) delete where[key];
     }
     // defaults
@@ -40,7 +39,7 @@ export default class FinancialAccount extends Rock {
       },
       IsTaxDeductible: true,
     }, where);
-      
+
     if (all) {
       where = { ParentAccountId: null, IsTaxDeductible: true };
     }
@@ -48,7 +47,7 @@ export default class FinancialAccount extends Rock {
     return await this.cache.get(
       this.cache.encode(where),
       () => FinancialAccountTable.find({ where, attributes: ["Id"], order: ["Order"] })
-        .then(this.getFromIds.bind(this))
+        .then(this.getFromIds.bind(this)),
     );
   }
 

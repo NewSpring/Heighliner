@@ -37,7 +37,7 @@ export const safeTrimArray = (skip, limit, arr, emptyRet) => {
   *     if it's outside of array bounds, just returns whole array
   */
   const trimmed = arr
-    .slice(skip ? skip : 0)
+    .slice(skip || 0)
     .slice(0, limit ? limit > arr.length ? arr.length : limit : null);
 
   if (!trimmed || !trimmed.length) return emptyRet;
@@ -83,12 +83,12 @@ export class Like {
 
     if (!entryIds || !entryIds.length) return null;
 
-    let promises = entryIds.map(x => nodeModel.get(x));
+    const promises = entryIds.map(x => nodeModel.get(x));
     return Promise.all(promises).then(likes => likes.filter(x => x));
   }
 
   async toggleLike(nodeId, userId, nodeModel) {
-    let existingLike = await this.model.findOne({
+    const existingLike = await this.model.findOne({
       entryId: nodeId,
       userId,
     });

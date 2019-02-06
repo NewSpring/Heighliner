@@ -3,7 +3,7 @@
 
 "format cjs";
 
-var wrap = require('word-wrap');
+const wrap = require("word-wrap");
 
 // This can be any kind of SystemJS compatible module.
 // We use Commonjs here, but ES6 or AMD would do just
@@ -21,8 +21,8 @@ module.exports = {
   //
   // By default, we'll de-indent your commit
   // template and will keep empty lines.
-  prompter: function(cz, commit) {
-    console.log('\nAll lines will be wrapped after 100 characters.\n');
+  prompter(cz, commit) {
+    console.log("\nAll lines will be wrapped after 100 characters.\n");
 
     // Let's ask some questions of the user
     // so that we can populate our commit
@@ -33,79 +33,78 @@ module.exports = {
     // collection library if you prefer.
     cz.prompt([
       {
-        type: 'list',
-        name: 'type',
-        message: 'Select the type of change that you\'re committing:',
+        type: "list",
+        name: "type",
+        message: "Select the type of change that you're committing:",
         choices: [
-        {
-          name: 'feat:     A new feature',
-          value: 'feat'
+          {
+            name: "feat:     A new feature",
+            value: "feat",
+          }, {
+            name: "fix:      A bug fix",
+            value: "fix",
+          }, {
+          name: "test:     Adding missing tests",
+          value: "test",
         }, {
-          name: 'fix:      A bug fix',
-          value: 'fix'
+          name: "style:    Changes that do not affect the meaning of the code\n            (white-space, formatting, missing semi-colons, etc)",
+          value: "style",
         }, {
-          name: 'test:     Adding missing tests',
-          value: 'test'
+          name: "refactor: A code change that neither fixes a bug or adds a feature",
+          value: "refactor",
         }, {
-          name: 'style:    Changes that do not affect the meaning of the code\n            (white-space, formatting, missing semi-colons, etc)',
-          value: 'style'
+          name: "docs:     Documentation only changes",
+          value: "docs",
         }, {
-          name: 'refactor: A code change that neither fixes a bug or adds a feature',
-          value: 'refactor'
+          name: "perf:     A code change that improves performance",
+          value: "perf",
         }, {
-          name: 'docs:     Documentation only changes',
-          value: 'docs'
-        }, {
-          name: 'perf:     A code change that improves performance',
-          value: 'perf'
-        }, {
-          name: 'chore:    Changes to the build process or auxiliary tools\n            and libraries such as documentation generation',
-          value: 'chore'
-        }]
+          name: "chore:    Changes to the build process or auxiliary tools\n            and libraries such as documentation generation",
+          value: "chore",
+        }],
       }, {
-        type: 'input',
-        name: 'issues',
-        message: 'Jira Issue ID(s) (required):\n',
+        type: "input",
+        name: "issues",
+        message: "Jira Issue ID(s) (required):\n",
       }, {
-      type: 'input',
-      name: 'subject',
-      message: 'Write a short description of the change (required):\n',
+        type: "input",
+        name: "subject",
+        message: "Write a short description of the change (required):\n",
       }, {
-        type: 'input',
-        name: 'body',
-        message: 'Provide a longer description of the change [Sent to JIRA] (optional):\n'
+        type: "input",
+        name: "body",
+        message: "Provide a longer description of the change [Sent to JIRA] (optional):\n",
       }, {
-        type: 'confirm',
-        name: 'ci',
-        message: 'Run this build on CI?\n'
-      }
-    ]).then(function(answers) {
+        type: "confirm",
+        name: "ci",
+        message: "Run this build on CI?\n",
+      },
+    ]).then((answers) => {
       try {
-        var wrapOptions = {
+        const wrapOptions = {
           trim: true,
-          newline: '\n',
-          indent:'',
-          width: 100
+          newline: "\n",
+          indent: "",
+          width: 100,
         };
 
-        var issues = answers.issues.trim();
-        var body = answers.body ? '#comment ' + answers.body.trim(): '';
-        var ci = answers.ci ? '' : ' [ci skip]';
+        const issues = answers.issues.trim();
+        var body = answers.body ? `#comment ${  answers.body.trim()}` : "";
+        const ci = answers.ci ? "" : " [ci skip]";
 
         // Hard limit this line
-        var head = answers.type + ': ' + answers.subject + ' ' + issues + ci;
-        if (body) head = head + ' ' + body;
+        let head = `${answers.type }: ${answers.subject } ${issues}${ci}`;
+        if (body) head = `${head } ${body}`;
 
         // Wrap these lines at 100 characters
         var body = wrap(body, wrapOptions);
 
-        if (!body) body = '';
+        if (!body) body = "";
 
-        commit(head + '\n\n' + body);
+        commit(`${head}\n\n${body}`);
       } catch (e) {
         console.log("COMMIT ERROR: ", e);
       }
-
     });
-  }
-}
+  },
+};

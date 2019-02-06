@@ -108,7 +108,7 @@ export class Person extends Rock {
   }
 
   async clearCacheFromId(id, globalId, action) {
-    globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
+    globalId = globalId || createGlobalId(`${id}`, this.__type);
     // delete the cache entry
     return Promise.resolve()
       .then(x => this.cache.del(globalId))
@@ -119,7 +119,7 @@ export class Person extends Rock {
   }
 
   async clearCacheFromPersonAliasId(id, globalId, action) {
-    globalId = globalId ? globalId : this.createGlobalAliasId(id);
+    globalId = globalId || this.createGlobalAliasId(id);
     // delete the cache entry
     return Promise.resolve()
       .then(x => this.cache.del(globalId))
@@ -130,7 +130,7 @@ export class Person extends Rock {
   }
 
   async getFromId(id, globalId) {
-    globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
+    globalId = globalId || createGlobalId(`${id}`, this.__type);
     return this.cache.get(globalId, () => PersonTable.findOne({ where: { Id: id } }));
   }
 

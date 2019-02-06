@@ -4,5 +4,5 @@ export default [
     groupId: ID!,
     message: String!,
     communicationPreference: String!,
-  ): GroupsMutationResponse`
+  ): GroupsMutationResponse`,
 ];

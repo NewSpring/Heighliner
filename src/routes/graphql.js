@@ -120,7 +120,7 @@ export default function (app, monitor) {
       try {
         if (context.authToken.indexOf("::") < 0) {
           context.authToken = `::${context.authToken}`;
-        };
+        }
         context.user = await timeout(createdModels.User.getByBasicAuth(context.authToken), 5000);
         const person = await timeout(
           createdModels.User.getUserProfile(context.user.PersonId), 5000);

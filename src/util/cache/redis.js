@@ -9,12 +9,11 @@ import { parseGlobalId } from "./../node/model";
 
 let db;
 let dd;
-export function connect( monitor) {
+export function connect(monitor) {
   dd = monitor && monitor.datadog;
   if (db) return Promise.resolve(true);
   let hasReturned = false;
   return new Promise((cb) => {
-
     db = Redis.createClient(6379, process.env.REDIS_HOST);
 
     db.on("connect", () => {
@@ -45,7 +44,7 @@ export class RedisCache {
       db.mget(keys, (error, results) => {
         if (error) return reject(error);
         resolve(results.map((result, index) =>
-          result !== null ? result : new Error(`No key: ${keys[index]}`)
+          result !== null ? result : new Error(`No key: ${keys[index]}`),
         ));
       });
     }), { cache: false });
@@ -64,17 +63,15 @@ export class RedisCache {
     if (dd) dd.increment(`${prefix}.transaction.count`);
     console.time(label); // tslint:disable-line
     return promise
-      .then(x => {
+      .then((x) => {
         if (log()) {
           const end = new Date();
           if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
           console.timeEnd(label); // tslint:disable-line
-        } else {
-          if (dd) dd.increment(`${prefix}.transaction.miss`);
-        }
+        } else if (dd) dd.increment(`${prefix}.transaction.miss`);
         return x;
       })
-      .catch(x => {
+      .catch((x) => {
         const end = new Date();
         if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
         if (dd) dd.increment(`${prefix}.transaction.error`);
@@ -90,12 +87,12 @@ export class RedisCache {
       if (!cache && lookup) return lookup().then(done);
       try {
         // try to nest information based on global id
-        let { __type } = parseGlobalId(id);
+        const { __type } = parseGlobalId(id);
         id = `${__type}:${id}`;
-      } catch (e) { /* tslint:disable-line */ };
+      } catch (e) { /* tslint:disable-line */ }
 
       return this.idLoader.load(id)
-        .then(data => {
+        .then((data) => {
           if (!data) return lookup().then(done);
 
           try { data = JSON.parse(data); } catch (e) {
@@ -135,7 +132,7 @@ export class RedisCache {
   del(id) {
     // try to nest information based on global id
     try {
-      let { __type } = parseGlobalId(id);
+      const { __type } = parseGlobalId(id);
       id = `${__type}:${id}`;
     } catch (e) {}
     db.del(id); // clear redis
@@ -144,8 +141,8 @@ export class RedisCache {
 
   encode(obj, type, user) {
     const cipher = Crypto.createHmac("sha256", this.secret);
-    type = type ? type + ":" : "";
-    user = user ? user + ":" : "";
+    type = type ? `${type  }:` : "";
+    user = user ? `${user  }:` : "";
     const str = cipher.update(JSON.stringify(obj), "utf-8").digest("hex");
 
     return `query:${type}${user}${str}`;

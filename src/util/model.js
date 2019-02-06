@@ -21,7 +21,7 @@ export class Heighliner {
     if (!data || !data.length) return Promise.resolve([]);
     return Promise.all(data.map(x => this.getFromId(x[this.id], createGlobalId(x[this.id], this.__type))))
       .then(x => flatten(x))
-      .then(x => x.filter(y => !isNil(y)).map(z => {
+      .then(x => x.filter(y => !isNil(y)).map((z) => {
         const item = z;
         item.__type = this.__type;
         return item;

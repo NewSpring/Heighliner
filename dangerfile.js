@@ -4,21 +4,19 @@ import { any } from "ramda";
 import fs from "fs";
 
 // Takes a list of file paths, and converts it into clickable links
-const linkableFiles = paths => {
+const linkableFiles = (paths) => {
   const repoURL = danger.github.pr.head.repo.html_url;
   const ref = danger.github.pr.head.ref;
-  const links = paths.map(path => {
-    return createLink(`${repoURL}/blob/${ref}/${path}`, path);
-  });
+  const links = paths.map((path) => createLink(`${repoURL}/blob/${ref}/${path}`, path));
   return toSentence(links);
 };
 
 // ["1", "2", "3"] to "1, 2 and 3"
-const toSentence = array => {
+const toSentence = (array) => {
   if (array.length === 1) {
     return array[0];
   }
-  return array.slice(0, array.length - 1).join(", ") + " and " + array.pop();
+  return `${array.slice(0, array.length - 1).join(", ")  } and ${  array.pop()}`;
 };
 
 // ("/href/thing", "name") to "<a href="/href/thing">name</a>"
@@ -28,7 +26,7 @@ const createLink = (href, text) => `<a href='${href}'>${text}</a>`;
 const raiseIssueAboutPaths = (type, paths, codeToInclude) => {
   if (paths.length > 0) {
     const files = linkableFiles(paths);
-    const strict = "<code>" + codeToInclude + "</code>";
+    const strict = `<code>${  codeToInclude  }</code>`;
     type(`Please ensure that ${strict} is enabled on: ${files}`);
   }
 };
@@ -75,7 +73,7 @@ if (hasAppChanges && !hasTestChanges) {
 }
 
 // new js files should have `@flow` at the top
-const unFlowedFiles = jsModifiedFiles.filter(filepath => {
+const unFlowedFiles = jsModifiedFiles.filter((filepath) => {
   // don't required flow for tests
   if (filepath.match(/__tests__\/$/gmi)) return true;
   const content = fs.readFileSync(filepath);
@@ -85,7 +83,7 @@ const unFlowedFiles = jsModifiedFiles.filter(filepath => {
 raiseIssueAboutPaths(warn, unFlowedFiles, "@flow");
 
 // Be careful of leaving testing shortcuts in the codebase
-const onlyTestFiles = jsTestChanges.filter(x => {
+const onlyTestFiles = jsTestChanges.filter((x) => {
   const content = fs.readFileSync(x).toString();
   return content.includes("it.only") || content.includes("describe.only");
 });
