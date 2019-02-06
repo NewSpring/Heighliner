@@ -4,8 +4,8 @@ const baseURL = `${process.env.ROCK_URL}api`;
 const CONFIG = {
   headers: {
     "Authorization-Token": process.env.ROCK_TOKEN,
-    "Content-Type": "application/json",
-  },
+    "Content-Type": "application/json"
+  }
 };
 
 async function statusResponseResolver(r = {}) {
@@ -26,36 +26,32 @@ export function get(url, config = {}) {
   return fetch(`${baseURL}${url}`, {
     method: "GET",
     ...CONFIG,
-    ...config,
-  })
-    .then(statusResponseResolver);
+    ...config
+  }).then(statusResponseResolver);
 }
 
 export function del(url, config = {}) {
   return fetch(`${baseURL}${url}`, {
     method: "DELETE",
     ...CONFIG,
-    ...config,
-  })
-    .then(statusResponseResolver);
+    ...config
+  }).then(statusResponseResolver);
 }
 
 export function head(url, config = {}) {
   return fetch(`${baseURL}${url}`, {
     method: "HEAD",
     ...CONFIG,
-    ...config,
-  })
-    .then(statusResponseResolver);
+    ...config
+  }).then(statusResponseResolver);
 }
 
 export function options(url, config = {}) {
   return fetch(`${baseURL}${url}`, {
     method: "OPTIONS",
     ...CONFIG,
-    ...config,
-  })
-    .then(statusResponseResolver);
+    ...config
+  }).then(statusResponseResolver);
 }
 
 export function post(url, data = {}, config = {}) {
@@ -63,9 +59,8 @@ export function post(url, data = {}, config = {}) {
     method: "POST",
     ...CONFIG,
     body: JSON.stringify(data),
-    ...config,
-  })
-    .then(statusResponseResolver);
+    ...config
+  }).then(statusResponseResolver);
 }
 
 export function put(url, data = {}, config = {}) {
@@ -73,9 +68,8 @@ export function put(url, data = {}, config = {}) {
     method: "PUT",
     ...CONFIG,
     body: JSON.stringify(data),
-    ...config,
-  })
-    .then(statusResponseResolver);
+    ...config
+  }).then(statusResponseResolver);
 }
 
 export function patch(url, data = {}, config = {}) {
@@ -83,7 +77,6 @@ export function patch(url, data = {}, config = {}) {
     method: "PATCH",
     ...CONFIG,
     body: JSON.stringify(data),
-    ...config,
-  })
-    .then(statusResponseResolver);
+    ...config
+  }).then(statusResponseResolver);
 }

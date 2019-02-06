@@ -1,4 +1,3 @@
-
 export default [
   `requestGroupInfo(
     groupId: ID!,

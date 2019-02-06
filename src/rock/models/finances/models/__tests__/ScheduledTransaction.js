@@ -1,4 +1,3 @@
-
 import ScheduledTransaction from "../ScheduledTransaction";
 import { ScheduledTransaction as ScheduledTransactionTable } from "../../tables";
 import nmi from "../../util/nmi";
@@ -10,8 +9,8 @@ jest.mock("../../tables", () => ({
     find: jest.fn(),
     findOne: jest.fn(),
     delete: jest.fn(),
-    patch: jest.fn(),
-  },
+    patch: jest.fn()
+  }
 }));
 
 jest.mock("../../util/nmi");
@@ -20,7 +19,7 @@ const mockedCache = {
   get: jest.fn((id, lookup) => Promise.resolve().then(lookup)),
   set: jest.fn(() => Promise.resolve().then(() => true)),
   del: jest.fn(),
-  encode: jest.fn((obj, prefix) => `${prefix}${JSON.stringify(obj)}`),
+  encode: jest.fn((obj, prefix) => `${prefix}${JSON.stringify(obj)}`)
 };
 
 describe("canceling a schedule", () => {
@@ -31,7 +30,9 @@ describe("canceling a schedule", () => {
     ScheduledTransactionTable.find.mockReturnValueOnce([]);
     const result = await Local.cancelNMISchedule(1, {});
 
-    expect(ScheduledTransactionTable.findOne).toBeCalledWith({ where: { Id: id } });
+    expect(ScheduledTransactionTable.findOne).toBeCalledWith({
+      where: { Id: id }
+    });
     expect(mockedCache.get.mock.calls[0][0]).toEqual(nodeId);
     expect(result).toEqual({ error: "Schedule not found" });
   });
@@ -41,21 +42,26 @@ describe("canceling a schedule", () => {
     const Local = new ScheduledTransaction({ cache: mockedCache });
     ScheduledTransactionTable.findOne.mockReturnValueOnce({
       Id: id,
-      GatewayScheduleId: "10",
+      GatewayScheduleId: "10"
     });
-    ScheduledTransactionTable.patch.mockReturnValueOnce(Promise.resolve({
-      status: 200,
-    }));
+    ScheduledTransactionTable.patch.mockReturnValueOnce(
+      Promise.resolve({
+        status: 200
+      })
+    );
 
     nmi.mockReturnValueOnce(Promise.resolve({ success: true }));
     const result = await Local.cancelNMISchedule(1, { SecurityKey: "safe" });
 
-    expect(nmi).toBeCalledWith({
-      "delete-subscription": {
-        "api-key": "safe",
-        "subscription-id": "10",
+    expect(nmi).toBeCalledWith(
+      {
+        "delete-subscription": {
+          "api-key": "safe",
+          "subscription-id": "10"
+        }
       },
-    }, { SecurityKey: "safe" });
+      { SecurityKey: "safe" }
+    );
 
     expect(result).toEqual({ scheduleId: 1 });
   });
@@ -65,16 +71,20 @@ describe("canceling a schedule", () => {
     const Local = new ScheduledTransaction({ cache: mockedCache });
     ScheduledTransactionTable.findOne.mockReturnValueOnce({
       Id: id,
-      GatewayScheduleId: "10",
+      GatewayScheduleId: "10"
     });
-    ScheduledTransactionTable.patch.mockReturnValueOnce(Promise.resolve({
-      status: 200,
-    }));
+    ScheduledTransactionTable.patch.mockReturnValueOnce(
+      Promise.resolve({
+        status: 200
+      })
+    );
 
     nmi.mockReturnValueOnce(Promise.resolve({ success: true }));
     const result = await Local.cancelNMISchedule(1, { SecurityKey: "safe" });
 
-    expect(ScheduledTransactionTable.patch).toBeCalledWith(1, { IsActive: false });
+    expect(ScheduledTransactionTable.patch).toBeCalledWith(1, {
+      IsActive: false
+    });
 
     expect(result).toEqual({ scheduleId: 1 });
   });
@@ -83,11 +93,13 @@ describe("canceling a schedule", () => {
     const id = 1;
     const Local = new ScheduledTransaction({ cache: mockedCache });
     ScheduledTransactionTable.findOne.mockReturnValueOnce({
-      Id: id,
+      Id: id
     });
-    ScheduledTransactionTable.delete.mockReturnValueOnce(Promise.resolve({
-      status: 200,
-    }));
+    ScheduledTransactionTable.delete.mockReturnValueOnce(
+      Promise.resolve({
+        status: 200
+      })
+    );
 
     nmi.mockReturnValueOnce(Promise.resolve({ success: true }));
     const result = await Local.cancelNMISchedule(1, { SecurityKey: "safe" });
@@ -101,13 +113,17 @@ describe("canceling a schedule", () => {
     const id = 1;
     const Local = new ScheduledTransaction({ cache: mockedCache });
     ScheduledTransactionTable.findOne.mockReturnValueOnce({
-      Id: id,
+      Id: id
     });
-    ScheduledTransactionTable.delete.mockReturnValueOnce(Promise.resolve({
-      status: 200,
-    }));
+    ScheduledTransactionTable.delete.mockReturnValueOnce(
+      Promise.resolve({
+        status: 200
+      })
+    );
 
-    nmi.mockReturnValueOnce(Promise.reject({ message: "Transaction not found" }));
+    nmi.mockReturnValueOnce(
+      Promise.reject({ message: "Transaction not found" })
+    );
     const result = await Local.cancelNMISchedule(1, { SecurityKey: "safe" });
 
     expect(ScheduledTransactionTable.delete).toBeCalledWith(1);
@@ -120,13 +136,17 @@ describe("canceling a schedule", () => {
     const nodeId = createGlobalId(`${1}`, "ScheduledTransaction");
     const Local = new ScheduledTransaction({ cache: mockedCache });
     ScheduledTransactionTable.findOne.mockReturnValueOnce({
-      Id: id,
+      Id: id
     });
-    ScheduledTransactionTable.delete.mockReturnValueOnce(Promise.resolve({
-      status: 200,
-    }));
+    ScheduledTransactionTable.delete.mockReturnValueOnce(
+      Promise.resolve({
+        status: 200
+      })
+    );
 
-    nmi.mockReturnValueOnce(Promise.reject({ message: "No recurring subscriptions found" }));
+    nmi.mockReturnValueOnce(
+      Promise.reject({ message: "No recurring subscriptions found" })
+    );
     const result = await Local.cancelNMISchedule(1, { SecurityKey: "safe" });
 
     expect(ScheduledTransactionTable.delete).toBeCalledWith(1);
@@ -140,7 +160,7 @@ describe("canceling a schedule", () => {
     const Local = new ScheduledTransaction({ cache: mockedCache });
     ScheduledTransactionTable.delete.mockClear();
     ScheduledTransactionTable.findOne.mockReturnValueOnce({
-      Id: id,
+      Id: id
     });
 
     const error = new Error("System offline");

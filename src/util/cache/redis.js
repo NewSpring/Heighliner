@@ -1,4 +1,3 @@
-
 import Crypto from "crypto";
 
 // XXX replace with https://github.com/h0x91b/redis-fast-driver
@@ -21,7 +20,7 @@ export function connect(monitor) {
       cb(true);
     });
 
-    db.on("error", (error) => {
+    db.on("error", error => {
       if (!hasReturned) {
         hasReturned = true;
         cb(false);
@@ -66,14 +65,14 @@ export class RedisCache {
       .then((x) => {
         if (log()) {
           const end = new Date();
-          if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
+          if (dd) dd.histogram(`${prefix}.transaction.time`, end - start, [""]);
           console.timeEnd(label); // tslint:disable-line
         } else if (dd) dd.increment(`${prefix}.transaction.miss`);
         return x;
       })
       .catch((x) => {
         const end = new Date();
-        if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
+        if (dd) dd.histogram(`${prefix}.transaction.time`, end - start, [""]);
         if (dd) dd.increment(`${prefix}.transaction.error`);
         console.timeEnd(label); // tslint:disable-line
         return x;
@@ -110,7 +109,7 @@ export class RedisCache {
   }
 
   set(id, data, ttl = 86400) {
-    return new Promise((done) => {
+    return new Promise(done => {
       // XXX this should technically never fail
       try {
         // save to cache
@@ -151,5 +150,4 @@ export class RedisCache {
   clearAll() {
     db.flushdb();
   }
-
 }

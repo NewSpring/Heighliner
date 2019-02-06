@@ -1,8 +1,6 @@
 /* tslint:disable:no-shadowed-variable */
 
-import {
-  INTEGER,
-} from "sequelize";
+import { INTEGER } from "sequelize";
 
 import { MySQLConnector, Tables } from "../../mysql";
 
@@ -10,24 +8,18 @@ const matrixSchema = {
   row_id: { type: INTEGER, primaryKey: true },
   site_id: { type: INTEGER },
   entry_id: { type: INTEGER },
-  field_id: { type: INTEGER },
+  field_id: { type: INTEGER }
 };
 
 const matrixColSchema = {
   col_id: { type: INTEGER, primaryKey: true },
   site_id: { type: INTEGER },
-  field_id: { type: INTEGER },
+  field_id: { type: INTEGER }
 };
 
 let Matrix;
 let MatrixCol;
-export {
-  Matrix,
-  matrixSchema,
-
-  MatrixCol,
-  matrixColSchema,
-};
+export { Matrix, matrixSchema, MatrixCol, matrixColSchema };
 
 export function connect() {
   Matrix = new MySQLConnector("exp_matrix_data", matrixSchema);
@@ -35,21 +27,15 @@ export function connect() {
 
   return {
     Matrix,
-    MatrixCol,
+    MatrixCol
   };
 }
 
-export function bind({
-  ChannelData,
-  Matrix,
-  MatrixCol,
-  AssetsSelections,
-}) {
+export function bind({ ChannelData, Matrix, MatrixCol, AssetsSelections }) {
   // Matrix.model.belongsTo(ChannelData.model, { foreignKey: "entry_id" });
   // Matrix.model.belongsTo(AssetsSelections.model, { foreignKey: "row_id" });
 
   // MatrixCol.model.belongsTo(AssetsSelections.model, { foreignKey: "col_id" });
-
 
   // // get access to matrix from channel data
   ChannelData.model.hasMany(Matrix.model, { foreignKey: "entry_id" });
@@ -65,5 +51,5 @@ export function bind({
 
 export default {
   connect,
-  bind,
+  bind
 };

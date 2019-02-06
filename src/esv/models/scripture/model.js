@@ -11,12 +11,12 @@ class ESV extends ESVFetchConnector {
   }
 
   async get(query) {
-    return await this.cache.get(`${this.__type}:${query}`, () => (
+    return await this.cache.get(`${this.__type}:${query}`, () =>
       this.getFromAPI(query)
-    ));
+    );
   }
-};
+}
 
 export default {
-  ESV,
+  ESV
 };

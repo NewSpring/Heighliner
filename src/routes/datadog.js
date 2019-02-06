@@ -1,14 +1,13 @@
-
 import Metrics from "datadog-metrics";
 
-export default (app) => {
+export default app => {
   let dogstatsd;
   if (process.env.DATADOG_API_KEY && process.env.NODE_ENV === "production") {
     dogstatsd = new Metrics.BufferedMetricsLogger({
       apiKey: process.env.DATADOG_API_KEY,
       appKey: process.env.DATADOG_APP_KEY,
       prefix: `heighliner.${process.env.SENTRY_ENVIRONMENT}.`,
-      flushIntervalSeconds: 15,
+      flushIntervalSeconds: 15
     });
 
     setInterval(() => {
@@ -38,7 +37,7 @@ export default (app) => {
         dogstatsd.increment(`response_code.${res.statusCode}`, 1, statTags);
         dogstatsd.increment("response_code.all", 1, statTags);
 
-        const now = (new Date()) - req._startTime;
+        const now = new Date() - req._startTime;
         dogstatsd.histogram("response_time", now, statTags);
       };
 

@@ -6,7 +6,7 @@ import {
   FinancialAccount,
   TransactionDetail,
   ScheduledTransaction,
-  FinancialBatch as FinancialBatchTable,
+  FinancialBatch as FinancialBatchTable
 } from "../../tables";
 
 import { Person, PersonAlias } from "../../../people/tables";
@@ -20,52 +20,52 @@ import submit from "../submit-transaction";
 jest.mock("../../tables", () => ({
   Transaction: {
     find: jest.fn(() => Promise.resolve()),
-    post: jest.fn(() => Promise.resolve()),
+    post: jest.fn(() => Promise.resolve())
   },
   TransactionDetail: {
-    post: jest.fn(() => Promise.resolve()),
+    post: jest.fn(() => Promise.resolve())
   },
   FinancialPaymentDetail: {
-    post: jest.fn(() => Promise.resolve()),
+    post: jest.fn(() => Promise.resolve())
   },
   FinancialAccount: {
-    findOne: jest.fn(() => Promise.resolve()),
+    findOne: jest.fn(() => Promise.resolve())
   },
   ScheduledTransaction: {
-    findOne: jest.fn(() => Promise.resolve()),
+    findOne: jest.fn(() => Promise.resolve())
   },
   FinancialBatch: {
     find: jest.fn(() => Promise.resolve()),
     findOne: jest.fn(() => Promise.resolve()),
-    post: jest.fn(() => Promise.resolve()),
-  },
+    post: jest.fn(() => Promise.resolve())
+  }
 }));
 
 jest.mock("../../../people/tables", () => ({
   Person: {
-    find: jest.fn(() => Promise.resolve()),
+    find: jest.fn(() => Promise.resolve())
   },
   PersonAlias: {
-    model: "PersonAlias",
-  },
+    model: "PersonAlias"
+  }
 }));
 
 jest.mock("../../../groups/tables", () => ({
   GroupLocation: {
-    find: jest.fn(() => Promise.resolve()),
+    find: jest.fn(() => Promise.resolve())
   },
   Group: {
-    model: "Group",
+    model: "Group"
   },
   GroupMember: {
-    model: "GroupMember",
-  },
+    model: "GroupMember"
+  }
 }));
 
 jest.mock("../../../campuses/tables", () => ({
   Location: {
-    model: "Location",
-  },
+    model: "Location"
+  }
 }));
 
 let warn;
@@ -83,21 +83,21 @@ it("returns a promise", () => {
 });
 
 it("returns immediately if no transaction is passed", () =>
-  submit().then((result) => {
+  submit().then(result => {
     expect(result).toBeFalsy();
   }));
 
 it("looks to see if the transaction is already in Rock", () => {
   const sample = {
     Transaction: {
-      TransactionCode: "1",
-    },
+      TransactionCode: "1"
+    }
   };
   Transaction.find.mockReturnValueOnce(Promise.resolve([{ Id: "1" }]));
   return submit(sample).then(() => {
     expect(Transaction.find).toBeCalled();
     expect(Transaction.find).toBeCalledWith({
-      where: { TransactionCode: "1" },
+      where: { TransactionCode: "1" }
     });
   });
 });
@@ -105,15 +105,15 @@ it("looks to see if the transaction is already in Rock", () => {
 it("exits if the transaction is in Rock", () => {
   const sample = {
     Transaction: {
-      TransactionCode: "1",
-    },
+      TransactionCode: "1"
+    }
   };
   Transaction.find.mockReturnValueOnce([{ Id: "1" }]);
-  return submit(sample).then((result) => {
+  return submit(sample).then(result => {
     expect(result).toBeFalsy();
     expect(Transaction.find).toBeCalled();
     expect(Transaction.find).toBeCalledWith({
-      where: { TransactionCode: "1" },
+      where: { TransactionCode: "1" }
     });
   });
 });
@@ -121,23 +121,23 @@ it("exits if the transaction is in Rock", () => {
 it("tries to find a person record for the transaction", () => {
   const sample = {
     Transaction: {
-      TransactionCode: "1",
+      TransactionCode: "1"
     },
     Person: {
       LastName: "Cenva",
-      Email: "norma.cenva@newspring.cc",
-    },
+      Email: "norma.cenva@newspring.cc"
+    }
   };
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
   Person.find.mockReturnValueOnce(Promise.resolve([]));
-  return submit(sample).then((result) => {
+  return submit(sample).then(result => {
     expect(result).toBeFalsy();
     expect(Transaction.find).toBeCalledWith({
-      where: { TransactionCode: "1" },
+      where: { TransactionCode: "1" }
     });
     expect(Person.find).toBeCalledWith({
       where: sample.Person,
-      include: [{ model: PersonAlias.model }],
+      include: [{ model: PersonAlias.model }]
     });
   });
 });
@@ -145,18 +145,18 @@ it("tries to find a person record for the transaction", () => {
 it("allows for manually setting the PersonId", () => {
   const sample = {
     Transaction: {
-      TransactionCode: "1",
+      TransactionCode: "1"
     },
     PaymentDetail: {
       AccountNumberMasked: "4***********1111",
       CreditCardTypeValueId: 7,
       CurrencyTypeValueId: 156,
-      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad",
+      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad"
     },
     Person: {
       Id: 11,
       LastName: "Cenva",
-      Email: "norma.cenva@newspring.cc",
+      Email: "norma.cenva@newspring.cc"
     },
     Location: {
       Street1: "1 Linwa Blvd",
@@ -164,19 +164,19 @@ it("allows for manually setting the PersonId", () => {
       City: "Anderson",
       State: "SC",
       PostalCode: "29621",
-      Country: undefined,
+      Country: undefined
     },
     TransactionDetails: [{ AccountId: 138 }, { AccountId: 128 }],
     CampusId: 1,
-    ScheduledTransaction: {},
+    ScheduledTransaction: {}
   };
   FinancialBatchTable.find.mockReturnValueOnce(Promise.resolve([]));
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
   Person.find.mockReturnValueOnce(
     Promise.resolve([
       { Id: 11, FirstName: "Norma", PersonAlias: { Id: 12 } },
-      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-    ]),
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } }
+    ])
   );
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
   Transaction.post.mockReturnValueOnce(Promise.resolve(100));
@@ -186,7 +186,7 @@ it("allows for manually setting the PersonId", () => {
   return submit(sample).then(() => {
     expect(GroupLocation.find).not.toBeCalled();
     expect(FinancialPaymentDetail.post).toBeCalledWith(
-      assign(sample.PaymentDetail, { CreatedByPersonAliasId: 12 }),
+      assign(sample.PaymentDetail, { CreatedByPersonAliasId: 12 })
     );
   });
 });
@@ -196,17 +196,17 @@ xit("it creates a person if none found");
 it("trieds to narrow down person by location", () => {
   const sample = {
     Transaction: {
-      TransactionCode: "1",
+      TransactionCode: "1"
     },
     PaymentDetail: {
       AccountNumberMasked: "4***********1111",
       CreditCardTypeValueId: 7,
       CurrencyTypeValueId: 156,
-      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad",
+      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad"
     },
     Person: {
       LastName: "Cenva",
-      Email: "norma.cenva@newspring.cc",
+      Email: "norma.cenva@newspring.cc"
     },
     Location: {
       Street1: "1 Linwa Blvd",
@@ -214,18 +214,18 @@ it("trieds to narrow down person by location", () => {
       City: "Anderson",
       State: "SC",
       PostalCode: "29621",
-      Country: undefined,
+      Country: undefined
     },
     TransactionDetails: [],
-    ScheduledTransaction: {},
+    ScheduledTransaction: {}
   };
   FinancialBatchTable.find.mockReturnValueOnce(Promise.resolve([]));
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
   Person.find.mockReturnValueOnce(
     Promise.resolve([
       { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-    ]),
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } }
+    ])
   );
   GroupLocation.find.mockReturnValueOnce(Promise.resolve([]));
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
@@ -243,8 +243,8 @@ it("trieds to narrow down person by location", () => {
             Street1: sample.Location.Street1,
             City: sample.Location.City,
             State: sample.Location.State,
-            PostalCode: sample.Location.PostalCode,
-          },
+            PostalCode: sample.Location.PostalCode
+          }
         },
         {
           model: Group.model,
@@ -253,11 +253,11 @@ it("trieds to narrow down person by location", () => {
             {
               model: GroupMember.model,
               // XXX should this be an array of arrays?
-              where: { PersonId: { $in: [[1, 2]] } },
-            },
-          ],
-        },
-      ],
+              where: { PersonId: { $in: [[1, 2]] } }
+            }
+          ]
+        }
+      ]
     });
   });
 });
@@ -265,17 +265,17 @@ it("trieds to narrow down person by location", () => {
 it("trieds to narrow down person by location with found locations", () => {
   const sample = {
     Transaction: {
-      TransactionCode: "1",
+      TransactionCode: "1"
     },
     PaymentDetail: {
       AccountNumberMasked: "4***********1111",
       CreditCardTypeValueId: 7,
       CurrencyTypeValueId: 156,
-      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad",
+      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad"
     },
     Person: {
       LastName: "Cenva",
-      Email: "norma.cenva@newspring.cc",
+      Email: "norma.cenva@newspring.cc"
     },
     Location: {
       Street1: "1 Linwa Blvd",
@@ -283,28 +283,30 @@ it("trieds to narrow down person by location with found locations", () => {
       City: "Anderson",
       State: "SC",
       PostalCode: "29621",
-      Country: undefined,
+      Country: undefined
     },
     TransactionDetails: [],
-    ScheduledTransaction: {},
+    ScheduledTransaction: {}
   };
   FinancialBatchTable.find.mockReturnValueOnce(Promise.resolve([]));
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
   Person.find.mockReturnValueOnce(
     Promise.resolve([
       { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-    ]),
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } }
+    ])
   );
   GroupLocation.find.mockReturnValueOnce(
-    Promise.resolve([{ Group: { GroupMembers: [{ PersonId: 1 }] } }]),
+    Promise.resolve([{ Group: { GroupMembers: [{ PersonId: 1 }] } }])
   );
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
   Transaction.post.mockReturnValueOnce(Promise.resolve(100));
   const originalWarn = console.warn;
   console.warn = jest.fn();
   return submit(sample).then(() => {
-    expect(console.warn).not.toBeCalledWith("no locations found for Norma,Tissa");
+    expect(console.warn).not.toBeCalledWith(
+      "no locations found for Norma,Tissa"
+    );
     console.warn = originalWarn;
     expect(GroupLocation.find).toBeCalledWith({
       include: [
@@ -314,8 +316,8 @@ it("trieds to narrow down person by location with found locations", () => {
             Street1: sample.Location.Street1,
             City: sample.Location.City,
             State: sample.Location.State,
-            PostalCode: sample.Location.PostalCode,
-          },
+            PostalCode: sample.Location.PostalCode
+          }
         },
         {
           model: Group.model,
@@ -324,11 +326,11 @@ it("trieds to narrow down person by location with found locations", () => {
             {
               model: GroupMember.model,
               // XXX should this be an array of arrays?
-              where: { PersonId: { $in: [[1, 2]] } },
-            },
-          ],
-        },
-      ],
+              where: { PersonId: { $in: [[1, 2]] } }
+            }
+          ]
+        }
+      ]
     });
   });
 });
@@ -336,17 +338,17 @@ it("trieds to narrow down person by location with found locations", () => {
 it("looks up the correct FinancialAccount based on CampusId", () => {
   const sample = {
     Transaction: {
-      TransactionCode: "1",
+      TransactionCode: "1"
     },
     PaymentDetail: {
       AccountNumberMasked: "4***********1111",
       CreditCardTypeValueId: 7,
       CurrencyTypeValueId: 156,
-      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad",
+      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad"
     },
     Person: {
       LastName: "Cenva",
-      Email: "norma.cenva@newspring.cc",
+      Email: "norma.cenva@newspring.cc"
     },
     Location: {
       Street1: "1 Linwa Blvd",
@@ -354,19 +356,19 @@ it("looks up the correct FinancialAccount based on CampusId", () => {
       City: "Anderson",
       State: "SC",
       PostalCode: "29621",
-      Country: undefined,
+      Country: undefined
     },
     TransactionDetails: [{ AccountId: 138 }, { AccountId: 128 }],
     CampusId: 1,
-    ScheduledTransaction: {},
+    ScheduledTransaction: {}
   };
   FinancialBatchTable.find.mockReturnValueOnce(Promise.resolve([]));
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
   Person.find.mockReturnValueOnce(
     Promise.resolve([
       { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-    ]),
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } }
+    ])
   );
   GroupLocation.find.mockReturnValueOnce(Promise.resolve([]));
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
@@ -376,11 +378,11 @@ it("looks up the correct FinancialAccount based on CampusId", () => {
 
   return submit(sample).then(({ Id }) => {
     expect(FinancialAccount.findOne).toBeCalledWith({
-      where: { CampusId: sample.CampusId, ParentAccountId: 138 },
+      where: { CampusId: sample.CampusId, ParentAccountId: 138 }
     });
 
     expect(FinancialAccount.findOne).toBeCalledWith({
-      where: { CampusId: sample.CampusId, ParentAccountId: 128 },
+      where: { CampusId: sample.CampusId, ParentAccountId: 128 }
     });
 
     expect(Id).toEqual(100);
@@ -390,17 +392,17 @@ it("looks up the correct FinancialAccount based on CampusId", () => {
 it("creates a financial payment", () => {
   const sample = {
     Transaction: {
-      TransactionCode: "1",
+      TransactionCode: "1"
     },
     PaymentDetail: {
       AccountNumberMasked: "4***********1111",
       CreditCardTypeValueId: 7,
       CurrencyTypeValueId: 156,
-      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad",
+      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad"
     },
     Person: {
       LastName: "Cenva",
-      Email: "norma.cenva@newspring.cc",
+      Email: "norma.cenva@newspring.cc"
     },
     Location: {
       Street1: "1 Linwa Blvd",
@@ -408,18 +410,18 @@ it("creates a financial payment", () => {
       City: "Anderson",
       State: "SC",
       PostalCode: "29621",
-      Country: undefined,
+      Country: undefined
     },
     TransactionDetails: [],
-    ScheduledTransaction: {},
+    ScheduledTransaction: {}
   };
   FinancialBatchTable.find.mockReturnValueOnce(Promise.resolve([]));
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
   Person.find.mockReturnValueOnce(
     Promise.resolve([
       { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-    ]),
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } }
+    ])
   );
   GroupLocation.find.mockReturnValueOnce(Promise.resolve([]));
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
@@ -427,27 +429,29 @@ it("creates a financial payment", () => {
 
   return submit(sample).then(() => {
     expect(FinancialPaymentDetail.post).toBeCalledWith(
-      assign(sample.PaymentDetail, { CreatedByPersonAliasId: 1 }),
+      assign(sample.PaymentDetail, { CreatedByPersonAliasId: 1 })
     );
   });
 });
 
-xit("it batches the rest of the actions if failure on creating a finanical payment");
+xit(
+  "it batches the rest of the actions if failure on creating a finanical payment"
+);
 
 it("attaches the ScheduledTransactionId if needed", () => {
   const sample = {
     Transaction: {
-      TransactionCode: "1",
+      TransactionCode: "1"
     },
     PaymentDetail: {
       AccountNumberMasked: "4***********1111",
       CreditCardTypeValueId: 7,
       CurrencyTypeValueId: 156,
-      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad",
+      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad"
     },
     Person: {
       LastName: "Cenva",
-      Email: "norma.cenva@newspring.cc",
+      Email: "norma.cenva@newspring.cc"
     },
     Location: {
       Street1: "1 Linwa Blvd",
@@ -455,21 +459,21 @@ it("attaches the ScheduledTransactionId if needed", () => {
       City: "Anderson",
       State: "SC",
       PostalCode: "29621",
-      Country: undefined,
+      Country: undefined
     },
     TransactionDetails: [{ AccountId: 138 }, { AccountId: 128 }],
     CampusId: 1,
     ScheduledTransaction: {
-      GatewayScheduleId: "19",
-    },
+      GatewayScheduleId: "19"
+    }
   };
   FinancialBatchTable.find.mockReturnValueOnce(Promise.resolve([]));
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
   Person.find.mockReturnValueOnce(
     Promise.resolve([
       { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-    ]),
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } }
+    ])
   );
   GroupLocation.find.mockReturnValueOnce(Promise.resolve([]));
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
@@ -478,20 +482,20 @@ it("attaches the ScheduledTransactionId if needed", () => {
   FinancialAccount.findOne.mockReturnValueOnce(Promise.resolve(120));
   ScheduledTransaction.findOne.mockReturnValueOnce(
     Promise.resolve({
-      Id: 24,
-    }),
+      Id: 24
+    })
   );
   return submit(sample).then(() => {
     expect(ScheduledTransaction.findOne).toBeCalledWith({
-      where: sample.ScheduledTransaction,
+      where: sample.ScheduledTransaction
     });
     expect(Transaction.post).toBeCalledWith(
       assign(sample.Transaction, {
         AuthorizedPersonAliasId: 1,
         CreatedByPersonAliasId: 1,
         FinancialPaymentDetailId: 5,
-        ScheduledTransactionId: 24,
-      }),
+        ScheduledTransactionId: 24
+      })
     );
   });
 });
@@ -499,18 +503,18 @@ it("attaches the ScheduledTransactionId if needed", () => {
 it("logs an error if missing a schedule in Rock", () => {
   const sample = {
     Transaction: {
-      TransactionCode: "1",
+      TransactionCode: "1"
     },
     PaymentDetail: {
       AccountNumberMasked: "4***********1111",
       CreditCardTypeValueId: 7,
       CurrencyTypeValueId: 156,
-      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad",
+      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad"
     },
     Person: {
       Id: 1,
       LastName: "Cenva",
-      Email: "norma.cenva@newspring.cc",
+      Email: "norma.cenva@newspring.cc"
     },
     Location: {
       Street1: "1 Linwa Blvd",
@@ -518,21 +522,21 @@ it("logs an error if missing a schedule in Rock", () => {
       City: "Anderson",
       State: "SC",
       PostalCode: "29621",
-      Country: undefined,
+      Country: undefined
     },
     TransactionDetails: [{ AccountId: 138 }, { AccountId: 128 }],
     CampusId: 1,
     ScheduledTransaction: {
-      GatewayScheduleId: "19",
-    },
+      GatewayScheduleId: "19"
+    }
   };
   FinancialBatchTable.find.mockReturnValueOnce(Promise.resolve([]));
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
   Person.find.mockReturnValueOnce(
     Promise.resolve([
       { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-    ]),
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } }
+    ])
   );
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
   Transaction.post.mockReturnValueOnce(Promise.resolve(100));
@@ -543,7 +547,7 @@ it("logs an error if missing a schedule in Rock", () => {
   console.error = jest.fn();
   return submit(sample).then(() => {
     expect(ScheduledTransaction.findOne).toBeCalledWith({
-      where: sample.ScheduledTransaction,
+      where: sample.ScheduledTransaction
     });
     expect(console.error.mock.calls[0]).toMatchSnapshot();
     console.error = originalError;
@@ -551,8 +555,8 @@ it("logs an error if missing a schedule in Rock", () => {
       assign(sample.Transaction, {
         AuthorizedPersonAliasId: 1,
         CreatedByPersonAliasId: 1,
-        FinancialPaymentDetailId: 5,
-      }),
+        FinancialPaymentDetailId: 5
+      })
     );
   });
 });
@@ -560,17 +564,17 @@ it("logs an error if missing a schedule in Rock", () => {
 it("creates a FinancialTransaction", () => {
   const sample = {
     Transaction: {
-      TransactionCode: "1",
+      TransactionCode: "1"
     },
     PaymentDetail: {
       AccountNumberMasked: "4***********1111",
       CreditCardTypeValueId: 7,
       CurrencyTypeValueId: 156,
-      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad",
+      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad"
     },
     Person: {
       LastName: "Cenva",
-      Email: "norma.cenva@newspring.cc",
+      Email: "norma.cenva@newspring.cc"
     },
     Location: {
       Street1: "1 Linwa Blvd",
@@ -578,18 +582,18 @@ it("creates a FinancialTransaction", () => {
       City: "Anderson",
       State: "SC",
       PostalCode: "29621",
-      Country: undefined,
+      Country: undefined
     },
     TransactionDetails: [],
-    ScheduledTransaction: {},
+    ScheduledTransaction: {}
   };
   FinancialBatchTable.find.mockReturnValueOnce(Promise.resolve([]));
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
   Person.find.mockReturnValueOnce(
     Promise.resolve([
       { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-    ]),
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } }
+    ])
   );
   GroupLocation.find.mockReturnValueOnce(Promise.resolve([]));
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
@@ -600,8 +604,8 @@ it("creates a FinancialTransaction", () => {
       assign(sample.Transaction, {
         AuthorizedPersonAliasId: 1,
         CreatedByPersonAliasId: 1,
-        FinancialPaymentDetailId: 5,
-      }),
+        FinancialPaymentDetailId: 5
+      })
     );
   });
 });
@@ -611,17 +615,17 @@ xit("it batches the rest of the actions if failure on creating a transaction");
 it("creates TransactionDetail entities", () => {
   const sample = {
     Transaction: {
-      TransactionCode: "1",
+      TransactionCode: "1"
     },
     PaymentDetail: {
       AccountNumberMasked: "4***********1111",
       CreditCardTypeValueId: 7,
       CurrencyTypeValueId: 156,
-      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad",
+      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad"
     },
     Person: {
       LastName: "Cenva",
-      Email: "norma.cenva@newspring.cc",
+      Email: "norma.cenva@newspring.cc"
     },
     Location: {
       Street1: "1 Linwa Blvd",
@@ -629,19 +633,19 @@ it("creates TransactionDetail entities", () => {
       City: "Anderson",
       State: "SC",
       PostalCode: "29621",
-      Country: undefined,
+      Country: undefined
     },
     TransactionDetails: [{ AccountId: 138 }, { AccountId: 128 }],
     CampusId: 1,
-    ScheduledTransaction: {},
+    ScheduledTransaction: {}
   };
   FinancialBatchTable.find.mockReturnValueOnce(Promise.resolve([]));
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
   Person.find.mockReturnValueOnce(
     Promise.resolve([
       { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-    ]),
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } }
+    ])
   );
   GroupLocation.find.mockReturnValueOnce(Promise.resolve([]));
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));
@@ -654,16 +658,16 @@ it("creates TransactionDetail entities", () => {
       assign(sample.TransactionDetails[0], {
         TransactionId: 100,
         CreatedByPersonAliasId: 1,
-        AccountId: 180,
-      }),
+        AccountId: 180
+      })
     );
 
     expect(TransactionDetail.post).toBeCalledWith(
       assign(sample.TransactionDetails[1], {
         TransactionId: 100,
         CreatedByPersonAliasId: 1,
-        AccountId: 120,
-      }),
+        AccountId: 120
+      })
     );
   });
 });
@@ -674,17 +678,17 @@ it("returns the FinancialTransactionId", () => {
   const sample = {
     Transaction: {
       TransactionCode: "1",
-      TransactionDateTime: "2017-10-16 11:53:32.240",
+      TransactionDateTime: "2017-10-16 11:53:32.240"
     },
     PaymentDetail: {
       AccountNumberMasked: "4***********1111",
       CreditCardTypeValueId: 7,
       CurrencyTypeValueId: 156,
-      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad",
+      Guid: "a31044f3-d721-47b2-a91d-e58ac41832ad"
     },
     Person: {
       LastName: "Cenva",
-      Email: "norma.cenva@newspring.cc",
+      Email: "norma.cenva@newspring.cc"
     },
     Location: {
       Street1: "1 Linwa Blvd",
@@ -692,19 +696,19 @@ it("returns the FinancialTransactionId", () => {
       City: "Anderson",
       State: "SC",
       PostalCode: "29621",
-      Country: undefined,
+      Country: undefined
     },
     TransactionDetails: [{ AccountId: 138 }, { AccountId: 128 }],
     CampusId: 1,
-    ScheduledTransaction: {},
+    ScheduledTransaction: {}
   };
   FinancialBatchTable.find.mockReturnValueOnce(Promise.resolve([]));
   Transaction.find.mockReturnValueOnce(Promise.resolve([]));
   Person.find.mockReturnValueOnce(
     Promise.resolve([
       { Id: 1, FirstName: "Norma", PersonAlias: { Id: 1 } },
-      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } },
-    ]),
+      { Id: 2, FirstName: "Tissa", PersonAlias: { Id: 2 } }
+    ])
   );
   GroupLocation.find.mockReturnValueOnce(Promise.resolve([]));
   FinancialPaymentDetail.post.mockReturnValueOnce(Promise.resolve(5));

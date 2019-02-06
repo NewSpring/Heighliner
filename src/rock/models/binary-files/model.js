@@ -4,7 +4,7 @@ import { defaultCache } from "../../../util/cache";
 import { createGlobalId } from "../../../util";
 
 import {
-  BinaryFile as BinaryFileTable,
+  BinaryFile as BinaryFileTable
   // Location as LocationTable, // XXX move to its own model
 } from "./tables";
 
@@ -62,7 +62,7 @@ export class BinaryFile extends Rock {
   async attachPhotoIdToUser({ personId, previousPhotoId, newPhotoId } = {}) {
     try {
       await api.patch(`/People/${personId}`, {
-        PhotoId: newPhotoId,
+        PhotoId: newPhotoId
       });
       if (!isEmpty(previousPhotoId)) {
         try {
@@ -76,5 +76,5 @@ export class BinaryFile extends Rock {
 }
 
 export default {
-  BinaryFile,
+  BinaryFile
 };

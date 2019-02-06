@@ -2,7 +2,6 @@ import { graphqlExpress as apolloExpress } from "apollo-server-express";
 import { timeout } from "promise-timeout";
 import Raven, { parsers } from "raven";
 import { makeExecutableSchema } from "graphql-tools";
-import OpticsAgent from "optics-agent";
 
 import Node from "../util/node/model";
 import { createCache } from "../util/cache";
@@ -11,18 +10,18 @@ import { createSchema, loadApplications, getIp } from "../util/heighliner";
 // Import Apollos
 import Apollos, {
   queries as ApollosQueries,
-  mutations as ApollosMutations,
+  mutations as ApollosMutations
 } from "../apollos";
 
 // Import Rock
 import Rock, {
   queries as RockQueries,
-  mutations as RockMutations,
+  mutations as RockMutations
 } from "../rock";
 
 // Import Expression Engine
 import ExpressionEngine, {
-  queries as ExpressionEngineQueries,
+  queries as ExpressionEngineQueries
 } from "../expression-engine";
 
 // Import Google Site Search
@@ -38,7 +37,7 @@ let { schema, models, resolvers } = loadApplications({
   ExpressionEngine,
   Rock,
   GoogleSS,
-  ESV,
+  ESV
 });
 
 // join all application queries and generate base query
@@ -48,25 +47,22 @@ schema = createSchema({
     ...ExpressionEngineQueries,
     ...RockQueries,
     ...GoogleSSQueries,
-    ...ESVQueries,
+    ...ESVQueries
   ],
-  mutations: [
-    ...ApollosMutations,
-    ...RockMutations,
-  ],
-  schema,
+  mutations: [...ApollosMutations, ...RockMutations],
+  schema
 });
 
 const executabledSchema = makeExecutableSchema({
   typeDefs: schema,
   resolvers,
-  allowUndefinedInResolve: true, // required for resolvers
+  allowUndefinedInResolve: true // required for resolvers
 });
 
 export function createModels({ cache }) {
   // create all of the models on app start up
   const createdModels = {};
-  Object.keys(models).forEach((name) => {
+  Object.keys(models).forEach(name => {
     createdModels[name] = new models[name]({ cache });
   });
 
@@ -74,10 +70,10 @@ export function createModels({ cache }) {
   return createdModels;
 }
 
-export default function (app, monitor) {
+export default function(app, monitor) {
   const datadog = monitor && monitor.datadog;
 
-  const graphql = async (request) => {
+  const graphql = async request => {
     let cache;
     // connect to all dbs
     await Promise.all([
@@ -86,7 +82,7 @@ export default function (app, monitor) {
       ExpressionEngine.connect({ datadog }),
       Rock.connect({ datadog }),
       GoogleSS.connect(),
-      ESV.connect(),
+      ESV.connect()
     ]).then(([REDIS]) => {
       cache = REDIS;
     });
@@ -111,7 +107,7 @@ export default function (app, monitor) {
       authToken: request.headers.authorization,
       cache,
       ip,
-      req: request,
+      req: request
     };
 
     if (context.authToken) {
@@ -121,14 +117,17 @@ export default function (app, monitor) {
         if (context.authToken.indexOf("::") < 0) {
           context.authToken = `::${context.authToken}`;
         }
+
         context.user = await timeout(createdModels.User.getByBasicAuth(context.authToken), 5000);
         const person = await timeout(
-          createdModels.User.getUserProfile(context.user.PersonId), 5000);
+          createdModels.User.getUserProfile(context.user.PersonId),
+          5000
+        );
 
         context.person = await timeout(
-          createdModels.Person.getFromAliasId(
-            person.PrimaryAliasId,
-          ), 5000);
+          createdModels.Person.getFromAliasId(person.PrimaryAliasId),
+          5000
+        );
       } catch (e) {
         /* tslint:disable-line */
       }
@@ -140,7 +139,7 @@ export default function (app, monitor) {
       if (context.person) {
         sentry.setUserContext({
           email: context.person.Email,
-          id: context.person.PersonId,
+          id: context.person.PersonId
         });
       }
     }
@@ -148,11 +147,11 @@ export default function (app, monitor) {
     return {
       context: {
         ...context,
-        ...{ models: createdModels },
+        ...{ models: createdModels }
       },
-      tracing: (process.env.NODE_ENV === "production"),
+      tracing: process.env.NODE_ENV === "production",
       schema: executabledSchema,
-      formatError: (error) => {
+      formatError: error => {
         if (process.env.NODE_ENV === "production") {
           if (datadog) datadog.increment("graphql.error");
           context.sentry.captureError(error, parsers.parseRequest(request));
@@ -160,9 +159,9 @@ export default function (app, monitor) {
         return {
           message: error.message,
           locations: error.locations,
-          stack: error.stack,
+          stack: error.stack
         };
-      },
+      }
     };
   };
 

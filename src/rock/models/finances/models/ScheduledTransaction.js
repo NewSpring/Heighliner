@@ -1,11 +1,10 @@
-
 import { createGlobalId } from "../../../../util";
 import nmi from "../util/nmi";
 
 import {
   Transaction as TransactionTable,
   ScheduledTransaction as ScheduledTransactionTable,
-  ScheduledTransactionDetail,
+  ScheduledTransactionDetail
 } from "../tables";
 
 import { Rock } from "../../system";
@@ -65,18 +64,20 @@ export default class ScheduledTransaction extends Rock {
       },
     };
 
-
     return nmi(payload, gatewayDetails)
-      .catch((error) => {
+      .catch(error => {
         // If this schedule isn't in NMI, go ahead and clean up Rock
         if (
           !/Transaction not found/.test(error.message) &&
           !/No recurring subscriptions found/.test(error.message)
-        ) throw error;
+        )
+          throw error;
       })
       .then(() => {
         if (existing.GatewayScheduleId) {
-          return ScheduledTransactionTable.patch(existing.Id, { IsActive: false });
+          return ScheduledTransactionTable.patch(existing.Id, {
+            IsActive: false
+          });
         }
 
         return ScheduledTransactionTable.delete(existing.Id);

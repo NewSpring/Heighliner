@@ -1,9 +1,7 @@
 import { merge, isUndefined } from "lodash";
 import { createGlobalId } from "../../../../util";
 
-import {
-  FinancialAccount as FinancialAccountTable,
-} from "../tables";
+import { FinancialAccount as FinancialAccountTable } from "../tables";
 
 import { Rock } from "../../system";
 
@@ -29,13 +27,16 @@ export default class FinancialAccount extends Rock {
       if (isUndefined(where[key])) delete where[key];
     }
     // defaults
-    where = merge({
-      ParentAccountId: null,
-      PublicDescription: {
-        $and: {
-          $ne: "",
-          $not: null,
+    where = merge(
+      {
+        ParentAccountId: null,
+        PublicDescription: {
+          $and: {
+            $ne: "",
+            $not: null
+          }
         },
+        IsTaxDeductible: true
       },
       IsTaxDeductible: true,
     }, where);
@@ -50,5 +51,4 @@ export default class FinancialAccount extends Rock {
         .then(this.getFromIds.bind(this)),
     );
   }
-
 }

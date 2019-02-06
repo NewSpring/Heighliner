@@ -5,7 +5,7 @@ import moment from "moment";
 import { createGlobalId } from "../../../../util";
 import {
   SavedPayment as SavedPaymentTable,
-  FinancialPaymentDetail as FinancialPaymentDetailTable,
+  FinancialPaymentDetail as FinancialPaymentDetailTable
 } from "../tables";
 
 import nmi from "../util/nmi";
@@ -18,7 +18,9 @@ export default class SavedPayment extends Rock {
 
   async getFromId(id, globalId) {
     globalId = globalId || createGlobalId(id, this.__type);
-    return this.cache.get(globalId, () => SavedPaymentTable.find({ where: { Id: id } }));
+    return this.cache.get(globalId, () =>
+      SavedPaymentTable.find({ where: { Id: id } })
+    );
   }
 
   async delFromCache(id) {
@@ -29,8 +31,8 @@ export default class SavedPayment extends Rock {
     const complete = {
       "complete-action": {
         "api-key": gatewayDetails.SecurityKey,
-        "token-id": token,
-      },
+        "token-id": token
+      }
     };
 
     return nmi(complete, gatewayDetails);
@@ -42,7 +44,7 @@ export default class SavedPayment extends Rock {
     return this.charge(token, gatewayDetails).then(response => ({
       code: response["result-code"],
       success: true,
-      error: null,
+      error: null
     }));
   }
 
@@ -51,7 +53,7 @@ export default class SavedPayment extends Rock {
     if (!person) throw new Error("Must be signed in to save a payment");
 
     return this.charge(token, gatewayDetails)
-      .then((response) => {
+      .then(response => {
         let FinancialPaymentDetail = {};
         if (response.billing["cc-number"]) {
           FinancialPaymentDetail = {
@@ -59,14 +61,16 @@ export default class SavedPayment extends Rock {
             CurrencyTypeValueId: 156,
             CreditCardTypeValueId: getCardType(response.billing["cc-number"]),
             ExpirationMonthEncrypted:
-              response.billing["cc-exp"] && response.billing["cc-exp"].slice(0, 2),
+              response.billing["cc-exp"] &&
+              response.billing["cc-exp"].slice(0, 2),
             ExpirationYearEncrypted:
-              response.billing["cc-exp"] && response.billing["cc-exp"].slice(2, 4),
+              response.billing["cc-exp"] &&
+              response.billing["cc-exp"].slice(2, 4)
           };
         } else {
           FinancialPaymentDetail = {
             AccountNumberMasked: response.billing["account-number"],
-            CurrencyTypeValueId: 157,
+            CurrencyTypeValueId: 157
           };
         }
 
@@ -80,15 +84,15 @@ export default class SavedPayment extends Rock {
           PersonAliasId: person.PrimaryAliasId,
           FinancialGatewayId: gatewayDetails.Id,
           CreatedByPersonAliasId: person.PrimaryAliasId,
-          ModifiedByPersonAliasId: person.PrimaryAliasId,
+          ModifiedByPersonAliasId: person.PrimaryAliasId
         };
 
         return FinancialPaymentDetailTable.post(FinancialPaymentDetail)
-          .then((response) => {
+          .then(response => {
             FinancialPersonSavedAccounts.FinancialPaymentDetailId = response;
             return SavedPaymentTable.post(FinancialPersonSavedAccounts);
           })
-          .then((savedPaymentId) => {
+          .then(savedPaymentId => {
             this.delFromCache(savedPaymentId);
             return { savedPaymentId };
           });
@@ -103,10 +107,11 @@ export default class SavedPayment extends Rock {
     let existing = await this.getFromId(entityId);
     if (existing && existing.length) existing = existing[0];
 
-    if (!existing || !existing.Id) return Promise.resolve({ error: "No saved account found" });
+    if (!existing || !existing.Id)
+      return Promise.resolve({ error: "No saved account found" });
 
     return SavedPaymentTable.delete(existing.Id)
-      .then((response) => {
+      .then(response => {
         if (response.status > 300) return response;
         if (!existing.ReferenceNumber) return response;
 
@@ -117,10 +122,10 @@ export default class SavedPayment extends Rock {
           {
             "delete-customer": {
               "api-key": gatewayDetails.SecurityKey,
-              "customer-vault-id": existing.ReferenceNumber,
-            },
+              "customer-vault-id": existing.ReferenceNumber
+            }
           },
-          gatewayDetails,
+          gatewayDetails
         );
       })
       .then(x => ({ ...x, ...{ Id: entityId } }))
@@ -144,28 +149,32 @@ export default class SavedPayment extends Rock {
 
     const paymentMethods = await this.findByPersonAlias(aliases);
     const paymentMethodIds = paymentMethods.map(
-      ({ FinancialPaymentDetailId }) => FinancialPaymentDetailId,
+      ({ FinancialPaymentDetailId }) => FinancialPaymentDetailId
     );
 
-    const expiringPaymentMethodDetails = await FinancialPaymentDetailTable.find({
-      where: {
-        Id: {
-          $in: paymentMethodIds,
+    const expiringPaymentMethodDetails = await FinancialPaymentDetailTable.find(
+      {
+        where: {
+          Id: {
+            $in: paymentMethodIds
+          },
+          $or: [
+            {
+              ExpirationYearEncrypted: nextMonth.format("YY"),
+              ExpirationMonthEncrypted: nextMonth.format("MM")
+            },
+            {
+              ExpirationYearEncrypted: thisMonth.format("YY"),
+              ExpirationMonthEncrypted: thisMonth.format("MM")
+            }
+          ]
         },
-        $or: [
-          {
-            ExpirationYearEncrypted: nextMonth.format("YY"),
-            ExpirationMonthEncrypted: nextMonth.format("MM"),
-          },
-          {
-            ExpirationYearEncrypted: thisMonth.format("YY"),
-            ExpirationMonthEncrypted: thisMonth.format("MM"),
-          },
-        ],
-      },
-      attributes: ["Id"],
-    });
-    const expiringPaymentMethodDetailIds = expiringPaymentMethodDetails.map(({ Id }) => Id);
+        attributes: ["Id"]
+      }
+    );
+    const expiringPaymentMethodDetailIds = expiringPaymentMethodDetails.map(
+      ({ Id }) => Id
+    );
 
     return await this.cache
       .get(
@@ -176,22 +185,22 @@ export default class SavedPayment extends Rock {
               $and: [
                 {
                   PersonAliasId: {
-                    $in: aliases,
-                  },
+                    $in: aliases
+                  }
                 },
                 {
                   FinancialPaymentDetailId: {
-                    $in: expiringPaymentMethodDetailIds,
-                  },
-                },
-              ],
+                    $in: expiringPaymentMethodDetailIds
+                  }
+                }
+              ]
             },
             order: [["ModifiedDateTime", "DESC"]],
             // attributes: ["Id"],
             limit,
-            offset,
+            offset
           }),
-        { cache },
+        { cache }
       )
       .then(this.getFromIds.bind(this));
   }
@@ -208,9 +217,9 @@ export default class SavedPayment extends Rock {
             order: [["ModifiedDateTime", "DESC"]],
             // attributes: ["Id"],
             limit,
-            offset,
+            offset
           }),
-        { cache },
+        { cache }
       )
       .then(this.getFromIds.bind(this));
   }
@@ -221,9 +230,9 @@ export default class SavedPayment extends Rock {
       () =>
         SavedPaymentTable.findOne({
           where: { PersonAliasId: { $in: aliases }, Id: id },
-          order: [["ModifiedDateTime", "DESC"]],
+          order: [["ModifiedDateTime", "DESC"]]
         }),
-      { cache },
+      { cache }
     );
   }
 }

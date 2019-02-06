@@ -1,4 +1,3 @@
-
 import { GoogleConnector } from "../../fetch";
 
 class SSearch extends GoogleConnector {
@@ -10,9 +9,8 @@ class SSearch extends GoogleConnector {
     const endpoint = `${this.url}key=${this.key}&cx=${this.cx}&q=${query}`;
     return this.get(endpoint);
   }
-
-};
+}
 
 export default {
-  SSearch,
+  SSearch
 };

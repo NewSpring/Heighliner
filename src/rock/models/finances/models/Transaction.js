@@ -20,7 +20,7 @@ import {
   TransactionDetail,
   FinancialGateway,
   FinancialAccount,
-  FinancialPaymentDetail as FinancialPaymentDetailTable,
+  FinancialPaymentDetail as FinancialPaymentDetailTable
 } from "../tables";
 
 import { AttributeValue, Attribute } from "../../system/tables";
@@ -34,7 +34,7 @@ import { Rock } from "../../system";
 import TransactionJobs from "./TransactionJobs";
 
 let TransactionJob = {};
-createCache().then((cache) => {
+createCache().then(cache => {
   TransactionJob = new TransactionJobs({ cache });
 });
 
@@ -45,13 +45,17 @@ export default class Transaction extends Rock {
 
   async getFromId(id, globalId) {
     globalId = globalId || createGlobalId(id, this.__type);
-    return this.cache.get(globalId, () => TransactionTable.findOne({ where: { Id: id } }));
+    return this.cache.get(globalId, () =>
+      TransactionTable.findOne({ where: { Id: id } })
+    );
   }
 
   async getDetailsById(id) {
     // XXX this isn't an accurate global cache
     const globalId = createGlobalId(`${id}`, "FinancialTransactionDetail");
-    return this.cache.get(globalId, () => TransactionDetail.find({ where: { TransactionId: id } }));
+    return this.cache.get(globalId, () =>
+      TransactionDetail.find({ where: { TransactionId: id } })
+    );
   }
 
   async getPaymentDetailsById(id) {
@@ -60,14 +64,14 @@ export default class Transaction extends Rock {
     const globalId = createGlobalId(`${id}`, "PaymentDetail");
     return this.cache.get(globalId, () =>
       FinancialPaymentDetailTable.findOne({
-        where: { Id: id },
-      }),
+        where: { Id: id }
+      })
     );
   }
 
   async findByPersonAlias(aliases, { limit, offset }, { cache }) {
     const deductibleAccounts = await FinancialAccount.find({
-      where: { IsTaxDeductible: true },
+      where: { IsTaxDeductible: true }
     }).then(x => x.map(y => y.Id));
 
     const query = { aliases, limit, offset };
@@ -85,11 +89,11 @@ export default class Transaction extends Rock {
               {
                 model: TransactionDetail.model,
                 where: { AccountId: { $in: deductibleAccounts } },
-                attributes: [],
-              },
-            ],
+                attributes: []
+              }
+            ]
           }),
-        { cache },
+        { cache }
       )
       .then(this.getFromIds.bind(this));
   }
@@ -97,7 +101,7 @@ export default class Transaction extends Rock {
   async findByAccountType(
     { personId, id, include = [], start, end },
     { limit, offset },
-    { cache },
+    { cache }
   ) {
     if (!include.length) return null;
 
@@ -109,20 +113,20 @@ export default class Transaction extends Rock {
     if (end) TransactionDateTime.$lt = Moment(end);
 
     const ParentAccount = await FinancialAccount.find({
-      where: { ParentAccountId: id },
+      where: { ParentAccountId: id }
     }).then(x => x.map(y => y.Id));
 
     const where = {
       AuthorizedPersonAliasId: {
-        $in: include,
-      },
+        $in: include
+      }
     };
 
     const includeQuery = [
       {
         model: TransactionDetail.model,
-        where: { AccountId: { $in: ParentAccount } },
-      },
+        where: { AccountId: { $in: ParentAccount } }
+      }
     ];
 
     if (personId) {
@@ -138,11 +142,17 @@ export default class Transaction extends Rock {
               {
                 model: GroupMember.model,
                 attributes: [],
-                include: [{ model: Group.model, attributes: [], where: { Id: personId } }],
-              },
-            ],
-          },
-        ],
+                include: [
+                  {
+                    model: Group.model,
+                    attributes: [],
+                    where: { Id: personId }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       });
     }
 
@@ -155,21 +165,25 @@ export default class Transaction extends Rock {
           TransactionTable.find({
             order: [["TransactionDateTime", "DESC"]],
             where,
-            include: includeQuery,
+            include: includeQuery
           }),
-        { cache },
+        { cache }
       )
-      .then((x) => {
+      .then(x => {
         if (limit) return x.slice(offset, limit + offset);
 
         return x;
       });
   }
 
-  async findByGivingGroup({ id, include, start, end }, { limit, offset }, { cache }) {
+  async findByGivingGroup(
+    { id, include, start, end },
+    { limit, offset },
+    { cache }
+  ) {
     const query = { id, include, start, end };
     const deductibleAccounts = await FinancialAccount.find({
-      where: { IsTaxDeductible: true },
+      where: { IsTaxDeductible: true }
     }).then(x => x.map(y => y.Id));
 
     let TransactionDateTime;
@@ -187,29 +201,39 @@ export default class Transaction extends Rock {
             order: [["TransactionDateTime", "DESC"]],
             where: TransactionDateTime ? [{ TransactionDateTime }] : null,
             include: [
-              { model: TransactionDetail.model, where: { AccountId: { $in: deductibleAccounts } } },
+              {
+                model: TransactionDetail.model,
+                where: { AccountId: { $in: deductibleAccounts } }
+              },
               {
                 model: PersonAlias.model,
                 include: [
                   {
                     model: PersonTable.model,
-                    where: include && include.length ? { Id: { $in: include } } : null,
+                    where:
+                      include && include.length
+                        ? { Id: { $in: include } }
+                        : null,
                     include: [
                       {
                         model: GroupMember.model,
                         include: [
-                          { model: Group.model, attributes: [], where: { Id: Number(id) } },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
+                          {
+                            model: Group.model,
+                            attributes: [],
+                            where: { Id: Number(id) }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }),
-        { cache },
+        { cache }
       )
-      .then((x) => {
+      .then(x => {
         if (!limit) return x;
         return x.slice(offset, limit + offset);
       })
@@ -225,7 +249,7 @@ export default class Transaction extends Rock {
     if (end) TransactionDateTime.$lt = Moment(end);
 
     const deductibleAccounts = await FinancialAccount.find({
-      where: { IsTaxDeductible: true },
+      where: { IsTaxDeductible: true }
     }).then(x => x.map(y => y.Id));
 
     const where = {};
@@ -235,7 +259,7 @@ export default class Transaction extends Rock {
         model: TransactionDetail.model,
         attributes: ["Amount", "AccountId"],
         where: { AccountId: { $in: deductibleAccounts } },
-        include: [{ model: FinancialAccount.model }],
+        include: [{ model: FinancialAccount.model }]
       },
       {
         model: PersonAlias.model,
@@ -249,19 +273,29 @@ export default class Transaction extends Rock {
               {
                 model: GroupMember.model,
                 attributes: [],
-                include: [{ model: Group.model, attributes: [], where: { Id: givingGroupId } }],
-              },
-            ],
-          },
-        ],
-      },
+                include: [
+                  {
+                    model: Group.model,
+                    attributes: [],
+                    where: { Id: givingGroupId }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     ];
 
     if (start) where.TransactionDateTime = TransactionDateTime;
 
-    const ParentAccounts = await FinancialAccount.find({ where: { ParentAccountId: null } });
-    const getName = (x) => {
-      const parent = find(ParentAccounts, { Id: x.FinancialAccount.ParentAccountId });
+    const ParentAccounts = await FinancialAccount.find({
+      where: { ParentAccountId: null }
+    });
+    const getName = x => {
+      const parent = find(ParentAccounts, {
+        Id: x.FinancialAccount.ParentAccountId
+      });
       if (parent) return parent.PublicName;
       return x.FinancialAccount.PublicName;
     };
@@ -272,32 +306,33 @@ export default class Transaction extends Rock {
           order: [["TransactionDateTime", "DESC"]],
           attributes: ["TransactionDateTime"],
           where,
-          include: includeQuery,
-        }),
+          include: includeQuery
+        })
       )
-      .then((transactions) => {
+      .then(transactions => {
         let total = 0;
         let details;
         if (!Array.isArray(transactions)) {
           details = [];
         } else {
           details = flatten(
-            transactions.map(({ TransactionDateTime, FinancialTransactionDetails }) =>
-              FinancialTransactionDetails.map((x) => {
-                total += x.Amount;
-                return {
-                  Amount: x.Amount,
-                  Date: Moment(TransactionDateTime).format("MMM D, YYYY"),
-                  Name: getName(x),
-                };
-              }),
-            ),
+            transactions.map(
+              ({ TransactionDateTime, FinancialTransactionDetails }) =>
+                FinancialTransactionDetails.map(x => {
+                  total += x.Amount;
+                  return {
+                    Amount: x.Amount,
+                    Date: Moment(TransactionDateTime).format("MMM D, YYYY"),
+                    Name: getName(x)
+                  };
+                })
+            )
           );
         }
 
         return {
           transactions: details,
-          total,
+          total
         };
       })
       .catch(this.debug);
@@ -319,18 +354,24 @@ export default class Transaction extends Rock {
           model: Attribute.model,
           where: {
             key: {
-              $in: ["AdminUsername", "AdminPassword", "APIUrl", "QueryUrl", "SecurityKey"],
-            },
-          },
-        },
-      ],
+              $in: [
+                "AdminUsername",
+                "AdminPassword",
+                "APIUrl",
+                "QueryUrl",
+                "SecurityKey"
+              ]
+            }
+          }
+        }
+      ]
     })
       .then(x => x.map(y => ({ value: y.Value, key: y.Attribute.Key })))
       .then(x =>
         x.reduce((y, z, index) => {
           if (index === 1) return { [y.key]: y.value, [z.key]: z.value };
           return assign(y, { [z.key]: z.value });
-        }),
+        })
       );
 
     this.gateway = assign(gateways, attributes, {
@@ -349,10 +390,10 @@ export default class Transaction extends Rock {
       assign(
         {
           username: gateway.AdminUsername,
-          password: gateway.AdminPassword,
+          password: gateway.AdminPassword
         },
-        args,
-      ),
+        args
+      )
     );
 
     const url = `${gateway.QueryUrl}?${querystring}`;
@@ -367,9 +408,9 @@ export default class Transaction extends Rock {
               (err, result) => {
                 if (err) f(err);
                 if (!err) a(result);
-              },
+              }
             );
-          }),
+          })
       )
       .then(x => x && x.nm_response && x.nm_response.transaction)
       .then(x => (isArray(x) ? x : [x]))
@@ -384,14 +425,18 @@ export default class Transaction extends Rock {
     const complete = {
       "complete-action": {
         "api-key": gatewayDetails.SecurityKey,
-        "token-id": token,
-      },
+        "token-id": token
+      }
     };
 
     return nmi(complete, gatewayDetails);
   };
 
-  async createOrder({ data, instant, id, ip, requestUrl, origin }, person, models) {
+  async createOrder(
+    { data, instant, id, ip, requestUrl, origin },
+    person,
+    models
+  ) {
     if (!data) return Promise.reject(new Error("No data provided"));
 
     const gateway = await this.loadGatewayDetails(`${process.env.NMI_GATEWAY}`);
@@ -406,7 +451,10 @@ export default class Transaction extends Rock {
     if (orderData["start-date"]) method = "add-subscription";
 
     if (orderData.product && orderData.product.length) {
-      orderData.product = orderData.product.map(x => ({ ...x, "unit-cost": x["total-amount"] }));
+      orderData.product = orderData.product.map(x => ({
+        ...x,
+        "unit-cost": x["total-amount"]
+      }));
     }
 
     if (
@@ -421,7 +469,9 @@ export default class Transaction extends Rock {
     // XXX we should probably error out if they expect a saved account but we don't find one?
     if (orderData.savedAccount) {
       // XXX lookup only based on logged in status
-      const accountDetails = await SavedPayment.findOne({ where: { Id: orderData.savedAccount } });
+      const accountDetails = await SavedPayment.findOne({
+        where: { Id: orderData.savedAccount }
+      });
 
       delete orderData.savedAccount;
       delete orderData.savedAccountName;
@@ -431,8 +481,13 @@ export default class Transaction extends Rock {
         orderData["customer-vault-id"] = accountDetails.ReferenceNumber;
       } else {
         // ERROR IF ACCOUNT DETAILS OR REFERENCE NUMBER IS MISSING
-        if (!accountDetails) report({ data }, new Error("Account details lookup failed"));
-        else report({ data }, new Error("Account Details doesn't have a reference number"));
+        if (!accountDetails)
+          report({ data }, new Error("Account details lookup failed"));
+        else
+          report(
+            { data },
+            new Error("Account Details doesn't have a reference number")
+          );
       }
     }
 
@@ -444,12 +499,15 @@ export default class Transaction extends Rock {
       if (!orderData["customer-vault-id"]) orderData["cvv-reject"] = "P|N|S|U";
     }
 
-    if (!orderData["customer-vault-id"] && method === "sale") orderData["add-customer"] = "";
+    if (!orderData["customer-vault-id"] && method === "sale")
+      orderData["add-customer"] = "";
     if (orderData["customer-vault-id"] && method === "add-subscription") {
       delete orderData["redirect-url"];
     }
 
-    const generatedId = `apollos_${Date.now()}_${Math.ceil(Math.random() * 100000)}`;
+    const generatedId = `apollos_${Date.now()}_${Math.ceil(
+      Math.random() * 100000
+    )}`;
     if (method !== "add-customer") {
       (orderData["order-description"] = "Online contribution from Apollos"),
         (orderData["order-id"] = generatedId || orderData.orderId);
@@ -458,8 +516,8 @@ export default class Transaction extends Rock {
     const order = {
       [method]: {
         ...{ "api-key": gateway.SecurityKey },
-        ...orderData,
-      },
+        ...orderData
+      }
     };
 
     if (order && order[method]) {
@@ -467,34 +525,47 @@ export default class Transaction extends Rock {
         if (!order[method]["merchant-defined-field-1"]) {
           report(
             { data },
-            new Error("merchant-defined-field-1 missing from subscription order information"),
+            new Error(
+              "merchant-defined-field-1 missing from subscription order information"
+            )
           );
         }
       }
       if (!order[method]["merchant-defined-field-2"]) {
         if (person && models) {
           const missingCampus = await models.Person.getCampusFromId(person.Id);
-          order[method]["merchant-defined-field-2"] = missingCampus ? missingCampus.Id : 20;
+          order[method]["merchant-defined-field-2"] = missingCampus
+            ? missingCampus.Id
+            : 20;
         }
-        report({ data }, new Error("merchant-defined-field-2 missing from order information"));
+        report(
+          { data },
+          new Error("merchant-defined-field-2 missing from order information")
+        );
       }
     } else {
       report({ data }, new Error("missing order or order method"));
     }
 
     return nmi(order, gateway)
-      .then((data) => {
+      .then(data => {
         if (!instant) return data;
         const scheduleId = id;
-        const response = formatTransaction({ scheduleId, response: data, person, origin }, gateway);
+        const response = formatTransaction(
+          { scheduleId, response: data, person, origin },
+          gateway
+        );
 
         if (!response || !response.Campus || !response.Campus.Id) {
           report({ data }, new Error("missing response campus id"));
         }
         if (response && Array.isArray(response.TransactionDetails)) {
-          response.TransactionDetails.map((detail) => {
+          response.TransactionDetails.map(detail => {
             if (!detail || !detail.AccountId) {
-              report({ data }, new Error("A TransactionDetail object is missing accountId"));
+              report(
+                { data },
+                new Error("A TransactionDetail object is missing accountId")
+              );
             }
           });
         }
@@ -506,14 +577,24 @@ export default class Transaction extends Rock {
         success: data.result === 1,
         code: data["result-code"],
         url: data["form-url"],
-        transactionId: data["transaction-id"],
+        transactionId: data["transaction-id"]
       }))
       .catch(e => ({ error: e.message, code: e.code }));
   }
 
-  async completeOrder({ scheduleId, token, person, accountName, origin, platform, version }) {
+  async completeOrder({
+    scheduleId,
+    token,
+    person,
+    accountName,
+    origin,
+    platform,
+    version
+  }) {
     try {
-      const gatewayDetails = await this.loadGatewayDetails(`${process.env.NMI_GATEWAY}`);
+      const gatewayDetails = await this.loadGatewayDetails(
+        `${process.env.NMI_GATEWAY}`
+      );
       const response = await this.charge(token, gatewayDetails);
       const transaction = formatTransaction(
         {
@@ -521,28 +602,33 @@ export default class Transaction extends Rock {
           response,
           person,
           accountName,
-          origin,
+          origin
         },
-        gatewayDetails,
+        gatewayDetails
       );
 
       const transactionJob = { ...transaction, platform, version };
       this.TransactionJob.add(transactionJob);
 
       if (accountName) {
-        const savedPaymentResult = await this.TransactionJob.createSavedPayment(transactionJob);
+        const savedPaymentResult = await this.TransactionJob.createSavedPayment(
+          transactionJob
+        );
         return {
           ...transaction,
-          savedPaymentId: get(savedPaymentResult, "FinancialPersonSavedAccount.Id"),
+          savedPaymentId: get(
+            savedPaymentResult,
+            "FinancialPersonSavedAccount.Id"
+          ),
           code: 200,
-          success: true,
+          success: true
         };
       }
 
       return {
         ...transaction,
         code: 200,
-        success: true,
+        success: true
       };
     } catch ({ message, code }) {
       return { error: message, code, success: false };

@@ -13,21 +13,21 @@ import {
   GroupLocation as GroupLocationTable,
   GroupType,
   GroupTypeRole,
-  Schedule as ScheduleTable,
+  Schedule as ScheduleTable
 } from "./tables";
 
 import { Person as PersonTable } from "../people/tables";
 
 import {
   Campus as CampusTable,
-  Location as LocationTable,
+  Location as LocationTable
 } from "../campuses/tables";
 
 import {
   DefinedValue,
   Attribute,
   AttributeValue,
-  EntityType,
+  EntityType
 } from "../system/tables";
 
 import { Rock } from "../system";
@@ -52,11 +52,11 @@ export class Group extends Rock {
             { model: GroupType.model, where: { Id: 25 }, attributes: [] },
             {
               model: AttributeValue.model,
-              include: [{ model: Attribute.model }],
-            },
-          ],
+              include: [{ model: Attribute.model }]
+            }
+          ]
         }),
-      { cache: false },
+      { cache: false }
     ); // XXX make this per request somehow
   }
 
@@ -67,9 +67,9 @@ export class Group extends Rock {
         where: { Id: id },
         include: [
           { model: GroupType.model, attributes: [] },
-          { model: AttributeValue.model, include: [{ model: Attribute.model }] },
-        ],
-      }),
+          { model: AttributeValue.model, include: [{ model: Attribute.model }] }
+        ]
+      })
     );
   }
 
@@ -77,8 +77,8 @@ export class Group extends Rock {
     return this.cache.get(`${id}:GroupMemberFromGroupId}`, () =>
       GroupMemberTable.find({
         where: { GroupId: id },
-        include: [{ model: GroupTypeRole.model }],
-      }),
+        include: [{ model: GroupTypeRole.model }]
+      })
     );
   }
 
@@ -87,8 +87,8 @@ export class Group extends Rock {
     const globalId = createGlobalId(`${Id}`, "Location");
     return this.cache.get(globalId, () =>
       LocationTable.findOne({
-        where: { Id },
-      }).then((x) => {
+        where: { Id }
+      }).then(x => {
         const loc = x;
         if (!loc.GeoPoint) return loc;
         try {
@@ -99,7 +99,7 @@ export class Group extends Rock {
         } catch (e) {
           return loc;
         }
-      }),
+      })
     ); // XXX figure out how to cache geopoints
   }
 
@@ -108,8 +108,8 @@ export class Group extends Rock {
     const globalId = createGlobalId(`${Id}`, "Schedule");
     return this.cache.get(globalId, () =>
       ScheduleTable.findOne({
-        where: { Id },
-      }),
+        where: { Id }
+      })
     );
   }
 
@@ -117,8 +117,8 @@ export class Group extends Rock {
     const globalId = createGlobalId(`${id}`, "GroupLocationsFromGroupId");
     return this.cache.get(globalId, () =>
       GroupLocationTable.find({
-        where: { GroupId: id },
-      }),
+        where: { GroupId: id }
+      })
     );
   }
 
@@ -131,20 +131,20 @@ export class Group extends Rock {
       // XXX type check lat and lng for sql injection
       // tslint:disable-next-line
       order = Sequelize.literal(
-        `[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326)) ASC`,
+        `[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326)) ASC`
       );
 
       distance = [
         // tslint:disable-next-line
         Sequelize.literal(
-          `[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326))`,
+          `[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326))`
         ),
-        "Distance",
+        "Distance"
       ];
     }
 
     const $or = attributes.map(x => ({
-      Value: { $like: x },
+      Value: { $like: x }
     }));
 
     let count;
@@ -160,7 +160,7 @@ export class Group extends Rock {
             { model: GroupType.model, where: { Id: 25 }, attributes: [] },
             {
               model: GroupLocationTable.model,
-              include: [{ model: LocationTable.model }],
+              include: [{ model: LocationTable.model }]
             },
             {
               model: AttributeValue.model,
@@ -169,7 +169,7 @@ export class Group extends Rock {
                 {
                   model: Attribute.model,
                   attributes: ["Name"],
-                  include: [{ model: EntityType.model, where: { Id: 16 } }], // Rock.Model.Group
+                  include: [{ model: EntityType.model, where: { Id: 16 } }] // Rock.Model.Group
                 },
                 {
                   model: DefinedValue.model,
@@ -179,20 +179,20 @@ export class Group extends Rock {
                         "CONCAT",
                         "%",
                         Sequelize.col("[AttributeValues.DefinedValue].[Guid]"),
-                        "%",
-                      ),
-                    },
+                        "%"
+                      )
+                    }
                   },
                   attributes: ["Value"],
-                  where: { $or }, // the actual lookup
-                },
-              ],
-            },
-          ],
-        }),
+                  where: { $or } // the actual lookup
+                }
+              ]
+            }
+          ]
+        })
       )
       .then(this.sortByLocations)
-      .then((x) => {
+      .then(x => {
         count = x.length;
         return x;
       })
@@ -208,7 +208,7 @@ export class Group extends Rock {
         // XXX handle multiple locations
         x.GroupLocations[0] &&
         x.GroupLocations[0].Location &&
-        x.GroupLocations[0].Location.GeoPoint,
+        x.GroupLocations[0].Location.GeoPoint
     );
 
     const withoutLocations = filter(
@@ -217,21 +217,21 @@ export class Group extends Rock {
         // XXX handle multiple locations
         !x.GroupLocations[0] ||
         !x.GroupLocations[0].Location ||
-        !x.GroupLocations[0].Location.GeoPoint,
+        !x.GroupLocations[0].Location.GeoPoint
     );
 
     return [...withLocations, ...withoutLocations];
   }
 
-  getFromIdsWithDistance = (x) => {
+  getFromIdsWithDistance = x => {
     const promises = [];
     const createPromise = y =>
-      this.getFromId(y.Id, null).then((result) => {
+      this.getFromId(y.Id, null).then(result => {
         const group = result;
         group.Distance = y.Distance;
         return group;
       });
-    x.forEach((y) => {
+    x.forEach(y => {
       promises.push(createPromise(y));
     });
 
@@ -246,9 +246,9 @@ export class Group extends Rock {
     const distance = [
       // tslint:disable-next-line
       Sequelize.literal(
-        `[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326))`,
+        `[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326))`
       ),
-      "Distance",
+      "Distance"
     ];
 
     return this.cache
@@ -259,10 +259,10 @@ export class Group extends Rock {
           include: [
             {
               model: GroupLocationTable.model,
-              include: [{ model: LocationTable.model }],
-            },
-          ],
-        }),
+              include: [{ model: LocationTable.model }]
+            }
+          ]
+        })
       )
       .then(x => x.Distance);
   }
@@ -274,14 +274,14 @@ export class Group extends Rock {
     if (latitude && longitude) {
       // tslint:disable-next-line
       order = Sequelize.literal(
-        `[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326)) ASC`,
+        `[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326)) ASC`
       );
       distance = [
         // tslint:disable-next-line
         Sequelize.literal(
-          `[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326))`,
+          `[GroupLocations.Location].[GeoPoint].STDistance(geography::Point(${latitude}, ${longitude}, 4326))`
         ),
-        "Distance",
+        "Distance"
       ];
     }
 
@@ -302,9 +302,9 @@ export class Group extends Rock {
                   query
                     .toLowerCase()
                     .replace("campus", "")
-                    .trim()}%'`,
-              ),
-            ],
+                    .trim()}%'`
+              )
+            ]
           },
           attributes: ["Id", distance],
           order,
@@ -313,13 +313,13 @@ export class Group extends Rock {
             { model: CampusTable.model, attributes: ["Name"] },
             {
               model: GroupLocationTable.model,
-              include: [{ model: LocationTable.model }],
-            },
-          ],
-        }),
+              include: [{ model: LocationTable.model }]
+            }
+          ]
+        })
       )
       .then(this.sortByLocations)
-      .then((x) => {
+      .then(x => {
         count = x.length;
         return x;
       })
@@ -330,7 +330,7 @@ export class Group extends Rock {
 
   async findByAttributesAndQuery(
     { attributes, query, campuses, schedules },
-    { limit, offset, geo },
+    { limit, offset, geo }
   ) {
     let count = 0;
     const point = `${Number(geo.latitude)}, ${Number(geo.longitude)}, 4326`;
@@ -343,7 +343,7 @@ export class Group extends Rock {
       (value, i) =>
         (insertDays = `${insertDays}('${value}')${
           i === schedules.length - 1 ? ";" : ","
-        }`),
+        }`)
     );
 
     // WILEYSORT
@@ -433,12 +433,12 @@ export class Group extends Rock {
     ORDER BY
         SUM(gt.TagValue) - ISNULL(CONVERT(INT, l.[GeoPoint].STDistance(geography::Point(${point})) / @metersPerMile / 15), 1000) DESC,
         l.[GeoPoint].STDistance(geography::Point(${point})) ASC;
-    `,
+    `
             )
-            .then(([x]) => x),
+            .then(([x]) => x)
         )
         // tslint:enable
-        .then((x) => {
+        .then(x => {
           count = x.length;
           return x;
         })
@@ -453,22 +453,22 @@ export class Group extends Rock {
     query = merge({ IsActive: true }, query);
     return this.cache.get(this.cache.encode(query), () =>
       GroupTable.find({
-        where: query,
+        where: query
         //      attributes: ["Id"],
-      }).then(this.getFromIds.bind(this)),
+      }).then(this.getFromIds.bind(this))
     );
   }
 
   requestGroupInfo = async (
     { groupId, message, communicationPreference },
-    person,
+    person
   ) => {
     // error incorrect data
     if (!groupId || !message || !communicationPreference) {
       return {
         code: 400,
         success: false,
-        error: "Insufficient information",
+        error: "Insufficient information"
       };
     }
 
@@ -477,7 +477,7 @@ export class Group extends Rock {
       return {
         code: 404,
         success: false,
-        error: `No group with id ${groupId} found`,
+        error: `No group with id ${groupId} found`
       };
     }
 
@@ -485,8 +485,8 @@ export class Group extends Rock {
     const query = {
       where: {
         GroupId: groupId,
-        PersonId: person.Id,
-      },
+        PersonId: person.Id
+      }
     };
 
     const isMember = await GroupMemberTable.findOne(query);
@@ -500,13 +500,13 @@ export class Group extends Rock {
       `attributevalue/${
         person.Id
       }?AttributeKey=CommunicationPreference&AttributeValue=${communicationPreference}`,
-      {},
+      {}
     );
     if (update && update.status >= 400) {
       return {
         code: update.status,
         error: update.statusText,
-        success: false,
+        success: false
       };
     }
 
@@ -519,14 +519,14 @@ export class Group extends Rock {
       IsNotified: false,
       GroupRoleId: 23, // member
       Guid: uuid.v4(),
-      Note: message,
+      Note: message
     });
 
     if (post && post.status >= 400) {
       return {
         code: post.status,
         error: post.statusText,
-        success: false,
+        success: false
       };
     }
 
@@ -535,5 +535,5 @@ export class Group extends Rock {
 }
 
 export default {
-  Group,
+  Group
 };

@@ -8,11 +8,11 @@ export default {
         return models.BinaryFile.attachPhotoIdToUser({
           personId: person.Id,
           previousPhotoId: person.PhotoId,
-          newPhotoId: props.id,
+          newPhotoId: props.id
         });
       } catch (err) {
         throw err;
       }
-    },
-  },
+    }
+  }
 };

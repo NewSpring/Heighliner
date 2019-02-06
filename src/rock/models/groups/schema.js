@@ -57,5 +57,5 @@ export default [
     code: Int
   }
 
-`,
+`
 ];

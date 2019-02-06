@@ -16,12 +16,12 @@ const groupSchema = {
   IsSystem: { type: BOOLEAN },
   Name: { type: STRING },
   ParentGroupId: { type: INTEGER },
-  ScheduleId: { type: INTEGER },
+  ScheduleId: { type: INTEGER }
 };
 
 const groupTypeSchema = {
   Id: { type: INTEGER, primaryKey: true },
-  Name: { type: STRING },
+  Name: { type: STRING }
 };
 
 const groupMemberSchema = {
@@ -34,12 +34,12 @@ const groupMemberSchema = {
   IsNotified: { type: BOOLEAN },
   IsSystem: { type: BOOLEAN },
   Note: { type: STRING },
-  PersonId: { type: INTEGER },
+  PersonId: { type: INTEGER }
 };
 
 const groupTypeRoleSchema = {
   Id: { type: INTEGER, primaryKey: true },
-  Name: { type: STRING },
+  Name: { type: STRING }
 };
 
 const groupLocationSchema = {
@@ -47,7 +47,7 @@ const groupLocationSchema = {
   GroupId: { type: INTEGER },
   GroupLocationTypeValueId: { type: INTEGER },
   GroupMemberPersonAliasId: { type: INTEGER },
-  LocationId: { type: INTEGER },
+  LocationId: { type: INTEGER }
 };
 
 // XXX abstract
@@ -59,7 +59,7 @@ const scheduleSchema = {
   WeeklyTimeOfDay: { type: INTEGER },
   EffectiveEndDate: { type: DATE },
   EffectiveStartDate: { type: DATE },
-  iCalendarContent: { type: STRING },
+  iCalendarContent: { type: STRING }
 };
 
 let Group;
@@ -83,7 +83,7 @@ export {
   groupLocationSchema,
   // XXX abstract
   Schedule,
-  scheduleSchema,
+  scheduleSchema
 };
 
 export function connect() {
@@ -101,7 +101,7 @@ export function connect() {
     GroupMember,
     GroupLocation,
     GroupType,
-    GroupTypeRole,
+    GroupTypeRole
   };
 }
 
@@ -114,53 +114,53 @@ export function bind({
   AttributeValue,
   GroupLocation,
   Location,
-  Person,
+  Person
 }) {
   Group.model.hasMany(GroupMember.model, { foreignKey: "GroupId" });
   Group.model.belongsTo(Campus.model, {
     foreignKey: "CampusId",
-    targetKey: "Id",
+    targetKey: "Id"
   });
   Group.model.hasMany(GroupLocation.model, { foreignKey: "GroupId" });
 
   GroupMember.model.belongsTo(Group.model, {
     foreignKey: "GroupId",
-    targetKey: "Id",
+    targetKey: "Id"
   });
   GroupLocation.model.belongsTo(Group.model, {
     foreignKey: "GroupId",
-    targetKey: "Id",
+    targetKey: "Id"
   });
 
   GroupMember.model.belongsTo(Person.model, {
     foreignKey: "PersonId",
-    targetKey: "Id",
+    targetKey: "Id"
   });
   Person.model.hasMany(GroupMember.model, { foreignKey: "PersonId" });
 
   GroupLocation.model.belongsTo(Location.model, {
     foreignKey: "LocationId",
-    targetKey: "Id",
+    targetKey: "Id"
   });
 
   Group.model.belongsTo(GroupType.model, {
     foreignKey: "GroupTypeId",
-    targetKey: "Id",
+    targetKey: "Id"
   });
   AttributeValue.model.belongsTo(Group.model, {
     foreignKey: "EntityId",
-    targetKey: "Id",
+    targetKey: "Id"
   });
 
   Group.model.hasMany(AttributeValue.model, { foreignKey: "EntityId" });
 
   GroupMember.model.belongsTo(GroupTypeRole.model, {
     foreignKey: "GroupRoleId",
-    targetKey: "Id",
+    targetKey: "Id"
   });
 }
 
 export default {
   connect,
-  bind,
+  bind
 };

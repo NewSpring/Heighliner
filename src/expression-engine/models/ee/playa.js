@@ -1,9 +1,6 @@
 /* tslint:disable:no-shadowed-variable */
 
-import {
-  INTEGER,
-  STRING,
-} from "sequelize";
+import { INTEGER, STRING } from "sequelize";
 
 import { MySQLConnector, Tables } from "../../mysql";
 
@@ -16,19 +13,16 @@ const playaSchema = {
   parent_var_id: { type: INTEGER },
   parent_element_id: { type: STRING },
   child_entry_id: { type: INTEGER },
-  rel_order: { type: INTEGER },
+  rel_order: { type: INTEGER }
 };
 let Playa;
-export {
-  Playa,
-  playaSchema,
-};
+export { Playa, playaSchema };
 
 export function connect() {
   Playa = new MySQLConnector("exp_playa_relationships", playaSchema);
 
   return {
-    Playa,
+    Playa
   };
 }
 
@@ -40,5 +34,5 @@ export function bind({ ChannelData, Playa }) {
 
 export default {
   connect,
-  bind,
+  bind
 };

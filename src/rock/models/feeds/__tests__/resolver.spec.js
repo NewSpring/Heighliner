@@ -1,4 +1,3 @@
-
 import Resolver from "../resolver";
 
 const sampleData = {
@@ -12,7 +11,7 @@ const sampleData = {
     payment: "Payment Object",
     person: "12345-ABCDE",
     schedule: "Schedule Object",
-    __type: "Transaction",
+    __type: "Transaction"
   },
   SavedPayment: {
     id: 4,
@@ -24,12 +23,12 @@ const sampleData = {
     payment: "Payment Object",
     expirationMonth: "123456",
     expirationYear: "12345678",
-    __type: "SavedPayment",
+    __type: "SavedPayment"
   },
   PaymentDetail: {
     id: 1,
     accountNumber: "1234567812345678",
-    paymentType: "Credit Card",
+    paymentType: "Credit Card"
   },
   person: {
     Id: "12345-ABCDE",
@@ -41,69 +40,73 @@ const sampleData = {
     BirthDay: "17",
     BirthYear: "1984",
     BirthMonth: "10",
-    Email: "email@example.com",
+    Email: "email@example.com"
   },
   like: {
-    "id": "16c44ac3fe07af726455feac35ab2be9",
-    "title": "One place where everyone is welcome",
-    "channelName": "articles",
-    "content": {
-      "images": [ { "url": "//drhztd8q3iayu.cloudfront.net/newspring/editorial/articles/newspring.blog.hero.monasterypews.large.jpg", "label": "2:1" } ]
+    id: "16c44ac3fe07af726455feac35ab2be9",
+    title: "One place where everyone is welcome",
+    channelName: "articles",
+    content: {
+      images: [
+        {
+          url:
+            "//drhztd8q3iayu.cloudfront.net/newspring/editorial/articles/newspring.blog.hero.monasterypews.large.jpg",
+          label: "2:1"
+        }
+      ]
     },
     __type: "Content"
   },
   campus: {
     id: "12345",
     guid: "314-1324-5321-5432",
-    name: "harambe",
+    name: "harambe"
   },
   news: {
     __type: "Content",
     title: "hello world",
-    campus: "harambe",
+    campus: "harambe"
   },
   globalNews: {
     __type: "Content",
     title: "hello world",
-    campus: null,
+    campus: null
   },
   userCampus: {
     Guid: "something-different",
-    Name: "Harambe's Home",
+    Name: "Harambe's Home"
   },
   sameCampus: {
     Guid: "harambe",
-    Name: "harambe",
-  },
+    Name: "harambe"
+  }
 };
 
 describe("Feed Query", () => {
   const mockModels = {
     Transaction: {
-      findByPersonAlias: jest.fn(),
+      findByPersonAlias: jest.fn()
     },
     SavedPayment: {
-      findExpiringByPersonAlias: jest.fn(),
+      findExpiringByPersonAlias: jest.fn()
     },
     Like: {
-      getLikedContent: jest.fn(),
+      getLikedContent: jest.fn()
     },
     Content: {
       find: jest.fn(),
-      findByCampusName: jest.fn(),
+      findByCampusName: jest.fn()
     },
     Person: {
-      getCampusFromId: jest.fn(),
+      getCampusFromId: jest.fn()
     },
     Campus: {
-      find: jest.fn(),
+      find: jest.fn()
     },
-    Node: {
-
-    },
+    Node: {},
     User: {
-      getUserFollowingTopics: jest.fn(),
-    },
+      getUserFollowingTopics: jest.fn()
+    }
   };
 
   afterEach(() => {
@@ -114,15 +117,27 @@ describe("Feed Query", () => {
   it("should return null with no person", async () => {
     const { Query } = Resolver;
 
-    const results = await Query.userFeed(null, {}, { models: null, person: null });
+    const results = await Query.userFeed(
+      null,
+      {},
+      { models: null, person: null }
+    );
     expect(results).toEqual(null);
   });
 
   it("should return null with no valid filters", async () => {
     const { Query } = Resolver;
 
-    const results = await Query.userFeed(null, {}, { models: null, person: sampleData.person });
-    const resultsWithFilter = await Query.userFeed(null, { filters: ["INVALID"] }, { models: null, person: sampleData.person });
+    const results = await Query.userFeed(
+      null,
+      {},
+      { models: null, person: sampleData.person }
+    );
+    const resultsWithFilter = await Query.userFeed(
+      null,
+      { filters: ["INVALID"] },
+      { models: null, person: sampleData.person }
+    );
     expect(results).toEqual(null);
     expect(resultsWithFilter).toEqual(null);
   });
@@ -133,10 +148,11 @@ describe("Feed Query", () => {
     mockModels.Transaction.findByPersonAlias.mockReturnValueOnce([]);
     mockModels.SavedPayment.findExpiringByPersonAlias.mockReturnValueOnce([]);
 
-    const results = await Query.userFeed( //eslint-disable-line
+    const results = await Query.userFeed(
+      //eslint-disable-line
       null,
       { filters: ["GIVING_DASHBOARD"] },
-      { models: mockModels, person: sampleData.person },
+      { models: mockModels, person: sampleData.person }
     );
 
     expect(results).toEqual([]);
@@ -145,13 +161,18 @@ describe("Feed Query", () => {
   it("should return array of combined Transaction and SavedPayment data", async () => {
     const { Query } = Resolver;
 
-    mockModels.Transaction.findByPersonAlias.mockReturnValueOnce([sampleData.Transaction]);
-    mockModels.SavedPayment.findExpiringByPersonAlias.mockReturnValueOnce([sampleData.SavedPayment]);
+    mockModels.Transaction.findByPersonAlias.mockReturnValueOnce([
+      sampleData.Transaction
+    ]);
+    mockModels.SavedPayment.findExpiringByPersonAlias.mockReturnValueOnce([
+      sampleData.SavedPayment
+    ]);
 
-    const results = await Query.userFeed( //eslint-disable-line
+    const results = await Query.userFeed(
+      //eslint-disable-line
       null,
       { filters: ["GIVING_DASHBOARD"] },
-      { models: mockModels, person: sampleData.person },
+      { models: mockModels, person: sampleData.person }
     );
 
     expect(results).toMatchSnapshot();
@@ -164,10 +185,15 @@ describe("Feed Query", () => {
 
     mockModels.Like.getLikedContent.mockReturnValueOnce([sampleData.like]);
 
-    const results = await Query.userFeed( //eslint-disable-line
+    const results = await Query.userFeed(
+      //eslint-disable-line
       null,
       { filters: ["LIKES"] },
-      { models: mockModels, person: { PrimaryAliasId: "1234" }, user: { _id: "1234" } },
+      {
+        models: mockModels,
+        person: { PrimaryAliasId: "1234" },
+        user: { _id: "1234" }
+      }
     );
 
     expect(mockModels.Like.getLikedContent).toHaveBeenCalledWith("1234", {});
@@ -178,12 +204,21 @@ describe("Feed Query", () => {
   it("should filter out empty content results", async () => {
     const { Query } = Resolver;
 
-    mockModels.Like.getLikedContent.mockReturnValueOnce([sampleData.like, null, null]);
+    mockModels.Like.getLikedContent.mockReturnValueOnce([
+      sampleData.like,
+      null,
+      null
+    ]);
 
-    const results = await Query.userFeed( //eslint-disable-line
+    const results = await Query.userFeed(
+      //eslint-disable-line
       null,
       { filters: ["LIKES"] },
-      { models: mockModels, person: { PrimaryAliasId: "1234" }, user: { _id: "1234" } },
+      {
+        models: mockModels,
+        person: { PrimaryAliasId: "1234" },
+        user: { _id: "1234" }
+      }
     );
 
     expect(results).toHaveLength(1);
@@ -193,24 +228,27 @@ describe("Feed Query", () => {
     const { Query } = Resolver;
 
     mockModels.Content.findByCampusName.mockReturnValueOnce([sampleData.news]);
-    mockModels.Person.getCampusFromId.mockReturnValueOnce(sampleData.userCampus);
+    mockModels.Person.getCampusFromId.mockReturnValueOnce(
+      sampleData.userCampus
+    );
     mockModels.User.getUserFollowingTopics.mockReturnValueOnce(["News"]);
     // mockModels.Campus.find.mockReturnValueOnce(Promise.resolve([{ Guid: "harambe" }]));
 
-    const results = await Query.userFeed( //eslint-disable-line
+    const results = await Query.userFeed(
+      //eslint-disable-line
       null,
       {
-        filters: ["CONTENT"],
+        filters: ["CONTENT"]
       },
-      { models: mockModels, person: { Id: "1234" } },
+      { models: mockModels, person: { Id: "1234" } }
     );
 
     expect(mockModels.Content.findByCampusName).toHaveBeenCalledWith(
       {
-        "channel_name": {"$or": [["news"]]},
-        "limit": undefined,
-        "offset": undefined,
-        "status": undefined
+        channel_name: { $or: [["news"]] },
+        limit: undefined,
+        offset: undefined,
+        status: undefined
       },
       "Harambe's Home", // campus Name
       true // global news
@@ -224,20 +262,21 @@ describe("Feed Query", () => {
     mockModels.Content.findByCampusName.mockReturnValueOnce([sampleData.news]);
     mockModels.User.getUserFollowingTopics.mockReturnValueOnce(["News"]);
 
-    const results = await Query.userFeed( //eslint-disable-line
+    const results = await Query.userFeed(
+      //eslint-disable-line
       null,
       {
-        filters: ["CONTENT"],
+        filters: ["CONTENT"]
       },
-      { models: mockModels, person: { Id: "1234" } },
+      { models: mockModels, person: { Id: "1234" } }
     );
 
     expect(mockModels.Content.findByCampusName).toHaveBeenCalledWith(
       {
-        "channel_name": {"$or": [["news"]]},
-        "limit": undefined,
-        "offset": undefined,
-        "status": undefined
+        channel_name: { $or: [["news"]] },
+        limit: undefined,
+        offset: undefined,
+        status: undefined
       },
       null, // no campus
       true // global news
