@@ -4,10 +4,10 @@ import { InMemoryCache } from "../memory-cache";
 import { parseGlobalId } from "../../node/model";
 
 it("the cache mutation should delete the id from the cache", () => {
-  const id = casual.word,
-    data = { test: casual.word },
-    cacheData = { [id]: data },
-    cache = new InMemoryCache(cacheData);
+  const id = casual.word;
+  const data = { test: casual.word };
+  const cacheData = { [id]: data };
+  const cache = new InMemoryCache(cacheData);
 
   const { Mutation } = resolvers;
 
@@ -16,17 +16,15 @@ it("the cache mutation should delete the id from the cache", () => {
   }
   const context = { cache, models: { Node: { get } } };
 
-  return Mutation.cache(null, { id, type: null }, context).then(() => {
-    expect(cacheData[id]).toBeFalsy;
-  });
+  return Mutation.cache(null, { id, type: null }, context).then(() => expect(cacheData[id]).toBeFalsy);
 });
 
 it("the cache mutation should refetch and save the data in the cache", () => {
-  const id = casual.word,
-    data = { test: casual.word },
-    data2 = { test: casual.word },
-    cacheData = { [id]: data },
-    cache = new InMemoryCache(cacheData);
+  const id = casual.word;
+  const data = { test: casual.word };
+  const data2 = { test: casual.word };
+  const cacheData = { [id]: data };
+  const cache = new InMemoryCache(cacheData);
 
   const { Mutation } = resolvers;
 
@@ -38,7 +36,7 @@ it("the cache mutation should refetch and save the data in the cache", () => {
   return Mutation.cache(null, { id, type: null }, context).then(result => {
     expect(result).toEqual(data2);
 
-    return new Promise((c, r) => {
+    return new Promise((c) => {
       // cache resetting is an async action
       process.nextTick(() => {
         expect(result).toEqual(data2);
@@ -49,12 +47,12 @@ it("the cache mutation should refetch and save the data in the cache", () => {
 });
 
 it("the cache mutation should allow using a native id and type together", () => {
-  const id = casual.word,
-    type = casual.word,
-    data = { test: casual.word },
-    data2 = { test: casual.word },
-    cacheData = { [id]: data },
-    cache = new InMemoryCache(cacheData);
+  const id = casual.word;
+  const type = casual.word;
+  const data = { test: casual.word };
+  const data2 = { test: casual.word };
+  const cacheData = { [id]: data };
+  const cache = new InMemoryCache(cacheData);
 
   const { Mutation } = resolvers;
 
@@ -69,7 +67,7 @@ it("the cache mutation should allow using a native id and type together", () => 
   return Mutation.cache(null, { id, type }, context).then(result => {
     expect(result).toEqual(data2);
 
-    return new Promise((c, r) => {
+    return new Promise((c) => {
       // cache resetting is an async action
       process.nextTick(() => {
         expect(result).toEqual(data2);

@@ -53,7 +53,7 @@ export function createApplication(models) {
     mutations: []
   };
 
-  for (const model of models) {
+  for (const model of models) { // eslint-disable-line
     if (model.schema) joined.schema = [...joined.schema, ...model.schema];
     if (model.models) joined.models = merge(joined.models, model.models);
     if (model.resolvers)

@@ -1,6 +1,6 @@
 import Crypto from "crypto";
 
-export class InMemoryCache {
+export default class InMemoryCache {
   constructor(cache = {}, secret = "InMemoryCache") {
     // XXX this is really only used for testing purposes
     this.cache = cache;

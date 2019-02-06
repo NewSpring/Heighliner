@@ -42,7 +42,7 @@ export class RedisCache {
     this.idLoader = new DataLoader(keys => new Promise((resolve, reject) => {
       db.mget(keys, (error, results) => {
         if (error) return reject(error);
-        resolve(results.map((result, index) =>
+        return resolve(results.map((result, index) =>
           result !== null ? result : new Error(`No key: ${keys[index]}`),
         ));
       });
@@ -50,7 +50,7 @@ export class RedisCache {
   }
 
   getCount() {
-    this.count++;
+    this.count++; // eslint-disable-line
     return this.count;
   }
 
@@ -87,21 +87,23 @@ export class RedisCache {
       try {
         // try to nest information based on global id
         const { __type } = parseGlobalId(id);
-        id = `${__type}:${id}`;
+        id = `${__type}:${id}`; // eslint-disable-line
       } catch (e) { /* tslint:disable-line */ }
 
       return this.idLoader.load(id)
         .then((data) => {
-          if (!data) return lookup().then(done);
 
+          if (!data) return lookup().then(done);
+          // eslint-disable-next-line
           try { data = JSON.parse(data); } catch (e) {
             return lookup().then(done);
           }
 
           fromCache = true;
-          done(data);
+          return done(data);
+
         })
-        .catch(x => lookup().then(done));
+        .catch(() => lookup().then(done));
     }).then((data) => {
       if (data && !fromCache) process.nextTick(() => { this.set(id, data, ttl); });
       return data;
@@ -132,16 +134,18 @@ export class RedisCache {
     // try to nest information based on global id
     try {
       const { __type } = parseGlobalId(id);
-      id = `${__type}:${id}`;
-    } catch (e) {}
+      id = `${__type}:${id}`; // eslint-disable-line
+    } catch (e) {
+      return;
+    }
     db.del(id); // clear redis
     this.idLoader.clear(id); // clear dataloader
   }
 
   encode(obj, type, user) {
     const cipher = Crypto.createHmac("sha256", this.secret);
-    type = type ? `${type  }:` : "";
-    user = user ? `${user  }:` : "";
+    type = type ? `${type  }:` : ""; // eslint-disable-line
+    user = user ? `${user  }:` : ""; // eslint-disable-line
     const str = cipher.update(JSON.stringify(obj), "utf-8").digest("hex");
 
     return `query:${type}${user}${str}`;

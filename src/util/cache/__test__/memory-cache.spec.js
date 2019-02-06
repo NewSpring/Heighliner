@@ -43,7 +43,7 @@ it("`InMemoryCache` should have a way to set items in the cache with a ttl", () 
     })
     .then(
       () =>
-        new Promise((c, r) => {
+        new Promise((c) => {
           setTimeout(() => {
             expect(cacheData[id]).toBeFalsy();
             c();
@@ -86,12 +86,12 @@ it("should have a way to set items in the cache with a ttl", () => {
 
   return cache
     .set(id, data, 0.1)
-    .then(result => {
+    .then(() => {
       expect(cacheData[id]).toEqual(data);
     })
     .then(
       () =>
-        new Promise((c, r) => {
+        new Promise((c) => {
           setTimeout(() => {
             expect(cacheData[id]).toBeFalsy();
             c();

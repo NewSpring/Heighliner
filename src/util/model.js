@@ -2,12 +2,12 @@ import { flatten, isNil } from "lodash";
 import { defaultCache } from "./cache";
 import { createGlobalId } from "./node/model";
 
-export class Heighliner {
+export default class Heighliner {
   constructor({ cache } = { cache: defaultCache }) {
     this.cache = cache;
   }
 
-  async getFromId(id, globalId) {
+  async getFromId() {
     return Promise.reject(new Error("Not implemented on this model"));
   }
 

@@ -21,10 +21,11 @@ export default app => {
   // datadog
   if (dogstatsd) {
     app.use((req, res, next) => {
-      if (!req._startTime) req._startTime = new Date();
+      if (!req._startTime) req._startTime = new Date(); // eslint-disable-line
       const end = res.end;
+      // eslint-disable-next-line
       res.end = (chunk, encoding) => {
-        res.end = end;
+        res.end = end; // eslint-disable-line
         res.end(chunk, encoding);
         const baseUrl = req.baseUrl;
         const statTags = [`route:${baseUrl}${req.path}`];

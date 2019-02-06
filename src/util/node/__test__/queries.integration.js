@@ -23,6 +23,7 @@
 
 // XXX figure out how to mock node resolver
 xit("Valid queries should return success", async () => {
+  // eslint-disable-next-line
   const response = await Heighliner(
     JSON.stringify({
       query: `{

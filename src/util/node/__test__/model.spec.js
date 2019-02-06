@@ -53,7 +53,7 @@ it("Node class should return data from the models `getFromId` method", async () 
   const context = {
     models: {
       Test: {
-        getFromId(_id) {
+        getFromId() {
           return Promise.resolve(data);
         }
       }
@@ -75,7 +75,7 @@ it("Node class should attach the __type to the resulting data", async () => {
   const context = {
     models: {
       Test: {
-        getFromId(_id) {
+        getFromId() {
           return Promise.resolve(data);
         }
       }

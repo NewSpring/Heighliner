@@ -18,10 +18,11 @@ export default (app, monitor) => {
       return;
     }
     let clearingCache;
+    // eslint-disable-next-line
     for (const model in models) {
       const Model = models[model];
-      if (!Model.cacheTypes) continue;
-      if (Model.cacheTypes.indexOf(type) === -1) continue;
+      if (!Model.cacheTypes) continue; // eslint-disable-line
+      if (Model.cacheTypes.indexOf(type) === -1) continue; // eslint-disable-line
       clearingCache = true;
       // XXX should we hold off the res until this responds?
       Model.clearCacheFromRequest(req);

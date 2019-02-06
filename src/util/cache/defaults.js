@@ -1,8 +1,8 @@
 import { createGlobalId } from "../node/model";
 
 export const defaultCache = {
-  get: (id, lookup) => Promise.resolve().then(lookup),
-  set: id => Promise.resolve().then(() => true),
+  get: ({lookup}) => Promise.resolve().then(lookup),
+  set: () => Promise.resolve().then(() => true),
   del() {},
   encode: (obj, prefix) => `${prefix}${JSON.stringify(obj)}`
 };
@@ -10,7 +10,7 @@ export const defaultCache = {
 export const resolvers = {
   Mutation: {
     cache(_, { id, type }, { cache, models }) {
-      if (type && id) id = createGlobalId(id, type);
+      if (type && id) id = createGlobalId(id, type); // eslint-disable-line
       return Promise.resolve()
         .then(() => cache.del(id))
         .then(() => models.Node.get(id));

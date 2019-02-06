@@ -31,7 +31,7 @@ import GoogleSS, { queries as GoogleSSQueries } from "../google-site-search";
 import ESV, { queries as ESVQueries } from "../esv";
 
 // Merge all applications together
-// eslint-ignore-next-line
+// eslint-disable-next-line
 let { schema, models, resolvers } = loadApplications({
   Apollos,
   ExpressionEngine,
