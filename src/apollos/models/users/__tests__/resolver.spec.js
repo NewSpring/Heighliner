@@ -1,4 +1,3 @@
-
 import casual from "casual";
 import Resolver from "../resolver";
 import { FOLLOWABLE_TOPICS } from "../../../../constants";
@@ -7,52 +6,55 @@ const sampleUser = {
   _id: casual.word,
   createdAt: new Date(casual.unix_time),
   profile: {
-    lastLogin: new Date(casual.unix_time),
+    lastLogin: new Date(casual.unix_time)
   },
   services: {
     password: {
-      bcrypt: casual.word,
+      bcrypt: casual.word
     },
     rock: {
       PersonId: casual.integer(0, 10000),
-      PrimaryAliasId: casual.integer(0, 10000),
+      PrimaryAliasId: casual.integer(0, 10000)
     },
     resume: {
       loginTokens: [
         {
           when: new Date(casual.unix_time),
-          hashedToken: casual.word,
+          hashedToken: casual.word
         },
         {
           when: new Date(casual.unix_time),
-          hashedToken: casual.word,
-        },
-      ],
-    },
+          hashedToken: casual.word
+        }
+      ]
+    }
   },
   emails: [
     {
       address: casual.email,
-      verified: casual.random_value({ a: true, b: false }),
-    },
-  ],
+      verified: casual.random_value({ a: true, b: false })
+    }
+  ]
 };
 
 const samplePerson = {
   Email: casual.email,
-  PrimaryAliasId: casual.integer(0, 10000),
+  PrimaryAliasId: casual.integer(0, 10000)
 };
 
 const mockModels = {
   User: {
     getUserFollowingTopics: jest.fn(),
-    toggleTopic: jest.fn(),
-  },
+    toggleTopic: jest.fn()
+  }
 };
 
 it("has a currentUser root level query which pulls from the context", () => {
   const { currentUser } = Resolver.Query;
-  expect(currentUser(null, null, { user: "TEST", person: "TEST" })).toEqual({ user: "TEST", person: "TEST" });
+  expect(currentUser(null, null, { user: "TEST", person: "TEST" })).toEqual({
+    user: "TEST",
+    person: "TEST"
+  });
   expect(currentUser(null, null, {})).toBe(null);
 });
 
@@ -62,7 +64,6 @@ it("`UserTokens` should return the login token from the data", () => {
   const tokens = UserTokens.tokens(sampleUser.services.resume);
   expect(tokens).toEqual(sampleUser.services.resume.loginTokens);
 });
-
 
 it("`UserRock` should return the 'Id' from the data", () => {
   const { UserRock } = Resolver;
@@ -131,17 +132,23 @@ it("`User` should call 'getUserFollowingTopics' with 'PrimaryAliasId' for 'follo
 
   User.followedTopics({ person: samplePerson }, null, { models: mockModels });
 
-  expect(mockModels.User.getUserFollowingTopics).toBeCalledWith(samplePerson.PrimaryAliasId);
+  expect(mockModels.User.getUserFollowingTopics).toBeCalledWith(
+    samplePerson.PrimaryAliasId
+  );
 });
 
 it("Mutation `toggleTopic` should call 'toggleTopic' from 'User'", () => {
   const { Mutation } = Resolver;
 
-  Mutation.toggleTopic(null, { topic: "Articles" }, { models: mockModels, person: samplePerson });
+  Mutation.toggleTopic(
+    null,
+    { topic: "Articles" },
+    { models: mockModels, person: samplePerson }
+  );
 
   expect(mockModels.User.toggleTopic).toBeCalledWith({
     topic: "Articles",
-    userId: samplePerson.PrimaryAliasId,
+    userId: samplePerson.PrimaryAliasId
   });
 });
 

@@ -10,8 +10,8 @@ jest.mock("../../tables", () => ({
     find: jest.fn(),
     findOne: jest.fn(),
     delete: jest.fn(),
-    post: jest.fn(),
-  },
+    post: jest.fn()
+  }
 }));
 
 jest.mock("../../util/nmi");
@@ -19,14 +19,14 @@ jest.mock("../../util/nmi");
 jest.mock("moment");
 
 jest.mock("node-uuid", () => ({
-  v4: jest.fn(() => "guid"),
+  v4: jest.fn(() => "guid")
 }));
 
 const mockedCache = {
   get: jest.fn((id, lookup) => Promise.resolve().then(lookup)),
   set: jest.fn(() => Promise.resolve().then(() => true)),
   del() {},
-  encode: jest.fn((obj, prefix) => `${prefix}${JSON.stringify(obj)}`),
+  encode: jest.fn((obj, prefix) => `${prefix}${JSON.stringify(obj)}`)
 };
 
 it("sets the __type", () => {
@@ -60,7 +60,7 @@ describe("findOrCreate", () => {
     FinancialBatchTable.find.mockReturnValueOnce([{ Id: 1 }]);
     const result = await Local.findOrCreate({
       currencyType: "Visa",
-      date: "date",
+      date: "date"
     });
 
     expect(FinancialBatchTable.find).toBeCalledWith({
@@ -68,8 +68,8 @@ describe("findOrCreate", () => {
         Status: 1,
         BatchStartDateTime: { $lte: "date" },
         BatchEndDateTime: { $gt: "date" },
-        Name: "Online Giving Visa",
-      },
+        Name: "Online Giving Visa"
+      }
     });
     expect(result).toEqual({ Id: 1 });
   });
@@ -92,7 +92,7 @@ describe("findOrCreate", () => {
     FinancialBatchTable.findOne.mockReturnValueOnce({ Id: 1 });
     const result = await Local.findOrCreate({
       currencyType: "Visa",
-      date: "date",
+      date: "date"
     });
 
     expect(moment).toBeCalledWith("date");
@@ -111,10 +111,10 @@ describe("findOrCreate", () => {
       Status: 1,
       ControlAmount: 0,
       BatchStartDateTime: "date",
-      BatchEndDateTime: "date",
+      BatchEndDateTime: "date"
     });
     expect(FinancialBatchTable.findOne).toBeCalledWith({
-      where: { Id: 1 },
+      where: { Id: 1 }
     });
     expect(result).toEqual({ Id: 1 });
   });

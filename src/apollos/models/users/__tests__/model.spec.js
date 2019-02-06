@@ -1,4 +1,3 @@
-
 import crypto from "crypto";
 import { User } from "../model";
 
@@ -31,7 +30,8 @@ it("`getByHashedToken` should allow searching for a raw token", async () => {
 it("`getByHashedToken` should allow searching for an encrypted token", async () => {
   const token = "testToken";
   const users = new User();
-  const encyptedToken = crypto.createHash("sha256")
+  const encyptedToken = crypto
+    .createHash("sha256")
     .update(token)
     .digest("base64");
 
@@ -71,7 +71,7 @@ it("`getFromId` should try and read the data from the cache using the globalId",
     get(global) {
       expect(globalId).toEqual(global);
       return Promise.resolve();
-    },
+    }
   };
 
   const tempUsers = new User({ cache });

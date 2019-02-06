@@ -6,7 +6,7 @@ import { createGlobalId } from "../../../util";
 const MutationReponseResolver = {
   error: ({ error }) => error,
   success: ({ success, error }) => success || !error,
-  code: ({ code }) => code,
+  code: ({ code }) => code
 };
 // models.Rock.getAttributeValueFromMatrix('SiteVersion', 'Sites', 10, 'Version')
 
@@ -21,15 +21,16 @@ export default {
     currentPerson: async (_, { cache }, { person, models, user }) => {
       if (cache && person) return person;
 
-      if (user && user.services && user.services.rock) { // Deprecated Mongo User
+      if (user && user.services && user.services.rock) {
+        // Deprecated Mongo User
         return models.Person.getFromAliasId(user.services.rock.PrimaryAliasId, {
-          cache,
+          cache
         });
       }
       if (user && user.PersonId) {
         const p = await models.User.getUserProfile(user.PersonId);
         return models.Person.getFromAliasId(p.PrimaryAliasId, {
-          cache,
+          cache
         });
       }
       return null;
@@ -37,7 +38,7 @@ export default {
     currentFamily: (_, args, { models, person }) => {
       if (!person) return null;
       return models.Person.getFamilyFromId(person.Id);
-    },
+    }
   },
 
   Mutation: {
@@ -46,7 +47,7 @@ export default {
         return {
           code: 401,
           success: false,
-          error: "Must be logged in to make this request",
+          error: "Must be logged in to make this request"
         };
       }
       return models.PhoneNumber.setPhoneNumber({ phoneNumber }, person);
@@ -54,13 +55,13 @@ export default {
     saveDeviceRegistrationId: (
       _,
       { registrationId, uuid },
-      { models, person },
+      { models, person }
     ) => {
       if (!person) {
         return {
           code: 401,
           success: false,
-          error: "Must be logged in to make this request",
+          error: "Must be logged in to make this request"
         };
       }
       return models.PersonalDevice.saveId(registrationId, uuid, person);
@@ -70,15 +71,15 @@ export default {
         return {
           code: 401,
           success: false,
-          error: "Must be logged in to make this request",
+          error: "Must be logged in to make this request"
         };
       }
       return models.Person.setPersonAttribute({ key, value }, person, {
         models,
         person,
-        ...rest,
+        ...rest
       });
-    },
+    }
   },
 
   Person: {
@@ -95,7 +96,7 @@ export default {
     phoneNumbers: async (
       { Id },
       _,
-      { models }, // tslint:disable-line
+      { models } // tslint:disable-line
     ) => {
       try {
         const result = await models.Person.getPhoneNumbersFromId(Id);
@@ -107,11 +108,14 @@ export default {
       }
     },
     photo: async ({ PhotoId }, _, { models }) => {
-      const DEFAULT_PHOTO = "//dg0ddngxdz549.cloudfront.net/images/cached/images/remote/http_s3.amazonaws.com/ns.images/all/member_images/members.nophoto_1000_1000_90_c1.jpg";
+      const DEFAULT_PHOTO =
+        "//dg0ddngxdz549.cloudfront.net/images/cached/images/remote/http_s3.amazonaws.com/ns.images/all/member_images/members.nophoto_1000_1000_90_c1.jpg";
       try {
         if (!PhotoId) return DEFAULT_PHOTO;
 
-        const url = await models.BinaryFile.getFromId(PhotoId).then(x => x.Path);
+        const url = await models.BinaryFile.getFromId(PhotoId).then(
+          x => x.Path
+        );
         if (isEmpty(url)) return DEFAULT_PHOTO;
 
         return url;
@@ -147,7 +151,7 @@ export default {
     },
     followedTopics({ PrimaryAliasId }, $, { models }) {
       return models.User.getUserFollowingTopics(PrimaryAliasId);
-    },
+    }
   },
 
   PhoneNumber: {
@@ -157,20 +161,20 @@ export default {
     canText: ({ IsMessagingEnabled }) => IsMessagingEnabled,
     rawNumber: ({ Number }) => Number,
     number: ({ NumberFormatted, Number }) => NumberFormatted || Number,
-    person: ({ PersonId }, _, { models }) => models.Person.getFromId(PersonId),
+    person: ({ PersonId }, _, { models }) => models.Person.getFromId(PersonId)
   },
 
   PhoneNumberMutationResponse: {
-    ...MutationReponseResolver,
+    ...MutationReponseResolver
   },
 
   DeviceRegistrationMutationResponse: {
-    ...MutationReponseResolver,
+    ...MutationReponseResolver
   },
 
   AttributeValueMutationResponse: {
-    ...MutationReponseResolver,
-  },
+    ...MutationReponseResolver
+  }
 };
 
 // # home: [Location]

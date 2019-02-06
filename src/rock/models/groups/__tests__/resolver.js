@@ -9,7 +9,7 @@ describe("requestGroupInfo", () => {
     expect(res).toEqual({
       code: 401,
       error: "Must be logged in to make this request",
-      success: false,
+      success: false
     });
   });
 
@@ -21,17 +21,17 @@ describe("requestGroupInfo", () => {
       {
         communicationPreference: "banana",
         groupId: 1234,
-        message: "i<br />miss<br />harambe", // should strip the br
+        message: "i<br />miss<br />harambe" // should strip the br
       },
-      { models, person: "person" },
+      { models, person: "person" }
     );
     expect(models.Group.requestGroupInfo).toHaveBeenCalledWith(
       {
         communicationPreference: "banana",
         groupId: 1234,
-        message: "i\nmiss\nharambe",
+        message: "i\nmiss\nharambe"
       },
-      "person",
+      "person"
     );
   });
 });
@@ -42,7 +42,7 @@ describe("GroupSchedule", () => {
     Description: "Special Group for May 13",
     Name: "Special Group",
     WeeklyDayOfWeek: 4,
-    WeeklyTimeOfDay: "1970-01-01T16:00:00.000Z",
+    WeeklyTimeOfDay: "1970-01-01T16:00:00.000Z"
   };
 
   it("passes date and time correctly", () => {
@@ -61,7 +61,7 @@ describe("GroupSchedule", () => {
 
   it("should show day even if no time", () => {
     const { GroupSchedule } = Resolver;
-    const group = {...sampleGroup, WeeklyTimeOfDay: null};
+    const group = { ...sampleGroup, WeeklyTimeOfDay: null };
     const description = GroupSchedule.description(group);
     expect(description).toEqual("Sunday");
   });
@@ -69,13 +69,13 @@ describe("GroupSchedule", () => {
   it("should show date and time for ical", () => {
     const { GroupSchedule } = Resolver;
     const days = [
-      {label: "SU", day: "Sunday"},
-      {label: "MO", day: "Monday"},
-      {label: "TU", day: "Tuesday"},
-      {label: "WE", day: "Wednesday"},
-      {label: "TH", day: "Thursday"},
-      {label: "FR", day: "Friday"},
-      {label: "SA", day: "Saturday"}
+      { label: "SU", day: "Sunday" },
+      { label: "MO", day: "Monday" },
+      { label: "TU", day: "Tuesday" },
+      { label: "WE", day: "Wednesday" },
+      { label: "TH", day: "Thursday" },
+      { label: "FR", day: "Friday" },
+      { label: "SA", day: "Saturday" }
     ];
 
     days.map(day => {
@@ -91,7 +91,11 @@ SEQUENCE:0
 UID:3203aa08-221f-42dc-8b63-56270ede5794
 END:VEVENT
 END:VCALENDAR`;
-      const group = {...sampleGroup, WeeklyDayOfWeek: null, iCalendarContent: ical};
+      const group = {
+        ...sampleGroup,
+        WeeklyDayOfWeek: null,
+        iCalendarContent: ical
+      };
       const description = GroupSchedule.description(group);
       expect(description).toEqual(`${day.day} @ 7:30 PM`);
     });
@@ -100,9 +104,9 @@ END:VCALENDAR`;
   it("should allow multiple days in ical", () => {
     const { GroupSchedule } = Resolver;
     const days = [
-      {label: "SU,MO,WE,SA", day: "Sunday, Monday, Wednesday, Saturday"},
-      {label: "TH,WE,SU", day: "Thursday, Wednesday, Sunday"},
-      {label: "MO,SU", day: "Monday, Sunday"},
+      { label: "SU,MO,WE,SA", day: "Sunday, Monday, Wednesday, Saturday" },
+      { label: "TH,WE,SU", day: "Thursday, Wednesday, Sunday" },
+      { label: "MO,SU", day: "Monday, Sunday" }
     ];
 
     days.map(day => {
@@ -118,7 +122,11 @@ SEQUENCE:0
 UID:3203aa08-221f-42dc-8b63-56270ede5794
 END:VEVENT
 END:VCALENDAR`;
-      const group = {...sampleGroup, WeeklyDayOfWeek: null, iCalendarContent: ical};
+      const group = {
+        ...sampleGroup,
+        WeeklyDayOfWeek: null,
+        iCalendarContent: ical
+      };
       const description = GroupSchedule.description(group);
       expect(description).toEqual(`${day.day} @ 7:30 PM`);
     });

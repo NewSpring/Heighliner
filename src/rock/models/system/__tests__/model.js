@@ -1,4 +1,3 @@
-
 import { Rock } from "../model";
 
 import {
@@ -8,45 +7,45 @@ import {
   Attribute as AttributeModel,
   AttributeValue as AttributeValueModel,
   FieldType as FieldTypeModel,
-  AttributeQualifier as AttributeQualifierModel,
+  AttributeQualifier as AttributeQualifierModel
 } from "../tables";
 
 jest.mock("../tables", () => ({
   SystemEmail: {
-    findOne: jest.fn(),
+    findOne: jest.fn()
   },
   Communication: {
     post: jest.fn(),
-    patch: jest.fn(),
+    patch: jest.fn()
   },
   CommunicationRecipient: {
-    post: jest.fn(),
+    post: jest.fn()
   },
   Attribute: {
     findOne: jest.fn(),
     find: jest.fn(),
-    model: "hey",
+    model: "hey"
   },
   AttributeValue: {
-    find: jest.fn(() => Promise.resolve([])),
+    find: jest.fn(() => Promise.resolve([]))
   },
   FieldType: {
-    model: "hey",
+    model: "hey"
   },
   AttributeQualifier: {
-    model: "boi",
-  },
+    model: "boi"
+  }
 }));
 
 jest.mock("node-uuid", () => ({
-  v4: () => "guid",
+  v4: () => "guid"
 }));
 
 const mockedCache = {
   get: jest.fn((id, lookup) => Promise.resolve().then(lookup)),
   set: jest.fn(() => Promise.resolve().then(() => true)),
   del() {},
-  encode: jest.fn((obj, prefix) => `${prefix}${JSON.stringify(obj)}`),
+  encode: jest.fn((obj, prefix) => `${prefix}${JSON.stringify(obj)}`)
 };
 
 describe("sendEmail", () => {
@@ -71,34 +70,41 @@ describe("sendEmail", () => {
     const result = await Local.sendEmail("test");
 
     expect(SystemEmailTable.findOne).toBeCalledWith({
-      where: { Title: "test" },
+      where: { Title: "test" }
     });
     expect(result).toBe(null);
   });
   it("it should return null if no Body", async () => {
-    SystemEmailTable.findOne.mockReturnValueOnce(Promise.resolve({ Subject: "foo" }));
+    SystemEmailTable.findOne.mockReturnValueOnce(
+      Promise.resolve({ Subject: "foo" })
+    );
 
     const result = await Local.sendEmail("test");
 
     expect(SystemEmailTable.findOne).toBeCalledWith({
-      where: { Title: "test" },
+      where: { Title: "test" }
     });
     expect(result).toBe(null);
   });
   it("it should return null if no Subject", async () => {
-    SystemEmailTable.findOne.mockReturnValueOnce(Promise.resolve({ Body: "foo" }));
+    SystemEmailTable.findOne.mockReturnValueOnce(
+      Promise.resolve({ Body: "foo" })
+    );
 
     const result = await Local.sendEmail("test");
 
     expect(SystemEmailTable.findOne).toBeCalledWith({
-      where: { Title: "test" },
+      where: { Title: "test" }
     });
     expect(result).toBe(null);
   });
   it("it should create a Communication and patch it", async () => {
-    SystemEmailTable.findOne.mockReturnValueOnce(Promise.resolve({
-      Subject: "foo", Body: "bar",
-    }));
+    SystemEmailTable.findOne.mockReturnValueOnce(
+      Promise.resolve({
+        Subject: "foo",
+        Body: "bar"
+      })
+    );
     CommunicationTable.post.mockReturnValueOnce(Promise.resolve(10));
     CommunicationTable.patch.mockReturnValueOnce(Promise.resolve(true));
 
@@ -112,7 +118,7 @@ describe("sendEmail", () => {
       Guid: "guid",
       Subject: "foo",
       Message: "bar",
-      Id: 10, // XXX bug in Jest
+      Id: 10 // XXX bug in Jest
     });
     // expect(CommunicationTable.patch).toBeCalledWith(10, {
     //   MediumEntityTypeId: 37, // Mandrill
@@ -120,9 +126,12 @@ describe("sendEmail", () => {
     expect(result).toEqual([]);
   });
   it("it should create CommunicationRecipient for all people", async () => {
-    SystemEmailTable.findOne.mockReturnValueOnce(Promise.resolve({
-      Subject: "foo", Body: "bar",
-    }));
+    SystemEmailTable.findOne.mockReturnValueOnce(
+      Promise.resolve({
+        Subject: "foo",
+        Body: "bar"
+      })
+    );
     CommunicationTable.post.mockReturnValueOnce(Promise.resolve(10));
     CommunicationTable.patch.mockReturnValueOnce(Promise.resolve(true));
     CommunicationRecipientTable.post.mockReturnValueOnce(Promise.resolve(12));
@@ -135,7 +144,7 @@ describe("sendEmail", () => {
       MediumEntityTypeId: 37, // Mandrill
       Status: 0, // Pending
       Guid: "guid",
-      AdditionalMergeValuesJson: JSON.stringify({ foo: "bar" }),
+      AdditionalMergeValuesJson: JSON.stringify({ foo: "bar" })
     });
     expect(result).toEqual([12]);
   });
@@ -170,12 +179,16 @@ describe("getAttributeValuesFromAttributeId", () => {
   });
 
   it("returns empty if nothing found", async () => {
-    expect(await Local.getAttributeValuesFromAttributeId(10, null, 123)).toEqual();
+    expect(
+      await Local.getAttributeValuesFromAttributeId(10, null, 123)
+    ).toEqual();
   });
 
   it("calls cache lookup", async () => {
     await Local.getAttributeValuesFromAttributeId(10, null, 123);
-    expect(mockedCache.get.mock.calls[0][0]).toEqual("10:123:getAttributeValuesFromAttributeId");
+    expect(mockedCache.get.mock.calls[0][0]).toEqual(
+      "10:123:getAttributeValuesFromAttributeId"
+    );
     expect(typeof mockedCache.get.mock.calls[0][1]).toEqual("function");
   });
 
@@ -185,7 +198,7 @@ describe("getAttributeValuesFromAttributeId", () => {
     await mockedCache.get.mock.calls[0][1]();
     expect(AttributeValueModel.find).toBeCalledWith({
       where: { AttributeId: 10, EntityId: 123 },
-      include: [{ include: [{ model: "hey" }], model: "hey" }],
+      include: [{ include: [{ model: "hey" }], model: "hey" }]
     });
   });
 
@@ -199,13 +212,17 @@ describe("getAttributeValuesFromAttributeId", () => {
 
   it("returns properly formatted data", async () => {
     Local.processAttributeValue = jest.fn(() => "VALUE");
-    AttributeValueModel.find.mockReturnValueOnce(Promise.resolve([{ whatWasAnInsideJob: "harambe" }]));
+    AttributeValueModel.find.mockReturnValueOnce(
+      Promise.resolve([{ whatWasAnInsideJob: "harambe" }])
+    );
     await Local.getAttributeValuesFromAttributeId(10, null, 123);
     const res = await mockedCache.get.mock.calls[0][1]();
-    expect(res).toEqual([{
-      Value: "VALUE",
-      whatWasAnInsideJob: "harambe",
-    }]);
+    expect(res).toEqual([
+      {
+        Value: "VALUE",
+        whatWasAnInsideJob: "harambe"
+      }
+    ]);
   });
 });
 
@@ -228,16 +245,23 @@ describe("getAttributesFromEntity", () => {
   it("calls cache get properly", async () => {
     mockedCache.get.mockReturnValue(Promise.resolve([]));
     await Local.getAttributesFromEntity(10, "Harambe", 123);
-    expect(mockedCache.get.mock.calls[0][0]).toEqual("10:Harambe:getAttributesFromEntity");
+    expect(mockedCache.get.mock.calls[0][0]).toEqual(
+      "10:Harambe:getAttributesFromEntity"
+    );
     expect(typeof mockedCache.get.mock.calls[0][1]).toEqual("function");
   });
 
   it("calls find properly", async () => {
     mockedCache.get.mockReturnValue(Promise.resolve([]));
     await Local.getAttributesFromEntity(10, "Harambe", 123);
-    expect(mockedCache.get.mock.calls[0][0]).toEqual("10:Harambe:getAttributesFromEntity");
+    expect(mockedCache.get.mock.calls[0][0]).toEqual(
+      "10:Harambe:getAttributesFromEntity"
+    );
     await mockedCache.get.mock.calls[0][1]();
-    expect(AttributeModel.find).toBeCalledWith({ include: [{ model: "hey" }, { model: "boi" }], where: { EntityTypeId: 123, Key: "Harambe" } });
+    expect(AttributeModel.find).toBeCalledWith({
+      include: [{ model: "hey" }, { model: "boi" }],
+      where: { EntityTypeId: 123, Key: "Harambe" }
+    });
   });
 
   it("handles results that aren't defined values", async () => {
@@ -245,25 +269,29 @@ describe("getAttributesFromEntity", () => {
       FieldType: { Class: "a" },
       Id: 1,
       Name: "banana",
-      Description: "What he eats",
+      Description: "What he eats"
     };
     mockedCache.get.mockReturnValue(Promise.resolve([stuff]));
     const res = await Local.getAttributesFromEntity(10, "Harambe", 123);
-    expect(res).toEqual([{
-      Description: stuff.Description,
-      EntityId: 10,
-      Id: stuff.Id,
-      Value: stuff.Name,
-    }]);
+    expect(res).toEqual([
+      {
+        Description: stuff.Description,
+        EntityId: 10,
+        Id: stuff.Id,
+        Value: stuff.Name
+      }
+    ]);
   });
 
   it("handles defined value results", async () => {
     const stuff = {
       FieldType: { Class: "Rock.Field.Types.DefinedValueFieldType" },
-      AttributeQualifiers: [{ Key: "definedtype", Value: "piggy" }],
+      AttributeQualifiers: [{ Key: "definedtype", Value: "piggy" }]
     };
     // mock defined value lookup
-    Local.getDefinedValuesByTypeId = jest.fn(() => Promise.resolve({ wow: "boi" }));
+    Local.getDefinedValuesByTypeId = jest.fn(() =>
+      Promise.resolve({ wow: "boi" })
+    );
     mockedCache.get.mockReturnValue(Promise.resolve([stuff]));
     const res = await Local.getAttributesFromEntity(10, "Harambe", 123);
     expect(Local.getDefinedValuesByTypeId).toBeCalledWith("piggy");

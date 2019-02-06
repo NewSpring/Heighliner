@@ -4,7 +4,9 @@ describe("Attribute", () => {
   const { Attribute } = Resolver;
 
   it("has id", () => {
-    expect(Attribute.id({ Id: 4 }, null, null, {parentType: {name: "boi"}})).toMatchSnapshot();
+    expect(
+      Attribute.id({ Id: 4 }, null, null, { parentType: { name: "boi" } })
+    ).toMatchSnapshot();
   });
   it("has key", () => {
     expect(Attribute.key({ Key: 2 })).toEqual(2);
@@ -17,11 +19,7 @@ describe("Attribute", () => {
   });
   it("has values", () => {
     const models = { Rock: { getAttributeValuesFromAttributeId: jest.fn() } };
-    Attribute.values(
-      { Id: 2, EntityId: 43 },
-      null,
-      { models }
-    );
+    Attribute.values({ Id: 2, EntityId: 43 }, null, { models });
     expect(models.Rock.getAttributeValuesFromAttributeId).toBeCalledWith(
       2,
       { models },
@@ -35,18 +33,15 @@ describe("AttributeValue", () => {
 
   it("has attribute", () => {
     const models = { Rock: { getAttributeFromId: jest.fn() } };
-    AttributeValue.attribute(
-      { AttributeId: 5 },
-      null,
-      { models },
-    );
+    AttributeValue.attribute({ AttributeId: 5 }, null, { models });
     expect(models.Rock.getAttributeFromId).toBeCalledWith(5);
   });
   it("has id", () => {
-    expect(AttributeValue.id({ Id: 4 }, null, null, { parentType: {name: "boi"} })).toMatchSnapshot();
+    expect(
+      AttributeValue.id({ Id: 4 }, null, null, { parentType: { name: "boi" } })
+    ).toMatchSnapshot();
   });
   it("has value", () => {
-    expect(AttributeValue.value({ Value: "yo" })).toEqual("yo")
+    expect(AttributeValue.value({ Value: "yo" })).toEqual("yo");
   });
-
 });

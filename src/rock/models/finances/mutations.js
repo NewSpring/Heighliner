@@ -63,5 +63,5 @@ export default [
     people: [Int]
     start: String
     end: String
-  ): StatementMutationResponse`,
+  ): StatementMutationResponse`
 ];

@@ -1,5 +1,1 @@
-
-export default [
-  "currentUser: User",
-  "topics: [String]",
-];
+export default ["currentUser: User", "topics: [String]"];

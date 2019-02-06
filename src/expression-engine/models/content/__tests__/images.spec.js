@@ -2,7 +2,7 @@ import { addResizings } from "../images";
 
 const createSampleImage = () => ({
   url: "url.jpg",
-  fileLabel: null,
+  fileLabel: null
 });
 
 it("`addResizings` should return 5 images when handed 1", () => {
@@ -16,7 +16,7 @@ it("`addResizings` should return 15 images when handed 3", () => {
   const images = [
     createSampleImage(),
     createSampleImage(),
-    createSampleImage(),
+    createSampleImage()
   ];
 
   const result = addResizings(images);
@@ -72,7 +72,7 @@ it("`addResizings` should return 1 image if 1 image and 1 size", () => {
   const images = [createSampleImage()];
   const options = {
     sizes: ["medium"],
-    ratios: [],
+    ratios: []
   };
 
   const results = addResizings(images, options);
@@ -82,13 +82,10 @@ it("`addResizings` should return 1 image if 1 image and 1 size", () => {
 });
 
 it("`addResizings` should return 4 images if 2 images and 2 sizes", () => {
-  const images = [
-    createSampleImage(),
-    createSampleImage(),
-  ];
+  const images = [createSampleImage(), createSampleImage()];
   const options = {
     sizes: ["medium", "large"],
-    ratios: [],
+    ratios: []
   };
 
   const results = addResizings(images, options);
@@ -96,20 +93,17 @@ it("`addResizings` should return 4 images if 2 images and 2 sizes", () => {
 });
 
 it("`addResizings` should return only the ratio specified", () => {
-  const images = [
-    createSampleImage(),
-    createSampleImage(),
-  ];
+  const images = [createSampleImage(), createSampleImage()];
   const options = {
     sizes: null,
-    ratios: ["2:1"],
+    ratios: ["2:1"]
   };
   images[0].fileLabel = "2:1";
   images[1].fileLabel = "1:2";
 
   const results = addResizings(images, options);
   expect(results.length).toEqual(5);
-  results.map((image) => {
+  results.map(image => {
     expect(image.fileLabel).toEqual("2:1");
   });
 });

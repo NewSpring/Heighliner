@@ -1,4 +1,13 @@
-import { isNil, pick, flatten, filter, find, uniq, uniqBy, sampleSize } from "lodash";
+import {
+  isNil,
+  pick,
+  flatten,
+  filter,
+  find,
+  uniq,
+  uniqBy,
+  sampleSize
+} from "lodash";
 import fetch from "isomorphic-fetch";
 import Sequelize from "sequelize";
 import { defaultCache } from "../../../util/cache";
@@ -14,7 +23,7 @@ import {
   ChannelData,
   channelDataSchema,
   LowReorder,
-  LowReorderOrder,
+  LowReorderOrder
 } from "./tables";
 
 import { Matrix, MatrixCol } from "../ee/matrix";
@@ -37,7 +46,7 @@ export class Content extends EE {
 
   pickField(name, fields) {
     let fieldName = name;
-    fields.forEach((x) => {
+    fields.forEach(x => {
       if (x.field_name !== name) return;
 
       fieldName = `field_id_${x.field_id}`;
@@ -47,7 +56,7 @@ export class Content extends EE {
   }
 
   createFieldNames(fields, remove) {
-    return fields.map((field) => {
+    return fields.map(field => {
       let name = field.field_name;
 
       if (remove) {
@@ -67,10 +76,12 @@ export class Content extends EE {
     const fields = await this.cache.get(`fields:${id}`, () =>
       ChannelData.find({
         where: { entry_id: Number(id) },
-        include: [{ model: Channels.model, include: [{ model: ChannelFields.model }] }],
+        include: [
+          { model: Channels.model, include: [{ model: ChannelFields.model }] }
+        ]
       })
         .then(x => flatten(x.map(y => y.exp_channel.exp_channel_field)))
-        .then(x => this.createFieldNames(x, true)),
+        .then(x => this.createFieldNames(x, true))
     );
 
     const exp_channel_fields = this.createFieldObject(fields);
@@ -84,16 +95,19 @@ export class Content extends EE {
             model: ChannelTitles.model,
             where: {
               expiration_date: {
-                $or: [{ $eq: 0 }, { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") }],
-              },
-            },
-          },
-        ],
-      }).then((x) => {
+                $or: [
+                  { $eq: 0 },
+                  { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") }
+                ]
+              }
+            }
+          }
+        ]
+      }).then(x => {
         if (!x.exp_channel) return null;
         x.exp_channel.exp_channel_fields = exp_channel_fields;
         return x;
-      }),
+      })
     );
   }
 
@@ -102,10 +116,12 @@ export class Content extends EE {
     const fields = await this.cache.get(`fields:${id}`, () =>
       ChannelData.find({
         where: { entry_id: Number(id) },
-        include: [{ model: Channels.model, include: [{ model: ChannelFields.model }] }],
+        include: [
+          { model: Channels.model, include: [{ model: ChannelFields.model }] }
+        ]
       })
         .then(x => flatten(x.map(y => y.exp_channel.exp_channel_field)))
-        .then(x => this.createFieldNames(x, true)),
+        .then(x => this.createFieldNames(x, true))
     );
 
     const exp_channel_fields = this.createFieldObject(fields);
@@ -120,22 +136,25 @@ export class Content extends EE {
             where: {
               entry_date: { $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
               expiration_date: {
-                $or: [{ $eq: 0 }, { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") }],
-              },
-            },
-          },
-        ],
-      }).then((x) => {
+                $or: [
+                  { $eq: 0 },
+                  { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") }
+                ]
+              }
+            }
+          }
+        ]
+      }).then(x => {
         if (!x.exp_channel) return null;
         x.exp_channel.exp_channel_fields = exp_channel_fields;
         return x;
-      }),
+      })
     );
   }
 
   createFieldObject(fields) {
     const fieldObject = {};
-    fields.forEach((x) => {
+    fields.forEach(x => {
       const [fieldId, fieldName] = x;
       fieldObject[fieldName] = fieldId;
     });
@@ -148,8 +167,8 @@ export class Content extends EE {
     const columns = await this.cache.get(`matrix:${field_id}`, () =>
       MatrixCol.find({
         where: { field_id },
-        attributes: ["col_id", "col_name", "col_label"],
-      }),
+        attributes: ["col_id", "col_name", "col_label"]
+      })
     );
 
     const columnIds = columns.map(x => [`col_id_${x.col_id}`, x.col_name]);
@@ -159,8 +178,10 @@ export class Content extends EE {
       ChannelData.find({
         where: { entry_id },
         attributes: ["entry_id"],
-        include: [{ model: Matrix.model, where: { field_id }, attributes: columnIds }],
-      }).then(x => flatten(x.map(y => y.exp_matrix_data))),
+        include: [
+          { model: Matrix.model, where: { field_id }, attributes: columnIds }
+        ]
+      }).then(x => flatten(x.map(y => y.exp_matrix_data)))
     );
   }
 
@@ -171,13 +192,13 @@ export class Content extends EE {
       () =>
         LowReorderOrder.findOne({
           attributes: ["sort_order"],
-          include: [{ model: LowReorder.model, where: { set_name: setName } }],
+          include: [{ model: LowReorder.model, where: { set_name: setName } }]
         })
           .then(x => x.sort_order.split("|"))
           .then(x => x.filter(y => !!y).map(z => ({ entry_id: z }))) // used so the next line can work
           .then(this.getFromPublishedIds)
           .then(x => x.filter(y => !!y)),
-      { ttl: 3600 },
+      { ttl: 3600 }
     ); // expire this lookup every hour
   }
 
@@ -192,26 +213,33 @@ export class Content extends EE {
       ChannelData.findOne({
         attributes: ["entry_id"],
         where: { [field_id]: value },
-        include,
+        include
       })
         .then(x => [x]) // used so the next line can work
         .then(this.getFromPublishedIds)
-        .then(x => x[0]),
+        .then(x => x[0])
     );
   }
 
   getFromPublishedIds = async (data = []) => {
     if (!data || !data.length) return Promise.resolve([]);
     return Promise.all(
-      data.map(x => this.getFromPublishedId(x[this.id], createGlobalId(x[this.id], this.__type))),
+      data.map(x =>
+        this.getFromPublishedId(
+          x[this.id],
+          createGlobalId(x[this.id], this.__type)
+        )
+      )
     )
       .then(flatten)
       .then(x =>
-        x.filter(y => !isNil(y)).map((z) => {
-          const item = z;
-          item.__type = this.__type;
-          return item;
-        }),
+        x
+          .filter(y => !isNil(y))
+          .map(z => {
+            const item = z;
+            item.__type = this.__type;
+            return item;
+          })
       );
   };
 
@@ -225,9 +253,9 @@ export class Content extends EE {
           () =>
             Playa.find({
               where: { child_entry_id: entry_id },
-              attributes: [["parent_entry_id", "entry_id"]],
+              attributes: [["parent_entry_id", "entry_id"]]
             }),
-          { cache: false },
+          { cache: false }
         ) // this intermentally breaks when cached
         .then(fetchMethod.bind(this))
         // make sure that we get only unique items based on the entry id.
@@ -236,7 +264,11 @@ export class Content extends EE {
         .then(x => uniqBy(x, item => item.exp_channel_title.entry_id))
         // XXX remove when channel is part of query
         .then(x =>
-          x.filter(y => !channels.length || channels.indexOf(y && y.exp_channel.channel_name) > -1),
+          x.filter(
+            y =>
+              !channels.length ||
+              channels.indexOf(y && y.exp_channel.channel_name) > -1
+          )
         )
     );
   }
@@ -246,8 +278,8 @@ export class Content extends EE {
       .get(`${entry_id}:Playa`, () =>
         Playa.findOne({
           where: { parent_entry_id: entry_id },
-          attributes: [["child_entry_id", "entry_id"]],
-        }),
+          attributes: [["child_entry_id", "entry_id"]]
+        })
       )
       .then(x => [x])
       .then(this.getFromPublishedIds)
@@ -264,8 +296,10 @@ export class Content extends EE {
     if (!id) return null;
     // todo: hook this up to the caching system
     return fetch(
-      `https://api.wistia.com/v1/medias/${id}.json?api_password=${process.env.WISTIA_KEY}`,
-    ).then((response) => {
+      `https://api.wistia.com/v1/medias/${id}.json?api_password=${
+        process.env.WISTIA_KEY
+      }`
+    ).then(response => {
       if (response.status >= 400) {
         // todo: handle this error
         return {};
@@ -297,9 +331,9 @@ export class Content extends EE {
         AND (t.expiration_date = 0 OR t.expiration_date >= UNIX_TIMESTAMP())
         AND m.col_id_366 IS NOT NULL;
     `,
-            { type: Sequelize.QueryTypes.SELECT },
+            { type: Sequelize.QueryTypes.SELECT }
           ),
-        { ttl: 60 },
+        { ttl: 60 }
       )
       .then(x => find(x, { isLive: 1 }));
     // tslint:enable
@@ -321,35 +355,47 @@ export class Content extends EE {
                 model: ChannelTitles.model,
                 where: {
                   status: { $or: ["open", "featured"] },
-                  entry_date: { $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
-                  expiration_date: {
-                    $or: [{ $eq: 0 }, { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") }],
+                  entry_date: {
+                    $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())")
                   },
-                },
+                  expiration_date: {
+                    $or: [
+                      { $eq: 0 },
+                      { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") }
+                    ]
+                  }
+                }
               },
-              { model: Channels.model, where: { channel_name: { $or: includeChannels } } },
+              {
+                model: Channels.model,
+                where: { channel_name: { $or: includeChannels } }
+              },
               {
                 model: TagEntries.model,
                 include: [
                   {
                     model: Tags.model,
-                    where: { tag_name: { $like: tagName } },
-                  },
-                ],
-              },
-            ],
+                    where: { tag_name: { $like: tagName } }
+                  }
+                ]
+              }
+            ]
           }),
-        { ttl: 3600, cache },
+        { ttl: 3600, cache }
       )
       .then(x =>
         // XXX find how to do this in the query?
-        x.slice(offset, limit + offset),
+        x.slice(offset, limit + offset)
       )
       .then(this.getFromPublishedIds)
       .then(x => x.filter(y => !!y));
   }
 
-  async findByTags({ tags, includeChannels, excludedIds }, { offset, limit }, cache) {
+  async findByTags(
+    { tags, includeChannels, excludedIds },
+    { offset, limit },
+    cache
+  ) {
     includeChannels || (includeChannels = []); // tslint:disable-line
     const channels = [
       "devotionals",
@@ -357,7 +403,7 @@ export class Content extends EE {
       "series_newspring",
       "sermons",
       "stories",
-      "newspring_albums",
+      "newspring_albums"
     ];
 
     /*
@@ -368,11 +414,13 @@ export class Content extends EE {
         XXX make the setting dynamic and pulled from heighliner
 
       */
-    includeChannels = includeChannels.map(x => x.toLowerCase()).map((x) => {
-      if (x === "series") return "series_newspring";
-      if (x === "music") return "albums_newspring";
-      return x;
-    });
+    includeChannels = includeChannels
+      .map(x => x.toLowerCase())
+      .map(x => {
+        if (x === "series") return "series_newspring";
+        if (x === "music") return "albums_newspring";
+        return x;
+      });
 
     // only include what user hasn't excluded
     includeChannels = uniq(channels.concat(includeChannels));
@@ -394,31 +442,39 @@ export class Content extends EE {
                 model: ChannelTitles.model,
                 where: {
                   status: { $or: ["open", "featured"] },
-                  entry_date: { $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())") },
-                  expiration_date: {
-                    $or: [{ $eq: 0 }, { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") }],
+                  entry_date: {
+                    $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())")
                   },
-                },
+                  expiration_date: {
+                    $or: [
+                      { $eq: 0 },
+                      { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") }
+                    ]
+                  }
+                }
               },
-              { model: Channels.model, where: { channel_name: { $or: includeChannels } } },
+              {
+                model: Channels.model,
+                where: { channel_name: { $or: includeChannels } }
+              },
               {
                 model: TagEntries.model,
                 include: [
                   {
                     model: Tags.model,
-                    where: { tag_name: { $in: tags } },
-                  },
-                ],
-              },
-            ],
+                    where: { tag_name: { $in: tags } }
+                  }
+                ]
+              }
+            ]
           }),
-        { ttl: 3600, cache },
+        { ttl: 3600, cache }
       )
       .then(x =>
         // XXX find how to do this in the query?
         // return x.slice(offset, limit + offset);
         // XXX make a WileySort for this instead of random stuff
-        sampleSize(x, limit),
+        sampleSize(x, limit)
       )
       .then(this.getFromPublishedIds)
       .then(x => x.filter(y => !!y));
@@ -432,10 +488,12 @@ export class Content extends EE {
           {
             where: { url_title: urlTitle },
             attributes: ["entry_id"],
-            include: [{ model: Channels.model, where: { channel_name: channel } }],
+            include: [
+              { model: Channels.model, where: { channel_name: channel } }
+            ]
           },
-          { ttl: 3600, cache: false },
-        ),
+          { ttl: 3600, cache: false }
+        )
     );
 
     if (!results || !results.entry_id) return null;
@@ -455,10 +513,10 @@ export class Content extends EE {
     const channelTitle = pick(query, Object.keys(channelTitleSchema));
     // This gets reset every hour currently
     channelTitle.entry_date = {
-      $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())"),
+      $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())")
     };
     channelTitle.expiration_date = {
-      $or: [{ $eq: 0 }, { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") }],
+      $or: [{ $eq: 0 }, { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") }]
     };
     // Filter by campus name. Show global content (null campus) if globals is true
     if (campusName) {
@@ -468,7 +526,8 @@ export class Content extends EE {
     } else {
       channelData.field_id_651 = { $or: ["", null] };
     }
-    if (channelTitle.status === "open") channelTitle.status = { $or: ["open", "featured"] };
+    if (channelTitle.status === "open")
+      channelTitle.status = { $or: ["open", "featured"] };
 
     return await this.cache
       .get(
@@ -480,12 +539,12 @@ export class Content extends EE {
             order: [[ChannelTitles.model, "entry_date", "DESC"]],
             include: [
               { model: Channels.model, where: channel },
-              { model: ChannelTitles.model, where: channelTitle },
+              { model: ChannelTitles.model, where: channelTitle }
             ],
             limit,
-            offset,
+            offset
           }),
-        { ttl: 3600, cache: false },
+        { ttl: 3600, cache: false }
       )
       .then(this.getFromPublishedIds)
       .then(x => x.filter(y => !!y));
@@ -501,13 +560,14 @@ export class Content extends EE {
     const channelTitle = pick(query, Object.keys(channelTitleSchema));
     // This gets reset every hour currently
     channelTitle.entry_date = {
-      $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())"),
+      $lte: Sequelize.literal("UNIX_TIMESTAMP(NOW())")
     };
     channelTitle.expiration_date = {
-      $or: [{ $eq: 0 }, { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") }],
+      $or: [{ $eq: 0 }, { $gt: Sequelize.literal("UNIX_TIMESTAMP(NOW())") }]
     };
 
-    if (channelTitle.status === "open") channelTitle.status = { $or: ["open", "featured"] };
+    if (channelTitle.status === "open")
+      channelTitle.status = { $or: ["open", "featured"] };
     return await this.cache
       .get(
         this.cache.encode(query, this.__type),
@@ -518,12 +578,12 @@ export class Content extends EE {
             order: [[ChannelTitles.model, "entry_date", "DESC"]],
             include: [
               { model: Channels.model, where: channel },
-              { model: ChannelTitles.model, where: channelTitle },
+              { model: ChannelTitles.model, where: channelTitle }
             ],
             limit,
-            offset,
+            offset
           }),
-        { ttl: 3600, cache: false },
+        { ttl: 3600, cache: false }
       )
       .then(this.getFromPublishedIds)
       .then(x => x.filter(y => !!y));
@@ -531,5 +591,5 @@ export class Content extends EE {
 }
 
 export default {
-  Content,
+  Content
 };

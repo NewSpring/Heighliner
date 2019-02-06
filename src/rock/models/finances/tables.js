@@ -20,7 +20,7 @@ const transactionSchema = {
   FinancialGatewayId: { type: INTEGER },
   FinancialPaymentDetailId: { type: INTEGER },
   Status: { type: STRING },
-  StatusMessage: { type: STRING },
+  StatusMessage: { type: STRING }
 };
 
 const transactionRefundSchema = {
@@ -29,7 +29,7 @@ const transactionRefundSchema = {
   RefundReasonSummary: { type: STRING },
   CreatedDateTime: { type: DATE },
   ModifiedDateTime: { type: DATE },
-  OriginalTransactionId: { type: INTEGER },
+  OriginalTransactionId: { type: INTEGER }
 };
 
 const transactionDetailSchema = {
@@ -39,7 +39,7 @@ const transactionDetailSchema = {
   Amount: { type: FLOAT },
   Summary: { type: STRING },
   CreatedDateTime: { type: DATE },
-  ModifiedDateTime: { type: DATE },
+  ModifiedDateTime: { type: DATE }
 };
 
 const scheduledTransactionSchema = {
@@ -59,7 +59,7 @@ const scheduledTransactionSchema = {
   ModifiedDateTime: { type: DATE },
   AuthorizedPersonAliasId: { type: INTEGER },
   FinancialGatewayId: { type: INTEGER },
-  FinancialPaymentDetailId: { type: INTEGER },
+  FinancialPaymentDetailId: { type: INTEGER }
   // SourceTypeValueId: { type: INTEGER },
 };
 
@@ -70,7 +70,7 @@ const scheduledTransactionDetailSchema = {
   Amount: { type: FLOAT },
   Summary: { type: STRING },
   CreatedDateTime: { type: DATE },
-  ModifiedDateTime: { type: DATE },
+  ModifiedDateTime: { type: DATE }
 };
 
 const savedPaymentSchema = {
@@ -82,7 +82,7 @@ const savedPaymentSchema = {
   ModifiedDateTime: { type: DATE },
   PersonAliasId: { type: INTEGER },
   FinancialGatewayId: { type: INTEGER },
-  FinancialPaymentDetailId: { type: INTEGER },
+  FinancialPaymentDetailId: { type: INTEGER }
 };
 
 const financialAccountSchema = {
@@ -103,7 +103,7 @@ const financialAccountSchema = {
   ImageBinaryFileId: { type: INTEGER },
   Url: { type: STRING },
   PublicDescription: { type: STRING },
-  IsPublic: { type: BOOLEAN },
+  IsPublic: { type: BOOLEAN }
 };
 
 const financialPaymentDetailSchema = {
@@ -115,7 +115,7 @@ const financialPaymentDetailSchema = {
   ModifiedDateTime: { type: DATE },
   // NOTE: This should've been stored as a date
   ExpirationMonthEncrypted: { type: STRING },
-  ExpirationYearEncrypted: { type: STRING },
+  ExpirationYearEncrypted: { type: STRING }
 };
 
 const financialGatewaySchema = {
@@ -124,7 +124,7 @@ const financialGatewaySchema = {
   Description: { type: STRING },
   IsActive: { type: BOOLEAN },
   CreatedDateTime: { type: DATE },
-  ModifiedDateTime: { type: DATE },
+  ModifiedDateTime: { type: DATE }
 };
 
 const financialBatchSchema = {
@@ -134,7 +134,7 @@ const financialBatchSchema = {
   CampusId: { type: INTEGER },
   Name: { type: STRING },
   Status: { type: STRING },
-  ControlAmount: { type: INTEGER },
+  ControlAmount: { type: INTEGER }
 };
 
 // FinancialAccounts,
@@ -167,33 +167,48 @@ export {
   FinancialGateway,
   financialGatewaySchema,
   FinancialBatch,
-  financialBatchSchema,
+  financialBatchSchema
 };
 
 export function connect() {
   Transaction = new MSSQLConnector("FinancialTransaction", transactionSchema);
-  TransactionRefund = new MSSQLConnector("FinancialTransactionRefund", transactionRefundSchema);
-  TransactionDetail = new MSSQLConnector("FinancialTransactionDetail", transactionDetailSchema);
+  TransactionRefund = new MSSQLConnector(
+    "FinancialTransactionRefund",
+    transactionRefundSchema
+  );
+  TransactionDetail = new MSSQLConnector(
+    "FinancialTransactionDetail",
+    transactionDetailSchema
+  );
   ScheduledTransaction = new MSSQLConnector(
     "FinancialScheduledTransaction",
-    scheduledTransactionSchema,
+    scheduledTransactionSchema
   );
   ScheduledTransactionDetail = new MSSQLConnector(
     "FinancialScheduledTransactionDetail",
-    scheduledTransactionDetailSchema,
+    scheduledTransactionDetailSchema
   );
-  SavedPayment = new MSSQLConnector("FinancialPersonSavedAccount", savedPaymentSchema);
-  FinancialAccount = new MSSQLConnector("FinancialAccount", financialAccountSchema);
+  SavedPayment = new MSSQLConnector(
+    "FinancialPersonSavedAccount",
+    savedPaymentSchema
+  );
+  FinancialAccount = new MSSQLConnector(
+    "FinancialAccount",
+    financialAccountSchema
+  );
   FinancialPaymentDetail = new MSSQLConnector(
     "FinancialPaymentDetail",
-    financialPaymentDetailSchema,
+    financialPaymentDetailSchema
   );
-  FinancialGateway = new MSSQLConnector("FinancialGateway", financialGatewaySchema);
+  FinancialGateway = new MSSQLConnector(
+    "FinancialGateway",
+    financialGatewaySchema
+  );
   FinancialBatch = new MSSQLConnector(
     "FinancialBatch",
     financialBatchSchema,
     {},
-    "FinancialBatches",
+    "FinancialBatches"
   );
 
   return {
@@ -206,7 +221,7 @@ export function connect() {
     FinancialAccount,
     FinancialGateway,
     FinancialPaymentDetail,
-    FinancialBatch,
+    FinancialBatch
   };
 }
 
@@ -218,57 +233,59 @@ export function bind({
   ScheduledTransaction,
   ScheduledTransactionDetail,
   SavedPayment,
-  FinancialAccount,
+  FinancialAccount
   // FinancialGateway,
 }) {
   Transaction.model.belongsTo(PersonAlias.model, {
     foreignKey: "AuthorizedPersonAliasId",
-    targetKey: "Id",
+    targetKey: "Id"
   });
 
   PersonAlias.model.hasMany(Transaction.model, {
-    foreignKey: "AuthorizedPersonAliasId",
+    foreignKey: "AuthorizedPersonAliasId"
   });
 
   TransactionRefund.model.belongsTo(Transaction.model, {
     foreignKey: "OriginalTransactionId",
-    targetKey: "Id",
+    targetKey: "Id"
   });
 
   TransactionDetail.model.belongsTo(FinancialAccount.model, {
     foreignKey: "AccountId",
-    targetKey: "Id",
+    targetKey: "Id"
   });
 
   ScheduledTransaction.model.hasMany(Transaction.model, { foreignKey: "Id" });
   Transaction.model.belongsTo(ScheduledTransaction.model, {
     foreignKey: "ScheduledTransactionId",
-    targetKey: "Id",
+    targetKey: "Id"
   });
 
   ScheduledTransaction.model.hasMany(ScheduledTransactionDetail.model, {
-    foreignKey: "ScheduledTransactionId",
+    foreignKey: "ScheduledTransactionId"
   });
   ScheduledTransactionDetail.model.belongsTo(ScheduledTransaction.model, {
     foreignKey: "ScheduledTransactionId",
-    targetKey: "Id",
+    targetKey: "Id"
   });
 
   SavedPayment.model.belongsTo(PersonAlias.model, {
     foreignKey: "PersonAliasId",
-    targetKey: "Id",
+    targetKey: "Id"
   });
 
-  Transaction.model.hasMany(TransactionDetail.model, { foreignKey: "TransactionId" });
+  Transaction.model.hasMany(TransactionDetail.model, {
+    foreignKey: "TransactionId"
+  });
   TransactionDetail.model.belongsTo(Transaction.model, {
     foreignKey: "Id",
-    targetKey: "TransactionId",
+    targetKey: "TransactionId"
   });
 }
 
 export default {
   connect,
-  bind,
+  bind
 };
 // // SELSELECT [FinancialTransaction].[Id],
 //        [FinancialTransaction].[TransactionDateTime],

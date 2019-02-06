@@ -1,4 +1,3 @@
-
 export default [
   "people(email: String): [Person]",
 
@@ -6,5 +5,5 @@ export default [
 
   "currentPerson(cache: Boolean = true): Person",
 
-  "currentFamily: [GroupMember]",
+  "currentFamily: [GroupMember]"
 ];

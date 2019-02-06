@@ -17,7 +17,7 @@ const tables = {
   sites,
   tags,
   navee,
-  snippets,
+  snippets
 };
 
 export function createTables() {
