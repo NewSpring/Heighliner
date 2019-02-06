@@ -89,7 +89,7 @@ module.exports = {
         };
 
         const issues = answers.issues.trim();
-        var body = answers.body ? `#comment ${  answers.body.trim()}` : "";
+        let body = answers.body ? `#comment ${  answers.body.trim()}` : "";
         const ci = answers.ci ? "" : " [ci skip]";
 
         // Hard limit this line
@@ -97,7 +97,7 @@ module.exports = {
         if (body) head = `${head } ${body}`;
 
         // Wrap these lines at 100 characters
-        var body = wrap(body, wrapOptions);
+        body = wrap(body, wrapOptions);
 
         if (!body) body = "";
 

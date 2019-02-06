@@ -5,7 +5,7 @@ module.exports = {
   process(src) {
     return fs.readSync(src, "utf8");
   },
-  getCacheKey(fileData, filename) {
+  getCacheKey(filename) {
     return filename;
   },
 };

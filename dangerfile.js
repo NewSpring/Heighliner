@@ -3,13 +3,8 @@ import { danger, fail, warn } from "danger";
 import { any } from "ramda";
 import fs from "fs";
 
-// Takes a list of file paths, and converts it into clickable links
-const linkableFiles = (paths) => {
-  const repoURL = danger.github.pr.head.repo.html_url;
-  const ref = danger.github.pr.head.ref;
-  const links = paths.map((path) => createLink(`${repoURL}/blob/${ref}/${path}`, path));
-  return toSentence(links);
-};
+// ("/href/thing", "name") to "<a href="/href/thing">name</a>"
+const createLink = (href, text) => `<a href='${href}'>${text}</a>`;
 
 // ["1", "2", "3"] to "1, 2 and 3"
 const toSentence = (array) => {
@@ -19,8 +14,13 @@ const toSentence = (array) => {
   return `${array.slice(0, array.length - 1).join(", ")  } and ${  array.pop()}`;
 };
 
-// ("/href/thing", "name") to "<a href="/href/thing">name</a>"
-const createLink = (href, text) => `<a href='${href}'>${text}</a>`;
+// Takes a list of file paths, and converts it into clickable links
+const linkableFiles = (paths) => {
+  const repoURL = danger.github.pr.head.repo.html_url;
+  const ref = danger.github.pr.head.ref;
+  const links = paths.map((path) => createLink(`${repoURL}/blob/${ref}/${path}`, path));
+  return toSentence(links);
+};
 
 // Raise about missing code inside files
 const raiseIssueAboutPaths = (type, paths, codeToInclude) => {
@@ -126,5 +126,5 @@ const hasReleaseLabel = danger.github &&
 if (hasReleaseLabel) {
   const checklist = fs.readFileSync("./.travis/QA.md");
   console.log("THIS PR IS A RELEASE CANDIDATE");
-  markdown(checklist);
+  markdown(checklist); // eslint-disable-line
 }

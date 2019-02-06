@@ -1,13 +1,12 @@
 {
   "parser": "babel-eslint",
-  "extends": ["airbnb-base","prettier"],
+  "extends": ["airbnb-base", "prettier"],
   "env": {
     "node": true,
     "es6": true,
     "jest": true
   },
-  "globals": {
-  },
+  "globals": {},
   "rules": {
     "quotes": [2, "double"],
     "no-underscore-dangle": 0,
