@@ -26,7 +26,6 @@ const RockSettings = {
   opts: {
     host: process.env.MSSQL_HOST,
     dialectOptions: {
-      encrypt: true;
       // instanceName: process.env.MSSQL_INSTANCE,
       // connectTimeout: 90000,
     }
