@@ -42,7 +42,7 @@ export function connect(monitor) {
       logging: process.env.LOG === "true" ? loud : noop,
       benchmark: process.env.NODE_ENV !== "production",
       dialectOptions: {
-        encrypt: true
+        encrypt: true,
         readOnlyIntent: true
       },
       define: {
