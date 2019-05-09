@@ -43,6 +43,7 @@ export function connect(monitor) {
       benchmark: process.env.NODE_ENV !== "production",
       dialectOptions: {
         readOnlyIntent: true
+        encrypt: true
       },
       define: {
         timestamps: false,
