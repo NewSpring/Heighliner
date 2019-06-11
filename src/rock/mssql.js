@@ -2,18 +2,18 @@ import Sequelize, {
   Options,
   Connection,
   Model,
-  DefineOptions
-} from "sequelize";
+  DefineOptions,
+} from 'sequelize';
 
-import fetch from "isomorphic-fetch";
+import fetch from 'isomorphic-fetch';
 
-import { merge, isArray } from "lodash";
+import { merge, isArray } from 'lodash';
 // import DataLoader from "dataloader";
 
-import { createTables } from "./models";
+import { createTables } from './models';
 
 const noop = (...args) => {}; // tslint:disable-line
-const loud = console.log.bind(console, "MSSQL:"); // tslint:disable-line
+const loud = console.log.bind(console, 'MSSQL:'); // tslint:disable-line
 let db;
 let dd;
 let isReady;
@@ -28,32 +28,33 @@ const RockSettings = {
     dialectOptions: {
       // instanceName: process.env.MSSQL_INSTANCE,
       // connectTimeout: 90000,
-    }
-  }
+    },
+  },
 };
 
 export function connect(monitor) {
   if (isReady) return Promise.resolve(true);
   dd = monitor && monitor.datadog;
-  return new Promise(cb => {
+  return new Promise((cb) => {
     const opts = merge({}, RockSettings.opts, {
-      dialect: "mssql",
-      logging: process.env.LOG === "true" ? loud : noop,
-      benchmark: process.env.NODE_ENV !== "production",
+      dialect: 'mssql',
+      logging: process.env.LOG === 'true' ? loud : noop,
+      benchmark: process.env.NODE_ENV !== 'production',
       dialectOptions: {
-        readOnlyIntent: true
+        encrypt: true,
+        readOnlyIntent: true,
       },
       define: {
         timestamps: false,
-        freezeTableName: true
-      }
+        freezeTableName: true,
+      },
     });
 
     db = new Sequelize(
       RockSettings.database,
       RockSettings.user,
       RockSettings.password,
-      opts
+      opts,
     );
 
     db.authenticate()
@@ -62,7 +63,7 @@ export function connect(monitor) {
       .then(() => {
         isReady = true;
       })
-      .catch(e => {
+      .catch((e) => {
         db = false;
         console.error(e); // tslint:disable-line
         cb(false);
@@ -71,7 +72,7 @@ export function connect(monitor) {
 }
 
 export class MSSQLConnector {
-  prefix = "";
+  prefix = '';
   count = 0;
 
   constructor(tableName, schema = {}, options = {}, api) {
@@ -91,7 +92,7 @@ export class MSSQLConnector {
       this.model.findAll
         .apply(this.model, args)
         .then(this.getValues)
-        .then(data => data.map(this.mergeData))
+        .then((data) => data.map(this.mergeData)),
     );
   }
 
@@ -99,28 +100,28 @@ export class MSSQLConnector {
     return this.time(
       this.model.findOne
         .apply(this.model, args)
-        .then(x => x && x.dataValues)
-        .then(this.mergeData)
+        .then((x) => x && x.dataValues)
+        .then(this.mergeData),
     );
   }
 
-  patch(entityId = "", body) {
-    return this.fetch("PATCH", `${entityId}`, body);
+  patch(entityId = '', body) {
+    return this.fetch('PATCH', `${entityId}`, body);
   }
 
   post(body) {
-    return this.fetch("POST", "", body);
+    return this.fetch('POST', '', body);
   }
 
-  delete(entityId = "") {
-    return this.fetch("DELETE", `${entityId}`);
+  delete(entityId = '') {
+    return this.fetch('DELETE', `${entityId}`);
   }
 
-  fetch(method, route = "", body) {
+  fetch(method, route = '', body) {
     const { ROCK_URL, ROCK_TOKEN } = process.env;
     const headers = {
-      "Authorization-Token": ROCK_TOKEN,
-      "Content-Type": "application/json"
+      'Authorization-Token': ROCK_TOKEN,
+      'Content-Type': 'application/json',
     };
     let url = `${ROCK_URL}api/${this.route}`;
     if (route) url = `${url}/${route}`;
@@ -128,13 +129,13 @@ export class MSSQLConnector {
     return fetch(url, {
       headers,
       method,
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     })
-      .then(response => {
+      .then((response) => {
         const { status, statusText, error } = response;
 
         if (status === 204)
-          return { json: () => ({ status: 204, statusText: "success" }) };
+          return { json: () => ({ status: 204, statusText: 'success' }) };
         if (status >= 200 && status < 300) return response;
         if (status >= 400) {
           const err = new Error(statusText);
@@ -143,13 +144,13 @@ export class MSSQLConnector {
         }
 
         return {
-          json: () => ({ status, statusText, error })
+          json: () => ({ status, statusText, error }),
         };
       })
-      .then(x => x.json());
+      .then((x) => x.json());
   }
 
-  mergeData = data => {
+  mergeData = (data) => {
     if (!data) return data;
 
     const keys = [];
@@ -172,7 +173,7 @@ export class MSSQLConnector {
   };
 
   getValues(data) {
-    return data.map(x => x.dataValues || x);
+    return data.map((x) => x.dataValues || x);
   }
 
   queryCount() {
@@ -181,22 +182,22 @@ export class MSSQLConnector {
   }
 
   time(promise) {
-    const prefix = "MSSQLConnector";
+    const prefix = 'MSSQLConnector';
     const count = this.queryCount();
     const start = new Date();
     const label = `${prefix}-${count}`;
     if (dd) dd.increment(`${prefix}.transaction.count`);
     console.time(label); // tslint:disable-line
     return promise
-      .then(x => {
+      .then((x) => {
         const end = new Date();
-        if (dd) dd.histogram(`${prefix}.transaction.time`, end - start, [""]);
+        if (dd) dd.histogram(`${prefix}.transaction.time`, end - start, ['']);
         console.timeEnd(label); // tslint:disable-line
         return x;
       })
-      .catch(x => {
+      .catch((x) => {
         const end = new Date();
-        if (dd) dd.histogram(`${prefix}.transaction.time`, end - start, [""]);
+        if (dd) dd.histogram(`${prefix}.transaction.time`, end - start, ['']);
         if (dd) dd.increment(`${prefix}.transaction.error`);
         console.timeEnd(label); // tslint:disable-line
         return x;
