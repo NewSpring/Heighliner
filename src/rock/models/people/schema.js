@@ -51,5 +51,5 @@ export default [
     success: Boolean!
     code: Int
   }
-`,
+`
 ];

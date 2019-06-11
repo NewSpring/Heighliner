@@ -1,4 +1,3 @@
-
 import casual from "casual";
 import Node, { createGlobalId, parseGlobalId } from "../model";
 
@@ -25,7 +24,6 @@ it("`parseGlobalId` should take a global id and return the type and id", () => {
   expect(parseGlobalId(globalId)).toEqual({ __type, id });
 });
 
-
 it("Node class should parse an encoded id to get the type to resolve", async () => {
   const id = casual.word;
   const __type = "Test";
@@ -37,9 +35,9 @@ it("Node class should parse an encoded id to get the type to resolve", async () 
         getFromId(_id) {
           expect(_id).toEqual(id);
           return {};
-        },
-      },
-    },
+        }
+      }
+    }
   };
 
   const node = new Node(context);
@@ -57,9 +55,9 @@ it("Node class should return data from the models `getFromId` method", async () 
       Test: {
         getFromId(_id) {
           return Promise.resolve(data);
-        },
-      },
-    },
+        }
+      }
+    }
   };
 
   const node = new Node(context);
@@ -79,9 +77,9 @@ it("Node class should attach the __type to the resulting data", async () => {
       Test: {
         getFromId(_id) {
           return Promise.resolve(data);
-        },
-      },
-    },
+        }
+      }
+    }
   };
 
   const node = new Node(context);

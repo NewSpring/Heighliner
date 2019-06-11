@@ -9,5 +9,5 @@ export default {
   resolvers,
   models,
   queries,
-  mutations,
+  mutations
 };

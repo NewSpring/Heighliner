@@ -1,3 +1,1 @@
-export default [
-  "attachPhotoIdToUser(id: ID!): Boolean",
-];
+export default ["attachPhotoIdToUser(id: ID!): Boolean"];

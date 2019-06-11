@@ -91,5 +91,5 @@ export default [
     tracks: [File]
     seriesId: ID
   }
-`,
+`
 ];

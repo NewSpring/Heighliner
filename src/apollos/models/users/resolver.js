@@ -1,4 +1,3 @@
-
 import get from "lodash/get";
 import pick from "lodash/pick";
 import { FOLLOWABLE_TOPICS } from "../../../constants";
@@ -11,21 +10,21 @@ export default {
     },
     topics() {
       return FOLLOWABLE_TOPICS;
-    },
+    }
   },
 
   UserTokens: {
-    tokens: ({ loginTokens }) => loginTokens,
+    tokens: ({ loginTokens }) => loginTokens
   },
 
   UserRock: {
     id: ({ PersonId }) => PersonId,
-    alias: ({ PrimaryAliasId }) => PrimaryAliasId,
+    alias: ({ PrimaryAliasId }) => PrimaryAliasId
   },
 
   UserService: {
     rock: ({ rock }) => rock,
-    resume: ({ resume }) => resume,
+    resume: ({ resume }) => resume
   },
 
   User: {
@@ -37,7 +36,7 @@ export default {
     createdAt: ({ user } = {}) => {
       const {
         createdAt, // Deprecated Mongo User
-        CreatedDateTime, // Rock User
+        CreatedDateTime // Rock User
       } = user;
       return CreatedDateTime || createdAt;
     },
@@ -52,7 +51,7 @@ export default {
     },
     followedTopics({ person }, $, { models }) {
       return models.User.getUserFollowingTopics(person.PrimaryAliasId);
-    },
+    }
   },
 
   Mutation: {
@@ -65,59 +64,48 @@ export default {
     logoutUser(_, props, { models, authToken, user }) {
       return models.User.logoutUser({
         token: authToken,
-        loginId: user && user.Id,
+        loginId: user && user.Id
       });
     },
     forgotUserPassword(_, props, { models }) {
-      const {
-        email,
-        sourceURL,
-      } = props;
+      const { email, sourceURL } = props;
       return models.User.forgotPassword(email, sourceURL);
     },
     resetUserPassword(_, props, { models }) {
-      const {
-        token,
-        newPassword,
-      } = props;
+      const { token, newPassword } = props;
       return models.User.resetPassword(token, newPassword);
     },
     changeUserPassword(_, props, { models, user }) {
-      const {
-        oldPassword,
-        newPassword,
-      } = props;
+      const { oldPassword, newPassword } = props;
       return models.User.changePassword(user, oldPassword, newPassword);
     },
     toggleTopic(_, props, { models, person }) {
-      const {
-        topic,
-      } = props;
+      const { topic } = props;
       return models.User.toggleTopic({
         topic,
-        userId: person.PrimaryAliasId,
+        userId: person.PrimaryAliasId
       });
     },
     updateProfile(_, { input } = {}, { models, person }) {
-      return models.User.updateProfile(person.Id, pick(input, [
-        "NickName",
-        "FirstName",
-        "LastName",
-        "Email",
-        "BirthMonth",
-        "BirthDay",
-        "BirthYear",
-        "Campus",
-      ]));
+      return models.User.updateProfile(
+        person.Id,
+        pick(input, [
+          "NickName",
+          "FirstName",
+          "LastName",
+          "Email",
+          "BirthMonth",
+          "BirthDay",
+          "BirthYear",
+          "Campus"
+        ])
+      );
     },
     updateHomeAddress(_, { input } = {}, { models, person }) {
-      return models.User.updateHomeAddress(person.Id, pick(input, [
-        "Street1",
-        "Street2",
-        "City",
-        "State",
-        "PostalCode",
-      ]));
-    },
-  },
+      return models.User.updateHomeAddress(
+        person.Id,
+        pick(input, ["Street1", "Street2", "City", "State", "PostalCode"])
+      );
+    }
+  }
 };

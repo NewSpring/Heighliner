@@ -6,9 +6,9 @@ import { createGlobalId } from "../../../util";
 // });
 
 export default {
-
   Query: {
-    campuses: (_, { name, id }, { models }) => models.Campus.find({ Id: id, Name: name }),
+    campuses: (_, { name, id }, { models }) =>
+      models.Campus.find({ Id: id, Name: name })
   },
 
   Campus: {
@@ -25,7 +25,7 @@ export default {
 
       ServiceTimes.split("|")
         .filter(x => !!x)
-        .forEach((x) => {
+        .forEach(x => {
           let [day, time] = x.split("^");
           day = day.trim();
           time = time.trim();
@@ -34,7 +34,7 @@ export default {
           if (days[day].indexOf(time) === -1) days[day].push(time);
         });
 
-      return Object.keys(days).map((x) => {
+      return Object.keys(days).map(x => {
         let str = `${x} at `;
         if (days[x].length === 1) {
           str += `& ${days[x]}`;
@@ -44,7 +44,6 @@ export default {
         str += `${[...days[x]].slice(0, days[x].length - 1).join(", ")} `;
         str += `& ${[...days[x]].pop()}`;
 
-
         return str;
       });
     },
@@ -53,7 +52,7 @@ export default {
       if (!LocationId) return null;
 
       return models.Campus.findByLocationId(LocationId);
-    },
+    }
   },
 
   Location: {
@@ -71,7 +70,9 @@ export default {
       try {
         const { points } = geography(GeoPoint);
         return points[0].x;
-      } catch (e) { return null; }
+      } catch (e) {
+        return null;
+      }
     },
     longitude: ({ GeoPoint, longitude }) => {
       if (longitude) return longitude;
@@ -79,15 +80,17 @@ export default {
       try {
         const { points } = geography(GeoPoint);
         return points[0].y;
-      } catch (e) { return null; }
+      } catch (e) {
+        return null;
+      }
     },
-    distance: ({ Id, Distance }) => { // tslint:disable-line
+    distance: ({ Id, Distance }) => {
+      // tslint:disable-line
       if (Distance) return Distance;
 
       return null;
       // XXX get distance from the person
       // this is typically used from a geo based lookup
-    },
-  },
-
+    }
+  }
 };

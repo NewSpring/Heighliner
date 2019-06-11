@@ -4,7 +4,7 @@ import { defaultCache } from "../../../util/cache";
 import { createGlobalId } from "../../../util";
 
 import {
-  BinaryFile as BinaryFileTable,
+  BinaryFile as BinaryFileTable
   // Location as LocationTable, // XXX move to its own model
 } from "./tables";
 
@@ -12,7 +12,7 @@ import { Rock } from "../system/model";
 import * as api from "../../../apollos/models/users/api";
 
 export class BinaryFile extends Rock {
-   __type = "BinaryFile";
+  __type = "BinaryFile";
 
   constructor({ cache } = { cache: defaultCache }) {
     super({ cache });
@@ -35,34 +35,34 @@ export class BinaryFile extends Rock {
   }
 
   async getFromId(id, globalId) {
-    globalId = globalId ? globalId : createGlobalId(`${id}`, this.__type);
-    return this.cache.get(globalId, () => BinaryFileTable.findOne({ where: { Id: id }})
-      .then(this.processFile)
+    globalId = globalId || createGlobalId(`${id}`, this.__type);
+    return this.cache.get(globalId, () =>
+      BinaryFileTable.findOne({ where: { Id: id } }).then(this.processFile)
     );
   }
 
   async getFromGuid(Guid) {
-    return this.cache.get(`${Guid}:BinaryFileGuid`, () => BinaryFileTable.findOne({
-      where: { Guid },
-    })
-      .then(this.processFile)
+    return this.cache.get(`${Guid}:BinaryFileGuid`, () =>
+      BinaryFileTable.findOne({
+        where: { Guid }
+      }).then(this.processFile)
     );
   }
 
   // async getFromPerson
   async find(query) {
-    return this.cache.get(this.cache.encode(query), () => BinaryFileTable.find({
-      where: query,
-      attributes: ["Id"],
-    })
-      .then(this.getFromIds.bind(this))
+    return this.cache.get(this.cache.encode(query), () =>
+      BinaryFileTable.find({
+        where: query,
+        attributes: ["Id"]
+      }).then(this.getFromIds.bind(this))
     );
   }
 
   async attachPhotoIdToUser({ personId, previousPhotoId, newPhotoId } = {}) {
     try {
       await api.patch(`/People/${personId}`, {
-        PhotoId: newPhotoId,
+        PhotoId: newPhotoId
       });
       if (!isEmpty(previousPhotoId)) {
         try {
@@ -76,5 +76,5 @@ export class BinaryFile extends Rock {
 }
 
 export default {
-  BinaryFile,
+  BinaryFile
 };
