@@ -11,8 +11,9 @@ import { merge, isArray } from "lodash";
 // import DataLoader from "dataloader";
 
 import { createTables } from "./models";
-let noop = (...args) => {}; // tslint:disable-line
-let loud = console.log.bind(console, "MSSQL:"); // tslint:disable-line
+
+const noop = (...args) => {}; // tslint:disable-line
+const loud = console.log.bind(console, "MSSQL:"); // tslint:disable-line
 let db;
 let dd;
 let isReady;
@@ -41,6 +42,7 @@ export function connect(monitor) {
       benchmark: process.env.NODE_ENV !== "production",
       dialectOptions: {
         readOnlyIntent: true,
+        encrypt: true,
       },
       define: {
         timestamps: false,
@@ -86,7 +88,7 @@ export class MSSQLConnector {
 
   findOne(...args) {
     return this.time(this.model.findOne.apply(this.model, args)
-      .then((x) => x && x.dataValues)
+      .then(x => x && x.dataValues)
       .then(this.mergeData));
   }
 
@@ -114,10 +116,10 @@ export class MSSQLConnector {
     return fetch(url, {
       headers, method, body: JSON.stringify(body),
     })
-      .then(response => {
+      .then((response) => {
         const { status, statusText, error } = response;
 
-        if (status === 204) return { json: () => ({ status: 204, statusText: "success" })};
+        if (status === 204) return { json: () => ({ status: 204, statusText: "success" }) };
         if (status >= 200 && status < 300) return response;
         if (status >= 400) {
           const err = new Error(statusText);
@@ -136,11 +138,11 @@ export class MSSQLConnector {
     if (!data) return data;
 
     const keys = [];
-    for (let key in data) {
+    for (const key in data) {
       if (key.indexOf(this.prefix) > -1) keys.push(key);
     }
 
-    for (let key of keys) {
+    for (const key of keys) {
       const table = data[key];
       if (!data[key]) continue;
 
@@ -171,13 +173,13 @@ export class MSSQLConnector {
     if (dd) dd.increment(`${prefix}.transaction.count`);
     console.time(label); // tslint:disable-line
     return promise
-      .then(x => {
+      .then((x) => {
         const end = new Date();
         if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
         console.timeEnd(label); // tslint:disable-line
         return x;
       })
-      .catch(x => {
+      .catch((x) => {
         const end = new Date();
         if (dd) dd.histogram(`${prefix}.transaction.time`, (end - start), [""]);
         if (dd) dd.increment(`${prefix}.transaction.error`);
